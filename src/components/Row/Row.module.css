@@ -1,0 +1,7 @@
+.row {
+  border-left: var(--rem) solid var(--color-font-secondary);
+}
+
+.date {
+  margin: 0;
+}

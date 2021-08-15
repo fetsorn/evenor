@@ -1,0 +1,20 @@
+.footer {
+  padding-top: calc(var(--rem) * 16);
+  padding-bottom: calc(var(--rem) * 16);
+}
+
+.title {
+  font-family: var(--title-font);
+  font-size: calc(var(--rem) * 16);
+  font-weight: 400;
+  line-height: 1em;
+  text-align: center;
+
+  color: var(--color-font-base);
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: calc(var(--rem) * 12);
+  }
+}

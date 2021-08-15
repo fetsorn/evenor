@@ -1,0 +1,15 @@
+.main {
+  margin-left: auto;
+  margin-right: auto;
+
+  width: calc(var(--col) * 16);
+}
+
+@media (max-width: 600px) {
+  .main {
+    margin-left: auto;
+    margin-right: auto;
+
+    width: calc(var(--rem) * 109);
+  }
+}

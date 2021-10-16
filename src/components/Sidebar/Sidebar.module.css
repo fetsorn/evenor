@@ -6,6 +6,8 @@
   flex-shrink: 0;
 
   transition: width 0.3s ease;
+
+  white-space: pre-wrap;
 }
 
 .sidebar.invisible {
@@ -30,4 +32,7 @@
   padding-left: calc(var(--col) * 2);
   padding-right: calc(var(--col) * 2);
   width: calc(var(--col) * 16);
+
+  overflow-y: auto;
+  max-height: 100vh;
 }

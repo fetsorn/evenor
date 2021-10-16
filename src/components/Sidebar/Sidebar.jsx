@@ -26,12 +26,15 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose }) => {
     >
       <div className={styles.container}>
         <div className={styles.sticky}>
-          <Title>{formatDate(event?.GUEST_DATE)}</Title>
+          <Title>{formatDate(event?.HOST_DATE)}</Title>
           {event?.DATUM && (
             <Paragraph>{event?.DATUM}</Paragraph>
           )}
           {event?.PATH && (
             <Paragraph><Link href={event?.PATH} target="_blank" rel="noreferrer">Вложение</Link></Paragraph>
+          )}
+          {event?.PATH && (
+            <Paragraph><iframe src={"api/" + event?.PATH} width="100%" height="800px"></iframe></Paragraph>
           )}
           <Button type="button" onClick={handleClose}>Закрыть</Button>
         </div>

@@ -8,9 +8,10 @@
 
   font-family: var(--title-font);
   font-size: calc(var(--rem) * 16);
-  font-weight: 400;
+  font-weight: 900;
   line-height: 1em;
   text-align: center;
+  text-transform: uppercase;
 
   color: var(--color-font-base);
 }

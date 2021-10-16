@@ -1,0 +1,19 @@
+.button {
+  border: none;
+  border-radius: calc(var(--rem) * 1.5);
+
+  padding-top: calc(var(--rem) * 3);
+  padding-bottom: calc(var(--rem) * 3);
+  padding-left: calc(var(--rem) * 6);
+  padding-right: calc(var(--rem) * 6);
+
+  background-color: var(--color-accent);
+
+  font-family: var(--title-font);
+  font-weight: 400;
+  font-size: calc(var(--rem) * 4);
+  line-height: calc(var(--rem) * 5.5);
+  color: var(--color-font-accent);
+
+  cursor: pointer;
+}

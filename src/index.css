@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Rubik+Mono+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Rubik:wght@400;700;900&display=swap');
 
 :root {
-  --title-font: 'Rubik Mono One', sans-serif;
+  --title-font: 'Rubik', sans-serif;
 
   --rem: 0.277777vw;
   --col: 2.5vw;
@@ -16,19 +16,23 @@
 @media (prefers-color-scheme: light) {
   :root {
     --color-background: #fff;
+    --color-accent: #40f;
     --color-font-base: #222;
-    --color-font-secondary: #666;
+    --color-font-accent: #fff;
   }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: #222;
+    --color-accent: #40f;
     --color-font-base: #fff;
-    --color-font-secondary: #666;
+    --color-font-accent: #fff;
   }
 }
 
 body {
   background-color: var(--color-background);
+
+  overflow-x: hidden;
 }

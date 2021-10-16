@@ -1,16 +1,18 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Header, Main, Footer, VirtualScroll, Row } from './components'
+import { Header, Main, Footer, Timeline, Sidebar, VirtualScroll, Row } from './components'
 import { useWindowSize, useMedia } from './hooks'
 import { REM_DESKTOP, REM_MOBILE } from './constants'
 
 const rowHeights = {
-  mobile: 32,
-  desktop: 32,
+  mobile: 40,
+  desktop: 40,
 }
 
 const App = () => {
-  const [, setLoading] = useState(true)
   const [data, setData] = useState([])
+  const [, setDataLoading] = useState(true)
+  const [event, setEvent] = useState(undefined)
+  const [eventLoading, setEventLoading] = useState(false)
 
   const { width: viewportWidth } = useWindowSize()
   const isMobile = useMedia('(max-width: 600px)')
@@ -26,17 +28,28 @@ const App = () => {
       .then((res) => res.json())
       .then((data) => setData(data))
       .catch((err) => console.error(err))
-      .finally(() => setLoading(false))
+      .finally(() => setDataLoading(false))
   }, [])
 
-  useEffect(() => console.log('data', data), [data])
-  useEffect(() => console.log('isMobile', isMobile), [isMobile])
+  const handleOpenEvent = (link) => {
+    setEventLoading(true)
+    fetch(`/api/events/${link}`)
+      .then((res) => res.json())
+      .then((data) => setEvent(data))
+      .catch((err) => console.error(err))
+      .finally(() => setEventLoading(false))
+  }
+
+  const handleCloseEvent = () => setEvent(undefined)
 
   return (
     <>
       <Header />
       <Main>
-        <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} />
+        <Timeline>
+          <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
+        </Timeline>
+        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} />
       </Main>
       <Footer />
     </>

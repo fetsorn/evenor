@@ -1,0 +1,33 @@
+.sidebar {
+  box-sizing: border-box;
+  width: calc(var( --col) * 20);
+
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  transition: width 0.3s ease;
+}
+
+.sidebar.invisible {
+  width: 0;
+
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    display: none;
+  }
+}
+
+.container {
+  height: 100%;
+}
+
+.sticky {
+  position: sticky;
+  top: 0;
+  padding-left: calc(var(--col) * 2);
+  padding-right: calc(var(--col) * 2);
+  width: calc(var(--col) * 16);
+}

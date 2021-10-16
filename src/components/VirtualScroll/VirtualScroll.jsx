@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
 import { useWindowSize } from '../../hooks'
 
-const VirtualScroll = ({ data, rowComponent: Component, rowHeight, tolerance = 2 }) => {
+const VirtualScroll = ({ data, rowComponent: Component, rowHeight, onEventClick, tolerance = 2 }) => {
   const topSpacer = useRef()
   const [start, setStart] = useState(0)
   const { height: viewportHeight } = useWindowSize()
@@ -41,15 +41,15 @@ const VirtualScroll = ({ data, rowComponent: Component, rowHeight, tolerance = 2
   return (
     <>
       <div style={{ height: getTopHeight() }} ref={topSpacer} />
-      {dataWithKeys.slice(start, start + visibleRowCount).map((elm, index) => (
-        <Component
-          data={elm}
-          key={elm.key}
-          isFirst={elm.key === 0}
-          isLast={elm.key === dataWithKeys.length - 1}
-          style={{ height: rowHeight }}
-        />
-      ))}
+        {dataWithKeys.slice(start, start + visibleRowCount).map((elm, index) => (
+          <Component
+            data={elm}
+            key={elm.key}
+            isLast={elm.key === dataWithKeys.length - 1}
+            onEventClick={onEventClick}
+            style={{ height: rowHeight }}
+          />
+        ))}
       <div style={{ height: getBottomHeight() }} />
     </>
   )

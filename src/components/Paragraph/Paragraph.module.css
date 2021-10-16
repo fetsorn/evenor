@@ -1,0 +1,10 @@
+.paragraph {
+  margin-top: calc(var(--rem) * 6);
+  margin-bottom: calc(var(--rem) * 6);
+
+  font-family: var(--title-font);
+  font-weight: 400;
+  font-size: calc(var(--rem) * 4.5);
+  line-height: calc(var(--rem) * 6);
+  color: var(--color-font-base);
+}

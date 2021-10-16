@@ -1,0 +1,14 @@
+.timeline {
+  margin-left: auto;
+  margin-right: auto;
+  width: calc(var(--col) * 16);
+
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .timeline {
+    width: calc(var(--rem) * 109);
+  }
+}

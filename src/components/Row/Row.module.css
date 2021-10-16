@@ -72,7 +72,7 @@
   width: calc(var(--rem) * 8);
   height: calc(var(--rem) * 8);
 
-  background-color: var(--color-accent);
+  background-color: var(--color-button-default);
 
   font-family: var(--title-font);
   font-weight: 700;
@@ -80,4 +80,17 @@
   color: var(--color-font-accent);
 
   cursor: pointer;
+}
+
+.star:hover {
+  background-color: var(--color-button-hover);
+}
+
+.star:active {
+  background-color: var(--color-button-active);
+}
+
+.star:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 var(--rem) var(--color-button-focus);
 }

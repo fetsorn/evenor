@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import cn from 'classnames'
 
-import { Title, Paragraph, Button } from '../'
-import { formatDate } from '../../utils'
+import { Title, Paragraph, Button, Link } from '@components'
+import { formatDate } from '@utils'
 
 import styles from './Sidebar.module.css'
 
@@ -31,7 +31,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose }) => {
             <Paragraph>{event?.DATUM}</Paragraph>
           )}
           {event?.PATH && (
-            <Paragraph><a href={event?.PATH} target="_blank" rel="noreferrer">Вложение</a></Paragraph>
+            <Paragraph><Link href={event?.PATH} target="_blank" rel="noreferrer">Вложение</Link></Paragraph>
           )}
           <Button type="button" onClick={handleClose}>Закрыть</Button>
         </div>

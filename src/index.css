@@ -17,8 +17,14 @@
   :root {
     --color-background: #fff;
     --color-accent: #40f;
+
     --color-font-base: #222;
     --color-font-accent: #fff;
+
+    --color-button-default: #40f;
+    --color-button-hover: #45f;
+    --color-button-active: #30b;
+    --color-button-focus: #48f;
   }
 }
 
@@ -26,8 +32,14 @@
   :root {
     --color-background: #222;
     --color-accent: #40f;
+
     --color-font-base: #fff;
     --color-font-accent: #fff;
+
+    --color-button-default: #40f;
+    --color-button-hover: #45f;
+    --color-button-active: #30b;
+    --color-button-focus: #48f;
   }
 }
 

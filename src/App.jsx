@@ -1,7 +1,8 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Header, Main, Footer, Timeline, Sidebar, VirtualScroll, Row } from './components'
-import { useWindowSize, useMedia } from './hooks'
-import { REM_DESKTOP, REM_MOBILE } from './constants'
+
+import { Header, Main, Footer, Timeline, Sidebar, VirtualScroll, Row } from '@components'
+import { useWindowSize, useMedia } from '@hooks'
+import { REM_DESKTOP, REM_MOBILE } from '@constants'
 
 const rowHeights = {
   mobile: 40,

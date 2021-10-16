@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react'
-import { useWindowSize } from '../../hooks'
+import { useWindowSize } from '@hooks'
 
 const VirtualScroll = ({ data, rowComponent: Component, rowHeight, onEventClick, tolerance = 2 }) => {
   const topSpacer = useRef()

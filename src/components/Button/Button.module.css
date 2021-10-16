@@ -7,7 +7,7 @@
   padding-left: calc(var(--rem) * 6);
   padding-right: calc(var(--rem) * 6);
 
-  background-color: var(--color-accent);
+  background-color: var(--color-button-default);
 
   font-family: var(--title-font);
   font-weight: 400;
@@ -16,4 +16,16 @@
   color: var(--color-font-accent);
 
   cursor: pointer;
+}
+
+.button:hover {
+  background-color: var(--color-button-hover);
+}
+
+.button:active {
+  background-color: var(--color-button-active);
+}
+
+.button:focus {
+  outline: var(--rem) solid var(--color-button-focus);
 }

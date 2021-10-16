@@ -1,6 +1,6 @@
 import cn from 'classnames'
 
-import { formatDate } from '../../utils'
+import { formatDate } from '@utils'
 
 import styles from './Row.module.css'
 

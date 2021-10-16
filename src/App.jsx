@@ -25,7 +25,7 @@ const App = () => {
   ), [viewportWidth, isMobile])
 
   useEffect(() => {
-    fetch('/api/timeline.json')
+    fetch(`api/hosts/${window.location.pathname}/timeline.json`)
       .then((res) => res.json())
       .then((data) => setData(data))
       .catch((err) => console.error(err))
@@ -34,7 +34,7 @@ const App = () => {
 
   const handleOpenEvent = (link) => {
     setEventLoading(true)
-    fetch(`/api/events/${link}`)
+    fetch(`api/hosts/${window.location.pathname}/events/${link}`)
       .then((res) => res.json())
       .then((data) => setEvent(data))
       .catch((err) => console.error(err))

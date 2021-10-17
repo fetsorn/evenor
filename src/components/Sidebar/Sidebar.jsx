@@ -34,7 +34,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose }) => {
             <Paragraph><Link href={event?.PATH} target="_blank" rel="noreferrer">Вложение</Link></Paragraph>
           )}
           {event?.PATH && (
-            <Paragraph><iframe src={"api/" + event?.PATH} width="100%" height="800px"></iframe></Paragraph>
+            <Paragraph><iframe title="iframe" src={"api/" + event?.PATH} width="100%" height="800px"></iframe></Paragraph>
           )}
           <Button type="button" onClick={handleClose}>Закрыть</Button>
         </div>

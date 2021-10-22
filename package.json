@@ -4,7 +4,10 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.3.0",
+    "@ffmpeg/core": "^0.10.0",
+    "@ffmpeg/ffmpeg": "^0.10.1",
     "classnames": "^2.3.1",
+    "mime-types": "^2.1.33",
     "normalize.css": "^8.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",

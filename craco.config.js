@@ -1,6 +1,12 @@
 const path = require("path")
 
 module.exports = {
+  devServer: {
+    headers: {
+      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Opener-Policy': 'same-origin'
+    },
+  },
   webpack: {
     alias: {
       "@components": path.resolve(__dirname, "./src/components"),

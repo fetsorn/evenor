@@ -2,6 +2,8 @@
 
 Shows a timeline for a set of files.
 
+[[file:example.png][example]]
+
 Will try to open all file types using external libraries:
  - fetch contents of plain text files
  - render video files with [[https://github.com/ffmpegwasm/ffmpeg.wasm][ffmpeg.wasm]]

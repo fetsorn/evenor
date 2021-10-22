@@ -56,7 +56,7 @@
 
   gap: var(--rem);
 
-  overflow-x: hidden;
+  overflow-x: auto;
 }
 
 .star {

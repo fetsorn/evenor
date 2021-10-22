@@ -14,6 +14,8 @@ const App = () => {
   const [, setDataLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
   const [eventLoading, setEventLoading] = useState(false)
+  const [datum, setDatum] = useState("")
+  const [convertSrc, setConvertSrc] = useState(undefined);
 
   const { width: viewportWidth } = useWindowSize()
   const isMobile = useMedia('(max-width: 600px)')
@@ -25,21 +27,26 @@ const App = () => {
   ), [viewportWidth, isMobile])
 
   useEffect(() => {
-    fetch(`api/hosts/${window.location.pathname}/timeline.json`)
+    fetch(`/api/hosts${window.location.pathname}.json`)
       .then((res) => res.json())
       .then((data) => setData(data))
       .catch((err) => console.error(err))
       .finally(() => setDataLoading(false))
   }, [])
 
-  const handleOpenEvent = (link) => {
+  const handleOpenEvent = (event) => {
     setEventLoading(true)
-    fetch(`api/hosts/${window.location.pathname}/events/${link}`)
-      .then((res) => res.json())
-      .then((data) => setEvent(data))
-      .catch((err) => console.error(err))
-      .finally(() => setEventLoading(false))
+    setEvent(event)
+    setDatum("")
+    setConvertSrc(undefined)
   }
+
+  const handlePlain = (path) => {
+    fetch(`/api/assets/${path}`)
+      .then((res) => {console.log(path, res); return res.text()})
+      .then((d) => {console.log(d); setDatum(d)})
+  }
+
 
   const handleCloseEvent = () => setEvent(undefined)
 
@@ -50,7 +57,7 @@ const App = () => {
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>
-        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} />
+        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc}/>
       </Main>
       <Footer />
     </>

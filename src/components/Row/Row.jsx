@@ -17,8 +17,8 @@ const pickcolor = (event) => {
   if (event.FILETYPE?.includes("text")) { return "blue" }
 
   // var re =/(?:\.([^.]+))?$/
-  // var ext = re.exec(event.PATH)[1].trim()
-  var ext = event.PATH.split('.').pop().trim();
+  // var ext = re.exec(event.FILEPATH)[1].trim()
+  var ext = event.FILEPATH?.split('.').pop().trim();
 
   const img = ["BMP", "GIF", "ICO", "JPEG", "JPG", "NPO", "PNG", "TIF", "bmp", "eps", "gif", "ico", "jpeg", "jpg", "png", "svg", "tif", "webp", "MPO", "heic", "HEIC"]
   const imgM = ["xcf", "kra", "ps", "psd"]
@@ -61,7 +61,7 @@ const Row = ({ data, onEventClick, isLast, ...props }) => (
     <div className={styles.content}>
       <div className={styles.stars}>
         {data.events.map((event, index) => (
-          <button className={styles.star} style={{"background-color":pickcolor(event)}} type="button" onClick={() => onEventClick(event)} title={event?.PATH} key={event}>
+          <button className={styles.star} style={{"background-color":pickcolor(event)}} type="button" onClick={() => onEventClick(event, index + 1)} title={event?.FILEPATH} key={event}>
             {index + 1}
           </button>
         ))}

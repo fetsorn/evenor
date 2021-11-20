@@ -13,9 +13,11 @@ const App = () => {
   const [data, setData] = useState([])
   const [, setDataLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
+  const [eventIndex, setEventIndex] = useState(undefined)
   const [eventLoading, setEventLoading] = useState(false)
   const [datum, setDatum] = useState("")
   const [convertSrc, setConvertSrc] = useState(undefined);
+  const [err, setErr] = useState("")
 
   const { width: viewportWidth } = useWindowSize()
   const isMobile = useMedia('(max-width: 600px)')
@@ -34,10 +36,12 @@ const App = () => {
       .finally(() => setDataLoading(false))
   }, [])
 
-  const handleOpenEvent = (event) => {
+  const handleOpenEvent = (event, index) => {
     setEventLoading(true)
     setEvent(event)
+    setEventIndex(index)
     setDatum("")
+    setErr("")
     setConvertSrc(undefined)
   }
 
@@ -57,7 +61,7 @@ const App = () => {
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>
-        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc}/>
+        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr}/>
       </Main>
       <Footer />
     </>

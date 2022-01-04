@@ -60,7 +60,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
   };
 
   var re =/(?:\.([^.]+))?$/
-  var ext = re.exec(event?.FILEPATH)[1]?.trim()
+  var ext = re.exec(event?.FILE_PATH)[1]?.trim()
 
   const img = ["BMP", "GIF", "ICO", "JPEG", "JPG", "NPO", "PNG", "TIF", "bmp", "eps", "gif", "ico", "jpeg", "jpg", "png", "svg", "tif", "webp", "MPO", "heic", "HEIC"]
   const vid = ["AVI", "BUP", "IFO", "MOV", "MP4", "VOB", "avi", "flv", "m2v", "m4v", "mov", "mp4", "swf", "webm"]
@@ -80,13 +80,13 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
-          <Button type="button" onClick={() => handlePlain(event?.FILEPATH)}>🖊</Button>
-          <Button type="button" onClick={() => unoconv(event?.FILEPATH)}>📄</Button>
-          <Button type="button" onClick={() => doTranscode(event?.FILEPATH)}>🔈</Button>
+          <Button type="button" onClick={() => handlePlain(event?.FILE_PATH)}>🖊</Button>
+          <Button type="button" onClick={() => unoconv(event?.FILE_PATH)}>📄</Button>
+          <Button type="button" onClick={() => doTranscode(event?.FILE_PATH)}>🔈</Button>
           <Button type="button" onClick={handleClose}>X</Button>
-          {event?.FILEPATH && (
+          {event?.FILE_PATH && (
             <Paragraph>
-              <Link href={"/api/assets/" + event?.FILEPATH} target="_blank" rel="noreferrer">{event?.FILEPATH}</Link>
+              <Link href={"/api/assets/" + event?.FILE_PATH} target="_blank" rel="noreferrer">{event?.FILE_PATH}</Link>
             </Paragraph>
           )}
           <Paragraph>{event?.UUID}</Paragraph>
@@ -95,7 +95,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
           )}
           <Paragraph>{datum}</Paragraph>
           {iframeable.includes(ext) && (
-            <Paragraph><iframe title="iframe" src={"/api/assets/" + event?.FILEPATH} width="100%" height="800px"></iframe></Paragraph>
+            <Paragraph><iframe title="iframe" src={"/api/assets/" + event?.FILE_PATH} width="100%" height="800px"></iframe></Paragraph>
           )}
           <div>
           {convertSrc && (

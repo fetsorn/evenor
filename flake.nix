@@ -6,7 +6,7 @@
   outputs = inputs@{ self, nixpkgs }:
     let
       pkgs = import nixpkgs { system = "aarch64-darwin"; };
-      timeline-frontend = pkgs.mkYarnPackage rec {
+      timeline-frontend = (pkgs.mkYarnPackage rec {
         name = "timeline-frontend";
         src = ./frontend;
         configurePhase = ''
@@ -17,21 +17,21 @@
           yarn run build
           cp -r build $out
         '';
-        installPhase = "exit";
-        distPhase = "exit";
-      };
-      timeline-backend = pkgs.mkYarnPackage rec {
+        dontInstall = true;
+      }).overrideAttrs (_: { doDist = false; });
+      timeline-backend = (pkgs.mkYarnPackage rec {
         name = "timeline-backend";
         src = ./backend;
         buildPhase = ''
-          mkdir deps/${name}/build
+          mkdir -p deps/${name}/build
           cp -r ${timeline-frontend}/* deps/${name}/build/
           chmod -R 755 deps/${name}/build/*
         '';
-        distPhase = "exit";
-      };
+      }).overrideAttrs (_: { doDist = false; });
     in {
+      packages.aarch64-darwin = { inherit timeline-backend timeline-frontend; };
       defaultPackage.aarch64-darwin = timeline-backend;
       defaultApp.aarch64-darwin = timeline-backend;
     };
 }
+

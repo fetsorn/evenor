@@ -31,6 +31,7 @@
         distPhase = "exit";
       };
     in {
-      packages.aarch64-darwin.defaultPackage.aarch64-darwin = timeline-backend;
+      defaultPackage.aarch64-darwin = timeline-backend;
+      defaultApp.aarch64-darwin = timeline-backend;
     };
 }

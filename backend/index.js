@@ -8,22 +8,19 @@ const fs = require('fs');
 const app = express();
 
 app.use((req, res, next) => {
-    if (/(.ico|.js|.css|.jpg|.png|.map)$/i.test(req.path)) {
-        next();
-    } else if (/^\/(assets|hosts)\//i.test(req.path)) {
-        var options = {
-            root: path.join(process.cwd())
-        };
-        res.sendFile(req.path, options, function (err) {
-            if (err) {
-                next(err);
-            }
-        });
+    if (/static/i.test(req.path)) {
+        // console.log("match static", req.path)
+        next()
+    } else if (/api\/(hosts|assets)/i.test(req.path)) {
+        // console.log("match hosts/assets", req.path)
+        // var trim = req.path.replace(/^\/api/, "")
+        // console.log(trim)
+        // var full = path.join(process.cwd(), trim)
+        // console.log(full)
+        res.sendFile(path.join(process.cwd(), req.path.replace(/^\/api/, "")));
     } else {
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        res.sendFile(path.resolve(__dirname, 'build', 'index.html'));
+        // console.log("match default", req.path)
+        res.sendFile(path.join(__dirname, 'build', 'index.html'));
     }
 });
 

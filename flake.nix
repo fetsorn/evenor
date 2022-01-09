@@ -9,8 +9,6 @@
       timeline-frontend = pkgs.mkYarnPackage rec {
         name = "timeline-frontend";
         src = ./frontend;
-        packageJSON = ./frontend/package.json;
-        yarnLock = ./frontend/yarn.lock;
         configurePhase = ''
           cp -r $node_modules node_modules
           chmod -R 755 node_modules
@@ -25,8 +23,6 @@
       timeline-backend = pkgs.mkYarnPackage rec {
         name = "timeline-backend";
         src = ./backend;
-        packageJSON = ./backend/package.json;
-        yarnLock = ./backend/yarn.lock;
         buildPhase = ''
           mkdir deps/${name}/build
           cp -r ${timeline-frontend}/* deps/${name}/build/

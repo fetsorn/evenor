@@ -29,8 +29,8 @@ const App = () => {
   ), [viewportWidth, isMobile])
 
   useEffect(() => {
-    fetch(`/api/hosts${window.location.pathname}.json`)
-      .then((res) => res.json())
+    fetch(`/api/hosts/${window.location.pathname.replace(/\//, "")}.json`)
+      .then((res) =>  res.json())
       .then((data) => setData(data))
       .catch((err) => console.error(err))
       .finally(() => setDataLoading(false))
@@ -50,7 +50,6 @@ const App = () => {
       .then((res) => {console.log(path, res); return res.text()})
       .then((d) => {console.log(d); setDatum(d)})
   }
-
 
   const handleCloseEvent = () => setEvent(undefined)
 

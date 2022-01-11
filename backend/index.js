@@ -11,7 +11,7 @@ app.use((req, res, next) => {
     if (/static/i.test(req.path)) {
         next()
     } else if (/api\/(hosts|assets)/i.test(req.path)) {
-        res.sendFile(path.join(process.cwd(), req.path.replace(/^\/api/, "")));
+        res.sendFile(path.join(process.cwd(), req.path.replace(/^\/api/, "").replace(/%20/g, "\ ")));
     } else {
         res.sendFile(path.join(__dirname, 'build', 'index.html'));
     }

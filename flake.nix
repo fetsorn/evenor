@@ -1,12 +1,15 @@
 {
   description = "timeline";
 
-  inputs = { nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable"; };
+  inputs = {
+    nixpkgs.url = "github:fetsorn/nixpkgs/yarn2nix-doDist";
+  };
 
   outputs = inputs@{ self, nixpkgs }:
     let
       pkgs = import nixpkgs { system = "aarch64-darwin"; };
-      timeline-frontend = (pkgs.mkYarnPackage rec {
+      mkYarnPackage1 = pkgs.mkYarnPackage;
+      timeline-frontend = mkYarnPackage1 rec {
         name = "timeline-frontend";
         src = ./frontend;
         configurePhase = ''
@@ -18,8 +21,9 @@
           cp -r build $out
         '';
         dontInstall = true;
-      }).overrideAttrs (_: { doDist = false; });
-      timeline-backend = (pkgs.mkYarnPackage rec {
+        doDist = false;
+      };
+      timeline-backend = pkgs.mkYarnPackage rec {
         name = "timeline-backend";
         src = ./backend;
         buildPhase = ''
@@ -27,7 +31,7 @@
           cp -r ${timeline-frontend}/* deps/${name}/build/
           chmod -R 755 deps/${name}/build/*
         '';
-      }).overrideAttrs (_: { doDist = false; });
+      };
     in {
       packages.aarch64-darwin = { inherit timeline-backend timeline-frontend; };
       defaultPackage.aarch64-darwin = timeline-backend;

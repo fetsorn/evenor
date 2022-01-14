@@ -32,7 +32,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       console.log('Start transcoding', path)
       var ext = re.exec(path)[1]?.trim()
       var filename = 'test.' + ext
-      ffmpeg.FS('writeFile', filename, await fetchFile('/api/assets/' + encodeURIComponent(path)))
+      ffmpeg.FS('writeFile', filename, await fetchFile('/api/' + encodeURIComponent(path)))
       await ffmpeg.run('-i', filename, 'test.mp4')
       console.log('Complete transcoding')
       const data = ffmpeg.FS('readFile', 'test.mp4')
@@ -44,7 +44,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
   };
 
   const unoconv = async (path) => {
-    const resp1 = await fetch('/api/assets/' + path)
+    const resp1 = await fetch('/api/' + path)
     const blob1 = await resp1.blob()
     const mimetype = mime.lookup(path)
     const resp2 = await fetch(`${process.env.REACT_APP_UNOCONV_URL}/convert/format/pdf/output/newname.pdf`,
@@ -86,7 +86,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
           <Button type="button" onClick={handleClose}>X</Button>
           {event?.FILE_PATH && (
             <Paragraph>
-              <Link href={"/api/assets/" + event?.FILE_PATH} target="_blank" rel="noreferrer">{event?.FILE_PATH}</Link>
+              <Link href={"/api/" + event?.FILE_PATH} target="_blank" rel="noreferrer">{event?.FILE_PATH}</Link>
             </Paragraph>
           )}
           <Paragraph>{event?.UUID}</Paragraph>
@@ -95,7 +95,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
           )}
           <Paragraph>{datum}</Paragraph>
           {iframeable.includes(ext) && (
-            <Paragraph><iframe title="iframe" src={"/api/assets/" + event?.FILE_PATH} width="100%" height="800px"></iframe></Paragraph>
+            <Paragraph><iframe title="iframe" src={"/api/" + event?.FILE_PATH} width="100%" height="800px"></iframe></Paragraph>
           )}
           <div>
           {convertSrc && (

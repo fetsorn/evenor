@@ -46,7 +46,7 @@ const App = () => {
   }
 
   const handlePlain = (path) => {
-    fetch(`/api/assets/${path}`)
+    fetch(`/api/${path}`)
       .then((res) => {console.log(path, res); return res.text()})
       .then((d) => {console.log(d); setDatum(d)})
   }

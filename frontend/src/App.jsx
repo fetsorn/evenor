@@ -29,8 +29,23 @@ const App = () => {
   ), [viewportWidth, isMobile])
 
   useEffect(() => {
-    fetch(`/api/hosts/${window.location.pathname.replace(/\//, "")}.json`)
-      .then((res) =>  res.json())
+    var hostname = window.location.pathname.replace(/\//, "")
+    fetch(`/api/hosts/index.json`)
+      .then((res) => res.json())
+      .then((events) => {
+        var object_of_arrays = events.filter(event => event.HOST_NAME == hostname)
+                                     .reduce((acc, item) => {
+                                       acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
+                                       acc[item.HOST_DATE].push(item)
+                                       return acc
+                                     }, {})
+        console.log("object_of_arrays", object_of_arrays)
+        var array_of_objects = Object.keys(object_of_arrays)
+                                     .map((key) => {return {date: key,
+                                                            events: object_of_arrays[key]}})
+        console.log("array_of_objects", array_of_objects)
+        return array_of_objects
+      })
       .then((data) => setData(data))
       .catch((err) => console.error(err))
       .finally(() => setDataLoading(false))

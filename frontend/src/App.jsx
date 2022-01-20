@@ -29,12 +29,21 @@ const App = () => {
   ), [viewportWidth, isMobile])
 
   useEffect(() => {
-    var hostname = window.location.pathname.replace(/\//, "")
+    var hostname = window.location.pathname.replace(/\//g, "")
     fetch(`/api/hosts/index.json`)
-      .then((res) => res.json())
-      .then((events) => {
-        var object_of_arrays = events.filter(event => event.HOST_NAME == hostname)
-                                     .reduce((acc, item) => {
+      .then((res) => res.text())
+      .then((res) => {
+        var events = res.split('\n')
+        events.pop()
+        var cache = []
+        for(var i=0; i < events.length; i++) {
+          // console.log(events[i])
+          cache.push(JSON.parse(events[i]))
+        }
+        console.log("event_cache", cache)
+        var cache_host = cache.filter(event => event.HOST_NAME == hostname)
+        console.log("cache_host", hostname, cache_host)
+        var object_of_arrays = cache_host.reduce((acc, item) => {
                                        acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
                                        acc[item.HOST_DATE].push(item)
                                        return acc

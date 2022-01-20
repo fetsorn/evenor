@@ -1,15 +1,12 @@
 {
   description = "timeline";
 
-  inputs = {
-    nixpkgs.url = "github:fetsorn/nixpkgs/yarn2nix-doDist";
-  };
+  inputs = { nixpkgs.url = "github:fetsorn/nixpkgs/yarn2nix-doDist"; };
 
   outputs = inputs@{ self, nixpkgs }:
     let
       pkgs = import nixpkgs { system = "aarch64-darwin"; };
-      mkYarnPackage1 = pkgs.mkYarnPackage;
-      timeline-frontend = mkYarnPackage1 rec {
+      timeline-frontend = pkgs.mkYarnPackage rec {
         name = "timeline-frontend";
         src = ./frontend;
         configurePhase = ''
@@ -36,6 +33,8 @@
       packages.aarch64-darwin = { inherit timeline-backend timeline-frontend; };
       defaultPackage.aarch64-darwin = timeline-backend;
       defaultApp.aarch64-darwin = timeline-backend;
+      devShell.aarch64-darwin =
+        pkgs.mkShell { buildInputs = [ pkgs.nodejs-16_x pkgs.yarn ]; };
     };
 }
 

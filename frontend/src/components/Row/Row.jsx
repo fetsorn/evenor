@@ -61,7 +61,7 @@ const Row = ({ data, onEventClick, isLast, ...props }) => (
     <div className={styles.content}>
       <div className={styles.stars}>
         {data.events.map((event, index) => (
-          <button className={styles.star} style={{"background-color":pickcolor(event)}} type="button" onClick={() => onEventClick(event, index + 1)} title={event?.FILE_PATH} key={event}>
+          <button className={styles.star} style={{"backgroundColor":pickcolor(event)}} type="button" onClick={() => onEventClick(event, index + 1)} title={event?.FILE_PATH} key={event}>
             {index + 1}
           </button>
         ))}

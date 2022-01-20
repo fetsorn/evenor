@@ -28,41 +28,36 @@ const App = () => {
       : Math.round(viewportWidth / 100 * REM_DESKTOP * rowHeights.desktop)
   ), [viewportWidth, isMobile])
 
-  useEffect(() => {
+  useEffect(async () => {
     var pathname = window.location.pathname
     var els = pathname.split('/')
     var hostname = els[1]
     var rulename = els[2]
-    // console.log(hostname, rulename)
-    fetch(`/api/hosts/index.json`)
-      .then((res) => res.text())
-      .then((res) => {
-        var events = res.split('\n')
-        events.pop()
-        var cache = []
-        for(var i=0; i < events.length; i++) {
-          cache.push(JSON.parse(events[i]))
-        }
-        // console.log("event_cache", cache)
-        var cache_host = hostname ? cache.filter(event => event.HOST_NAME == hostname) : cache
-        // console.log("cache_host", hostname, cache_host)
-        var cache_rule = rulename ? cache.filter(event => event.RULE == rulename) : cache_host
-        // console.log("cache_rule", hostname, cache_rule)
-        var object_of_arrays = cache_rule.reduce((acc, item) => {
-                                       acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
-                                       acc[item.HOST_DATE].push(item)
-                                       return acc
-                                     }, {})
-        // console.log("object_of_arrays", object_of_arrays)
-        var array_of_objects = Object.keys(object_of_arrays)
-                                     .map((key) => {return {date: key,
-                                                            events: object_of_arrays[key]}})
-        // console.log("array_of_objects", array_of_objects)
-        return array_of_objects
-      })
-      .then((data) => setData(data))
-      .catch((err) => console.error(err))
-      .finally(() => setDataLoading(false))
+
+    try {
+      var res = await fetch(`/api/hosts/index.json`)
+      var restext = await res.text()
+      var events = restext.split('\n')
+      events.pop()
+      var cache = []
+      for(var i=0; i < events.length; i++) {
+        cache.push(JSON.parse(events[i]))
+      }
+      var cache_host = hostname ? cache.filter(event => event.HOST_NAME == hostname) : cache
+      var cache_rule = rulename ? cache.filter(event => event.RULE == rulename) : cache_host
+      var object_of_arrays = cache_rule.reduce((acc, item) => {
+        acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
+        acc[item.HOST_DATE].push(item)
+        return acc
+      }, {})
+      var array_of_objects = Object.keys(object_of_arrays)
+                                   .map((key) => {return {date: key,
+                                                          events: object_of_arrays[key]}})
+      setData(array_of_objects)
+    } catch (e) {
+      console.error(e)
+    }
+    setDataLoading(false)
   }, [])
 
   const handleOpenEvent = (event, index) => {

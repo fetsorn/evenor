@@ -21,6 +21,7 @@ const App = () => {
   const [eventLoading, setEventLoading] = useState(false)
   const [datum, setDatum] = useState("")
   const [convertSrc, setConvertSrc] = useState(undefined);
+  const [lfsSrc, setLFSSrc] = useState(undefined);
   const [err, setErr] = useState("")
 
   const { width: viewportWidth } = useWindowSize()
@@ -41,7 +42,6 @@ const App = () => {
       // var restext = await res.text()
 
       // clone cache
-      window.http = http;
       var fs = new LightningFS('fs', {
         wipe: true
       });
@@ -129,7 +129,7 @@ const App = () => {
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>
-        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr}/>
+        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr} lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}/>
       </Main>
       <Footer />
     </>

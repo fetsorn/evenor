@@ -29,7 +29,11 @@ const App = () => {
   ), [viewportWidth, isMobile])
 
   useEffect(() => {
-    var hostname = window.location.pathname.replace(/\//g, "")
+    var pathname = window.location.pathname
+    var els = pathname.split('/')
+    var hostname = els[1]
+    var rulename = els[2]
+    // console.log(hostname, rulename)
     fetch(`/api/hosts/index.json`)
       .then((res) => res.text())
       .then((res) => {
@@ -37,22 +41,23 @@ const App = () => {
         events.pop()
         var cache = []
         for(var i=0; i < events.length; i++) {
-          // console.log(events[i])
           cache.push(JSON.parse(events[i]))
         }
-        console.log("event_cache", cache)
-        var cache_host = cache.filter(event => event.HOST_NAME == hostname)
-        console.log("cache_host", hostname, cache_host)
-        var object_of_arrays = cache_host.reduce((acc, item) => {
+        // console.log("event_cache", cache)
+        var cache_host = hostname ? cache.filter(event => event.HOST_NAME == hostname) : cache
+        // console.log("cache_host", hostname, cache_host)
+        var cache_rule = rulename ? cache.filter(event => event.RULE == rulename) : cache_host
+        // console.log("cache_rule", hostname, cache_rule)
+        var object_of_arrays = cache_rule.reduce((acc, item) => {
                                        acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
                                        acc[item.HOST_DATE].push(item)
                                        return acc
                                      }, {})
-        console.log("object_of_arrays", object_of_arrays)
+        // console.log("object_of_arrays", object_of_arrays)
         var array_of_objects = Object.keys(object_of_arrays)
                                      .map((key) => {return {date: key,
                                                             events: object_of_arrays[key]}})
-        console.log("array_of_objects", array_of_objects)
+        // console.log("array_of_objects", array_of_objects)
         return array_of_objects
       })
       .then((data) => setData(data))

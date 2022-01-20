@@ -8,7 +8,38 @@ import { formatDate } from '@utils'
 
 import styles from './Sidebar.module.css'
 
-const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, datum, convertSrc, setConvertSrc, eventIndex, err, setErr }) => {
+import http from 'isomorphic-git/http/web'
+import LightningFS from '@isomorphic-git/lightning-fs';
+import git from 'isomorphic-git'
+
+
+const SPEC_URL = 'https://git-lfs.github.com/spec/v1';
+const LFS_POINTER_PREAMBLE = `version ${SPEC_URL}\n`;
+function pointsToLFS(content) {
+  return (
+    content[0] === 118) // 'v'
+    // && content.subarray(0, 100).indexOf(LFS_POINTER_PREAMBLE) === 0);
+    // tries to find preamble at the start of the pointer, fails for some reason
+}
+
+async function bodyToBuffer(body) {
+  const buffers = [];
+  let offset = 0;
+  let size = 0;
+  for await (const chunk of body) {
+    buffers.push(chunk);
+    size += chunk.byteLength;
+  }
+
+  const result = new Uint8Array(size);
+  for (const buffer of buffers) {
+    result.set(buffer, offset);
+    offset += buffer.byteLength;
+  }
+  return Buffer.from(result.buffer);
+}
+
+const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, datum, convertSrc, setConvertSrc, eventIndex, err, setErr, lfsSrc, setLFSSrc }) => {
   const [event, setEvent] = useState(newEvent)
 
   useEffect(() => {
@@ -59,6 +90,99 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
     setConvertSrc(URL.createObjectURL(blob2, { type: 'application/pdf' }))
   };
 
+  const handleAsset = async (path) => {
+    if (path.indexOf("lfs/") === 0) {
+      await handleLFS
+    } else {
+      setLFSSrc("http://localhost:3030/" + path)
+    }
+  }
+
+  const handleLFS = async (path1) => {
+
+    // strip lfs/
+    var path = path1.replace("lfs/", "")
+
+    // clone repo, get pointer file
+    var fs = new LightningFS('fs', {
+      wipe: true
+    });
+    console.log("fs initialized")
+    var pfs = fs.promises;
+    var dir = "/gedcom";
+    await pfs.mkdir(dir);
+    console.log("dir created")
+    await git.clone({
+      fs,
+      http,
+      dir,
+      url: "https://source.fetsorn.website/fetsorn/royals.git",
+      corsProxy: "https://cors.isomorphic-git.org",
+      ref: "master",
+      singleBranch: true,
+      depth: 10,
+    });
+    console.log("cloned")
+    var files = await pfs.readdir(dir);
+    console.log("read files", files)
+    console.log("file path", path)
+    var restext
+    if (files.includes(path)) {
+      restext = new TextDecoder().decode(await pfs.readFile(dir + "/" + path));
+      console.log(restext)
+      var buff = await pfs.readFile(dir + "/" + path);
+      //version https://git-lfs.github.com/spec/v1
+      //oid sha256:a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478
+      //size 2
+      var info = {oid: "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478", size: 2}
+      const lfsInfoRequestData = {
+        operation: 'download',
+        transfers: ['basic'],
+        objects: [info],
+      };
+
+      // https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/royals.git/info/lfs/objects/batch
+      const rawurl = "https://source.fetsorn.website/fetsorn/royals.git"
+      const url = "https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/royals.git"
+      const { body: lfsInfoBody } = await http.request({
+        url: `${url}/info/lfs/objects/batch`,
+        method: 'POST',
+        headers: {
+          // Github LFS doesn’t seem to accept this UA, but works fine without any
+          // 'User-Agent': `git/isomorphic-git@${git.version()}`,
+          // ...headers,
+          // ...authHeaders,
+          'Accept': 'application/vnd.git-lfs+json',
+          'Content-Type': 'application/vnd.git-lfs+json',
+        },
+        body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
+      });
+      var lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString()
+      var lfsInfoResponse = JSON.parse(lfsInfoResponseRaw)
+      var downloadAction = lfsInfoResponse.objects[0].actions.download
+      const lfsObjectDownloadURL = "https://cors-anywhere.herokuapp.com/" + downloadAction.href;
+      const lfsObjectDownloadHeaders = downloadAction.header ?? {};
+
+      const { body: lfsObjectBody } = await http.request({
+        url: lfsObjectDownloadURL,
+        method: 'GET',
+        headers: lfsObjectDownloadHeaders,
+      });
+
+      var str = (await bodyToBuffer(lfsObjectBody)).toString()
+      const blob = new Blob([str], {type:'plain'});
+      console.log(blob)
+
+      setLFSSrc(URL.createObjectURL(blob, { type: 'text' }))
+
+    } else {
+      console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");
+    }
+
+    // const blob = fetchLFS(path)
+    // setLFSSrc("https://example.com")
+  }
+
   var re =/(?:\.([^.]+))?$/
   var ext = re.exec(event?.FILE_PATH)[1]?.trim()
 
@@ -83,6 +207,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
           <Button type="button" onClick={() => handlePlain(event?.FILE_PATH)}>🖊</Button>
           <Button type="button" onClick={() => unoconv(event?.FILE_PATH)}>📄</Button>
           <Button type="button" onClick={() => doTranscode(event?.FILE_PATH)}>🔈</Button>
+          <Button type="button" onClick={() => handleAsset(event?.FILE_PATH)}>LFS</Button>
           <Button type="button" onClick={handleClose}>X</Button>
           {event?.FILE_PATH && (
             <Paragraph>
@@ -100,6 +225,9 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
           <div>
           {convertSrc && (
             <Paragraph><iframe title="iframe" src={convertSrc} width="100%" height="800px"></iframe></Paragraph>
+          )}
+          {lfsSrc && (
+            <Paragraph><iframe title="iframe" src={lfsSrc} width="100%" height="800px"></iframe></Paragraph>
           )}
           </div>
           <Paragraph>{err}</Paragraph>

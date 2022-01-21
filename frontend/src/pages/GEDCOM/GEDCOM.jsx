@@ -34,7 +34,7 @@ const GEDCOM = () => {
         fs,
         http,
         dir,
-        url: "https://source.fetsorn.website/fetsorn/royals.git",
+        url: "https://source.fetsorn.website/fetsorn/stars.git",
         corsProxy: "https://cors.isomorphic-git.org",
         ref: "master",
         singleBranch: true,
@@ -44,8 +44,8 @@ const GEDCOM = () => {
       var files = await pfs.readdir(dir);
       // console.log("read files", files)
       var restext
-      if (files.includes("ROYALS.GED")) {
-        restext = new TextDecoder().decode(await pfs.readFile(dir + '/ROYALS.GED'));
+      if (files.includes("index.ged")) {
+        restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.ged'));
         // console.log("read files", files)
       } else {
         console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");

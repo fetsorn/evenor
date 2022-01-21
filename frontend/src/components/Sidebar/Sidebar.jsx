@@ -116,7 +116,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       fs,
       http,
       dir,
-      url: "https://source.fetsorn.website/fetsorn/royals.git",
+      url: "https://source.fetsorn.website/fetsorn/stars.git",
       corsProxy: "https://cors.isomorphic-git.org",
       ref: "master",
       singleBranch: true,
@@ -142,8 +142,8 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       };
 
       // https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/royals.git/info/lfs/objects/batch
-      const rawurl = "https://source.fetsorn.website/fetsorn/royals.git"
-      const url = "https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/royals.git"
+      const rawurl = "https://source.fetsorn.website/fetsorn/stars.git"
+      const url = "https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/stars.git"
       const { body: lfsInfoBody } = await http.request({
         url: `${url}/info/lfs/objects/batch`,
         method: 'POST',

@@ -141,9 +141,8 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
         objects: [info],
       };
 
-      // https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/royals.git/info/lfs/objects/batch
       const rawurl = "https://source.fetsorn.website/fetsorn/stars.git"
-      const url = "https://cors-anywhere.herokuapp.com/https://source.fetsorn.website/fetsorn/stars.git"
+      const url = "https://cors-anywhere.herokuapp.com" + rawurl
       const { body: lfsInfoBody } = await http.request({
         url: `${url}/info/lfs/objects/batch`,
         method: 'POST',

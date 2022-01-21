@@ -92,9 +92,11 @@ const BIORG = () => {
         acc[item.HOST_DATE].push(item)
         return acc
       }, {})
-      var array_of_objects = Object.keys(object_of_arrays)
+      console.log(object_of_arrays)
+      var array_of_objects = Object.keys(object_of_arrays).sort()
                                    .map((key) => {return {date: key,
                                                           events: object_of_arrays[key]}})
+      console.log(array_of_objects)
       setData(array_of_objects)
     } catch (e) {
       console.error(e)

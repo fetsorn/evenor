@@ -48,7 +48,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
     }
   }, [newEvent])
 
-  useEffect(() => console.log( event ))
+  // useEffect(() => console.log( event ))
 
   const ffmpeg = createFFmpeg({
     corePath: 'https:unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js',
@@ -58,7 +58,7 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
   // breaks in firefox if dev tools are open
   const doTranscode = async (path) => {
     try {
-      console.log('Loading ffmpeg-core.js')
+      // console.log('Loading ffmpeg-core.js')
       if (!ffmpeg.isLoaded()) {await ffmpeg.load()}
       console.log('Start transcoding', path)
       var ext = re.exec(path)[1]?.trim()
@@ -107,11 +107,11 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
     var fs = new LightningFS('fs', {
       wipe: true
     });
-    console.log("fs initialized")
+    // console.log("fs initialized")
     var pfs = fs.promises;
     var dir = "/gedcom";
     await pfs.mkdir(dir);
-    console.log("dir created")
+    // console.log("dir created")
     await git.clone({
       fs,
       http,
@@ -122,14 +122,14 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       singleBranch: true,
       depth: 10,
     });
-    console.log("cloned")
+    // console.log("cloned")
     var files = await pfs.readdir(dir);
-    console.log("read files", files)
-    console.log("file path", path)
+    // console.log("read files", files)
+    // console.log("file path", path)
     var restext
     if (files.includes(path)) {
       restext = new TextDecoder().decode(await pfs.readFile(dir + "/" + path));
-      console.log(restext)
+      // console.log(restext)
       var buff = await pfs.readFile(dir + "/" + path);
       //version https://git-lfs.github.com/spec/v1
       //oid sha256:a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478

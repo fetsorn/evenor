@@ -6,8 +6,8 @@
 class Config {
   constructor() {
         this.input = ""
-        this.rootfamily = "F1"
-        this.familydepth = 3
+        this.rootfamily = "F4"
+        this.familydepth = 4
         this.nameorder = "little"
   }
 }

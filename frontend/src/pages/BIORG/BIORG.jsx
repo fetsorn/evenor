@@ -53,7 +53,7 @@ const BIORG = () => {
         fs,
         http,
         dir,
-        url: "https://source.fetsorn.website/fetsorn/royals.git",
+        url: "https://source.fetsorn.website/fetsorn/stars.git",
         corsProxy: "https://cors.isomorphic-git.org",
         ref: "master",
         singleBranch: true,

@@ -6,6 +6,7 @@
     "@craco/craco": "^6.3.0",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
+    "@hpcc-js/wasm": "^1.12.8",
     "@isomorphic-git/lightning-fs": "^4.4.1",
     "classnames": "^2.3.1",
     "isomorphic-git": "^1.10.4",
@@ -13,6 +14,7 @@
     "normalize.css": "^8.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-router-dom": "^6.2.1",
     "react-scripts": "4.0.3"
   },
   "scripts": {

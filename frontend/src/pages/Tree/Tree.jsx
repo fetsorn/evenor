@@ -1,4 +1,4 @@
-import styles from './GEDCOM.module.css'
+import styles from './Tree.module.css'
 
 import { useEffect, useState, useMemo } from 'react'
 import { ged2dot } from '@utils'
@@ -9,7 +9,7 @@ import git from 'isomorphic-git'
 
 // import hpccWasm from '@hpcc-js/wasm'
 
-const GEDCOM = () => {
+const Tree = () => {
   const [data, setData] = useState([])
   const [dataLoading, setDataLoading] = useState([])
 
@@ -74,4 +74,4 @@ const GEDCOM = () => {
   )
 }
 
-export default GEDCOM
+export default Tree

@@ -12,7 +12,7 @@ const rowHeights = {
   desktop: 40,
 }
 
-const BIORG = () => {
+const Line = () => {
   const [data, setData] = useState([])
   const [, setDataLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
@@ -137,4 +137,4 @@ const BIORG = () => {
   )
 }
 
-export default BIORG
+export default Line

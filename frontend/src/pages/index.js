@@ -1,2 +1,2 @@
-export { default as GEDCOM } from './GEDCOM'
-export { default as BIORG } from './BIORG'
+export { default as Tree } from './Tree'
+export { default as Line } from './Line'

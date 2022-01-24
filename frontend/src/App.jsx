@@ -1,13 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { GEDCOM, BIORG } from '@pages'
+import { Tree, Line } from '@pages'
 
 const App = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/">
-          <Route index element={<GEDCOM />} />
-          <Route path="*" element={<BIORG />} />
+          <Route index element={<Tree>} />
+          <Route path="*" element={<Line>} />
         </Route>
       </Routes>
     </BrowserRouter>

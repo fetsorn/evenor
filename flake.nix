@@ -20,12 +20,26 @@
         dontInstall = true;
         doDist = false;
       };
+      timeline-frontend-local = pkgs.mkYarnPackage rec {
+        name = "timeline-frontend";
+        src = ./frontend;
+        configurePhase = ''
+          cp -r $node_modules node_modules
+          chmod -R 755 node_modules
+        '';
+        buildPhase = ''
+          REACT_APP_BUILD_MODE=local yarn run build
+          cp -r build $out
+        '';
+        dontInstall = true;
+        doDist = false;
+      };
       timeline-backend = pkgs.mkYarnPackage rec {
         name = "timeline-backend";
         src = ./backend;
         buildPhase = ''
           mkdir -p deps/${name}/build
-          cp -r ${timeline-frontend}/* deps/${name}/build/
+          cp -r ${timeline-frontend-local}/* deps/${name}/build/
           chmod -R 755 deps/${name}/build/*
         '';
       };

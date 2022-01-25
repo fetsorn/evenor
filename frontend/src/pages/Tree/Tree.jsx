@@ -17,38 +17,43 @@ const Tree = () => {
     async function fetchData() {
     try {
 
-      // fetch cache
-      // var res = await fetch(`/api/hosts/index.json`)
-      // var restext = await res.text()
-
-      // clone cache
-      var fs = new LightningFS('fs', {
-        wipe: true
-      });
-      // console.log("fs initialized")
-      var pfs = fs.promises;
-      var dir = "/gedcom";
-      await pfs.mkdir(dir);
-      // console.log("dir created")
-      await git.clone({
-        fs,
-        http,
-        dir,
-        url: "https://source.fetsorn.website/fetsorn/stars.git",
-        corsProxy: "https://cors.isomorphic-git.org",
-        ref: "master",
-        singleBranch: true,
-        depth: 10,
-      });
-      // console.log("cloned")
-      var files = await pfs.readdir(dir);
-      // console.log("read files", files)
       var restext
-      if (files.includes("index.ged")) {
-        restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.ged'));
-        // console.log("read files", files)
+
+      const { REACT_APP_BUILD_MODE } = process.env;
+
+      if (REACT_APP_BUILD_MODE === "local") {
+        // fetch cache
+        var res = await fetch(`/api/hosts/index.ged`)
+        restext = await res.text()
       } else {
-        console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");
+        // clone cache
+        var fs = new LightningFS('fs', {
+          wipe: true
+        });
+        // console.log("fs initialized")
+        var pfs = fs.promises;
+        var dir = "/gedcom";
+        await pfs.mkdir(dir);
+        // console.log("dir created")
+        await git.clone({
+          fs,
+          http,
+          dir,
+          url: "https://source.fetsorn.website/fetsorn/stars.git",
+          corsProxy: "https://cors.isomorphic-git.org",
+          ref: "master",
+          singleBranch: true,
+          depth: 10,
+        });
+        // console.log("cloned")
+        var files = await pfs.readdir(dir);
+        // console.log("read files", files)
+        if (files.includes("index.ged")) {
+          restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.ged'));
+          // console.log("read files", files)
+        } else {
+          console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");
+        }
       }
 
       var dot = ged2dot(restext)

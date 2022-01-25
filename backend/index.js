@@ -10,7 +10,7 @@ const app = express();
 app.use((req, res, next) => {
     // on / serve a custom overview page in current directory
     if (/^\/$/i.test(req.path)) {
-      res.sendFile(path.join(process.cwd(), "index.html"));
+        res.sendFile(path.join(__dirname, 'build', 'index.html'));
     // on /static skip to serving /build/static
     } else if (/static/i.test(req.path)) {
         next()

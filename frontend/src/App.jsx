@@ -6,8 +6,8 @@ const App = () => {
     <BrowserRouter>
       <Routes>
         <Route path="/">
-          <Route index element={<Tree>} />
-          <Route path="*" element={<Line>} />
+          <Route index element={<Tree/>} />
+          <Route path="*" element={<Line/>} />
         </Route>
       </Routes>
     </BrowserRouter>

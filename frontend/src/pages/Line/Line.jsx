@@ -132,6 +132,8 @@ async function fetchDataMetadir(path) {
       var res = await fetch(`/api/` + path)
       restext = await res.text()
     }
+   
+    return restext
   } catch (e) {
     console.error(e)
   }
@@ -144,22 +146,25 @@ async function buildJSON() {
   let search = window.location.search
   console.log("search:", search)
   let searchParams = new URLSearchParams(search);
+  var hostname
   if (searchParams.has('hostname')) {
-    let hostname = searchParams.get('hostname')
+    hostname = searchParams.get('hostname')
   }
 
   var cache = []
 
   // get hostname_uuid
   // fetch hostname_index
-  let hostname_index = await fetchDataMetadir("metadir/props/hostname/index.csv")
+  let hostname_index = await fetchDataMetadir("metadir/props/name/index.csv")
   // parse hostname_index
   var hostname_index_lines = hostname_index.split('\n')
   // find line that matches hostname
   let hostname_regex = new RegExp("," + hostname + "$");
-  let hostname_line = hostname_index_lines.find(line => line.test(hostname_regex))
+  let hostname_line = hostname_index_lines.find(line => hostname_regex.test(line))
+  console.log("hostname_line", hostname_line)
   // split line to cut hostname_uuid
   var hostname_uuid = hostname_line.slice(0,64)
+  console.log("hostname_uuid", hostname_uuid)
   let hostname_uuid_regex = new RegExp(hostname_uuid)
 
   // get all datums and datum_uuids associated with hostname_uuid
@@ -168,11 +173,13 @@ async function buildJSON() {
   // parse pairs/datum-hostname.csv
   var datum_hostname_pair_lines = datum_hostname_pair.split('\n')
   // find lines that match hostname_uuid
-  var datum_uuid_lines = datum_hostname_pair_lines.map(line => line.test(hostname_uuid_regex))
+  var datum_uuid_lines = datum_hostname_pair_lines.filter(line => hostname_uuid_regex.test(line))
+  console.log("datum_uuid_lines", datum_uuid_lines)
 
   // split lines to cut datum_uuid
   // build array of datum_uuids associated with hostname
   var datum_uuids = datum_uuid_lines.map(line => line.slice(0,64))
+  console.log("datum_uuids", datum_uuids)
 
   // prepare lookup tables to build events
   // fetch pairs/datum-hostdate.csv
@@ -184,6 +191,7 @@ async function buildJSON() {
   let date_index = await fetchDataMetadir("metadir/props/date/index.csv")
   // parse date_index
   var date_index_lines = date_index.split('\n')
+  console.log("date_index_lines", date_index_lines)
 
   // fetch datum_index
   let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
@@ -196,6 +204,7 @@ async function buildJSON() {
 
     var datum_uuid = datum_uuids[i]
     let datum_uuid_regex = new RegExp(datum_uuid)
+    console.log("datum_uuid", datum_uuid)
 
     var event = {}
     event.HOST_NAME = hostname
@@ -203,44 +212,52 @@ async function buildJSON() {
 
     // .HOST_DATE
     // find line that matches datum_uuid in datum-hostdate pair
-    let hostdate_uuid_line = datum_hostdate_pair_lines.find(line => line.test(datum_uuid_regex))
+    let hostdate_uuid_line = datum_hostdate_pair_lines.find(line => datum_uuid_regex.test(line))
+    // skip event if it has no hostdate
+    if (!hostdate_uuid_line) { continue; }
+    console.log("hostdate_uuid_line", hostdate_uuid_line)
     // split line to cut hostdate_uuid
-    let hostdate_uuid = hostdate_uuid_line.slice(66)
+    let hostdate_uuid = hostdate_uuid_line.slice(65)
+    console.log("hostdate_uuid", hostdate_uuid)
     let hostdate_uuid_regex = new RegExp(hostdate_uuid)
     // find line that matches hostdate_uuid in date_index
-    let hostdate_line = date_index_lines.find(line => line.test(hostdate_regex))
+    let hostdate_line = date_index_lines.find(line => hostdate_uuid_regex.test(line))
+    console.log("hostdate_line", hostdate_line)
     // split line to cut hostdate
-    let hostdate = hostdate_line.slice(66)
+    let hostdate = hostdate_line.slice(65)
+    console.log("hostdate", hostdate)
     // add hostdate to the element
     event.HOST_DATE = hostdate
 
     // .DATUM
     // find line that matches datum_uuid in datum_index
-    let datum_line = datum_index.find(line => line.test(datum_uuid_regex))
+    let datum_line = datum_index_lines.find(line => datum_uuid_regex.test(line)) ?? " "
+    console.log("datum_line", datum_line)
     // split line to cut datum
-    let datum = datum_line.slice(66)
+    let datum = datum_line.slice(65)
+    console.log("datum", datum)
     // parse as JSON to unescape
-    let datum_json = JSON.parse(datum)
+    // let datum_json = JSON.parse(datum)
     // add datum to the element
-    event.DATUM = datum_json
+    event.DATUM = datum
 
     // {"UUID": "", "HOST_DATE": "", "HOST_NAME": "", "DATUM": ""}
     cache.push(event)
   }
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
-  var object_of_arrays = cache_host.reduce((acc, item) => {
+  var object_of_arrays = cache.reduce((acc, item) => {
     acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
     acc[item.HOST_DATE].push(item)
     return acc
   }, {})
-  // console.log(object_of_arrays)
+  console.log(object_of_arrays)
 
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
   var array_of_objects = Object.keys(object_of_arrays).sort()
                                .map((key) => {return {date: key,
                                                       events: object_of_arrays[key]}})
-  // console.log(array_of_objects)
+  console.log(array_of_objects)
 
   return array_of_objects
 }
@@ -266,16 +283,16 @@ const Line = () => {
   ), [viewportWidth, isMobile])
 
   useEffect( () => {
-    async function setLine() {
-      var restext = await fetchData()
-      var array_of_objects = transformJSON(restext)
+    //async function setLine() {
+    //  var restext = await fetchData()
+    //  var array_of_objects = transformJSON(restext)
+    //  setData(array_of_objects)
+    //}
+    async function setLineMetadir() {
+      var array_of_objects = await buildJSON()
       setData(array_of_objects)
     }
-    // async function setLineMetadir() {
-    //   var array_of_objects = buildJSON()
-    //   setData(array_of_objects)
-    // }
-    setLine()
+    setLineMetadir()
     setDataLoading(false)
   }, [])
 

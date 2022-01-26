@@ -64,7 +64,7 @@ async function fetchData() {
 // transform a list of events
 // into a list of lists of events
 // grouped by dates
-function transformData(restext) {
+function transformJSON(restext) {
 
   // parse cache
   var events = restext.split('\n')
@@ -75,21 +75,40 @@ function transformData(restext) {
   }
 
   // parse url query
-  var pathname = window.location.pathname
-  var els = pathname.split('/')
-  var hostname = els[1]
-  var rulename = els[2]
+  let pathname = window.location.pathname
+  console.log("pathname", pathname)
+  let search = window.location.search
+  console.log("search:", search)
+  let searchParams = new URLSearchParams(search);
 
-  // filter cache by query
-  var cache_host = hostname ? cache.filter(event => event.HOST_NAME === hostname) : cache
-  var cache_rule = rulename ? cache.filter(event => event.RULE === rulename) : cache_host
+  if (searchParams.has('hostname')) {
+    let hostname = searchParams.get('hostname')
+    cache = cache.filter(event => event.HOST_NAME === hostname)
+  }
+  if (searchParams.has('guestname')) {
+    let guestname = searchParams.get('guestname')
+    cache = cache.filter(event => event.GUEST_NAME === guestname)
+  }
+  if (searchParams.has('tag')) {
+    let tagname = searchParams.get('tag')
+    cache = cache.filter(event => event.TAG === tagname)
+  }
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
-  var object_of_arrays = cache_rule.reduce((acc, item) => {
-    acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
-    acc[item.HOST_DATE].push(item)
-    return acc
-  }, {})
+  var object_of_arrays
+  if (searchParams.get('groupBy') === "guestdate") {
+    object_of_arrays = cache_host.reduce((acc, item) => {
+      acc[item.GUEST_DATE] = acc[item.GUEST_DATE] || []
+      acc[item.GUEST_DATE].push(item)
+      return acc
+    }, {})
+  } else {
+    object_of_arrays = cache_host.reduce((acc, item) => {
+      acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
+      acc[item.HOST_DATE].push(item)
+      return acc
+    }, {})
+  }
   // console.log(object_of_arrays)
 
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
@@ -124,7 +143,7 @@ const Line = () => {
   useEffect( () => {
     async function setLine() {
       var restext = await fetchData()
-      var array_of_objects = transformData(restext)
+      var array_of_objects = transformJSON(restext)
       setData(array_of_objects)
     }
     setLine()

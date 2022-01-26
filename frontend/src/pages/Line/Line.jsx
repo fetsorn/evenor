@@ -12,6 +12,95 @@ const rowHeights = {
   desktop: 40,
 }
 
+async function fetchData() {
+  try {
+
+    var restext
+
+    const { REACT_APP_BUILD_MODE } = process.env;
+
+    if (REACT_APP_BUILD_MODE === "local") {
+      // fetch cache
+      var res = await fetch(`/api/hosts/index.json`)
+      restext = await res.text()
+    } else {
+      // clone cache
+      var fs = new LightningFS('fs', {
+        wipe: true
+      });
+      // console.log("fs initialized")
+      var pfs = fs.promises;
+      var dir = "/gedcom";
+      await pfs.mkdir(dir);
+      // console.log("dir created")
+      await git.clone({
+        fs,
+        http,
+        dir,
+        url: "https://source.fetsorn.website/fetsorn/stars.git",
+        corsProxy: "https://cors.isomorphic-git.org",
+        ref: "master",
+        singleBranch: true,
+        depth: 10,
+      });
+      // console.log("cloned")
+      var files = await pfs.readdir(dir);
+      // console.log("read files", files)
+      if (files.includes("index.json")) {
+        restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.json'));
+        // console.log("read files", files)
+      } else {
+        console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");
+      }
+    }
+
+    return restext
+
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+// transform a list of events
+// into a list of lists of events
+// grouped by dates
+function transformData(restext) {
+
+  // parse cache
+  var events = restext.split('\n')
+  events.pop()
+  var cache = []
+  for(var i=0; i < events.length; i++) {
+    cache.push(JSON.parse(events[i]))
+  }
+
+  // parse url query
+  var pathname = window.location.pathname
+  var els = pathname.split('/')
+  var hostname = els[1]
+  var rulename = els[2]
+
+  // filter cache by query
+  var cache_host = hostname ? cache.filter(event => event.HOST_NAME === hostname) : cache
+  var cache_rule = rulename ? cache.filter(event => event.RULE === rulename) : cache_host
+
+  // { "YYYY-MM-DD": [event1, event2, event3] }
+  var object_of_arrays = cache_rule.reduce((acc, item) => {
+    acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
+    acc[item.HOST_DATE].push(item)
+    return acc
+  }, {})
+  // console.log(object_of_arrays)
+
+  // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
+  var array_of_objects = Object.keys(object_of_arrays).sort()
+                               .map((key) => {return {date: key,
+                                                      events: object_of_arrays[key]}})
+  // console.log(array_of_objects)
+
+  return array_of_objects
+}
+
 const Line = () => {
   const [data, setData] = useState([])
   const [, setDataLoading] = useState(true)
@@ -33,81 +122,12 @@ const Line = () => {
   ), [viewportWidth, isMobile])
 
   useEffect( () => {
-    async function fetchData() {
-    try {
-
-      var restext
-
-      const { REACT_APP_BUILD_MODE } = process.env;
-
-      if (REACT_APP_BUILD_MODE === "local") {
-        // fetch cache
-        var res = await fetch(`/api/hosts/index.json`)
-        restext = await res.text()
-      } else {
-        // clone cache
-        var fs = new LightningFS('fs', {
-          wipe: true
-        });
-        // console.log("fs initialized")
-        var pfs = fs.promises;
-        var dir = "/gedcom";
-        await pfs.mkdir(dir);
-        // console.log("dir created")
-        await git.clone({
-          fs,
-          http,
-          dir,
-          url: "https://source.fetsorn.website/fetsorn/stars.git",
-          corsProxy: "https://cors.isomorphic-git.org",
-          ref: "master",
-          singleBranch: true,
-          depth: 10,
-        });
-        // console.log("cloned")
-        var files = await pfs.readdir(dir);
-        // console.log("read files", files)
-        if (files.includes("index.json")) {
-          restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.json'));
-          // console.log("read files", files)
-        } else {
-          console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");
-        }
-      }
-
-      // parse cache
-      var events = restext.split('\n')
-      events.pop()
-      var cache = []
-      for(var i=0; i < events.length; i++) {
-        cache.push(JSON.parse(events[i]))
-      }
-
-      // parse url query
-      var pathname = window.location.pathname
-      var els = pathname.split('/')
-      var hostname = els[1]
-      var rulename = els[2]
-
-      // filter cache by query and set timeline data
-      var cache_host = hostname ? cache.filter(event => event.HOST_NAME === hostname) : cache
-      var cache_rule = rulename ? cache.filter(event => event.RULE === rulename) : cache_host
-      var object_of_arrays = cache_rule.reduce((acc, item) => {
-        acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
-        acc[item.HOST_DATE].push(item)
-        return acc
-      }, {})
-      // console.log(object_of_arrays)
-      var array_of_objects = Object.keys(object_of_arrays).sort()
-                                   .map((key) => {return {date: key,
-                                                          events: object_of_arrays[key]}})
-      // console.log(array_of_objects)
+    async function setLine() {
+      var restext = await fetchData()
+      var array_of_objects = transformData(restext)
       setData(array_of_objects)
-    } catch (e) {
-      console.error(e)
     }
-    }
-    fetchData()
+    setLine()
     setDataLoading(false)
   }, [])
 

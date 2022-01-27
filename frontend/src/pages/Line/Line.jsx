@@ -139,106 +139,110 @@ async function fetchDataMetadir(path) {
   }
 }
 
-
 async function buildJSON() {
 
-  // get hostname from query
+  let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv")).split('\n')
+  let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv")).split('\n')
+  let datum_guestdate_pair = (await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")).split('\n')
+  let datum_hostdate_pair = (await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")).split('\n')
+  let datum_filepath_pair = (await fetchDataMetadir("metadir/pairs/datum-filepath.csv")).split('\n')
+  let name_index = (await fetchDataMetadir("metadir/props/name/index.csv")).split('\n')
+  let date_index = (await fetchDataMetadir("metadir/props/date/index.csv")).split('\n')
+  let filepath_index = (await fetchDataMetadir("metadir/props/filepath/index.csv")).split('\n')
+  let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv")).split('\n')
+
   let search = window.location.search
-  console.log("search:", search)
   let searchParams = new URLSearchParams(search);
+
   var hostname
-  if (searchParams.has('hostname')) {
+  var guestname
+  var hostname_uuid
+  var guestname_uuid
+  var datum_uuids
+
+  if (searchParams.has('hostname') && searchParams.has('guestname')) {
     hostname = searchParams.get('hostname')
+    guestname = searchParams.get('guestname')
+    hostname_uuid = name_index.find(line => (new RegExp("," + hostname + "$")).test(line)).slice(0,64)
+    guestname_uuid = name_index.find(line => (new RegExp("," + guestname + "$")).test(line)).slice(0,64)
+    let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
+    let datum_uuids_both = datum_guestname_pair.filter(line => datum_uuids_hostname.contains(line.slice(0,64))).map(line => line.slice(0,64))
+    datum_uuids = datum_uuids_both
+  } else if (searchParams.has('hostname')) {
+    hostname = searchParams.get('hostname')
+    hostname_uuid = name_index.find(line => (new RegExp("," + hostname + "$")).test(line)).slice(0,64)
+    let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
+    datum_uuids = datum_uuids_hostname
+  } else if (searchParams.has('guestname')) {
+    guestname = searchParams.get('guestname')
+    guestname_uuid = name_index.find(line => (new RegExp("," + guestname + "$")).test(line)).slice(0,64)
+    let datum_uuids_guestname = datum_guestname_pair.filter(line => (new RegExp(guestname_uuid)).test(line)).map(line => line.slice(0,64))
+    datum_uuids = datum_uuids_guestname
   }
 
-  var cache = []
+  if (searchParams.has('rulename')) {
+    datum_uuids = datum_uuids
+  }
 
-  // get hostname_uuid
-  // fetch hostname_index
-  let hostname_index = await fetchDataMetadir("metadir/props/name/index.csv")
-  // parse hostname_index
-  var hostname_index_lines = hostname_index.split('\n')
-  // find line that matches hostname
-  let hostname_regex = new RegExp("," + hostname + "$");
-  let hostname_line = hostname_index_lines.find(line => hostname_regex.test(line))
-  console.log("hostname_line", hostname_line)
-  // split line to cut hostname_uuid
-  var hostname_uuid = hostname_line.slice(0,64)
-  console.log("hostname_uuid", hostname_uuid)
-  let hostname_uuid_regex = new RegExp(hostname_uuid)
-
-  // get all datums and datum_uuids associated with hostname_uuid
-  // fetch pairs/datum-hostname.csv
-  let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
-  // parse pairs/datum-hostname.csv
-  var datum_hostname_pair_lines = datum_hostname_pair.split('\n')
-  // find lines that match hostname_uuid
-  var datum_uuid_lines = datum_hostname_pair_lines.filter(line => hostname_uuid_regex.test(line))
-  console.log("datum_uuid_lines", datum_uuid_lines)
-
-  // split lines to cut datum_uuid
-  // build array of datum_uuids associated with hostname
-  var datum_uuids = datum_uuid_lines.map(line => line.slice(0,64))
-  console.log("datum_uuids", datum_uuids)
-
-  // prepare lookup tables to build events
-  // fetch pairs/datum-hostdate.csv
-  let datum_hostdate_pair = await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")
-  // parse pairs/datum-hostdate.csv
-  var datum_hostdate_pair_lines = datum_hostdate_pair.split('\n')
-
-  // fetch date_index
-  let date_index = await fetchDataMetadir("metadir/props/date/index.csv")
-  // parse date_index
-  var date_index_lines = date_index.split('\n')
-  console.log("date_index_lines", date_index_lines)
-
-  // fetch datum_index
-  let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
-  // parse datum_index
-  var datum_index_lines = datum_index.split('\n')
+  var groupBy = searchParams.get('groupBy') ?? "hostdate"
 
   var cache = []
   // for every datum_uuid build an event
   for(var i=0; i < datum_uuids.length; i++) {
 
     var datum_uuid = datum_uuids[i]
-    let datum_uuid_regex = new RegExp(datum_uuid)
-    console.log("datum_uuid", datum_uuid)
 
     var event = {}
-    event.HOST_NAME = hostname
     event.UUID = datum_uuid
 
+    // .HOST_NAME
+    if (hostname) {
+      event.HOST_NAME = hostname
+    } else {
+      hostname_uuid = datum_hostname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
+      hostname = name_index.find(line => (new RegExp(hostname_uuid)).test(line)).slice(65)
+    }
+
+    // .GUEST_NAME
+    if (guestname) {
+      event.GUEST_NAME = guestname
+    } else {
+      guestname_uuid = datum_guestname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
+      guestname = name_index.find(line => (new RegExp(guestname_uuid)).test(line)).slice(65)
+    }
+
     // .HOST_DATE
-    // find line that matches datum_uuid in datum-hostdate pair
-    let hostdate_uuid_line = datum_hostdate_pair_lines.find(line => datum_uuid_regex.test(line))
-    // skip event if it has no hostdate
-    if (!hostdate_uuid_line) { continue; }
-    console.log("hostdate_uuid_line", hostdate_uuid_line)
-    // split line to cut hostdate_uuid
-    let hostdate_uuid = hostdate_uuid_line.slice(65)
-    console.log("hostdate_uuid", hostdate_uuid)
-    let hostdate_uuid_regex = new RegExp(hostdate_uuid)
-    // find line that matches hostdate_uuid in date_index
-    let hostdate_line = date_index_lines.find(line => hostdate_uuid_regex.test(line))
-    console.log("hostdate_line", hostdate_line)
-    // split line to cut hostdate
-    let hostdate = hostdate_line.slice(65)
-    console.log("hostdate", hostdate)
-    // add hostdate to the element
+    let hostdate_uuid = (datum_hostdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+    if (hostdate_uuid === "" && groupBy === "hostdate") {
+      continue;
+    }
+    var hostdate = (date_index.find(line => (new RegExp(hostdate_uuid)).test(line)) ?? "").slice(65)
     event.HOST_DATE = hostdate
 
+    // .GUEST_DATE
+    let guestdate_uuid = (datum_guestdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+    if (guestdate_uuid === "" && groupBy === "guestdate") {
+      continue;
+    }
+    var guestdate = (date_index.find(line => (new RegExp(guestdate_uuid)).test(line)) ?? "").slice(65)
+    event.GUEST_DATE = guestdate
+
+    // .FILE_PATH
+    var filepath
+    let filepath_uuid = (datum_filepath_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+    if (filepath_uuid != "") {
+      filepath = filepath_index.find(line => (new RegExp(filepath_uuid)).test(line)).slice(65)
+      filepath = JSON.parse(filepath)
+    } else {
+      filepath = ""
+    }
+    event.FILE_PATH = filepath
+
     // .DATUM
-    // find line that matches datum_uuid in datum_index
-    let datum_line = datum_index_lines.find(line => datum_uuid_regex.test(line)) ?? " "
-    console.log("datum_line", datum_line)
-    // split line to cut datum
-    let datum = datum_line.slice(65)
-    console.log("datum", datum)
-    // parse as JSON to unescape
-    // let datum_json = JSON.parse(datum)
-    // add datum to the element
+    var datum = (datum_index.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+    if (datum != "") {
+      datum = JSON.parse(datum)
+    }
     event.DATUM = datum
 
     // {"UUID": "", "HOST_DATE": "", "HOST_NAME": "", "DATUM": ""}
@@ -246,18 +250,25 @@ async function buildJSON() {
   }
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
-  var object_of_arrays = cache.reduce((acc, item) => {
-    acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
-    acc[item.HOST_DATE].push(item)
-    return acc
-  }, {})
-  console.log(object_of_arrays)
+  var object_of_arrays
+  if (groupBy === "hostdate") {
+    object_of_arrays = cache.reduce((acc, item) => {
+      acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
+      acc[item.HOST_DATE].push(item)
+      return acc
+    }, {})
+  } else if (groupBy === "guestdate") {
+    object_of_arrays = cache.reduce((acc, item) => {
+      acc[item.GUEST_DATE] = acc[item.GUEST_DATE] || []
+      acc[item.GUEST_DATE].push(item)
+      return acc
+    }, {})
+  }
 
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
   var array_of_objects = Object.keys(object_of_arrays).sort()
                                .map((key) => {return {date: key,
                                                       events: object_of_arrays[key]}})
-  console.log(array_of_objects)
 
   return array_of_objects
 }

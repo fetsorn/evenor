@@ -39,14 +39,26 @@
         src = ./backend;
         buildPhase = ''
           mkdir -p deps/${name}/build
+          cp -r ${timeline-frontend}/* deps/${name}/build/
+          chmod -R 755 deps/${name}/build/*
+        '';
+      };
+      timeline-backend-local = pkgs.mkYarnPackage rec {
+        name = "timeline-backend";
+        src = ./backend;
+        buildPhase = ''
+          mkdir -p deps/${name}/build
           cp -r ${timeline-frontend-local}/* deps/${name}/build/
           chmod -R 755 deps/${name}/build/*
         '';
       };
     in {
-      packages.aarch64-darwin = { inherit timeline-backend timeline-frontend; };
-      defaultPackage.aarch64-darwin = timeline-backend;
-      defaultApp.aarch64-darwin = timeline-backend;
+      packages.aarch64-darwin = {
+        inherit timeline-backend timeline-frontend timeline-backend-local
+          timeline-frontend-local;
+      };
+      defaultPackage.aarch64-darwin = timeline-backend-local;
+      defaultApp.aarch64-darwin = timeline-backend-local;
       devShell.aarch64-darwin =
         pkgs.mkShell { buildInputs = [ pkgs.nodejs-16_x pkgs.yarn ]; };
     };

@@ -12,6 +12,36 @@ const rowHeights = {
   desktop: 40,
 }
 
+async function gitInit(url, ref, token) {
+  try {
+    // clone cache
+    window.fs = new LightningFS('fs', {
+      wipe: true
+    });
+    console.log("fs initialized")
+    window.pfs = window.fs.promises;
+    window.dir = "/git";
+    await window.pfs.mkdir(window.dir);
+    console.log("dir created")
+    await git.clone({
+      fs: window.fs,
+      http,
+      dir: window.dir,
+      url,
+      corsProxy: "https://cors.isomorphic-git.org",
+      ref,
+      singleBranch: true,
+      depth: 10,
+      onAuth: () => ({
+        username: token
+      })
+    });
+    console.log("repo cloned")
+  } catch (e) {
+    console.error(e)
+  }
+}
+
 async function fetchData() {
   try {
 
@@ -24,30 +54,10 @@ async function fetchData() {
       var res = await fetch(`/api/hosts/index.json`)
       restext = await res.text()
     } else {
-      // clone cache
-      var fs = new LightningFS('fs', {
-        wipe: true
-      });
-      // console.log("fs initialized")
-      var pfs = fs.promises;
-      var dir = "/gedcom";
-      await pfs.mkdir(dir);
-      // console.log("dir created")
-      await git.clone({
-        fs,
-        http,
-        dir,
-        url: "https://source.fetsorn.website/fetsorn/stars.git",
-        corsProxy: "https://cors.isomorphic-git.org",
-        ref: "master",
-        singleBranch: true,
-        depth: 10,
-      });
-      // console.log("cloned")
-      var files = await pfs.readdir(dir);
+      var files = await window.pfs.readdir(window.dir);
       // console.log("read files", files)
       if (files.includes("index.json")) {
-        restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.json'));
+        restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/index.json'));
         // console.log("read files", files)
       } else {
         console.error("Cannot load file. Ensure there is a file called 'index.json' in the root of the repository.");
@@ -131,6 +141,23 @@ async function fetchDataMetadir(path) {
       // fetch cache
       var res = await fetch(`/api/` + path)
       restext = await res.text()
+    } else {
+      // check if path exists in the repo
+      var path_elements = path.split('/')
+      var root = window.dir
+      for (var i=0; i < path_elements.length; i++) {
+        let path_element = path_elements[i]
+        var files = await window.pfs.readdir(root);
+        // console.log(files)
+        if (files.includes(path_element)) {
+          root += '/' + path_element
+          // console.log(`${root} has ${path_element}`)
+        } else {
+          console.error(`Cannot load file. Ensure there is a file called ${path_element} in ${root}.`);
+        }
+      }
+      // console.log(window.dir + '/' + path)
+      restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/' + path));
     }
    
     return restext
@@ -294,12 +321,21 @@ const Line = () => {
   ), [viewportWidth, isMobile])
 
   useEffect( () => {
-    //async function setLine() {
+    // async function setLine() {
+    //   const { REACT_APP_BUILD_MODE } = process.env;
+    //   if (REACT_APP_BUILD_MODE != "local") {
+    //     await gitInit("https://source.fetsorn.website/fetsorn/stars.git", "master", "2060f5e4fec80c0cfaa62fbdaf89e9701ff25f4e")
+    //   }
     //  var restext = await fetchData()
     //  var array_of_objects = transformJSON(restext)
     //  setData(array_of_objects)
-    //}
+    // }
+    // setLine()
     async function setLineMetadir() {
+      const { REACT_APP_BUILD_MODE } = process.env;
+      if (REACT_APP_BUILD_MODE != "local") {
+        await gitInit("https://source.fetsorn.website/fetsorn/pleiades.git", "main", "2060f5e4fec80c0cfaa62fbdaf89e9701ff25f4e")
+      }
       var array_of_objects = await buildJSON()
       setData(array_of_objects)
     }

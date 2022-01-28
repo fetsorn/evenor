@@ -1,6 +1,7 @@
 import styles from './Tree.module.css'
 
 import { useEffect, useState, useMemo } from 'react'
+import { Header } from '@components'
 import { ged2dot } from '@utils'
 
 import http from 'isomorphic-git/http/web'
@@ -65,7 +66,10 @@ const Tree = () => {
   }, [])
 
   return (
-    <div className={styles.container} dangerouslySetInnerHTML={{ __html: data }}></div>
+    <>
+      <Header />
+      <div className={styles.container} dangerouslySetInnerHTML={{ __html: data }}></div>
+    </>
   )
 }
 

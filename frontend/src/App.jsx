@@ -1,17 +1,25 @@
+import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Tree, Line } from '@pages'
+import { Auth, Tree, Line, Evea } from '@pages'
 
 const App = () => {
-  return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/">
-          <Route index element={<Tree/>} />
-          <Route path="*" element={<Line/>} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
-  );
+  const [authorized, setAuthorized] = useState(false)
+
+    if (authorized) {
+      return (
+        <BrowserRouter>
+          <Routes>
+            <Route path="/">
+              <Route index element={<Tree/>} />
+              <Route path="edit/*" element={<Evea/>} />
+              <Route path="*" element={<Line/>} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      )
+    } else {
+      return ( <Auth authorized={authorized} setAuthorized={setAuthorized} /> )
+    }
 }
 
 export default App

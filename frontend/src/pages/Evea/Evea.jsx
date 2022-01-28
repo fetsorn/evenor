@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Header, Main, Footer, Timeline, Sidebar, VirtualScroll, Row } from '@components'
+import { Header, Main, Footer, Timeline, SidebarEvea, VirtualScroll, Row } from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
 
@@ -129,7 +129,7 @@ async function fetchDataMetadir(path) {
       // console.log(window.dir + '/' + path)
       restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/' + path));
     }
-   
+
     return restext
   } catch (e) {
     console.error(e)
@@ -270,7 +270,7 @@ async function buildJSON() {
   return array_of_objects
 }
 
-const Line = () => {
+const Evea = () => {
   const [data, setData] = useState([])
   const [, setDataLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
@@ -292,9 +292,10 @@ const Line = () => {
 
   useEffect( () => {
     async function setLine() {
-      const { REACT_APP_RENDER_MODE } = process.env;
-      if (REACT_APP_RENDER_MODE === "legacy") {
-        setData(transformJSON(await fetchData()))
+      // if cannot edit, redirect to view
+      const { REACT_APP_BUILD_MODE, REACT_APP_RENDER_MODE } = process.env;
+      if (REACT_APP_BUILD_MODE === "local" || REACT_APP_RENDER_MODE === "legacy" ) {
+        window.open((window.location.href).replace("edit/", ""))
       } else {
         setData(await buildJSON())
       }
@@ -327,11 +328,11 @@ const Line = () => {
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>
-        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr} lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}/>
+        <SidebarEvea event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr} lfsSrc={lfsSrc} setLFSSrc={setLFSSrc} setData={setData} buildJSON={buildJSON}/>
       </Main>
       <Footer />
     </>
   )
 }
 
-export default Line
+export default Evea

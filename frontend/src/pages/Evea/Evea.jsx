@@ -294,8 +294,9 @@ const Evea = () => {
     async function setLine() {
       // if cannot edit, redirect to view
       const { REACT_APP_BUILD_MODE, REACT_APP_RENDER_MODE } = process.env;
-      if (REACT_APP_BUILD_MODE === "local" || REACT_APP_RENDER_MODE === "legacy" ) {
-        window.open((window.location.href).replace("edit/", ""))
+      let storeToken = window.sessionStorage.getItem('token')
+      if (REACT_APP_BUILD_MODE === "local" || REACT_APP_RENDER_MODE === "legacy" || storeToken == null || storeToken === "" ) {
+        window.open((window.location.href).replace("edit", ""),"_self")
       } else {
         setData(await buildJSON())
       }

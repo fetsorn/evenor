@@ -17,7 +17,7 @@ async function fetchData() {
 
     if (REACT_APP_BUILD_MODE === "local") {
       // fetch cache
-      var res = await fetch(`/api/hosts/index.ged`)
+      var res = await fetch(`/api/index.ged`)
       restext = await res.text()
     } else {
       var files = await window.pfs.readdir(window.dir);

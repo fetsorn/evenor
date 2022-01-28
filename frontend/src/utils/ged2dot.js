@@ -6,7 +6,7 @@
 class Config {
   constructor() {
         this.input = ""
-        this.rootfamily = "F4"
+        this.rootfamily = "F1"
         this.familydepth = 4
         this.nameorder = "little"
   }
@@ -263,7 +263,7 @@ class Individual {
 
   get_label(name_order) {
     var label = "<table border=\"0\" cellborder=\"0\"><tr><td>"
-    label +=  "</td></tr><tr><td href=\"" + this.dict["hostname"] + "\"><font face=\"Times\">"
+    label +=  "</td></tr><tr><td href=\"q?hostname=" + this.dict["hostname"] + "\"><font face=\"Times\">"
     if (name_order === "big") {
       label += this.dict["surname"] + "<br/>"
       label += this.dict["forename"] + "<br/>"

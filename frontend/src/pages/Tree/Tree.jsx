@@ -19,10 +19,10 @@ async function fetchData() {
       var res = await fetch(`/api/hosts/index.ged`)
       restext = await res.text()
     } else {
-      var files = await pfs.readdir(dir);
+      var files = await window.pfs.readdir(window.dir);
       // console.log("read files", files)
       if (files.includes("index.ged")) {
-        restext = new TextDecoder().decode(await pfs.readFile(dir + '/index.ged'));
+        restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/index.ged'));
         // console.log("read files", files)
       } else {
         console.error("Cannot load file. Ensure there is a file called 'index.ged' in the root of the repository.");

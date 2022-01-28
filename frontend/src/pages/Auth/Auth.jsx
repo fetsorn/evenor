@@ -20,19 +20,33 @@ async function gitInit(url, ref, token) {
     console.log("repo exists")
   } else {
     await window.pfs.mkdir(window.dir);
-    await git.clone({
-      fs: window.fs,
-      http,
-      dir: window.dir,
-      url,
-      corsProxy: "https://cors.isomorphic-git.org",
-      ref,
-      singleBranch: true,
-      depth: 10,
-      onAuth: () => ({
-        username: token
+    // attempt to clone a public repo if no token is provided
+    if (token === "") {
+      await git.clone({
+        fs: window.fs,
+        http,
+        dir: window.dir,
+        url,
+        corsProxy: "https://cors.isomorphic-git.org",
+        ref,
+        singleBranch: true,
+        depth: 10
       })
-    })
+    } else {
+      await git.clone({
+        fs: window.fs,
+        http,
+        dir: window.dir,
+        url,
+        corsProxy: "https://cors.isomorphic-git.org",
+        ref,
+        singleBranch: true,
+        depth: 10,
+        onAuth: () => ({
+          username: token
+        })
+      })
+    }
     console.log("repo cloned")
   }
 }
@@ -76,7 +90,8 @@ const Auth = ({authorized, setAuthorized}) => {
 
     console.log("store", storeUrl, storeRef, storeToken)
 
-    if (storeToken != null && storeToken != "") {
+    if (storeToken != null) {
+      console.log("try to authorize")
       authorize(storeUrl, storeRef, storeToken)
     }
   }, [])

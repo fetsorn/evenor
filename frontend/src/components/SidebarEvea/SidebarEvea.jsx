@@ -230,6 +230,7 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
   }
 
   const addEvent = async (path) => {
+
     // TODO: use files already fetched during buildJSON
     let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
     let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
@@ -241,56 +242,63 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
     let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
     let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
 
-    // append to datum-index
     let datum_uuid = await digestMessage(crypto.randomUUID())
     let datum_escaped = JSON.stringify(event.DATUM)
     let datum_line = `${datum_uuid},${datum_escaped}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/datum/index.csv", datum_index + datum_line, 'utf8')
-    // append to filepath-index
+
     let filepath = event.FILE_PATH
     let filepath_uuid = await digestMessage(filepath)
-    let filepath_line = `${filepath_uuid},${filepath}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/filepath/index.csv", filepath_index + filepath_line, 'utf8')
-    // append to datum-filepath
+    let filepath_escaped = JSON.stringify(filepath)
+    let filepath_line = `${filepath_uuid},${filepath_escaped}\n`
+
     let datum_filepath_line = `${datum_uuid},${filepath_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-filepath.csv", datum_filepath_pair + datum_filepath_line, 'utf8')
-    // append to guestdate-index
-    let guestdate = event.GUEST_DATE
-    let guestdate_uuid = await digestMessage(guestdate)
-    let guestdate_line = `${guestdate_uuid},${guestdate}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/date/index.csv", date_index + guestdate_line, 'utf8')
-    // append to datum-guestdate
-    let datum_guestdate_line = `${datum_uuid},${guestdate_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestdate.csv", datum_guestdate_pair + datum_guestdate_line, 'utf8')
-    // append to hostdate-index
-    let hostdate = event.HOST_DATE
-    let hostdate_uuid = await digestMessage(hostdate)
-    let hostdate_line = `${hostdate_uuid},${hostdate}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/date/index.csv", date_index + hostdate_line, 'utf8')
-    // append to datum-hostdate
-    let datum_hostdate_line = `${datum_uuid},${hostdate_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostdate.csv", datum_hostdate_pair + datum_hostdate_line, 'utf8')
-    // append to name-index
+
     let guestname = event.GUEST_NAME
     let guestname_uuid = await digestMessage(guestname)
     let guestname_line = `${guestname_uuid},${guestname}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/name/index.csv", name_index + guestname_line, 'utf8')
-    // append to datum-guestname
+
     let datum_guestname_line = `${datum_uuid},${guestname_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestname.csv", datum_guestname_pair + datum_guestname_line, 'utf8')
-    // append to name-index
+
     let hostname = event.HOST_NAME
     let hostname_uuid = await digestMessage(hostname)
     let hostname_line = `${hostname_uuid},${hostname}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/name/index.csv", name_index + hostname_line, 'utf8')
-    // append to datum-hostname
+
     let datum_hostname_line = `${datum_uuid},${hostname_uuid}\n`
+
+    let name_lines = [...new Set([guestname_line, hostname_line])].join('')
+
+    let guestdate = event.GUEST_DATE
+    let guestdate_uuid = await digestMessage(guestdate)
+    let guestdate_line = `${guestdate_uuid},${guestdate}\n`
+
+    let datum_guestdate_line = `${datum_uuid},${guestdate_uuid}\n`
+
+    let hostdate = event.HOST_DATE
+    let hostdate_uuid = await digestMessage(hostdate)
+    let hostdate_line = `${hostdate_uuid},${hostdate}\n`
+
+    let datum_hostdate_line = `${datum_uuid},${hostdate_uuid}\n`
+
+    let date_lines = [...new Set([guestdate_line, hostdate_line])].join('')
+
+    await window.pfs.writeFile(window.dir + "/metadir/props/datum/index.csv", datum_index + datum_line, 'utf8')
+
+    await window.pfs.writeFile(window.dir + "/metadir/props/filepath/index.csv", filepath_index + filepath_line, 'utf8')
+    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-filepath.csv", datum_filepath_pair + datum_filepath_line, 'utf8')
+
+    await window.pfs.writeFile(window.dir + "/metadir/props/name/index.csv", name_index + name_lines, 'utf8')
+    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestname.csv", datum_guestname_pair + datum_guestname_line, 'utf8')
     await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostname.csv", datum_hostname_pair + datum_hostname_line, 'utf8')
+
+    await window.pfs.writeFile(window.dir + "/metadir/props/date/index.csv", date_index + date_lines, 'utf8')
+    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestdate.csv", datum_guestdate_pair + datum_guestdate_line, 'utf8')
+    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostdate.csv", datum_hostdate_pair + datum_hostdate_line, 'utf8')
 
     setData(await buildJSON())
   }
 
   const deleteEvent = async (datum_uuid) => {
+
     // TODO: use files already fetched during buildJSON
     let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
     let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
@@ -315,6 +323,7 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
 
   const editEvent = async (event) => {
 
+    // TODO: use files already fetched during buildJSON
     let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
     let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
     let datum_guestdate_pair = await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")
@@ -395,12 +404,13 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
       }
     })
     let token = window.sessionStorage.getItem('token')
+    let ref = window.sessionStorage.getItem('ref')
     let pushResult = await git.push({
       fs: window.fs,
       http,
       dir: window.dir,
       remote: 'origin',
-      ref: 'main',
+      ref,
       onAuth: () => ({
         username: token
       })

@@ -101,9 +101,10 @@ function transformJSON(restext) {
 }
 
 async function fetchDataMetadir(path) {
-  try {
 
-    var restext
+  var restext = ""
+
+  try {
 
     const { REACT_APP_BUILD_MODE } = process.env;
 
@@ -118,24 +119,30 @@ async function fetchDataMetadir(path) {
       for (var i=0; i < path_elements.length; i++) {
         let path_element = path_elements[i]
         var files = await window.pfs.readdir(root);
-        // console.log(files)
+        console.log(files)
         if (files.includes(path_element)) {
           root += '/' + path_element
           // console.log(`${root} has ${path_element}`)
         } else {
           console.error(`Cannot load file. Ensure there is a file called ${path_element} in ${root}.`);
+          break
         }
       }
       // console.log(window.dir + '/' + path)
       restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/' + path));
     }
-   
-    return restext
+
   } catch (e) {
     console.error(e)
   }
+
+  return restext
+
 }
 
+// if there are no files in metadir, output []
+// if files are empty, output []
+// otherwise, filter and group events by group according to url query
 async function buildJSON() {
 
   let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv")).split('\n')
@@ -157,28 +164,31 @@ async function buildJSON() {
   var guestname_uuid
   var datum_uuids
 
+  // if query is not found in the metadir
+  // fallback to an impossible regexp
+  // so that filters return an empty array
+  let falseRegex = "\\b\\B"
   if (searchParams.has('hostname') && searchParams.has('guestname')) {
     hostname = searchParams.get('hostname')
     guestname = searchParams.get('guestname')
-    hostname_uuid = name_index.find(line => (new RegExp("," + hostname + "$")).test(line)).slice(0,64)
-    guestname_uuid = name_index.find(line => (new RegExp("," + guestname + "$")).test(line)).slice(0,64)
+    hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
+    guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
     let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
     let datum_uuids_both = datum_guestname_pair.filter(line => datum_uuids_hostname.contains(line.slice(0,64))).map(line => line.slice(0,64))
     datum_uuids = datum_uuids_both
   } else if (searchParams.has('hostname')) {
     hostname = searchParams.get('hostname')
-    hostname_uuid = name_index.find(line => (new RegExp("," + hostname + "$")).test(line)).slice(0,64)
+    hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
     let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
     datum_uuids = datum_uuids_hostname
   } else if (searchParams.has('guestname')) {
     guestname = searchParams.get('guestname')
-    guestname_uuid = name_index.find(line => (new RegExp("," + guestname + "$")).test(line)).slice(0,64)
+    guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
     let datum_uuids_guestname = datum_guestname_pair.filter(line => (new RegExp(guestname_uuid)).test(line)).map(line => line.slice(0,64))
     datum_uuids = datum_uuids_guestname
-  }
-
-  if (searchParams.has('rulename')) {
-    datum_uuids = datum_uuids
+  } else {
+    // list all datums if no query is provided
+    datum_uuids = datum_index.map(line => line.slice(0,64))
   }
 
   var groupBy = searchParams.get('groupBy') ?? "hostdate"
@@ -192,7 +202,6 @@ async function buildJSON() {
     var event = {}
     event.UUID = datum_uuid
 
-    // .HOST_NAME
     if (hostname) {
       event.HOST_NAME = hostname
     } else {
@@ -200,7 +209,6 @@ async function buildJSON() {
       hostname = name_index.find(line => (new RegExp(hostname_uuid)).test(line)).slice(65)
     }
 
-    // .GUEST_NAME
     if (guestname) {
       event.GUEST_NAME = guestname
     } else {
@@ -208,7 +216,6 @@ async function buildJSON() {
       guestname = name_index.find(line => (new RegExp(guestname_uuid)).test(line)).slice(65)
     }
 
-    // .HOST_DATE
     let hostdate_uuid = (datum_hostdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
     if (hostdate_uuid === "" && groupBy === "hostdate") {
       continue;
@@ -216,7 +223,6 @@ async function buildJSON() {
     var hostdate = (date_index.find(line => (new RegExp(hostdate_uuid)).test(line)) ?? "").slice(65)
     event.HOST_DATE = hostdate
 
-    // .GUEST_DATE
     let guestdate_uuid = (datum_guestdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
     if (guestdate_uuid === "" && groupBy === "guestdate") {
       continue;
@@ -224,7 +230,6 @@ async function buildJSON() {
     var guestdate = (date_index.find(line => (new RegExp(guestdate_uuid)).test(line)) ?? "").slice(65)
     event.GUEST_DATE = guestdate
 
-    // .FILE_PATH
     var filepath
     let filepath_uuid = (datum_filepath_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
     if (filepath_uuid != "") {
@@ -235,7 +240,6 @@ async function buildJSON() {
     }
     event.FILE_PATH = filepath
 
-    // .DATUM
     var datum = (datum_index.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
     if (datum != "") {
       datum = JSON.parse(datum)

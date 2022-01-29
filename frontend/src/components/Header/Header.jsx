@@ -3,7 +3,7 @@ import styles from './Header.module.css'
 
 import LightningFS from '@isomorphic-git/lightning-fs';
 
-const Header = () => {
+const Header = ({setEvent}) => {
 
   // remove credentials to sessionStorage, wipe fs and reload
   const logout = async () => {
@@ -20,6 +20,9 @@ const Header = () => {
   return (
   <header className={styles.header}>
     <h1 className={styles.title}></h1>
+    {setEvent && (
+      <Button type="button" onClick={() => setEvent({})}>New event</Button>
+    )}
     <Button type="button" onClick={logout}>Logout</Button>
   </header>
   )}

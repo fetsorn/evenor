@@ -5,62 +5,84 @@
 
   outputs = inputs@{ self, nixpkgs }:
     let
-      pkgs = import nixpkgs { system = "aarch64-darwin"; };
-      timeline-frontend = pkgs.mkYarnPackage rec {
-        name = "timeline-frontend";
-        src = ./frontend;
-        configurePhase = ''
-          cp -r $node_modules node_modules
-          chmod -R 755 node_modules
-        '';
-        buildPhase = ''
-          yarn run build
-          cp -r build $out
-        '';
-        dontInstall = true;
-        doDist = false;
-      };
-      timeline-frontend-local = pkgs.mkYarnPackage rec {
-        name = "timeline-frontend";
-        src = ./frontend;
-        configurePhase = ''
-          cp -r $node_modules node_modules
-          chmod -R 755 node_modules
-        '';
-        buildPhase = ''
-          REACT_APP_BUILD_MODE=local yarn run build
-          cp -r build $out
-        '';
-        dontInstall = true;
-        doDist = false;
-      };
-      timeline-backend = pkgs.mkYarnPackage rec {
-        name = "timeline-backend";
-        src = ./backend;
-        buildPhase = ''
-          mkdir -p deps/${name}/build
-          cp -r ${timeline-frontend}/* deps/${name}/build/
-          chmod -R 755 deps/${name}/build/*
-        '';
-      };
-      timeline-backend-local = pkgs.mkYarnPackage rec {
-        name = "timeline-backend";
-        src = ./backend;
-        buildPhase = ''
-          mkdir -p deps/${name}/build
-          cp -r ${timeline-frontend-local}/* deps/${name}/build/
-          chmod -R 755 deps/${name}/build/*
-        '';
-      };
-    in {
-      packages.aarch64-darwin = {
-        inherit timeline-backend timeline-frontend timeline-backend-local
-          timeline-frontend-local;
-      };
-      defaultPackage.aarch64-darwin = timeline-backend-local;
-      defaultApp.aarch64-darwin = timeline-backend-local;
-      devShell.aarch64-darwin =
-        pkgs.mkShell { buildInputs = [ pkgs.nodejs-16_x pkgs.yarn ]; };
-    };
+      eachSystem = systems: f:
+        let
+          op = attrs: system:
+            let
+              ret = f system;
+              op = attrs: key:
+                let
+                  appendSystem = key: system: ret: { ${system} = ret.${key}; };
+                in attrs // {
+                  ${key} = (attrs.${key} or { })
+                    // (appendSystem key system ret);
+                };
+            in builtins.foldl' op attrs (builtins.attrNames ret);
+        in builtins.foldl' op { } systems;
+      defaultSystems = [
+        "aarch64-linux"
+        "aarch64-darwin"
+        "i686-linux"
+        "x86_64-darwin"
+        "x86_64-linux"
+      ];
+    in eachSystem defaultSystems (system:
+      let
+        pkgs = import nixpkgs { inherit system; };
+        timeline-frontend = pkgs.mkYarnPackage rec {
+          name = "timeline-frontend";
+          src = ./frontend;
+          configurePhase = ''
+            cp -r $node_modules node_modules
+            chmod -R 755 node_modules
+          '';
+          buildPhase = ''
+            yarn run build
+            cp -r build $out
+          '';
+          dontInstall = true;
+          doDist = false;
+        };
+        timeline-frontend-local = pkgs.mkYarnPackage rec {
+          name = "timeline-frontend";
+          src = ./frontend;
+          configurePhase = ''
+            cp -r $node_modules node_modules
+            chmod -R 755 node_modules
+          '';
+          buildPhase = ''
+            REACT_APP_BUILD_MODE=local yarn run build
+            cp -r build $out
+          '';
+          dontInstall = true;
+          doDist = false;
+        };
+        timeline-backend = pkgs.mkYarnPackage rec {
+          name = "timeline-backend";
+          src = ./backend;
+          buildPhase = ''
+            mkdir -p deps/${name}/build
+            cp -r ${timeline-frontend}/* deps/${name}/build/
+            chmod -R 755 deps/${name}/build/*
+          '';
+        };
+        timeline-backend-local = pkgs.mkYarnPackage rec {
+          name = "timeline-backend";
+          src = ./backend;
+          buildPhase = ''
+            mkdir -p deps/${name}/build
+            cp -r ${timeline-frontend-local}/* deps/${name}/build/
+            chmod -R 755 deps/${name}/build/*
+          '';
+        };
+      in {
+        packages = {
+          inherit timeline-backend timeline-frontend timeline-backend-local
+            timeline-frontend-local;
+        };
+        defaultPackage = timeline-backend-local;
+        defaultApp = timeline-backend-local;
+        devShell =
+          pkgs.mkShell { buildInputs = [ pkgs.nodejs-16_x pkgs.yarn ]; };
+      });
 }
-

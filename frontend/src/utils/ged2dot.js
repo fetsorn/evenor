@@ -6,8 +6,8 @@
 class Config {
   constructor() {
         this.input = ""
-        this.rootfamily = "F1"
-        this.familydepth = 4
+        // this.rootfamily = "F1"
+        // this.familydepth = 100
         this.nameorder = "little"
   }
 }
@@ -349,6 +349,16 @@ function graph_find(graph, identifier) {
   return results[0]
 }
 
+function graph_find_first(graph) {
+  for (var i in graph) {
+    var node = graph[i]
+    var reg = new RegExp("F")
+    if (reg.test(node.dict["identifier"])) {
+      return node
+    }
+  }
+}
+
 function bfs(root, config) {
   var visited = [root]
   var queue = [root]
@@ -356,10 +366,10 @@ function bfs(root, config) {
 
   while (queue.length > 0) {
     var node = queue.shift()
-    var family_depth = config.familydepth
-    if (node.depth > (family_depth * 2 + 1)) {
-      return ret
-    }
+    // var family_depth = config.familydepth
+    // if (node.depth > (family_depth * 2 + 1)) {
+    //   return ret
+    // }
     ret.push(node)
     var neighbours = node.get_neighbours()
     for (var i in neighbours) {
@@ -380,7 +390,7 @@ export default function ged2dot(ged) {
   config.input = ged
   var importer = new GedcomImport()
   var graph = importer.load(config)
-  var root_family = graph_find(graph, config.rootfamily)
+  var root_family = graph_find_first(graph)
   var subgraph = bfs(root_family, config)
   var exporter = new DotExport()
 

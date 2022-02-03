@@ -29,6 +29,7 @@
     in eachSystem defaultSystems (system:
       let
         pkgs = import nixpkgs { inherit system; };
+        # interacts with git, served publicly
         timeline-frontend = pkgs.mkYarnPackage rec {
           name = "timeline-frontend";
           src = ./frontend;
@@ -43,6 +44,7 @@
           dontInstall = true;
           doDist = false;
         };
+        # interacts with fs, served locally
         timeline-frontend-local = pkgs.mkYarnPackage rec {
           name = "timeline-frontend";
           src = ./frontend;
@@ -77,7 +79,7 @@
         };
       in {
         packages = {
-          inherit timeline-backend timeline-frontend timeline-backend-local
+          inherit timeline-frontend timeline-backend timeline-backend-local
             timeline-frontend-local;
         };
         defaultPackage = timeline-backend-local;

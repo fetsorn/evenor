@@ -297,7 +297,7 @@ async function resolveAssetPath(filepath) {
     }
     return ""
   } else {
-    let lfspath_local = "/api/lfs/" + filepath
+    let lfspath_local = "lfs/" + filepath
     let lfspath_remote = await resolveLFS(lfspath_local)
     return lfspath_remote
   }
@@ -322,55 +322,76 @@ async function bodyToBuffer(body) {
 
 async function resolveLFS(path) {
 
-  var files = await window.pfs.readdir(window.dir);
-  var restext
-  if (files.includes(path)) {
-    restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + "/" + path));
-    // console.log(restext)
-    var buff = await window.pfs.readFile(window.dir + "/" + path);
-    //version https://git-lfs.github.com/spec/v1
-    //oid sha256:a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478
-    //size 2
-    var info = {oid: "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478", size: 2}
-    const lfsInfoRequestData = {
-      operation: 'download',
-      transfers: ['basic'],
-      objects: [info],
-    };
+  var path_elements = path.split('/')
 
-    const rawurl = "https://source.fetsorn.website/fetsorn/stars.git"
-    const url = "https://cors-anywhere.herokuapp.com" + rawurl
-    const { body: lfsInfoBody } = await http.request({
+  var root = window.dir
+  for (var i=0; i < path_elements.length; i++) {
+    let path_element = path_elements[i]
+    var files = await window.pfs.readdir(root);
+    if (files.includes(path_element)) {
+      root += '/' + path_element
+    } else {
+      console.error(`Cannot load file. Ensure there is a file called ${path_element} in ${root}.`);
+      return ""
+    }
+  }
+  var restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + "/" + path));
+  var lines = restext.split('\n')
+  var oid = lines[1].slice(11)
+  var size = parseInt(lines[2].slice(5))
+
+  const lfsInfoRequestData = {
+    operation: 'download',
+    objects: [{oid, size}],
+    transfers: ['basic'],
+    ref: { name: "refs/heads/main" },
+  }
+
+  let url = window.sessionStorage.getItem('url')
+  let token = window.sessionStorage.getItem('token')
+  var lfsInfoBody
+  if (token != "") {
+    const { body } = await http.request({
       url: `${url}/info/lfs/objects/batch`,
       method: 'POST',
       headers: {
-        // Github LFS doesn’t seem to accept this UA, but works fine without any
-        // 'User-Agent': `git/isomorphic-git@${git.version()}`,
-        // ...headers,
-        // ...authHeaders,
+        'Authorization': `Basic ${Buffer.from(`${token}:`).toString('base64')}`,
         'Accept': 'application/vnd.git-lfs+json',
         'Content-Type': 'application/vnd.git-lfs+json',
       },
       body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
     });
-    var lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString()
-    var lfsInfoResponse = JSON.parse(lfsInfoResponseRaw)
-    var downloadAction = lfsInfoResponse.objects[0].actions.download
-    const lfsObjectDownloadURL = "https://cors-anywhere.herokuapp.com/" + downloadAction.href;
-    const lfsObjectDownloadHeaders = downloadAction.header ?? {};
-
-    const { body: lfsObjectBody } = await http.request({
-      url: lfsObjectDownloadURL,
-      method: 'GET',
-      headers: lfsObjectDownloadHeaders,
+    lfsInfoBody = body
+  } else {
+    const { body } = await http.request({
+      url: `${url}/info/lfs/objects/batch`,
+      method: 'POST',
+      headers: {
+        'Accept': 'application/vnd.git-lfs+json',
+        'Content-Type': 'application/vnd.git-lfs+json',
+      },
+      body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
     });
-
-    var str = (await bodyToBuffer(lfsObjectBody)).toString()
-    const blob = new Blob([str], {type:'plain'});
-    console.log(blob)
-
-    return URL.createObjectURL(blob, { type: 'text' })
+    lfsInfoBody = body
   }
+
+  var lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString()
+  var lfsInfoResponse = JSON.parse(lfsInfoResponseRaw)
+  var downloadAction = lfsInfoResponse.objects[0].actions.download
+  const lfsObjectDownloadURL = downloadAction.href;
+  const lfsObjectDownloadHeaders = downloadAction.header ?? {};
+
+  const { body: lfsObjectBody } = await http.request({
+    url: lfsObjectDownloadURL,
+    method: 'GET',
+    headers: lfsObjectDownloadHeaders,
+  });
+
+  var lfsObjectBuffer = await bodyToBuffer(lfsObjectBody)
+  const blob = new Blob([lfsObjectBuffer]);
+
+  return URL.createObjectURL(blob)
+
 }
 
 const Line = () => {
@@ -411,9 +432,8 @@ const Line = () => {
     setEventLoading(true)
     setEvent(event)
     setEventIndex(index)
-    let path = await resolveAssetPath(event.FILE_PATH)
-    console.log("asset path resolved to", path)
-    setAssetPath(path)
+    setAssetPath("")
+    setAssetPath(await resolveAssetPath(event.FILE_PATH))
     setDatum("")
     setErr("")
     setConvertSrc(undefined)

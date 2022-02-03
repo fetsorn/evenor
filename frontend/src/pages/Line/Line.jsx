@@ -274,6 +274,105 @@ async function buildJSON() {
   return array_of_objects
 }
 
+// check if a filepath exists on local,
+// try to fetch lfs on remote,
+// otherwise return empty string.
+// if filepath is "path/to",
+// return either "/api/assets/path/to"
+// or /api/lfs/path/to" for local,
+// "/lfs/blob/uri" for remote,
+// or an empty string.
+async function resolveAssetPath(filepath) {
+
+  const { REACT_APP_BUILD_MODE } = process.env;
+
+  if (REACT_APP_BUILD_MODE === "local") {
+    let localpath = "/api/local/" + filepath
+    if ((await fetch(localpath)).ok) {
+      return localpath
+    }
+    let lfspath = "/api/lfs/" + filepath
+    if ((await fetch(lfspath)).ok) {
+      return lfspath
+    }
+    return ""
+  } else {
+    let lfspath_local = "/api/lfs/" + filepath
+    let lfspath_remote = await resolveLFS(lfspath_local)
+    return lfspath_remote
+  }
+}
+
+async function bodyToBuffer(body) {
+  const buffers = [];
+  let offset = 0;
+  let size = 0;
+  for await (const chunk of body) {
+    buffers.push(chunk);
+    size += chunk.byteLength;
+  }
+
+  const result = new Uint8Array(size);
+  for (const buffer of buffers) {
+    result.set(buffer, offset);
+    offset += buffer.byteLength;
+  }
+  return Buffer.from(result.buffer);
+}
+
+async function resolveLFS(path) {
+
+  var files = await window.pfs.readdir(window.dir);
+  var restext
+  if (files.includes(path)) {
+    restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + "/" + path));
+    // console.log(restext)
+    var buff = await window.pfs.readFile(window.dir + "/" + path);
+    //version https://git-lfs.github.com/spec/v1
+    //oid sha256:a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478
+    //size 2
+    var info = {oid: "a3a5e715f0cc574a73c3f9bebb6bc24f32ffd5b67b387244c2c909da779a1478", size: 2}
+    const lfsInfoRequestData = {
+      operation: 'download',
+      transfers: ['basic'],
+      objects: [info],
+    };
+
+    const rawurl = "https://source.fetsorn.website/fetsorn/stars.git"
+    const url = "https://cors-anywhere.herokuapp.com" + rawurl
+    const { body: lfsInfoBody } = await http.request({
+      url: `${url}/info/lfs/objects/batch`,
+      method: 'POST',
+      headers: {
+        // Github LFS doesn’t seem to accept this UA, but works fine without any
+        // 'User-Agent': `git/isomorphic-git@${git.version()}`,
+        // ...headers,
+        // ...authHeaders,
+        'Accept': 'application/vnd.git-lfs+json',
+        'Content-Type': 'application/vnd.git-lfs+json',
+      },
+      body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
+    });
+    var lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString()
+    var lfsInfoResponse = JSON.parse(lfsInfoResponseRaw)
+    var downloadAction = lfsInfoResponse.objects[0].actions.download
+    const lfsObjectDownloadURL = "https://cors-anywhere.herokuapp.com/" + downloadAction.href;
+    const lfsObjectDownloadHeaders = downloadAction.header ?? {};
+
+    const { body: lfsObjectBody } = await http.request({
+      url: lfsObjectDownloadURL,
+      method: 'GET',
+      headers: lfsObjectDownloadHeaders,
+    });
+
+    var str = (await bodyToBuffer(lfsObjectBody)).toString()
+    const blob = new Blob([str], {type:'plain'});
+    console.log(blob)
+
+    return URL.createObjectURL(blob, { type: 'text' })
+  }
+}
+
 const Line = () => {
   const [data, setData] = useState([])
   const [, setDataLoading] = useState(true)
@@ -282,6 +381,7 @@ const Line = () => {
   const [eventLoading, setEventLoading] = useState(false)
   const [datum, setDatum] = useState("")
   const [convertSrc, setConvertSrc] = useState(undefined);
+  const [assetPath, setAssetPath] = useState("");
   const [lfsSrc, setLFSSrc] = useState(undefined);
   const [err, setErr] = useState("")
 
@@ -307,10 +407,13 @@ const Line = () => {
     setDataLoading(false)
   }, [])
 
-  const handleOpenEvent = (event, index) => {
+  const handleOpenEvent = async (event, index) => {
     setEventLoading(true)
     setEvent(event)
     setEventIndex(index)
+    let path = await resolveAssetPath(event.FILE_PATH)
+    console.log("asset path resolved to", path)
+    setAssetPath(path)
     setDatum("")
     setErr("")
     setConvertSrc(undefined)
@@ -331,7 +434,7 @@ const Line = () => {
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>
-        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr} lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}/>
+        <Sidebar event={event} onClose={handleCloseEvent} loading={eventLoading} handlePlain={handlePlain} datum={datum} convertSrc={convertSrc} setConvertSrc={setConvertSrc} eventIndex={eventIndex} err={err} setErr={setErr} lfsSrc={lfsSrc} setLFSSrc={setLFSSrc} assetPath={assetPath}/>
       </Main>
       <Footer />
     </>

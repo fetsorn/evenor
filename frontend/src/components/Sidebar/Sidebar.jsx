@@ -39,7 +39,7 @@ async function bodyToBuffer(body) {
   return Buffer.from(result.buffer);
 }
 
-const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, datum, convertSrc, setConvertSrc, eventIndex, err, setErr, lfsSrc, setLFSSrc }) => {
+const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, datum, convertSrc, setConvertSrc, eventIndex, err, setErr, lfsSrc, setLFSSrc, assetPath }) => {
   const [event, setEvent] = useState(newEvent)
 
   useEffect(() => {
@@ -218,8 +218,8 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
             <Paragraph>{event?.DATUM}</Paragraph>
           )}
           <Paragraph>{datum}</Paragraph>
-          {iframeable.includes(ext) && (
-            <Paragraph><iframe title="iframe" src={"/api/" + event?.FILE_PATH} width="100%" height="800px"></iframe></Paragraph>
+          {iframeable.includes(ext) && assetPath != "" && (
+            <Paragraph><iframe title="iframe" src={assetPath} width="100%" height="800px"></iframe></Paragraph>
           )}
           <div>
           {convertSrc && (

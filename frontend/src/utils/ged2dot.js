@@ -6,8 +6,8 @@
 class Config {
   constructor() {
         this.input = ""
-        // this.rootfamily = "F1"
-        // this.familydepth = 100
+        this.rootfamily = "F1"
+        this.familydepth = 4
         this.nameorder = "little"
   }
 }
@@ -24,10 +24,11 @@ class DotExport {
       if (! (node instanceof Individual)) {
         continue
       }
-      stream += node.dict["identifier"] + " [shape=box, "
+      stream += node.dict["identifier"] + " [shape=box\n"
       var name_order = this.config.nameorder
       var label = node.get_label(name_order)
       stream += "label = <" + label + ">\n"
+      stream += "tooltip = \"" + node.dict["identifier"] + "\"\n"
       stream += "color = " + node.get_color() + "];\n"
     }
     return stream
@@ -40,13 +41,16 @@ class DotExport {
       if (! (node instanceof Family)) {
         continue
       }
-      var table_start = "<table border=\"0\" cellborder=\"0\" width=\"32px\" height=\"23px\">"
+      var table_start = "<table border=\"0\" cellborder=\"0\" width=\"16px\" height=\"10px\">"
       var label = table_start + "<tr><td></td></tr></table>"
 
       if (node.dict["marr"]) {
         label = node.dict["marr"]
       }
-      stream += node.dict["identifier"] + " [shape=circle, margin=\"0,0\", label=<" + label + ">];\n"
+      stream += node.dict["identifier"] + " [shape=circle\n"
+      stream += "style=filled, color=black, fillcolor=white\n"
+      stream += "href=\"javascript:setRoot('" + node.dict["identifier"] + "')\"\n"
+      stream += "label=<" + label + ">, tooltip=\"" + node.dict["identifier"] + "\"];\n"
     }
     stream += "\n"
     return stream
@@ -349,7 +353,7 @@ function graph_find(graph, identifier) {
   return results[0]
 }
 
-function graph_find_first(graph) {
+function graph_find_(graph) {
   for (var i in graph) {
     var node = graph[i]
     var reg = new RegExp("F")
@@ -359,17 +363,13 @@ function graph_find_first(graph) {
   }
 }
 
-function bfs(root, config) {
+function bfs_(root, config) {
   var visited = [root]
   var queue = [root]
   var ret = []
 
   while (queue.length > 0) {
     var node = queue.shift()
-    // var family_depth = config.familydepth
-    // if (node.depth > (family_depth * 2 + 1)) {
-    //   return ret
-    // }
     ret.push(node)
     var neighbours = node.get_neighbours()
     for (var i in neighbours) {
@@ -384,13 +384,53 @@ function bfs(root, config) {
   return ret
 }
 
-export default function ged2dot(ged) {
+function bfs(root, config) {
+  var visited = [root]
+  var queue = [root]
+  var ret = []
+
+  while (queue.length > 0) {
+    var node = queue.shift()
+    var family_depth = config.familydepth
+    if (node.depth > (family_depth * 2 + 1)) {
+      return ret
+    }
+    ret.push(node)
+    var neighbours = node.get_neighbours()
+    for (var i in neighbours) {
+      var neighbour = neighbours[i]
+      if (!visited.includes(neighbour)) {
+        neighbour.depth = node.depth + 1
+        visited.push(neighbour)
+        queue.push(neighbour)
+      }
+    }
+  }
+  return ret
+}
+
+export function ged2dot_(ged) {
 
   var config = new Config()
   config.input = ged
   var importer = new GedcomImport()
   var graph = importer.load(config)
-  var root_family = graph_find_first(graph)
+  var root_family = graph_find_(graph)
+  var subgraph = bfs_(root_family, config)
+  var exporter = new DotExport()
+
+  return exporter.store(subgraph, config)
+}
+
+export function ged2dot(ged, rootfamily, familydepth) {
+
+  var config = new Config()
+  config.input = ged
+  config.rootfamily = rootfamily
+  config.familydepth = familydepth
+  var importer = new GedcomImport()
+  var graph = importer.load(config)
+  var root_family = graph_find(graph, rootfamily)
   var subgraph = bfs(root_family, config)
   var exporter = new DotExport()
 

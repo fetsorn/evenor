@@ -14,6 +14,9 @@ app.use((req, res, next) => {
     // on /static skip to serving /build/static
     } else if (/static/i.test(req.path)) {
         next()
+    // serve wasm module from /build
+    } else if (/\.wasm/i.test(req.path)) {
+        next()
     // on /api/assets and /api/hosts, serve assets/ and hosts/ in current directory
     } else if (/api/i.test(req.path)) {
         res.sendFile(path.join(process.cwd(), req.path.replace(/^\/api/, "").replace(/%20/g, "\ ")));

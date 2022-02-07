@@ -7,6 +7,8 @@ import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs';
 import git from 'isomorphic-git'
 
+import { grep } from '@fetsorn/wasm-grep'
+
 const rowHeights = {
   mobile: 40,
   desktop: 40,
@@ -149,10 +151,13 @@ async function buildJSON() {
   let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv")).split('\n')
   let datum_guestdate_pair = (await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")).split('\n')
   let datum_hostdate_pair = (await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")).split('\n')
-  let datum_filepath_pair = (await fetchDataMetadir("metadir/pairs/datum-filepath.csv")).split('\n')
+  let filepath_moddate_pair = (await fetchDataMetadir("metadir/pairs/filepath-moddate.csv")).split('\n')
+  let datum_filepath_pair_file = await fetchDataMetadir("metadir/pairs/datum-filepath.csv")
+  let datum_filepath_pair = datum_filepath_pair_file.split('\n')
   let name_index = (await fetchDataMetadir("metadir/props/name/index.csv")).split('\n')
   let date_index = (await fetchDataMetadir("metadir/props/date/index.csv")).split('\n')
-  let filepath_index = (await fetchDataMetadir("metadir/props/filepath/index.csv")).split('\n')
+  let filepath_index_file = await fetchDataMetadir("metadir/props/filepath/index.csv")
+  let filepath_index = filepath_index_file.split('\n')
   let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv")).split('\n')
 
   let search = window.location.search
@@ -186,6 +191,21 @@ async function buildJSON() {
     guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
     let datum_uuids_guestname = datum_guestname_pair.filter(line => (new RegExp(guestname_uuid)).test(line)).map(line => line.slice(0,64))
     datum_uuids = datum_uuids_guestname
+  } else if (searchParams.has('rulename')) {
+    var rulename = searchParams.get('rulename')
+    let rulefile = (await fetchDataMetadir(`metadir/props/tag/rules/${rulename}.rule`))
+    let filepath_grep = grep(filepath_index_file, rulefile)
+    // console.log("filepath_grep", filepath_grep)
+    let filepath_lines = filepath_grep.replace(/\n*$/, "").split("\n").filter(line => line != "")
+    // console.log("filepath_lines", filepath_lines)
+    let filepath_uuids = filepath_lines.map(line => line.slice(0,64))
+    // console.log("filepath_uuids", filepath_uuids)
+    let filepath_uuids_list = filepath_uuids.join("\n") + "\n"
+    console.log("filepath_uuids_list")
+    let datum_grep = grep(datum_filepath_pair_file, filepath_uuids_list)
+    console.log("datum_grep")
+    datum_uuids = datum_grep.replace(/\n*$/, "").split("\n").map(line => line.slice(0,64))
+    console.log("datum_uuids")
   } else {
     // list all datums if no query is provided
     datum_uuids = datum_index.map(line => line.slice(0,64))
@@ -202,34 +222,6 @@ async function buildJSON() {
     var event = {}
     event.UUID = datum_uuid
 
-    if (hostname) {
-      event.HOST_NAME = hostname
-    } else {
-      hostname_uuid = datum_hostname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
-      hostname = name_index.find(line => (new RegExp(hostname_uuid)).test(line)).slice(65)
-    }
-
-    if (guestname) {
-      event.GUEST_NAME = guestname
-    } else {
-      guestname_uuid = datum_guestname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
-      guestname = name_index.find(line => (new RegExp(guestname_uuid)).test(line)).slice(65)
-    }
-
-    let hostdate_uuid = (datum_hostdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
-    if (hostdate_uuid === "" && groupBy === "hostdate") {
-      continue;
-    }
-    var hostdate = (date_index.find(line => (new RegExp(hostdate_uuid)).test(line)) ?? "").slice(65)
-    event.HOST_DATE = hostdate
-
-    let guestdate_uuid = (datum_guestdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
-    if (guestdate_uuid === "" && groupBy === "guestdate") {
-      continue;
-    }
-    var guestdate = (date_index.find(line => (new RegExp(guestdate_uuid)).test(line)) ?? "").slice(65)
-    event.GUEST_DATE = guestdate
-
     var filepath
     let filepath_uuid = (datum_filepath_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
     if (filepath_uuid != "") {
@@ -239,6 +231,50 @@ async function buildJSON() {
       filepath = ""
     }
     event.FILE_PATH = filepath
+
+    if (searchParams.has('rulename')) {
+      let moddate_uuid = (filepath_moddate_pair.find(line => (new RegExp(filepath_uuid)).test(line)) ?? "").slice(65)
+      // if datum doesn't have a date to group by, skip it
+      if (moddate_uuid === "") {
+        continue
+      }
+      let moddate = (date_index.find(line => (new RegExp(moddate_uuid)).test(line)) ?? "").slice(65)
+      // console.log(filepath, filepath_uuid, moddate, moddate_uuid)
+      event.GUEST_DATE = moddate
+      event.HOST_DATE = moddate
+      event.GUEST_NAME = "fetsorn"
+      event.HOST_NAME = "fetsorn"
+    } else {
+      if (hostname) {
+        event.HOST_NAME = hostname
+      } else {
+        hostname_uuid = datum_hostname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
+        hostname = name_index.find(line => (new RegExp(hostname_uuid)).test(line)).slice(65)
+      }
+
+      if (guestname) {
+        event.GUEST_NAME = guestname
+      } else {
+        guestname_uuid = datum_guestname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
+        guestname = name_index.find(line => (new RegExp(guestname_uuid)).test(line)).slice(65)
+      }
+
+      let hostdate_uuid = (datum_hostdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+      // if datum doesn't have a date to group by, skip it
+      if (hostdate_uuid === "" && groupBy === "hostdate") {
+        continue;
+      }
+      var hostdate = (date_index.find(line => (new RegExp(hostdate_uuid)).test(line)) ?? "").slice(65)
+      event.HOST_DATE = hostdate
+
+      let guestdate_uuid = (datum_guestdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+      // if datum doesn't have a date to group by, skip it
+      if (guestdate_uuid === "" && groupBy === "guestdate") {
+        continue;
+      }
+      var guestdate = (date_index.find(line => (new RegExp(guestdate_uuid)).test(line)) ?? "").slice(65)
+      event.GUEST_DATE = guestdate
+    }
 
     var datum = (datum_index.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
     if (datum != "") {
@@ -271,6 +307,7 @@ async function buildJSON() {
                                .map((key) => {return {date: key,
                                                       events: object_of_arrays[key]}})
 
+  // console.log(array_of_objects)
   return array_of_objects
 }
 

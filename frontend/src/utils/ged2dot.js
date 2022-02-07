@@ -147,8 +147,10 @@ class GedcomImport {
       if (tokens.length > 1) {
         this.individual.dict["sex"] = tokens[1]
       }
-    } else if (line_lead_token === "HOST" && this.individual) {
+    } else if (line_lead_token === "REFN" && this.individual) {
       this.individual.dict["hostname"] = line.slice(5).trim()
+    } else if (line_lead_token === "_UID" && this.individual) {
+      this.individual.dict["uuid"] = line.slice(5).trim()
     } else if (line_lead_token === "NAME" && this.individual) {
       var subline = line.slice(5)
       var subline_tokens = subline.split('/')
@@ -236,6 +238,7 @@ class Individual {
     this.dict["forename"] = ""
     this.dict["surname"] = ""
     this.dict["hostname"] = ""
+    this.dict["uuid"] = ""
     this.dict["sex"] = ""
     this.famc = ""
     this.fams_ids = []
@@ -267,7 +270,15 @@ class Individual {
 
   get_label(name_order) {
     var label = "<table border=\"0\" cellborder=\"0\"><tr><td>"
-    label +=  "</td></tr><tr><td href=\"q?hostname=" + this.dict["hostname"] + "\"><font face=\"Times\">"
+    var href
+    if (this.dict["hostname"] != "") {
+      href = "href=\"q?hostname=" + this.dict["hostname"] + "\""
+    } else if (this.dict["uuid"] != "") {
+      href = "href=\"q?hostname=" + this.dict["uuid"] + "\""
+    } else {
+      href = ""
+    }
+    label +=  "</td></tr><tr><td " + href + "><font face=\"Times\">"
     if (name_order === "big") {
       label += this.dict["surname"] + "<br/>"
       label += this.dict["forename"] + "<br/>"

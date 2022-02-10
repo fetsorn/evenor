@@ -321,6 +321,9 @@ async function buildJSON() {
 // or an empty string.
 async function resolveAssetPath(filepath) {
 
+  if (filepath === "") {
+    return ""
+  }
   const { REACT_APP_BUILD_MODE } = process.env;
 
   if (REACT_APP_BUILD_MODE === "local") {

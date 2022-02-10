@@ -144,7 +144,7 @@ async function fetchDataMetadir(path) {
 
 // if there are no files in metadir, output []
 // if files are empty, output []
-// otherwise, filter and group events by group according to url query
+// otherwise, filter and group events according to url query
 async function buildJSON() {
 
   let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv")).split('\n')
@@ -154,11 +154,13 @@ async function buildJSON() {
   let filepath_moddate_pair = (await fetchDataMetadir("metadir/pairs/filepath-moddate.csv")).split('\n')
   let datum_filepath_pair_file = await fetchDataMetadir("metadir/pairs/datum-filepath.csv")
   let datum_filepath_pair = datum_filepath_pair_file.split('\n')
+  let datum_tag_pair = (await fetchDataMetadir("metadir/pairs/datum-tag.csv")).split('\n')
   let name_index = (await fetchDataMetadir("metadir/props/name/index.csv")).split('\n')
   let date_index = (await fetchDataMetadir("metadir/props/date/index.csv")).split('\n')
   let filepath_index_file = await fetchDataMetadir("metadir/props/filepath/index.csv")
   let filepath_index = filepath_index_file.split('\n')
   let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv")).split('\n')
+  let tag_index = (await fetchDataMetadir("metadir/props/tag/index.csv")).split('\n')
 
   let search = window.location.search
   let searchParams = new URLSearchParams(search);
@@ -179,7 +181,7 @@ async function buildJSON() {
     hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
     guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
     let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
-    let datum_uuids_both = datum_guestname_pair.filter(line => datum_uuids_hostname.contains(line.slice(0,64))).map(line => line.slice(0,64))
+    let datum_uuids_both = datum_guestname_pair.filter(line => datum_uuids_hostname.includes(line.slice(0,64))).map(line => line.slice(0,64))
     datum_uuids = datum_uuids_both
   } else if (searchParams.has('hostname')) {
     hostname = searchParams.get('hostname')
@@ -195,20 +197,21 @@ async function buildJSON() {
     var rulename = searchParams.get('rulename')
     let rulefile = (await fetchDataMetadir(`metadir/props/tag/rules/${rulename}.rule`))
     let filepath_grep = grep(filepath_index_file, rulefile)
-    // console.log("filepath_grep", filepath_grep)
     let filepath_lines = filepath_grep.replace(/\n*$/, "").split("\n").filter(line => line != "")
-    // console.log("filepath_lines", filepath_lines)
     let filepath_uuids = filepath_lines.map(line => line.slice(0,64))
-    // console.log("filepath_uuids", filepath_uuids)
     let filepath_uuids_list = filepath_uuids.join("\n") + "\n"
-    console.log("filepath_uuids_list")
     let datum_grep = grep(datum_filepath_pair_file, filepath_uuids_list)
-    console.log("datum_grep")
     datum_uuids = datum_grep.replace(/\n*$/, "").split("\n").map(line => line.slice(0,64))
-    console.log("datum_uuids")
   } else {
     // list all datums if no query is provided
     datum_uuids = datum_index.map(line => line.slice(0,64))
+  }
+
+  if (searchParams.has('tag')) {
+    let tag = searchParams.get('tag')
+    let tag_uuid = (tag_index.find(line => (new RegExp("," + tag + "$")).test(line)) ?? falseRegex).slice(0,64)
+    let datum_uuids_tag = datum_tag_pair.filter(line => (new RegExp(tag_uuid)).test(line)).map(line => line.slice(0,64))
+    datum_uuids = datum_uuids.filter(line => datum_uuids_tag.includes(line))
   }
 
   var groupBy = searchParams.get('groupBy') ?? "hostdate"
@@ -239,7 +242,6 @@ async function buildJSON() {
         continue
       }
       let moddate = (date_index.find(line => (new RegExp(moddate_uuid)).test(line)) ?? "").slice(65)
-      // console.log(filepath, filepath_uuid, moddate, moddate_uuid)
       event.GUEST_DATE = moddate
       event.HOST_DATE = moddate
       event.GUEST_NAME = "fetsorn"
@@ -307,7 +309,6 @@ async function buildJSON() {
                                .map((key) => {return {date: key,
                                                       events: object_of_arrays[key]}})
 
-  // console.log(array_of_objects)
   return array_of_objects
 }
 

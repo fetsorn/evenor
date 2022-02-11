@@ -195,12 +195,12 @@ async function buildJSON() {
     datum_uuids = datum_uuids_guestname
   } else if (searchParams.has('rulename')) {
     var rulename = searchParams.get('rulename')
-    let rulefile = (await fetchDataMetadir(`metadir/props/tag/rules/${rulename}.rule`))
-    let filepath_grep = grep(filepath_index_file, rulefile)
+    let rulefile = (await fetchDataMetadir(`metadir/props/pathrule/rules/${rulename}.rule`))
+    let filepath_grep = await grep(filepath_index_file, rulefile)
     let filepath_lines = filepath_grep.replace(/\n*$/, "").split("\n").filter(line => line != "")
     let filepath_uuids = filepath_lines.map(line => line.slice(0,64))
     let filepath_uuids_list = filepath_uuids.join("\n") + "\n"
-    let datum_grep = grep(datum_filepath_pair_file, filepath_uuids_list)
+    let datum_grep = await grep(datum_filepath_pair_file, filepath_uuids_list)
     datum_uuids = datum_grep.replace(/\n*$/, "").split("\n").map(line => line.slice(0,64))
   } else {
     // list all datums if no query is provided

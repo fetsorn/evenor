@@ -1389,10 +1389,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/wasm-grep@0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@fetsorn/wasm-grep/-/wasm-grep-0.1.4.tgz#a5b57a47dce5724302dc6579f839a2afc549f6be"
-  integrity sha512-IFgbcLu+6tGfhkkBlop27KspVEWubf4MkLbUPDO8QFLahGqOuOoecv1mGunaDlAlFHDzGUWFLZTL/fjmmllLlg==
+"@fetsorn/wasm-grep@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@fetsorn/wasm-grep/-/wasm-grep-0.1.5.tgz#a3463769ab80c16e7993c19d972f446820e2d6ec"
+  integrity sha512-SDTbzIuDGf0cjzuPyXmm2wsSjSWoKblvSt6WJYw8j9qizufDQ7jmzOMhrEpB4kfUnsrOjksL07LX3wLIi839xQ==
 
 "@ffmpeg/core@^0.10.0":
   version "0.10.0"

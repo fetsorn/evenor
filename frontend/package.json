@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@fetsorn/wasm-grep": "0.1.4",
+    "@fetsorn/wasm-grep": "0.1.5",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@hpcc-js/wasm": "^1.12.8",

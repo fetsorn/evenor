@@ -35,7 +35,8 @@ module.exports = {
   jest: {
       configure: {
         moduleNameMapper: {
-            "^fetsorn(.*)$": "<rootDir>/src/mocks/$1"
+          "^fetsorn(.*)$": "<rootDir>/src/mocks$1",
+          "^@utils(.*)$": "<rootDir>/src/utils$1"
         }
       }
   }

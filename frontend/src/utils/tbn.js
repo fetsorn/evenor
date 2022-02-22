@@ -2,64 +2,86 @@ import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs';
 import git from 'isomorphic-git'
 
-import { grep } from '@fetsorn/wasm-grep'
+import { grep } from 'fetsorn/wasm-grep'
 
-async function fetchDataMetadir(path) {
+import { fetchDataMetadir } from '@utils'
 
-  var restext = ""
-
-  try {
-
-    const { REACT_APP_BUILD_MODE } = process.env;
-
-    if (REACT_APP_BUILD_MODE === "local") {
-      // fetch cache
-      var res = await fetch(`/api/` + path)
-      restext = await res.text()
-    } else {
-      // check if path exists in the repo
-      var path_elements = path.split('/')
-      var root = window.dir
-      for (var i=0; i < path_elements.length; i++) {
-        let path_element = path_elements[i]
-        var files = await window.pfs.readdir(root);
-        console.log(files)
-        if (files.includes(path_element)) {
-          root += '/' + path_element
-          // console.log(`${root} has ${path_element}`)
-        } else {
-          console.error(`Cannot load file. Ensure there is a file called ${path_element} in ${root}.`);
-          break
-        }
-      }
-      // console.log(window.dir + '/' + path)
-      restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/' + path));
-      console.log("fetch file:", path, restext)
-    }
-
-  } catch (e) {
-    console.error(e)
+const config = {
+  "datum": {
+    "type": "string"
+  },
+  "hostdate": {
+    "parent": "datum",
+    "dir": "date",
+    "type": "date",
+    "label": "HOST_DATE"
+  },
+  "hostname": {
+    "parent": "datum",
+    "dir": "name",
+    "label": "HOST_NAME"
+  },
+  "guestdate": {
+    "parent": "datum",
+    "dir": "date",
+    "type": "date",
+    "label": "GUEST_DATE"
+  },
+  "guestname": {
+    "parent": "datum",
+    "dir": "name",
+    "label": "GUEST_NAME"
+  },
+  "tag": {
+    "parent": "datum",
+    "label": "TAG"
+  },
+  "filepath": {
+    "parent": "datum",
+    "label": "FILE_PATH",
+    "type": "string"
+  },
+  "moddate": {
+    "parent": "filepath",
+    "dir": "date",
+    "type": "date",
+    "label": "GUEST_DATE"
+  },
+  "filetype": {
+    "parent": "filepath",
+    "label": "FILE_TYPE",
+    "type": "string"
+  },
+  "filesize": {
+    "parent": "filepath",
+    "label": "FILE_SIZE"
+  },
+  "filehash": {
+    "parent": "filepath",
+    "label": "FILE_HASH",
+    "type": "hash"
+  },
+  "pathrule": {
+    "parent": "filepath",
+    "type": "regex"
   }
-
-  return restext
-
 }
 
-export async function queryMetadir(searchParams) {
-  let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv")).split('\n')
-  let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv")).split('\n')
-  let datum_guestdate_pair = (await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")).split('\n')
-  let datum_hostdate_pair = (await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")).split('\n')
-  let filepath_moddate_pair = (await fetchDataMetadir("metadir/pairs/filepath-moddate.csv")).split('\n')
-  let datum_filepath_pair_file = await fetchDataMetadir("metadir/pairs/datum-filepath.csv")
+export async function queryMetadir(searchParams, fs) {
+  let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv", fs)).split('\n')
+  let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv", fs)).split('\n')
+  let datum_guestdate_pair = (await fetchDataMetadir("metadir/pairs/datum-guestdate.csv", fs)).split('\n')
+  let datum_hostdate_pair = (await fetchDataMetadir("metadir/pairs/datum-hostdate.csv", fs)).split('\n')
+  let filepath_moddate_pair = (await fetchDataMetadir("metadir/pairs/filepath-moddate.csv", fs)).split('\n')
+  let datum_filepath_pair_file = await fetchDataMetadir("metadir/pairs/datum-filepath.csv", fs)
   let datum_filepath_pair = datum_filepath_pair_file.split('\n')
-  let datum_tag_pair = (await fetchDataMetadir("metadir/pairs/datum-tag.csv")).split('\n')
-  let name_index = (await fetchDataMetadir("metadir/props/name/index.csv")).split('\n')
-  let date_index = (await fetchDataMetadir("metadir/props/date/index.csv")).split('\n')
-  let filepath_index_file = await fetchDataMetadir("metadir/props/filepath/index.csv")
+  let datum_tag_pair = (await fetchDataMetadir("metadir/pairs/datum-tag.csv", fs)).split('\n')
+  let name_index = (await fetchDataMetadir("metadir/props/name/index.csv", fs)).split('\n')
+  let date_index = (await fetchDataMetadir("metadir/props/date/index.csv", fs)).split('\n')
+  let filepath_index_file = await fetchDataMetadir("metadir/props/filepath/index.csv", fs)
   let filepath_index = filepath_index_file.split('\n')
-  let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv")).split('\n')
-  let tag_index = (await fetchDataMetadir("metadir/props/tag/index.csv")).split('\n')
+  let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv", fs)).split('\n')
+  let tag_index = (await fetchDataMetadir("metadir/props/tag/index.csv", fs)).split('\n')
 
   var hostname
   var guestname
@@ -627,3 +649,7 @@ export async function commit() {
     })
     console.log(pushResult)
   }
+
+export function sum(a, b) {
+  return a + b;
+}

@@ -67,6 +67,12 @@ const config = {
   }
 }
 
+function lookup(lines, uuid) {
+  let line = lines.find(line => (new RegExp(uuid)).test(line)) ?? ""
+  let value = line.slice(65)
+  return value
+}
+
 export async function queryMetadir(searchParams, fs) {
   let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv", fs)).split('\n')
   let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv", fs)).split('\n')
@@ -144,9 +150,9 @@ export async function queryMetadir(searchParams, fs) {
     event.UUID = datum_uuid
 
     var filepath
-    let filepath_uuid = (datum_filepath_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+    let filepath_uuid = lookup(datum_filepath_pair,datum_uuid)
     if (filepath_uuid != "") {
-      filepath = filepath_index.find(line => (new RegExp(filepath_uuid)).test(line)).slice(65)
+      filepath = lookup(filepath_index,filepath_uuid)
       filepath = JSON.parse(filepath)
     } else {
       filepath = ""
@@ -154,12 +160,12 @@ export async function queryMetadir(searchParams, fs) {
     event.FILE_PATH = filepath
 
     if (searchParams.has('rulename')) {
-      let moddate_uuid = (filepath_moddate_pair.find(line => (new RegExp(filepath_uuid)).test(line)) ?? "").slice(65)
+      let moddate_uuid = lookup(filepath_moddate_pair,filepath_uuid)
       // if datum doesn't have a date to group by, skip it
       if (moddate_uuid === "") {
         continue
       }
-      let moddate = (date_index.find(line => (new RegExp(moddate_uuid)).test(line)) ?? "").slice(65)
+      let moddate = lookup(date_index,moddate_uuid)
       event.GUEST_DATE = moddate
       event.HOST_DATE = moddate
       event.GUEST_NAME = "fetsorn"
@@ -168,35 +174,35 @@ export async function queryMetadir(searchParams, fs) {
       if (hostname) {
         event.HOST_NAME = hostname
       } else {
-        hostname_uuid = datum_hostname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
-        hostname = name_index.find(line => (new RegExp(hostname_uuid)).test(line)).slice(65)
+        hostname_uuid = lookup(datum_hostname_pair,datum_uuid)
+        hostname = lookup(name_index,hostname_uuid)
       }
 
       if (guestname) {
         event.GUEST_NAME = guestname
       } else {
-        guestname_uuid = datum_guestname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
-        guestname = name_index.find(line => (new RegExp(guestname_uuid)).test(line)).slice(65)
+        guestname_uuid = lookup(datum_guestname_pair,datum_uuid)
+        guestname = lookup(name_index,guestname_uuid)
       }
 
-      let hostdate_uuid = (datum_hostdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+      let hostdate_uuid = lookup(datum_hostdate_pair,datum_uuid)
       // if datum doesn't have a date to group by, skip it
       if (hostdate_uuid === "" && groupBy === "hostdate") {
         continue;
       }
-      var hostdate = (date_index.find(line => (new RegExp(hostdate_uuid)).test(line)) ?? "").slice(65)
+      var hostdate = lookup(date_index,hostdate_uuid)
       event.HOST_DATE = hostdate
 
-      let guestdate_uuid = (datum_guestdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+      let guestdate_uuid = lookup(datum_guestdate_pair,datum_uuid)
       // if datum doesn't have a date to group by, skip it
       if (guestdate_uuid === "" && groupBy === "guestdate") {
         continue;
       }
-      var guestdate = (date_index.find(line => (new RegExp(guestdate_uuid)).test(line)) ?? "").slice(65)
+      var guestdate = lookup(date_index,guestdate_uuid)
       event.GUEST_DATE = guestdate
     }
 
-    var datum = (datum_index.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
+    var datum = lookup(datum_index,datum_uuid)
     if (datum != "") {
       datum = JSON.parse(datum)
     }

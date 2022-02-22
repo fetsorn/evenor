@@ -32,4 +32,11 @@ module.exports = {
       plugin: CracoCompatibility,
     },
   ],
+  jest: {
+      configure: {
+        moduleNameMapper: {
+            "^fetsorn(.*)$": "<rootDir>/src/mocks/$1"
+        }
+      }
+  }
 }

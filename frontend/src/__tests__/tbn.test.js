@@ -9,6 +9,7 @@ const event1 = {
   "DATUM": "value1",
   "FILE_PATH": "path/to/1",
   "GUEST_DATE": "2001-01-01",
+  "GUEST_NAME": "name1",
   "HOST_DATE": "2001-01-01",
   "HOST_NAME": "name1",
   "UUID": "8260502525153a8775ecb052f41e4e908aba4c94b07ef90263fff77195392704",
@@ -18,6 +19,7 @@ const event2 = {
   "DATUM": "value2",
   "FILE_PATH": "path/to/2",
   "GUEST_DATE": "2002-01-01",
+  "GUEST_NAME": "name2",
   "HOST_DATE": "2002-01-01",
   "HOST_NAME": "name2",
   "UUID": "b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e",
@@ -25,8 +27,8 @@ const event2 = {
 
 const event3 = {
   "DATUM": "",
-  "FILE_PATH": "",
   "GUEST_DATE": "2003-01-01",
+  "GUEST_NAME": "name3",
   "HOST_DATE": "2003-01-01",
   "HOST_NAME": "name3",
   "UUID": "f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265",
@@ -103,10 +105,16 @@ test('queryMetadir', () => {
   return queryMetadir(searchParams, {}).then(data => {
     expect(data).toStrictEqual([sortObject(event1)])
   });
+});
+test('querymetadir', () => {
+  var searchParams = new URLSearchParams()
   searchParams.set('hostname', 'name2')
   return queryMetadir(searchParams, {}).then(data => {
     expect(data).toStrictEqual([sortObject(event2)])
   });
+});
+test('querymetadir', () => {
+  var searchParams = new URLSearchParams()
   searchParams.set('hostname', 'name3')
   return queryMetadir(searchParams, {}).then(data => {
     expect(data).toStrictEqual([sortObject(event3)])

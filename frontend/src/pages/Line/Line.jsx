@@ -25,7 +25,7 @@ async function buildJSON() {
     searchParams.set('groupBy', groupBy)
   }
 
-  var cache = await queryMetadir(searchParams)
+  var cache = await queryMetadir(searchParams, window.fs)
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays
@@ -84,13 +84,14 @@ const Line = () => {
     setLine()
     setDataLoading(false)
   }, [])
-
+  let url = window.sessionStorage.getItem('url')
+  let token = window.sessionStorage.getItem('token')
   const handleOpenEvent = async (event, index) => {
     setEventLoading(true)
     setEvent(event)
     setEventIndex(index)
     setAssetPath("")
-    setAssetPath(await resolveAssetPath(event.FILE_PATH))
+    setAssetPath(await resolveAssetPath(event.FILE_PATH, window.fs, window.dir, url, token))
     setDatum("")
     setErr("")
     setConvertSrc(undefined)

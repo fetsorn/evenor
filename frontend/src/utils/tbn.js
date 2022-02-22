@@ -8,7 +8,8 @@ import { fetchDataMetadir } from '@utils'
 
 const config = {
   "datum": {
-    "type": "string"
+    "type": "string",
+    "label": "DATUM"
   },
   "hostdate": {
     "parent": "datum",
@@ -68,261 +69,132 @@ const config = {
 }
 
 function lookup(lines, uuid) {
-  let line = lines.find(line => (new RegExp(uuid)).test(line)) ?? ""
-  let value = line.slice(65)
-  return value
+  let line = lines.find(line => (new RegExp(uuid)).test(line))
+  if (line) {
+    let value = line.slice(65)
+    return value
+  } else {
+    return undefined
+  }
 }
 
 export async function queryMetadir(searchParams, fs) {
-  let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv", fs)).split('\n')
-  let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv", fs)).split('\n')
-  let datum_guestdate_pair = (await fetchDataMetadir("metadir/pairs/datum-guestdate.csv", fs)).split('\n')
-  let datum_hostdate_pair = (await fetchDataMetadir("metadir/pairs/datum-hostdate.csv", fs)).split('\n')
-  let filepath_moddate_pair = (await fetchDataMetadir("metadir/pairs/filepath-moddate.csv", fs)).split('\n')
-  let datum_filepath_pair_file = await fetchDataMetadir("metadir/pairs/datum-filepath.csv", fs)
-  let datum_filepath_pair = datum_filepath_pair_file.split('\n')
-  let datum_tag_pair = (await fetchDataMetadir("metadir/pairs/datum-tag.csv", fs)).split('\n')
-  let name_index = (await fetchDataMetadir("metadir/props/name/index.csv", fs)).split('\n')
-  let date_index = (await fetchDataMetadir("metadir/props/date/index.csv", fs)).split('\n')
-  let filepath_index_file = await fetchDataMetadir("metadir/props/filepath/index.csv", fs)
-  let filepath_index = filepath_index_file.split('\n')
-  let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv", fs)).split('\n')
-  let tag_index = (await fetchDataMetadir("metadir/props/tag/index.csv", fs)).split('\n')
 
-  var hostname
-  var guestname
-  var hostname_uuid
-  var guestname_uuid
-  var datum_uuids
+  let config_props = Object.keys(config)
+  let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
 
-  // if query is not found in the metadir
-  // fallback to an impossible regexp
-  // so that filters return an empty array
-  let falseRegex = "\\b\\B"
-  if (searchParams.has('hostname') && searchParams.has('guestname')) {
-    hostname = searchParams.get('hostname')
-    guestname = searchParams.get('guestname')
-    hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
-    let datum_uuids_both = datum_guestname_pair.filter(line => datum_uuids_hostname.includes(line.slice(0,64))).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids_both
-  } else if (searchParams.has('hostname')) {
-    hostname = searchParams.get('hostname')
-    hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids_hostname
-  } else if (searchParams.has('guestname')) {
-    guestname = searchParams.get('guestname')
-    guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_guestname = datum_guestname_pair.filter(line => (new RegExp(guestname_uuid)).test(line)).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids_guestname
-  } else if (searchParams.has('rulename')) {
+  var csv = {}
+  csv[`${root}_index`] = (await fetchDataMetadir(`metadir/props/${root}/index.csv`, fs)).split('\n')
+  for (var i in config_props) {
+    let prop = config_props[i]
+     if (prop != root) {
+       let parent = config[prop]['parent']
+       csv[`${parent}_${prop}_pair_file`] = await fetchDataMetadir(`metadir/pairs/${parent}-${prop}.csv`, fs)
+       csv[`${parent}_${prop}_pair`] = csv[`${parent}_${prop}_pair_file`].split('\n')
+       let prop_dir = config[prop]['dir'] ?? prop
+       csv[`${prop_dir}_index_file`] = await fetchDataMetadir(`metadir/props/${prop_dir}/index.csv`, fs)
+       csv[`${prop_dir}_index`] = csv[`${prop_dir}_index_file`].split('\n')
+     }
+  }
+
+  var root_uuids
+
+  if (searchParams.has('rulename')) {
     var rulename = searchParams.get('rulename')
     let rulefile = (await fetchDataMetadir(`metadir/props/pathrule/rules/${rulename}.rule`))
-    let filepath_grep = await grep(filepath_index_file, rulefile)
+    let filepath_grep = await grep(csv['filepath_index_file'], rulefile)
     let filepath_lines = filepath_grep.replace(/\n*$/, "").split("\n").filter(line => line != "")
     let filepath_uuids = filepath_lines.map(line => line.slice(0,64))
     let filepath_uuids_list = filepath_uuids.join("\n") + "\n"
-    let datum_grep = await grep(datum_filepath_pair_file, filepath_uuids_list)
+    let datum_grep = await grep(csv['datum_filepath_pair_file'], filepath_uuids_list)
     datum_uuids = datum_grep.replace(/\n*$/, "").split("\n").map(line => line.slice(0,64))
   } else {
-    // list all datums if no query is provided
-    datum_uuids = datum_index.map(line => line.slice(0,64))
+    for (var entry of searchParams.entries()) {
+      // if query is not found in the metadir
+      // fallback to an impossible regexp
+      // so that the filter ouputs empty list
+      let falseRegex = "\\b\\B"
+      let entry_prop = entry[0]
+      let entry_value = entry[1]
+      let entry_prop_dir = config[entry_prop]['dir']
+      let entry_prop_uuid = (csv[`${entry_prop_dir}_index`].find(line => (new RegExp("," + entry_value + "$")).test(line)) ?? falseRegex).slice(0,64)
+      if (!root_uuids) {
+        let parent = config[entry_prop]['parent']
+        root_uuids = csv[`${parent}_${entry_prop}_pair`].filter(line => (new RegExp(entry_prop_uuid)).test(line)).map(line => line.slice(0,64))
+      } else {
+        root_uuids = csv[`${parent}_${entry_prop}_pair`].filter(line => root_uuids.includes(line.slice(0,64))).map(line => line.slice(0,64))
+      }
+    }
   }
-
-  if (searchParams.has('tag')) {
-    let tag = searchParams.get('tag')
-    let tag_uuid = (tag_index.find(line => (new RegExp("," + tag + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_tag = datum_tag_pair.filter(line => (new RegExp(tag_uuid)).test(line)).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids.filter(line => datum_uuids_tag.includes(line))
-  }
-
-  var groupBy = searchParams.get('groupBy') ?? "hostdate"
 
   var cache = []
   // for every datum_uuid build an event
-  for(var i=0; i < datum_uuids.length; i++) {
+  for(var i in root_uuids) {
 
-    var datum_uuid = datum_uuids[i]
+    let root_uuid = root_uuids[i]
 
-    var event = {}
-    event.UUID = datum_uuid
+    let event = {}
 
-    var filepath
-    let filepath_uuid = lookup(datum_filepath_pair,datum_uuid)
-    if (filepath_uuid != "") {
-      filepath = lookup(filepath_index,filepath_uuid)
-      filepath = JSON.parse(filepath)
-    } else {
-      filepath = ""
+    event.UUID = root_uuid
+    let root_value = lookup(csv[`${root}_index`],root_uuid)
+    let root_label = config[root]['label']
+    if (root_value != "") {
+      root_value = JSON.parse(root_value)
+      event[root_label] = root_value
     }
-    event.FILE_PATH = filepath
 
+    // TODO can this not be hardcoded?
     if (searchParams.has('rulename')) {
-      let moddate_uuid = lookup(filepath_moddate_pair,filepath_uuid)
+      let moddate_uuid = lookup(csv['filepath_moddate_pair'],filepath_uuid)
       // if datum doesn't have a date to group by, skip it
       if (moddate_uuid === "") {
         continue
       }
-      let moddate = lookup(date_index,moddate_uuid)
+      let moddate = lookup(csv['date_index'],moddate_uuid)
       event.GUEST_DATE = moddate
       event.HOST_DATE = moddate
       event.GUEST_NAME = "fetsorn"
       event.HOST_NAME = "fetsorn"
     } else {
-      if (hostname) {
-        event.HOST_NAME = hostname
-      } else {
-        hostname_uuid = lookup(datum_hostname_pair,datum_uuid)
-        hostname = lookup(name_index,hostname_uuid)
-      }
 
-      if (guestname) {
-        event.GUEST_NAME = guestname
-      } else {
-        guestname_uuid = lookup(datum_guestname_pair,datum_uuid)
-        guestname = lookup(name_index,guestname_uuid)
-      }
+      let uuids = {}
+      uuids[root] = root_uuid
 
-      let hostdate_uuid = lookup(datum_hostdate_pair,datum_uuid)
-      // if datum doesn't have a date to group by, skip it
-      if (hostdate_uuid === "" && groupBy === "hostdate") {
-        continue;
+      // if query is not found in the metadir
+      // fallback to an impossible regexp
+      // so that next search on uuid fails
+      let falseRegex = "\\b\\B"
+      // TODO add queue to support the second level of props
+      for (var i in config_props) {
+        let prop = config_props[i]
+        if (prop != root) {
+          let parent = config[prop]['parent']
+          let pair = csv[`${parent}_${prop}_pair`] ?? ['']
+          let parent_uuid = uuids[parent]
+          let prop_uuid = lookup(pair, parent_uuid) ?? falseRegex
+          uuids[prop] = prop_uuid
+          let prop_dir = config[prop]['dir'] ?? prop
+          let index = csv[`${prop_dir}_index`] ?? []
+          let prop_value = lookup(index, prop_uuid)
+          // console.log("get", prop, prop_uuid, parent, parent_uuid, prop_value)
+          if ( prop_value != undefined ) {
+            let prop_type = config[prop]['type']
+            if (prop_type == "string") {
+              // console.log("try to parse", prop, prop_value)
+              prop_value = JSON.parse(prop_value)
+            }
+            let label = config[prop]['label'] ?? prop
+            // console.log("set", prop, prop_uuid, parent, parent_uuid, prop_value)
+            event[label] = prop_value
+          }
+        }
       }
-      var hostdate = lookup(date_index,hostdate_uuid)
-      event.HOST_DATE = hostdate
-
-      let guestdate_uuid = lookup(datum_guestdate_pair,datum_uuid)
-      // if datum doesn't have a date to group by, skip it
-      if (guestdate_uuid === "" && groupBy === "guestdate") {
-        continue;
-      }
-      var guestdate = lookup(date_index,guestdate_uuid)
-      event.GUEST_DATE = guestdate
     }
 
-    var datum = lookup(datum_index,datum_uuid)
-    if (datum != "") {
-      datum = JSON.parse(datum)
-    }
-    event.DATUM = datum
-
+    // console.log(event)
     // {"UUID": "", "HOST_DATE": "", "HOST_NAME": "", "DATUM": ""}
     cache.push(event)
   }
-  return cache
-}
-
-export async function queryMetadirEvea(searchParams) {
-
-  let datum_guestname_pair = (await fetchDataMetadir("metadir/pairs/datum-guestname.csv")).split('\n')
-  let datum_hostname_pair = (await fetchDataMetadir("metadir/pairs/datum-hostname.csv")).split('\n')
-  let datum_guestdate_pair = (await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")).split('\n')
-  let datum_hostdate_pair = (await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")).split('\n')
-  let datum_filepath_pair = (await fetchDataMetadir("metadir/pairs/datum-filepath.csv")).split('\n')
-  let name_index = (await fetchDataMetadir("metadir/props/name/index.csv")).split('\n')
-  let date_index = (await fetchDataMetadir("metadir/props/date/index.csv")).split('\n')
-  let filepath_index = (await fetchDataMetadir("metadir/props/filepath/index.csv")).split('\n')
-  let datum_index = (await fetchDataMetadir("metadir/props/datum/index.csv")).split('\n')
-
-  var hostname
-  var guestname
-  var hostname_uuid
-  var guestname_uuid
-  var datum_uuids
-
-  // if query is not found in the metadir
-  // fallback to an impossible regexp
-  // so that filters return an empty array
-  let falseRegex = "\\b\\B"
-  if (searchParams.has('hostname') && searchParams.has('guestname')) {
-    hostname = searchParams.get('hostname')
-    guestname = searchParams.get('guestname')
-    hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
-    let datum_uuids_both = datum_guestname_pair.filter(line => datum_uuids_hostname.contains(line.slice(0,64))).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids_both
-  } else if (searchParams.has('hostname')) {
-    hostname = searchParams.get('hostname')
-    hostname_uuid = (name_index.find(line => (new RegExp("," + hostname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_hostname = datum_hostname_pair.filter(line => (new RegExp(hostname_uuid)).test(line)).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids_hostname
-  } else if (searchParams.has('guestname')) {
-    guestname = searchParams.get('guestname')
-    guestname_uuid = (name_index.find(line => (new RegExp("," + guestname + "$")).test(line)) ?? falseRegex).slice(0,64)
-    let datum_uuids_guestname = datum_guestname_pair.filter(line => (new RegExp(guestname_uuid)).test(line)).map(line => line.slice(0,64))
-    datum_uuids = datum_uuids_guestname
-  } else {
-    // list all datums if no query is provided
-    datum_uuids = datum_index.map(line => line.slice(0,64))
-  }
-
-  console.log("datum_uuids:", datum_uuids)
-
-  var groupBy = searchParams.get('groupBy') ?? "hostdate"
-
-  var cache = []
-  // for every datum_uuid build an event
-  for(var i=0; i < datum_uuids.length; i++) {
-
-    var datum_uuid = datum_uuids[i]
-    console.log("datum_uuid:", datum_uuid)
-
-    var event = {}
-    event.UUID = datum_uuid
-
-    if (hostname) {
-      event.HOST_NAME = hostname
-    } else {
-      hostname_uuid = datum_hostname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
-      hostname = name_index.find(line => (new RegExp(hostname_uuid)).test(line)).slice(65)
-      event.HOST_NAME = hostname
-    }
-
-    if (guestname) {
-      event.GUEST_NAME = guestname
-    } else {
-      guestname_uuid = datum_guestname_pair.find(line => (new RegExp(datum_uuid)).test(line)).slice(65)
-      guestname = name_index.find(line => (new RegExp(guestname_uuid)).test(line)).slice(65)
-      event.GUEST_NAME = guestname
-    }
-
-    let hostdate_uuid = (datum_hostdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
-    if (hostdate_uuid === "" && groupBy === "hostdate") {
-      continue;
-    }
-    var hostdate = (date_index.find(line => (new RegExp(hostdate_uuid)).test(line)) ?? "").slice(65)
-    event.HOST_DATE = hostdate
-
-    let guestdate_uuid = (datum_guestdate_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
-    if (guestdate_uuid === "" && groupBy === "guestdate") {
-      continue;
-    }
-    var guestdate = (date_index.find(line => (new RegExp(guestdate_uuid)).test(line)) ?? "").slice(65)
-    event.GUEST_DATE = guestdate
-
-    var filepath
-    let filepath_uuid = (datum_filepath_pair.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
-    if (filepath_uuid != "") {
-      filepath = filepath_index.find(line => (new RegExp(filepath_uuid)).test(line)).slice(65)
-      filepath = JSON.parse(filepath)
-    } else {
-      filepath = ""
-    }
-    event.FILE_PATH = filepath
-
-    var datum = (datum_index.find(line => (new RegExp(datum_uuid)).test(line)) ?? "").slice(65)
-    if (datum != "") {
-      datum = JSON.parse(datum)
-    }
-    event.DATUM = datum
-
-    // {"UUID": "", "HOST_DATE": "", "HOST_NAME": "", "DATUM": ""}
-    cache.push(event)
-  }
-
   return cache
 }
 
@@ -352,15 +224,14 @@ async function bodyToBuffer(body) {
   return Buffer.from(result.buffer);
 }
 
-
-export async function resolveLFS(path) {
+export async function resolveLFS(path, fs, dir, url, token) {
 
   var path_elements = path.split('/')
 
-  var root = window.dir
+  var root = dir
   for (var i=0; i < path_elements.length; i++) {
     let path_element = path_elements[i]
-    var files = await window.pfs.readdir(root);
+    var files = await fs.promises.readdir(root);
     if (files.includes(path_element)) {
       root += '/' + path_element
     } else {
@@ -368,7 +239,7 @@ export async function resolveLFS(path) {
       return ""
     }
   }
-  var restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + "/" + path));
+  var restext = new TextDecoder().decode(await fs.promises.readFile(dir + "/" + path));
   var lines = restext.split('\n')
   var oid = lines[1].slice(11)
   var size = parseInt(lines[2].slice(5))
@@ -380,8 +251,6 @@ export async function resolveLFS(path) {
     ref: { name: "refs/heads/main" },
   }
 
-  let url = window.sessionStorage.getItem('url')
-  let token = window.sessionStorage.getItem('token')
   var lfsInfoBody
   if (token != "") {
     const { body } = await http.request({
@@ -435,7 +304,7 @@ export async function resolveLFS(path) {
 // or /api/lfs/path/to" for local,
 // "/lfs/blob/uri" for remote,
 // or an empty string.
-export async function resolveAssetPath(filepath) {
+export async function resolveAssetPath(filepath, fs, dir, url, token) {
 
   if (filepath === "") {
     return ""
@@ -454,7 +323,7 @@ export async function resolveAssetPath(filepath) {
     return ""
   } else {
     let lfspath_local = "lfs/" + filepath
-    let lfspath_remote = await resolveLFS(lfspath_local)
+    let lfspath_remote = await resolveLFS(lfspath_local, fs, dir, url, token)
     return lfspath_remote
   }
 }
@@ -471,7 +340,7 @@ function prune(file, regex) {
   return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n')
 }
 
-export async function addEvent(event) {
+export async function addEvent(event, fs, dir) {
 
     // TODO: use files already fetched during buildJSON
     let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
@@ -523,22 +392,22 @@ export async function addEvent(event) {
 
     let date_lines = [...new Set([guestdate_line, hostdate_line])].join('')
 
-    await window.pfs.writeFile(window.dir + "/metadir/props/datum/index.csv", datum_index + datum_line, 'utf8')
+  await fs.promises.writeFile(dir + "/metadir/props/datum/index.csv", datum_index + datum_line, 'utf8')
 
-    await window.pfs.writeFile(window.dir + "/metadir/props/filepath/index.csv", filepath_index + filepath_line, 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-filepath.csv", datum_filepath_pair + datum_filepath_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/filepath/index.csv", filepath_index + filepath_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-filepath.csv", datum_filepath_pair + datum_filepath_line, 'utf8')
 
-    await window.pfs.writeFile(window.dir + "/metadir/props/name/index.csv", name_index + name_lines, 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestname.csv", datum_guestname_pair + datum_guestname_line, 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostname.csv", datum_hostname_pair + datum_hostname_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/name/index.csv", name_index + name_lines, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-guestname.csv", datum_guestname_pair + datum_guestname_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-hostname.csv", datum_hostname_pair + datum_hostname_line, 'utf8')
 
-    await window.pfs.writeFile(window.dir + "/metadir/props/date/index.csv", date_index + date_lines, 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestdate.csv", datum_guestdate_pair + datum_guestdate_line, 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostdate.csv", datum_hostdate_pair + datum_hostdate_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/date/index.csv", date_index + date_lines, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-guestdate.csv", datum_guestdate_pair + datum_guestdate_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-hostdate.csv", datum_hostdate_pair + datum_hostdate_line, 'utf8')
 
   }
 
-export async function deleteEvent(datum_uuid) {
+export async function deleteEvent(datum_uuid, fs, dir) {
 
     // TODO: use files already fetched during buildJSON
     let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
@@ -551,16 +420,16 @@ export async function deleteEvent(datum_uuid) {
     let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
     let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
 
-    await window.pfs.writeFile(window.dir + "/metadir/props/datum/index.csv", prune(datum_index, datum_uuid), 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid), 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid), 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid), 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid), 'utf8')
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid), 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/datum/index.csv", prune(datum_index, datum_uuid), 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid), 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid), 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid), 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid), 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid), 'utf8')
 
   }
 
-export async function editEvent(event) {
+export async function editEvent(event, fs, dir) {
 
     // TODO: use files already fetched during buildJSON
     let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
@@ -577,76 +446,74 @@ export async function editEvent(event) {
     let datum_uuid = event.UUID
     let datum_escaped = JSON.stringify(event.DATUM)
     let datum_line = `${datum_uuid},${datum_escaped}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/datum/index.csv", prune(datum_index, datum_uuid) + datum_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/datum/index.csv", prune(datum_index, datum_uuid) + datum_line, 'utf8')
     // append to filepath-index
     let filepath = event.FILE_PATH
     let filepath_uuid = await digestMessage(filepath)
     let filepath_escaped = JSON.stringify(filepath)
     let filepath_line = `${filepath_uuid},${filepath_escaped}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/filepath/index.csv", prune(filepath_index, filepath_uuid) + filepath_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/filepath/index.csv", prune(filepath_index, filepath_uuid) + filepath_line, 'utf8')
     // append to datum-filepath
     let datum_filepath_line = `${datum_uuid},${filepath_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid) + datum_filepath_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid) + datum_filepath_line, 'utf8')
     // append to guestdate-index
     let guestdate = event.GUEST_DATE
     let guestdate_uuid = await digestMessage(guestdate)
     let guestdate_line = `${guestdate_uuid},${guestdate}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/date/index.csv", prune(date_index, guestdate_uuid) + guestdate_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/date/index.csv", prune(date_index, guestdate_uuid) + guestdate_line, 'utf8')
     // append to datum-guestdate
     let datum_guestdate_line = `${datum_uuid},${guestdate_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid) + datum_guestdate_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid) + datum_guestdate_line, 'utf8')
     // append to hostdate-index
     let hostdate = event.HOST_DATE
     let hostdate_uuid = await digestMessage(hostdate)
     let hostdate_line = `${hostdate_uuid},${hostdate}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/date/index.csv", prune(date_index, hostdate_uuid) + hostdate_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/date/index.csv", prune(date_index, hostdate_uuid) + hostdate_line, 'utf8')
     // append to datum-hostdate
     let datum_hostdate_line = `${datum_uuid},${hostdate_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid) + datum_hostdate_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid) + datum_hostdate_line, 'utf8')
     // append to name-index
     let guestname = event.GUEST_NAME
     let guestname_uuid = await digestMessage(guestname)
     let guestname_line = `${guestname_uuid},${guestname}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/name/index.csv", prune(name_index, guestname_uuid) + guestname_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/name/index.csv", prune(name_index, guestname_uuid) + guestname_line, 'utf8')
     // append to datum-guestname
     let datum_guestname_line = `${datum_uuid},${guestname_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid) + datum_guestname_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid) + datum_guestname_line, 'utf8')
     // append to name-index
     let hostname = event.HOST_NAME
     let hostname_uuid = await digestMessage(hostname)
     let hostname_line = `${hostname_uuid},${hostname}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/props/name/index.csv", prune(name_index, hostname_uuid) + hostname_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/props/name/index.csv", prune(name_index, hostname_uuid) + hostname_line, 'utf8')
     // append to datum-hostname
     let datum_hostname_line = `${datum_uuid},${hostname_uuid}\n`
-    await window.pfs.writeFile(window.dir + "/metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid) + datum_hostname_line, 'utf8')
+    await fs.promises.writeFile(dir + "/metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid) + datum_hostname_line, 'utf8')
 
   }
 
-export async function commit() {
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/pairs/datum-guestname.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/pairs/datum-hostname.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/pairs/datum-guestdate.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/pairs/datum-hostdate.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/pairs/datum-filepath.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/props/name/index.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/props/date/index.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/props/filepath/index.csv"})
-    await git.add({fs: window.fs, dir: window.dir, filepath: "metadir/props/datum/index.csv"})
+export async function commit(fs, dir, token, ref) {
+    await git.add({fs, dir, filepath: "metadir/pairs/datum-guestname.csv"})
+    await git.add({fs, dir, filepath: "metadir/pairs/datum-hostname.csv"})
+    await git.add({fs, dir, filepath: "metadir/pairs/datum-guestdate.csv"})
+    await git.add({fs, dir, filepath: "metadir/pairs/datum-hostdate.csv"})
+    await git.add({fs, dir, filepath: "metadir/pairs/datum-filepath.csv"})
+    await git.add({fs, dir, filepath: "metadir/props/name/index.csv"})
+    await git.add({fs, dir, filepath: "metadir/props/date/index.csv"})
+    await git.add({fs, dir, filepath: "metadir/props/filepath/index.csv"})
+    await git.add({fs, dir, filepath: "metadir/props/datum/index.csv"})
     let sha = await git.commit({
-      fs: window.fs,
-      dir: window.dir,
+      fs,
+      dir,
       message: 'antea edit',
       author: {
         name: 'name',
         email: 'name@mail.com'
       }
     })
-    let token = window.sessionStorage.getItem('token')
-    let ref = window.sessionStorage.getItem('ref')
     let pushResult = await git.push({
-      fs: window.fs,
+      fs,
       http,
-      dir: window.dir,
+      dir,
       remote: 'origin',
       ref,
       onAuth: () => ({

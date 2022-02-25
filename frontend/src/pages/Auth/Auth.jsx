@@ -13,7 +13,7 @@ async function gitInit(url, ref, token) {
   console.log("gitInit", url, ref, token)
   window.fs = new LightningFS('fs');
   window.pfs = window.fs.promises;
-  window.dir = "/git";
+  window.dir = "/git/";
   window.url = url;
   console.log(await window.pfs.readdir("/"))
   if ((await window.pfs.readdir("/")).includes("git")) {

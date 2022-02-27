@@ -334,6 +334,9 @@ export async function resolveAssetPath(filepath, fs, dir, url, token) {
   }
 }
 
+function includes(file, line) {
+  return file.includes(line)
+}
 function prune(file, regex) {
   return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n') + "\n"
 }
@@ -445,7 +448,9 @@ export async function editEvent(event, fs, dir) {
   if (event.DATUM) {
     let datum_escaped = JSON.stringify(event.DATUM)
     let datum_line = `${datum_uuid},${datum_escaped}\n`
-    await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", prune(datum_index, datum_uuid) + datum_line, 'utf8')
+    if (!includes(datum_index, datum_line)) {
+      await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", prune(datum_index, datum_uuid) + datum_line, 'utf8')
+    }
   }
   if (event.FILE_PATH) {
     // append to filepath-index
@@ -453,30 +458,42 @@ export async function editEvent(event, fs, dir) {
     let filepath_uuid = await digestMessage(filepath)
     let filepath_escaped = JSON.stringify(filepath)
     let filepath_line = `${filepath_uuid},${filepath_escaped}\n`
-    await fs.promises.writeFile(dir + "metadir/props/filepath/index.csv", prune(filepath_index, filepath_uuid) + filepath_line, 'utf8')
+    if (!includes(filepath_index, filepath_line)) {
+      await fs.promises.writeFile(dir + "metadir/props/filepath/index.csv", prune(filepath_index, filepath_uuid) + filepath_line, 'utf8')
+    }
     // append to datum-filepath
     let datum_filepath_line = `${datum_uuid},${filepath_uuid}\n`
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid) + datum_filepath_line, 'utf8')
+    if (!includes(datum_filepath_pair, datum_filepath_line)) {
+      await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid) + datum_filepath_line, 'utf8')
+    }
   }
   if (event.GUEST_DATE) {
     // append to guestdate-index
     let guestdate = event.GUEST_DATE
     let guestdate_uuid = await digestMessage(guestdate)
     let guestdate_line = `${guestdate_uuid},${guestdate}\n`
-    await fs.promises.writeFile(dir + "metadir/props/date/index.csv", prune(date_index, guestdate_uuid) + guestdate_line, 'utf8')
+    if (!includes(date_index, guestdate_line)) {
+      await fs.promises.writeFile(dir + "metadir/props/date/index.csv", prune(date_index, guestdate_uuid) + guestdate_line, 'utf8')
+    }
     // append to datum-guestdate
     let datum_guestdate_line = `${datum_uuid},${guestdate_uuid}\n`
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid) + datum_guestdate_line, 'utf8')
+    if (!includes(datum_guestdate_pair, datum_guestdate_line)) {
+      await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid) + datum_guestdate_line, 'utf8')
+    }
   }
   if (event.HOST_DATE) {
     // append to hostdate-index
     let hostdate = event.HOST_DATE
     let hostdate_uuid = await digestMessage(hostdate)
     let hostdate_line = `${hostdate_uuid},${hostdate}\n`
-    await fs.promises.writeFile(dir + "metadir/props/date/index.csv", prune(date_index, hostdate_uuid) + hostdate_line, 'utf8')
+    if (!includes(date_index, hostdate_line)) {
+      await fs.promises.writeFile(dir + "metadir/props/date/index.csv", prune(date_index, hostdate_uuid) + hostdate_line, 'utf8')
+    }
     // append to datum-hostdate
     let datum_hostdate_line = `${datum_uuid},${hostdate_uuid}\n`
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid) + datum_hostdate_line, 'utf8')
+    if (!includes(datum_hostdate_pair, datum_hostdate_line)) {
+      await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid) + datum_hostdate_line, 'utf8')
+    }
   }
   if (event.GUEST_NAME) {
     // append to name-index
@@ -484,20 +501,28 @@ export async function editEvent(event, fs, dir) {
     let guestname_uuid = await digestMessage(guestname)
     // console.log(guestname, guestname_uuid)
     let guestname_line = `${guestname_uuid},${guestname}\n`
-    await fs.promises.writeFile(dir + "metadir/props/name/index.csv", prune(name_index, guestname_uuid) + guestname_line, 'utf8')
+    if (!includes(name_index, guestname_line)) {
+      await fs.promises.writeFile(dir + "metadir/props/name/index.csv", prune(name_index, guestname_uuid) + guestname_line, 'utf8')
+    }
     // append to datum-guestname
     let datum_guestname_line = `${datum_uuid},${guestname_uuid}\n`
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid) + datum_guestname_line, 'utf8')
+    if (!includes(datum_guestname_pair, datum_guestname_line)) {
+      await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid) + datum_guestname_line, 'utf8')
+    }
   }
   if (event.HOST_NAME) {
     // append to name-index
     let hostname = event.HOST_NAME
     let hostname_uuid = await digestMessage(hostname)
     let hostname_line = `${hostname_uuid},${hostname}\n`
-    await fs.promises.writeFile(dir + "metadir/props/name/index.csv", prune(name_index, hostname_uuid) + hostname_line, 'utf8')
+    if (!includes(name_index, hostname_line)) {
+      await fs.promises.writeFile(dir + "metadir/props/name/index.csv", prune(name_index, hostname_uuid) + hostname_line, 'utf8')
+    }
     // append to datum-hostname
     let datum_hostname_line = `${datum_uuid},${hostname_uuid}\n`
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid) + datum_hostname_line, 'utf8')
+    if (!includes(datum_hostname_pair, datum_hostname_line)) {
+      await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid) + datum_hostname_line, 'utf8')
+    }
   }
 }
 

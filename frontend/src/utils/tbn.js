@@ -341,96 +341,7 @@ function prune(file, regex) {
   return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n')
 }
 
-export async function addEvent(event, fs, dir) {
-
-    // TODO: use files already fetched during buildJSON
-    let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
-    let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
-    let datum_guestdate_pair = await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")
-    let datum_hostdate_pair = await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")
-    let datum_filepath_pair = await fetchDataMetadir("metadir/pairs/datum-filepath.csv")
-    let name_index = await fetchDataMetadir("metadir/props/name/index.csv")
-    let date_index = await fetchDataMetadir("metadir/props/date/index.csv")
-    let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
-    let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
-
-    let datum_uuid = await digestRandom()
-    let datum_escaped = JSON.stringify(event.DATUM)
-    let datum_line = `${datum_uuid},${datum_escaped}\n`
-
-    let filepath = event.FILE_PATH
-    let filepath_uuid = await digestMessage(filepath)
-    let filepath_escaped = JSON.stringify(filepath)
-    let filepath_line = `${filepath_uuid},${filepath_escaped}\n`
-
-    let datum_filepath_line = `${datum_uuid},${filepath_uuid}\n`
-
-    let guestname = event.GUEST_NAME
-    let guestname_uuid = await digestMessage(guestname)
-    let guestname_line = `${guestname_uuid},${guestname}\n`
-
-    let datum_guestname_line = `${datum_uuid},${guestname_uuid}\n`
-
-    let hostname = event.HOST_NAME
-    let hostname_uuid = await digestMessage(hostname)
-    let hostname_line = `${hostname_uuid},${hostname}\n`
-
-    let datum_hostname_line = `${datum_uuid},${hostname_uuid}\n`
-
-    let name_lines = [...new Set([guestname_line, hostname_line])].join('')
-
-    let guestdate = event.GUEST_DATE
-    let guestdate_uuid = await digestMessage(guestdate)
-    let guestdate_line = `${guestdate_uuid},${guestdate}\n`
-
-    let datum_guestdate_line = `${datum_uuid},${guestdate_uuid}\n`
-
-    let hostdate = event.HOST_DATE
-    let hostdate_uuid = await digestMessage(hostdate)
-    let hostdate_line = `${hostdate_uuid},${hostdate}\n`
-
-    let datum_hostdate_line = `${datum_uuid},${hostdate_uuid}\n`
-
-    let date_lines = [...new Set([guestdate_line, hostdate_line])].join('')
-
-  await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", datum_index + datum_line, 'utf8')
-
-    await fs.promises.writeFile(dir + "metadir/props/filepath/index.csv", filepath_index + filepath_line, 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", datum_filepath_pair + datum_filepath_line, 'utf8')
-
-    await fs.promises.writeFile(dir + "metadir/props/name/index.csv", name_index + name_lines, 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", datum_guestname_pair + datum_guestname_line, 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", datum_hostname_pair + datum_hostname_line, 'utf8')
-
-    await fs.promises.writeFile(dir + "metadir/props/date/index.csv", date_index + date_lines, 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", datum_guestdate_pair + datum_guestdate_line, 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", datum_hostdate_pair + datum_hostdate_line, 'utf8')
-
-  }
-
 export async function deleteEvent(datum_uuid, fs, dir) {
-
-    // TODO: use files already fetched during buildJSON
-    let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
-    let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
-    let datum_guestdate_pair = await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")
-    let datum_hostdate_pair = await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")
-    let datum_filepath_pair = await fetchDataMetadir("metadir/pairs/datum-filepath.csv")
-    let name_index = await fetchDataMetadir("metadir/props/name/index.csv")
-    let date_index = await fetchDataMetadir("metadir/props/date/index.csv")
-    let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
-    let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
-
-    await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", prune(datum_index, datum_uuid), 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid), 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid), 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid), 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid), 'utf8')
-    await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid), 'utf8')
-
-  }
-
-export async function editEvent(event, fs, dir) {
 
   // TODO: use files already fetched during buildJSON
   let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
@@ -443,105 +354,82 @@ export async function editEvent(event, fs, dir) {
   let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
   let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
 
-  // append to datum-index
-  let datum_uuid
-  if (event.UUID) {
-    datum_uuid = event.UUID
-  } else {
-    datum_uuid = await digestRandom()
+  await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", prune(datum_index, datum_uuid), 'utf8')
+  await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid), 'utf8')
+  await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid), 'utf8')
+  await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid), 'utf8')
+  await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid), 'utf8')
+  await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid), 'utf8')
+
+}
+
+export async function editEvent(event, fs, dir) {
+
+  let config_props = Object.keys(config)
+  let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
+
+  // list event props that match the config
+  let event_keys = Object.keys(event)
+  var event_props = []
+  for (var i in event_keys) {
+    let key = event_keys[i]
+    let prop = config_props.find(prop => config[prop].label == key || prop == key)
+    if (prop) {
+      event_props.push(prop)
+    }
   }
 
-  if (event.DATUM) {
-    let datum_escaped = JSON.stringify(event.DATUM)
-    let datum_line = `${datum_uuid},${datum_escaped}\n`
-    if (!includes(datum_index, datum_line)) {
-      await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", prune(datum_index, datum_uuid) + datum_line, 'utf8')
+  var uuids = {}
+  for (var i in event_props) {
+    let prop = event_props[i]
+    let prop_label = config[prop].label
+    let prop_type = config[prop].type
+    let prop_value = event[prop] ? event[prop] : event[prop_label]
+
+    let prop_uuid
+    if (prop != root) {
+      prop_uuid = await digestMessage(prop_value)
+    } else {
+      if (event.UUID) {
+        prop_uuid = event.UUID
+      } else {
+        prop_uuid = await digestRandom()
+      }
     }
-  }
-  if (event.FILE_PATH) {
-    // append to filepath-index
-    let filepath = event.FILE_PATH
-    let filepath_uuid = await digestMessage(filepath)
-    let filepath_escaped = JSON.stringify(filepath)
-    let filepath_line = `${filepath_uuid},${filepath_escaped}\n`
-    if (!includes(filepath_index, filepath_line)) {
-      await fs.promises.writeFile(dir + "metadir/props/filepath/index.csv", prune(filepath_index, filepath_uuid) + filepath_line, 'utf8')
+    uuids[prop] = prop_uuid
+
+    if (prop_type != "hash") {
+      let prop_dir = config[prop]['dir'] ?? prop
+      let index_path = `metadir/props/${prop_dir}/index.csv`
+      let index_file = await fetchDataMetadir(index_path, fs)
+      if (prop_type == "string") {
+        prop_value = JSON.stringify(prop_value)
+      }
+      let index_line = `${prop_uuid},${prop_value}\n`
+      if (!includes(index_file, index_line)) {
+        await fs.promises.writeFile(dir + index_path,
+                                    prune(index_file, prop_uuid) + index_line,
+                                    'utf8')
+      }
     }
-    // append to datum-filepath
-    let datum_filepath_line = `${datum_uuid},${filepath_uuid}\n`
-    if (!includes(datum_filepath_pair, datum_filepath_line)) {
-      await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid) + datum_filepath_line, 'utf8')
-    }
-  }
-  if (event.GUEST_DATE) {
-    // append to guestdate-index
-    let guestdate = event.GUEST_DATE
-    let guestdate_uuid = await digestMessage(guestdate)
-    let guestdate_line = `${guestdate_uuid},${guestdate}\n`
-    if (!includes(date_index, guestdate_line)) {
-      await fs.promises.writeFile(dir + "metadir/props/date/index.csv", prune(date_index, guestdate_uuid) + guestdate_line, 'utf8')
-    }
-    // append to datum-guestdate
-    let datum_guestdate_line = `${datum_uuid},${guestdate_uuid}\n`
-    if (!includes(datum_guestdate_pair, datum_guestdate_line)) {
-      await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid) + datum_guestdate_line, 'utf8')
-    }
-  }
-  if (event.HOST_DATE) {
-    // append to hostdate-index
-    let hostdate = event.HOST_DATE
-    let hostdate_uuid = await digestMessage(hostdate)
-    let hostdate_line = `${hostdate_uuid},${hostdate}\n`
-    if (!includes(date_index, hostdate_line)) {
-      await fs.promises.writeFile(dir + "metadir/props/date/index.csv", prune(date_index, hostdate_uuid) + hostdate_line, 'utf8')
-    }
-    // append to datum-hostdate
-    let datum_hostdate_line = `${datum_uuid},${hostdate_uuid}\n`
-    if (!includes(datum_hostdate_pair, datum_hostdate_line)) {
-      await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid) + datum_hostdate_line, 'utf8')
-    }
-  }
-  if (event.GUEST_NAME) {
-    // append to name-index
-    let guestname = event.GUEST_NAME
-    let guestname_uuid = await digestMessage(guestname)
-    // console.log(guestname, guestname_uuid)
-    let guestname_line = `${guestname_uuid},${guestname}\n`
-    if (!includes(name_index, guestname_line)) {
-      await fs.promises.writeFile(dir + "metadir/props/name/index.csv", prune(name_index, guestname_uuid) + guestname_line, 'utf8')
-    }
-    // append to datum-guestname
-    let datum_guestname_line = `${datum_uuid},${guestname_uuid}\n`
-    if (!includes(datum_guestname_pair, datum_guestname_line)) {
-      await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid) + datum_guestname_line, 'utf8')
-    }
-  }
-  if (event.HOST_NAME) {
-    // append to name-index
-    let hostname = event.HOST_NAME
-    let hostname_uuid = await digestMessage(hostname)
-    let hostname_line = `${hostname_uuid},${hostname}\n`
-    if (!includes(name_index, hostname_line)) {
-      await fs.promises.writeFile(dir + "metadir/props/name/index.csv", prune(name_index, hostname_uuid) + hostname_line, 'utf8')
-    }
-    // append to datum-hostname
-    let datum_hostname_line = `${datum_uuid},${hostname_uuid}\n`
-    if (!includes(datum_hostname_pair, datum_hostname_line)) {
-      await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid) + datum_hostname_line, 'utf8')
+    if (prop != root) {
+      // append to datum-guestdate
+      let parent = config[prop].parent
+      let parent_uuid = uuids[parent]
+      let pair_path = `metadir/pairs/${parent}-${prop}.csv`
+      let pair_file = await fetchDataMetadir(pair_path, fs)
+      let pair_line = `${parent_uuid},${prop_uuid}\n`
+      if (!includes(pair_file, pair_line)) {
+        await fs.promises.writeFile(dir + pair_path,
+                                    prune(pair_file, parent_uuid) + pair_line,
+                                    'utf8')
+      }
     }
   }
 }
 
 export async function commit(fs, dir, token, ref) {
-    await git.add({fs, dir, filepath: "metadir/pairs/datum-guestname.csv"})
-    await git.add({fs, dir, filepath: "metadir/pairs/datum-hostname.csv"})
-    await git.add({fs, dir, filepath: "metadir/pairs/datum-guestdate.csv"})
-    await git.add({fs, dir, filepath: "metadir/pairs/datum-hostdate.csv"})
-    await git.add({fs, dir, filepath: "metadir/pairs/datum-filepath.csv"})
-    await git.add({fs, dir, filepath: "metadir/props/name/index.csv"})
-    await git.add({fs, dir, filepath: "metadir/props/date/index.csv"})
-    await git.add({fs, dir, filepath: "metadir/props/filepath/index.csv"})
-    await git.add({fs, dir, filepath: "metadir/props/datum/index.csv"})
+    await git.add({fs, dir, filepath: "."})
     let sha = await git.commit({
       fs,
       dir,

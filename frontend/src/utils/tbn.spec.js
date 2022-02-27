@@ -1,13 +1,14 @@
 import LightningFS from '@isomorphic-git/lightning-fs';
 import http from 'isomorphic-git/http/web'
 import { queryMetadir, editEvent } from '@utils'
-import { fetchDataMetadir } from '@utils/tbn2'
 const tbn2 = require('@utils/tbn2')
 import { TextEncoder, TextDecoder } from 'util'
 import crypto from 'crypto'
+
 global.TextEncoder = TextEncoder
 global.TextDecoder = TextDecoder
 global.crypto = {
+  "randomUUID": crypto.randomUUID,
   "subtle": crypto.webcrypto.subtle
 }
 
@@ -141,6 +142,50 @@ b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e,161c6b3d37ba334
 f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265,e11f6f7cedcf5fd13d31ba71df973a1d28f48c847331fa852c17f1d4f5fdc746
 `
 
+var csvMock4 = { ...csvMock }
+
+csvMock4["metadir/props/datum/index.csv"] = `8260502525153a8775ecb052f41e4e908aba4c94b07ef90263fff77195392704,"value1"
+b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e,"value2"
+f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265,""
+c55581aff06024b65866642ed14f73a6f0e555821f3366fd8f10d74570fac920,"value4"
+`
+
+csvMock4["metadir/props/date/index.csv"] = `4935b73812dd87780ee8deae03d0bbcb125bbcdc05271066ca527ab029e4e79d,2001-01-01
+161c6b3d37ba3341b7775b10730b2ded837c3d84d77fb1a046fa198e9db8cbbc,2002-01-01
+28a15dd418a2eed8bc7c2133b21bf942182cc58160dfea0c9dd98f155d80ea10,2003-01-01
+d21966fdfaca51c457dddf8b6f8089b41190551166eede4e377edcb762f6bcc8,2004-01-01
+`
+
+csvMock4["metadir/pairs/datum-guestdate.csv"] = `8260502525153a8775ecb052f41e4e908aba4c94b07ef90263fff77195392704,4935b73812dd87780ee8deae03d0bbcb125bbcdc05271066ca527ab029e4e79d
+b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e,161c6b3d37ba3341b7775b10730b2ded837c3d84d77fb1a046fa198e9db8cbbc
+f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265,28a15dd418a2eed8bc7c2133b21bf942182cc58160dfea0c9dd98f155d80ea10
+c55581aff06024b65866642ed14f73a6f0e555821f3366fd8f10d74570fac920,d21966fdfaca51c457dddf8b6f8089b41190551166eede4e377edcb762f6bcc8
+`
+
+csvMock4["metadir/pairs/datum-hostdate.csv"] = `8260502525153a8775ecb052f41e4e908aba4c94b07ef90263fff77195392704,4935b73812dd87780ee8deae03d0bbcb125bbcdc05271066ca527ab029e4e79d
+b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e,161c6b3d37ba3341b7775b10730b2ded837c3d84d77fb1a046fa198e9db8cbbc
+f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265,28a15dd418a2eed8bc7c2133b21bf942182cc58160dfea0c9dd98f155d80ea10
+c55581aff06024b65866642ed14f73a6f0e555821f3366fd8f10d74570fac920,d21966fdfaca51c457dddf8b6f8089b41190551166eede4e377edcb762f6bcc8
+`
+
+csvMock4["metadir/props/name/index.csv"] = `9367417d63903350aeb7e092bca792263d4fd82d4912252e014e073a8931b4c1,name1
+069587dcb8f8b63329ae53051ba79ba34ba0deb41c7a1e044280d7b6bb15e4f0,name2
+b218ca013905fc528204bdadf9e104acd87d646a2d90ef834526fbf85b17e690,name3
+8b30955ad81009092a766bab12ede073956eb5ef1862f2ab5ac5b69ab43a79c5,name4
+`
+
+csvMock4["metadir/pairs/datum-guestname.csv"] = `8260502525153a8775ecb052f41e4e908aba4c94b07ef90263fff77195392704,9367417d63903350aeb7e092bca792263d4fd82d4912252e014e073a8931b4c1
+b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e,069587dcb8f8b63329ae53051ba79ba34ba0deb41c7a1e044280d7b6bb15e4f0
+f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265,b218ca013905fc528204bdadf9e104acd87d646a2d90ef834526fbf85b17e690
+c55581aff06024b65866642ed14f73a6f0e555821f3366fd8f10d74570fac920,8b30955ad81009092a766bab12ede073956eb5ef1862f2ab5ac5b69ab43a79c5
+`
+
+csvMock4["metadir/pairs/datum-hostname.csv"] = `8260502525153a8775ecb052f41e4e908aba4c94b07ef90263fff77195392704,9367417d63903350aeb7e092bca792263d4fd82d4912252e014e073a8931b4c1
+b52dc2b8884fc396c108c095da157d8607ee7d61a1e6b4b501b660d42f93c58e,069587dcb8f8b63329ae53051ba79ba34ba0deb41c7a1e044280d7b6bb15e4f0
+f35d45c3ee3e68cf9e36ee10df3edb02104c22b2d47ab17e64114ffb9c208265,b218ca013905fc528204bdadf9e104acd87d646a2d90ef834526fbf85b17e690
+c55581aff06024b65866642ed14f73a6f0e555821f3366fd8f10d74570fac920,8b30955ad81009092a766bab12ede073956eb5ef1862f2ab5ac5b69ab43a79c5
+`
+
 async function fetchDataMetadirMock(path, fs) {
   return csvMock[path]
 }
@@ -191,7 +236,7 @@ describe('updateMetadir', () => {
   let fs
 
   beforeEach(() => {
-    csvMockNew = csvMock
+    csvMockNew = { ...csvMock }
     async function writeFileMock(path, contents, encoding) {
       csvMockNew[path] = contents
     }
@@ -207,6 +252,14 @@ describe('updateMetadir', () => {
     return editEvent(event3new, fs, dir)
       .then(() => {
         expect(csvMockNew).toStrictEqual(csvMock3)
+      });
+  });
+  test('adds event', () => {
+    jest.spyOn(tbn2, 'digestRandom')
+        .mockImplementation(() => "c55581aff06024b65866642ed14f73a6f0e555821f3366fd8f10d74570fac920");
+    return editEvent(event4edit, fs, dir)
+      .then(() => {
+        expect(csvMockNew).toStrictEqual(csvMock4)
       });
   });
 })

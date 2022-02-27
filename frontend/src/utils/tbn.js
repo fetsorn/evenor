@@ -354,7 +354,7 @@ export async function addEvent(event, fs, dir) {
     let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
     let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
 
-    let datum_uuid = await randomDigest()
+    let datum_uuid = await digestRandom()
     let datum_escaped = JSON.stringify(event.DATUM)
     let datum_line = `${datum_uuid},${datum_escaped}\n`
 
@@ -444,7 +444,13 @@ export async function editEvent(event, fs, dir) {
   let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
 
   // append to datum-index
-  let datum_uuid = event.UUID
+  let datum_uuid
+  if (event.UUID) {
+    datum_uuid = event.UUID
+  } else {
+    datum_uuid = await digestRandom()
+  }
+
   if (event.DATUM) {
     let datum_escaped = JSON.stringify(event.DATUM)
     let datum_line = `${datum_uuid},${datum_escaped}\n`

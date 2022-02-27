@@ -165,7 +165,7 @@ describe('updateMetadir', () => {
   let fs
 
   beforeEach(() => {
-    csvMockNew = {}
+    csvMockNew = csvMock
     async function writeFileMock(path, contents, encoding) {
       csvMockNew[path] = contents
     }

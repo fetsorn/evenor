@@ -341,26 +341,30 @@ function prune(file, regex) {
   return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n')
 }
 
-export async function deleteEvent(datum_uuid, fs, dir) {
+export async function deleteEvent(root_uuid, fs, dir) {
 
-  // TODO: use files already fetched during buildJSON
-  let datum_guestname_pair = await fetchDataMetadir("metadir/pairs/datum-guestname.csv")
-  let datum_hostname_pair = await fetchDataMetadir("metadir/pairs/datum-hostname.csv")
-  let datum_guestdate_pair = await fetchDataMetadir("metadir/pairs/datum-guestdate.csv")
-  let datum_hostdate_pair = await fetchDataMetadir("metadir/pairs/datum-hostdate.csv")
-  let datum_filepath_pair = await fetchDataMetadir("metadir/pairs/datum-filepath.csv")
-  let name_index = await fetchDataMetadir("metadir/props/name/index.csv")
-  let date_index = await fetchDataMetadir("metadir/props/date/index.csv")
-  let filepath_index = await fetchDataMetadir("metadir/props/filepath/index.csv")
-  let datum_index = await fetchDataMetadir("metadir/props/datum/index.csv")
+  let config_props = Object.keys(config)
+  let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
+  let props = config_props.filter(prop => config[prop].parent == root)
 
-  await fs.promises.writeFile(dir + "metadir/props/datum/index.csv", prune(datum_index, datum_uuid), 'utf8')
-  await fs.promises.writeFile(dir + "metadir/pairs/datum-filepath.csv", prune(datum_filepath_pair, datum_uuid), 'utf8')
-  await fs.promises.writeFile(dir + "metadir/pairs/datum-guestdate.csv", prune(datum_guestdate_pair, datum_uuid), 'utf8')
-  await fs.promises.writeFile(dir + "metadir/pairs/datum-hostdate.csv", prune(datum_hostdate_pair, datum_uuid), 'utf8')
-  await fs.promises.writeFile(dir + "metadir/pairs/datum-guestname.csv", prune(datum_guestname_pair, datum_uuid), 'utf8')
-  await fs.promises.writeFile(dir + "metadir/pairs/datum-hostname.csv", prune(datum_hostname_pair, datum_uuid), 'utf8')
+  let index_path = `metadir/props/${root}/index.csv`
+  let index_file = await fetchDataMetadir(index_path)
+  if (index_file) {
+      await fs.promises.writeFile(dir + index_path,
+                                  prune(index_file, root_uuid),
+                                  'utf8')
+  }
 
+  for (var i in props) {
+    let prop = props[i]
+    let pair_path = `metadir/pairs/${root}-${prop}.csv`
+    let pair_file = await fetchDataMetadir(pair_path)
+    if (pair_file) {
+      await fs.promises.writeFile(dir + pair_path,
+                                  prune(pair_file, root_uuid),
+                                  'utf8')
+    }
+  }
 }
 
 export async function editEvent(event, fs, dir) {

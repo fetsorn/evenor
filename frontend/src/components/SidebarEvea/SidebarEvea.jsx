@@ -34,11 +34,13 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
             await editEvent(event, window.fs, window.dir)
             setData(await buildJSON())
           }}>Edit</Button>
-          <Button type="button" onClick={async () => {
-            await deleteEvent(event?.UUID, window.fs, window.dir)
-            setData(await buildJSON())
-            handleClose()
-          }}>Delete</Button>
+          {event?.UUID && (
+            <Button type="button" onClick={async () => {
+              await deleteEvent(event.UUID, window.fs, window.dir)
+              setData(await buildJSON())
+              handleClose()
+            }}>Delete</Button>
+          )}
           <Button type="button" onClick={() => {
             let token = window.sessionStorage.getItem('token')
             let ref = window.sessionStorage.getItem('ref')

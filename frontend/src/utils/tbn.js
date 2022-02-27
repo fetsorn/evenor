@@ -6,68 +6,6 @@ import { grep } from 'fetsorn/wasm-grep'
 
 import { fetchDataMetadir, digestMessage, digestRandom } from '@utils'
 
-const config = {
-  "datum": {
-    "type": "string",
-    "label": "DATUM"
-  },
-  "hostdate": {
-    "parent": "datum",
-    "dir": "date",
-    "type": "date",
-    "label": "HOST_DATE"
-  },
-  "hostname": {
-    "parent": "datum",
-    "dir": "name",
-    "label": "HOST_NAME"
-  },
-  "guestdate": {
-    "parent": "datum",
-    "dir": "date",
-    "type": "date",
-    "label": "GUEST_DATE"
-  },
-  "guestname": {
-    "parent": "datum",
-    "dir": "name",
-    "label": "GUEST_NAME"
-  },
-  "tag": {
-    "parent": "datum",
-    "label": "TAG"
-  },
-  "filepath": {
-    "parent": "datum",
-    "label": "FILE_PATH",
-    "type": "string"
-  },
-  "moddate": {
-    "parent": "filepath",
-    "dir": "date",
-    "type": "date",
-    "label": "GUEST_DATE"
-  },
-  "filetype": {
-    "parent": "filepath",
-    "label": "FILE_TYPE",
-    "type": "string"
-  },
-  "filesize": {
-    "parent": "filepath",
-    "label": "FILE_SIZE"
-  },
-  "filehash": {
-    "parent": "filepath",
-    "label": "FILE_HASH",
-    "type": "hash"
-  },
-  "pathrule": {
-    "parent": "filepath",
-    "type": "regex"
-  }
-}
-
 function lookup(lines, uuid) {
   let line = lines.find(line => (new RegExp(uuid)).test(line))
   if (line) {
@@ -78,7 +16,9 @@ function lookup(lines, uuid) {
   }
 }
 
-export async function queryMetadir(searchParams, fs) {
+export async function queryMetadir(searchParams, fs, config_name = "metadir.json") {
+
+  let config = JSON.parse(await fetchDataMetadir(config_name, fs))
 
   let config_props = Object.keys(config)
   let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
@@ -341,7 +281,9 @@ function prune(file, regex) {
   return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n')
 }
 
-export async function deleteEvent(root_uuid, fs, dir) {
+export async function deleteEvent(root_uuid, fs, dir, config_name = "metadir.json") {
+
+  let config = JSON.parse(await fetchDataMetadir(config_name, fs))
 
   let config_props = Object.keys(config)
   let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
@@ -367,7 +309,9 @@ export async function deleteEvent(root_uuid, fs, dir) {
   }
 }
 
-export async function editEvent(event, fs, dir) {
+export async function editEvent(event, fs, dir, config_name = "metadir.json") {
+
+  let config = JSON.parse(await fetchDataMetadir(config_name, fs))
 
   let config_props = Object.keys(config)
   let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
@@ -454,8 +398,4 @@ export async function commit(fs, dir, token, ref) {
       })
     })
     console.log(pushResult)
-  }
-
-export function sum(a, b) {
-  return a + b;
 }

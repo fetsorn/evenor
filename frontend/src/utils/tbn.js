@@ -338,7 +338,7 @@ function includes(file, line) {
   return file.includes(line)
 }
 function prune(file, regex) {
-  return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n') + "\n"
+  return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n')
 }
 
 export async function addEvent(event, fs, dir) {

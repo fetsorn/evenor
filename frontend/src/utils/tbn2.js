@@ -2,9 +2,7 @@ import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs';
 import git from 'isomorphic-git'
 
-export async function fetchDataMetadir(path, fs) {
-
-  var pfs = fs.promises
+export async function fetchDataMetadir(path, pfs) {
 
   var restext = undefined
 

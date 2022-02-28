@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Header, Main, Footer, Timeline, Sidebar, VirtualScroll, Row } from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
-import { queryMetadir, resolveAssetPath } from '@utils'
+import { queryMetadir, resolveAssetPath } from '@fetsorn/csvs-js/src/tbn'
 
 const rowHeights = {
   mobile: 40,
@@ -25,7 +25,14 @@ async function buildJSON() {
     searchParams.set('groupBy', groupBy)
   }
 
-  var cache = await queryMetadir(searchParams, window.fs)
+  const { REACT_APP_BUILD_MODE } = process.env;
+
+  var cache
+  if (REACT_APP_BUILD_MODE === "local") {
+     cache = await queryMetadir(searchParams)
+  } else {
+    cache = await queryMetadir(searchParams, window.fs.promises, window.dir)
+  }
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays
@@ -91,7 +98,12 @@ const Line = () => {
     setEvent(event)
     setEventIndex(index)
     setAssetPath("")
-    setAssetPath(await resolveAssetPath(event.FILE_PATH, window.fs, window.dir, url, token))
+    const { REACT_APP_BUILD_MODE } = process.env;
+    if (REACT_APP_BUILD_MODE === "local") {
+      setAssetPath(await resolveAssetPath(event.FILE_PATH))
+    } else {
+      setAssetPath(await resolveAssetPath(event.FILE_PATH, window.fs.promises, window.dir, url, token))
+    }
     setDatum("")
     setErr("")
     setConvertSrc(undefined)

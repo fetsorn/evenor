@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Header, Main, Footer, Timeline, SidebarEvea, VirtualScroll, Row } from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
-import { queryMetadir } from '@utils'
+import { queryMetadir } from '@fetsorn/csvs-js/src/tbn'
 
 const rowHeights = {
   mobile: 40,
@@ -25,7 +25,7 @@ async function buildJSON() {
     searchParams.set('groupBy', groupBy)
   }
 
-  var cache = await queryMetadir(searchParams, window.fs)
+  var cache = await queryMetadir(searchParams, window.fs, window.dir)
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays

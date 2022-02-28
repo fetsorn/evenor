@@ -2,7 +2,7 @@ import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs';
 import git from 'isomorphic-git'
 
-import { grep } from 'fetsorn/wasm-grep'
+import { grep } from '@fetsorn/wasm-grep'
 
 import { fetchDataMetadir, digestMessage, digestRandom } from '@utils'
 
@@ -16,26 +16,26 @@ function lookup(lines, uuid) {
   }
 }
 
-export async function queryMetadir(searchParams, fs, config_name = "metadir.json") {
+export async function queryMetadir(searchParams, pfs, config_name = "metadir.json") {
 
-  let config = JSON.parse(await fetchDataMetadir(config_name, fs))
+  let config = JSON.parse(await fetchDataMetadir(config_name, pfs))
 
   let config_props = Object.keys(config)
   let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
 
   var csv = {}
-  csv[`${root}_index`] = (await fetchDataMetadir(`metadir/props/${root}/index.csv`, fs)).split('\n')
+  csv[`${root}_index`] = (await fetchDataMetadir(`metadir/props/${root}/index.csv`, pfs)).split('\n')
   for (var i in config_props) {
     let prop = config_props[i]
      if (prop != root) {
        let parent = config[prop]['parent']
-       let pair_file = await fetchDataMetadir(`metadir/pairs/${parent}-${prop}.csv`, fs)
+       let pair_file = await fetchDataMetadir(`metadir/pairs/${parent}-${prop}.csv`, pfs)
        if (pair_file) {
          csv[`${parent}_${prop}_pair_file`] = pair_file
          csv[`${parent}_${prop}_pair`] = csv[`${parent}_${prop}_pair_file`].split('\n')
        }
        let prop_dir = config[prop]['dir'] ?? prop
-       let index_file = await fetchDataMetadir(`metadir/props/${prop_dir}/index.csv`, fs)
+       let index_file = await fetchDataMetadir(`metadir/props/${prop_dir}/index.csv`, pfs)
        if (index_file) {
          csv[`${prop_dir}_index_file`] = index_file
          csv[`${prop_dir}_index`] = csv[`${prop_dir}_index_file`].split('\n')
@@ -47,13 +47,13 @@ export async function queryMetadir(searchParams, fs, config_name = "metadir.json
 
   if (searchParams.has('rulename')) {
     var rulename = searchParams.get('rulename')
-    let rulefile = (await fetchDataMetadir(`metadir/props/pathrule/rules/${rulename}.rule`))
+    let rulefile = await fetchDataMetadir(`metadir/props/pathrule/rules/${rulename}.rule`, pfs)
     let filepath_grep = await grep(csv['filepath_index_file'], rulefile)
     let filepath_lines = filepath_grep.replace(/\n*$/, "").split("\n").filter(line => line != "")
     let filepath_uuids = filepath_lines.map(line => line.slice(0,64))
     let filepath_uuids_list = filepath_uuids.join("\n") + "\n"
     let datum_grep = await grep(csv['datum_filepath_pair_file'], filepath_uuids_list)
-    datum_uuids = datum_grep.replace(/\n*$/, "").split("\n").map(line => line.slice(0,64))
+    root_uuids = datum_grep.replace(/\n*$/, "").split("\n").map(line => line.slice(0,64))
   } else {
     for (var entry of searchParams.entries()) {
       // if query is not found in the metadir
@@ -61,11 +61,12 @@ export async function queryMetadir(searchParams, fs, config_name = "metadir.json
       // so that the filter ouputs empty list
       let falseRegex = "\\b\\B"
       let entry_prop = entry[0]
+      if (entry_prop == "groupBy") { continue }
       let entry_value = entry[1]
       let entry_prop_dir = config[entry_prop]['dir']
       let entry_prop_uuid = (csv[`${entry_prop_dir}_index`].find(line => (new RegExp("," + entry_value + "$")).test(line)) ?? falseRegex).slice(0,64)
+      let parent = config[entry_prop]['parent']
       if (!root_uuids) {
-        let parent = config[entry_prop]['parent']
         root_uuids = csv[`${parent}_${entry_prop}_pair`].filter(line => (new RegExp(entry_prop_uuid)).test(line)).map(line => line.slice(0,64))
       } else {
         root_uuids = csv[`${parent}_${entry_prop}_pair`].filter(line => root_uuids.includes(line.slice(0,64))).map(line => line.slice(0,64))
@@ -91,6 +92,7 @@ export async function queryMetadir(searchParams, fs, config_name = "metadir.json
 
     // TODO can this not be hardcoded?
     if (searchParams.has('rulename')) {
+      let filepath_uuid = lookup(csv['datum_filepath_pair'],root_uuid)
       let moddate_uuid = lookup(csv['filepath_moddate_pair'],filepath_uuid)
       // if datum doesn't have a date to group by, skip it
       if (moddate_uuid === "") {
@@ -170,14 +172,14 @@ async function bodyToBuffer(body) {
   return Buffer.from(result.buffer);
 }
 
-export async function resolveLFS(path, fs, dir, url, token) {
+export async function resolveLFS(path, pfs, dir, url, token) {
 
   var path_elements = path.split('/')
 
   var root = dir
   for (var i=0; i < path_elements.length; i++) {
     let path_element = path_elements[i]
-    var files = await fs.promises.readdir(root);
+    var files = await pfs.readdir(root);
     if (files.includes(path_element)) {
       root += '/' + path_element
     } else {
@@ -185,7 +187,7 @@ export async function resolveLFS(path, fs, dir, url, token) {
       return ""
     }
   }
-  var restext = new TextDecoder().decode(await fs.promises.readFile(dir + "/" + path));
+  var restext = new TextDecoder().decode(await pfs.readFile(dir + "/" + path));
   var lines = restext.split('\n')
   var oid = lines[1].slice(11)
   var size = parseInt(lines[2].slice(5))
@@ -250,7 +252,7 @@ export async function resolveLFS(path, fs, dir, url, token) {
 // or /api/lfs/path/to" for local,
 // "/lfs/blob/uri" for remote,
 // or an empty string.
-export async function resolveAssetPath(filepath, fs, dir, url, token) {
+export async function resolveAssetPath(filepath, pfs, dir, url, token) {
 
   if (filepath === "") {
     return ""
@@ -269,7 +271,7 @@ export async function resolveAssetPath(filepath, fs, dir, url, token) {
     return ""
   } else {
     let lfspath_local = "lfs/" + filepath
-    let lfspath_remote = await resolveLFS(lfspath_local, fs, dir, url, token)
+    let lfspath_remote = await resolveLFS(lfspath_local, pfs, dir, url, token)
     return lfspath_remote
   }
 }
@@ -281,18 +283,18 @@ function prune(file, regex) {
   return file.split('\n').filter(line => !(new RegExp(regex)).test(line)).join('\n')
 }
 
-export async function deleteEvent(root_uuid, fs, dir, config_name = "metadir.json") {
+export async function deleteEvent(root_uuid, pfs, dir, config_name = "metadir.json") {
 
-  let config = JSON.parse(await fetchDataMetadir(config_name, fs))
+  let config = JSON.parse(await fetchDataMetadir(config_name, pfs))
 
   let config_props = Object.keys(config)
   let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
   let props = config_props.filter(prop => config[prop].parent == root)
 
   let index_path = `metadir/props/${root}/index.csv`
-  let index_file = await fetchDataMetadir(index_path)
+  let index_file = await fetchDataMetadir(index_path, pfs)
   if (index_file) {
-      await fs.promises.writeFile(dir + index_path,
+      await pfs.writeFile(dir + index_path,
                                   prune(index_file, root_uuid),
                                   'utf8')
   }
@@ -300,18 +302,18 @@ export async function deleteEvent(root_uuid, fs, dir, config_name = "metadir.jso
   for (var i in props) {
     let prop = props[i]
     let pair_path = `metadir/pairs/${root}-${prop}.csv`
-    let pair_file = await fetchDataMetadir(pair_path)
+    let pair_file = await fetchDataMetadir(pair_path, pfs)
     if (pair_file) {
-      await fs.promises.writeFile(dir + pair_path,
+      await pfs.writeFile(dir + pair_path,
                                   prune(pair_file, root_uuid),
                                   'utf8')
     }
   }
 }
 
-export async function editEvent(event, fs, dir, config_name = "metadir.json") {
+export async function editEvent(event, pfs, dir, config_name = "metadir.json") {
 
-  let config = JSON.parse(await fetchDataMetadir(config_name, fs))
+  let config = JSON.parse(await fetchDataMetadir(config_name, pfs))
 
   let config_props = Object.keys(config)
   let root = config_props.find(prop => !config[prop].hasOwnProperty("parent"))
@@ -349,13 +351,13 @@ export async function editEvent(event, fs, dir, config_name = "metadir.json") {
     if (prop_type != "hash") {
       let prop_dir = config[prop]['dir'] ?? prop
       let index_path = `metadir/props/${prop_dir}/index.csv`
-      let index_file = await fetchDataMetadir(index_path, fs)
+      let index_file = await fetchDataMetadir(index_path, pfs)
       if (prop_type == "string") {
         prop_value = JSON.stringify(prop_value)
       }
       let index_line = `${prop_uuid},${prop_value}\n`
       if (!includes(index_file, index_line)) {
-        await fs.promises.writeFile(dir + index_path,
+        await pfs.writeFile(dir + index_path,
                                     prune(index_file, prop_uuid) + index_line,
                                     'utf8')
       }
@@ -365,10 +367,10 @@ export async function editEvent(event, fs, dir, config_name = "metadir.json") {
       let parent = config[prop].parent
       let parent_uuid = uuids[parent]
       let pair_path = `metadir/pairs/${parent}-${prop}.csv`
-      let pair_file = await fetchDataMetadir(pair_path, fs)
+      let pair_file = await fetchDataMetadir(pair_path, pfs)
       let pair_line = `${parent_uuid},${prop_uuid}\n`
       if (!includes(pair_file, pair_line)) {
-        await fs.promises.writeFile(dir + pair_path,
+        await pfs.writeFile(dir + pair_path,
                                     prune(pair_file, parent_uuid) + pair_line,
                                     'utf8')
       }

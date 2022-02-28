@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 
 import { Title, Paragraph, Button, Link } from '@components'
-import { formatDate, addEvent, editEvent, deleteEvent, commit } from '@utils'
+import { formatDate } from '@utils'
+import { editEvent, deleteEvent, commit } from '@fetsorn/csvs-js/src/tbn'
 
 import styles from './SidebarEvea.module.css'
 
@@ -26,14 +27,18 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
-          <Button type="button" onClick={async () => {
-            await addEvent(event, window.fs, window.dir)
-            setData(await buildJSON())
-          }}>Add</Button>
-          <Button type="button" onClick={async () => {
-            await editEvent(event, window.fs, window.dir)
-            setData(await buildJSON())
-          }}>Edit</Button>
+          {event?.UUID || (
+            <Button type="button" onClick={async () => {
+              await editEvent(event, window.fs, window.dir)
+              setData(await buildJSON())
+            }}>Add</Button>
+          )}
+          {event?.UUID && (
+            <Button type="button" onClick={async () => {
+              await editEvent(event, window.fs, window.dir)
+              setData(await buildJSON())
+            }}>Edit</Button>
+          )}
           {event?.UUID && (
             <Button type="button" onClick={async () => {
               await deleteEvent(event.UUID, window.fs, window.dir)

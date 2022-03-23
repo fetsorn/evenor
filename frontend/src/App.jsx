@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Auth, Tree, Line, Evea } from '@pages'
+import { Auth, Tree, Line } from '@pages'
 
 const App = () => {
   const [authorized, setAuthorized] = useState(false)
@@ -11,7 +11,7 @@ const App = () => {
           <Routes>
             <Route path="/">
               <Route index element={<Tree/>} />
-              <Route path="edit/*" element={<Evea/>} />
+              <Route path="edit/*" element={<Line isEdit={true}/>} />
               <Route path="*" element={<Line/>} />
             </Route>
           </Routes>

@@ -5,9 +5,9 @@ import { Title, Paragraph, Button, Link } from '@components'
 import { formatDate } from '@utils'
 import { editEvent, deleteEvent, commit } from '@fetsorn/csvs-js/src/tbn'
 
-import styles from './SidebarEvea.module.css'
+import styles from './SidebarEdit.module.css'
 
-const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePlain, datum, convertSrc, setConvertSrc, eventIndex, err, setErr, lfsSrc, setLFSSrc, setData, buildJSON }) => {
+const SidebarEdit = ({ event: newEvent, loading, onClose: handleClose, handlePlain, datum, convertSrc, setConvertSrc, eventIndex, err, setErr, lfsSrc, setLFSSrc, setData, buildJSON }) => {
   const [event, setEvent] = useState(newEvent)
 
   useEffect(() => {
@@ -83,4 +83,4 @@ const SidebarEvea = ({ event: newEvent, loading, onClose: handleClose, handlePla
   )
 }
 
-export default SidebarEvea
+export default SidebarEdit

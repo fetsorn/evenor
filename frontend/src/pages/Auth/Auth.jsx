@@ -54,47 +54,82 @@ async function gitInit(url, ref, token) {
 
 const Auth = ({authorized, setAuthorized}) => {
 
-  const [url, setUrl] = useState("https://source.fetsorn.website/fetsorn/pleiades.git")
-  const [ref, setRef] = useState("main")
-  const [token, setToken] = useState("")
+  const [formUrl, setUrl] = useState("")
+  const [formRef, setRef] = useState("main")
+  const [formToken, setToken] = useState("")
 
   // clone git repo and hide authorization
   async function authorize(url, ref, token) {
     try {
       await gitInit(url, ref, token)
+
+      window.sessionStorage.setItem('url', url)
+      window.sessionStorage.setItem('ref', ref)
+      window.sessionStorage.setItem('token', token)
+
       setAuthorized(true)
     } catch (e) {
+      // clean up if git initialization failed
+      window.fs = new LightningFS('fs', {wipe: true});
       console.log(e)
     }
   }
 
-  // save credentials to sessionStorage and authorize
-  const login = async () => {
+  async function login() {
 
-    window.sessionStorage.setItem('url', url)
-    window.sessionStorage.setItem('ref', ref)
-    window.sessionStorage.setItem('token', token)
+    // read credentials from sessionStorage
+    let storeUrl = window.sessionStorage.getItem('url')
+    if (storeUrl != null) {
+      setUrl(storeUrl)
+    }
+    let storeRef = window.sessionStorage.getItem('ref')
+    if (storeRef != null) {
+      setRef(storeRef)
+    }
+    let storeToken = window.sessionStorage.getItem('token')
+    if (storeToken != null) {
+      setToken(storeToken)
+    }
 
-    await authorize(url, ref, token)
+    console.log("store", storeUrl, storeRef, storeToken)
+
+    // try to login read-write
+    if (storeUrl) {
+      console.log("try to login read-write")
+      await authorize(storeUrl, storeUrl, storeToken)
+    }
+
+    // read url and ref from path
+    let search = window.location.search
+    let searchParams = new URLSearchParams(search);
+    let barUrl
+    if (searchParams.has('url')) {
+      barUrl = searchParams.get('url')
+      setUrl(barUrl)
+    }
+    let barRef = "main"
+    if (searchParams.has('ref')) {
+      barRef = searchParams.get('ref')
+      setRef(barRef)
+    }
+
+    // try to login read-only to a public repo from address bar
+    if (barUrl) {
+      await authorize(barUrl, barRef, "")
+    }
+
   }
 
-  // attempt to authorize if sessionStorage has credentials
   useEffect(() => {
+
     // ignore git authorization if served from local
     const { REACT_APP_BUILD_MODE } = process.env;
     if (REACT_APP_BUILD_MODE === "local") {
       setAuthorized(true)
     }
-    let storeUrl = window.sessionStorage.getItem('url')
-    let storeRef = window.sessionStorage.getItem('ref')
-    let storeToken = window.sessionStorage.getItem('token')
 
-    console.log("store", storeUrl, storeRef, storeToken)
+    login()
 
-    if (storeToken != null) {
-      console.log("try to authorize")
-      authorize(storeUrl, storeRef, storeToken)
-    }
   }, [])
 
   return (
@@ -104,19 +139,19 @@ const Auth = ({authorized, setAuthorized}) => {
         <br/>
         <form>
           <label>git repo:
-            <input className={styles.input} type="text" value={url} onChange={(e) => setUrl(e.target.value)}/>
+            <input className={styles.input} type="text" value={formUrl} onChange={(e) => setUrl(e.target.value)}/>
           </label>
           <br/>
           <label>branch:
-            <input className={styles.input} type="text" value={ref} onChange={(e) => setRef(e.target.value)}/>
+            <input className={styles.input} type="text" value={formRef} onChange={(e) => setRef(e.target.value)}/>
           </label>
           <br/>
           <label>token:
-            <input className={styles.input} type="text" value={token} onChange={(e) => setToken(e.target.value)}/>
+            <input className={styles.input} type="text" value={formToken} onChange={(e) => setToken(e.target.value)}/>
           </label>
         </form>
         <br/>
-        <Button type="button" onClick={login}>Login</Button>
+        <Button type="button" onClick={() => authorize(formUrl, formRef, formToken)}>Login</Button>
       </Main>
       <Footer />
     </>

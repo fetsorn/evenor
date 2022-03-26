@@ -25,7 +25,7 @@ async function buildJSON() {
     searchParams.set('groupBy', groupBy)
   }
 
-  var cache = await queryMetadir(searchParams, window.fs, window.dir)
+  var cache = await queryMetadir(searchParams, window.fs.promises, window.dir)
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays

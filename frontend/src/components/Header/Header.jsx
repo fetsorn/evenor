@@ -14,7 +14,8 @@ const Header = ({setEvent}) => {
 
     window.fs = new LightningFS('fs', {wipe: true});
 
-    window.location.reload()
+    // window.location.reload()
+    window.open("/","_self")
   }
 
   return (

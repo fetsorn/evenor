@@ -80,16 +80,20 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
-          <Button type="button" onClick={() => handlePlain(event?.FILE_PATH)}>🖊</Button>
-          <Button type="button" onClick={() => unoconv(event?.FILE_PATH)}>📄</Button>
-          <Button type="button" onClick={() => doTranscode(event?.FILE_PATH)}>🔈</Button>
-          <Button type="button" onClick={handleClose}>X</Button>
-          {event?.FILE_PATH && (
-            <Paragraph>
-              <Link href={"/api/" + event?.FILE_PATH} target="_blank" rel="noreferrer">{event?.FILE_PATH}</Link>
-            </Paragraph>
+          { (process.env.REACT_APP_BUILD_MODE === "local") && (
+            <div>
+              <Button type="button" onClick={() => handlePlain(event?.FILE_PATH)}>🖊</Button>
+              <Button type="button" onClick={() => unoconv(event?.FILE_PATH)}>📄</Button>
+              <Button type="button" onClick={() => doTranscode(event?.FILE_PATH)}>🔈</Button>
+            </div>
           )}
-          <Paragraph>{event?.UUID}</Paragraph>
+          <Button type="button" onClick={handleClose}>X</Button>
+          {/* {event?.FILE_PATH && ( */}
+          {/*   <Paragraph> */}
+          {/*     <Link href={"/api/" + event?.FILE_PATH} target="_blank" rel="noreferrer">{event?.FILE_PATH}</Link> */}
+          {/*   </Paragraph> */}
+          {/* )} */}
+          {/* <Paragraph>{event?.UUID}</Paragraph> */}
           {event?.DATUM && (
             <Paragraph>{event?.DATUM}</Paragraph>
           )}

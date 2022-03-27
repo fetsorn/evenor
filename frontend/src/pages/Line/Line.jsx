@@ -3,6 +3,7 @@ import { Header, Main, Footer, Timeline, Sidebar, SidebarEdit, VirtualScroll, Ro
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
 import { queryMetadir, resolveAssetPath } from '@fetsorn/csvs-js/src/tbn'
+import { fetchDataMetadir } from '@fetsorn/csvs-js/src/tbn2'
 
 const rowHeights = {
   mobile: 40,
@@ -63,6 +64,7 @@ const Line = () => {
   const [lfsSrc, setLFSSrc] = useState(undefined);
   const [err, setErr] = useState("")
   const [isEdit, setIsEdit] = useState(false)
+  const [schema, setSchema] = useState([])
 
   const { width: viewportWidth } = useWindowSize()
   const isMobile = useMedia('(max-width: 600px)')
@@ -84,6 +86,11 @@ const Line = () => {
       // }
     }
     setLine()
+    async function getSchema() {
+      let config = JSON.parse(await fetchDataMetadir("metadir.json", window.fs.promises, window.dir))
+      setSchema(config)
+    }
+    getSchema()
     setDataLoading(false)
   }, [])
 
@@ -132,7 +139,9 @@ const Line = () => {
             err={err} setErr={setErr}
             lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
             setData={setData}
-            buildJSON={buildJSON}/>
+            buildJSON={buildJSON}
+            schema={schema}
+          />
         ) : (
           <Sidebar
             event={event}
@@ -144,7 +153,8 @@ const Line = () => {
             eventIndex={eventIndex}
             err={err} setErr={setErr}
             lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
-            assetPath={assetPath}/>
+            assetPath={assetPath}
+          />
         )}
       </Main>
       <Footer />

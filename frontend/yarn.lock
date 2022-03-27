@@ -1389,10 +1389,10 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/csvs-js@0.1.3":
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.1.3.tgz#b447ee5e77918759d40acc7bd68d0efa51ee4a36"
-  integrity sha512-pRD8ALmCJco7YEYIHQS+s8gWMK/XS5dYH92iT7hk99ro1DwpJn//eGafXA1Ove0/ElGykRXFKnF8GQRs8Knn+A==
+"@fetsorn/csvs-js@0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.1.5.tgz#396bc127de3e3fce9bd24ca3d3e19e3740198cf6"
+  integrity sha512-guVlh7sJOJTEUeDLxLzlt01g+NIkbMXKk6lYpxkTi3sr5qVOfz+YLJvldI8+UtOZjmTbpZqLK/u1tb9Sc43RrQ==
   dependencies:
     "@fetsorn/wasm-grep" "0.1.5"
     "@isomorphic-git/lightning-fs" "^4.4.1"

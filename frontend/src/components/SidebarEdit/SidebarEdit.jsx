@@ -3,7 +3,7 @@ import cn from 'classnames'
 
 import { Title, Paragraph, Button, Link } from '@components'
 import { formatDate } from '@utils'
-import { editEvent, deleteEvent, commit } from '@fetsorn/csvs-js/src/tbn'
+import { editEvent, deleteEvent } from '@fetsorn/csvs-js/src/tbn'
 
 import styles from './SidebarEdit.module.css'
 
@@ -27,30 +27,19 @@ const SidebarEdit = ({ event: newEvent, loading, onClose: handleClose, handlePla
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
-          {event?.UUID || (
-            <Button type="button" onClick={async () => {
-              await editEvent(event, window.fs, window.dir)
-              setData(await buildJSON())
-            }}>Add</Button>
-          )}
           {event?.UUID && (
             <Button type="button" onClick={async () => {
-              await editEvent(event, window.fs, window.dir)
+              await editEvent(event, window.fs.promises, window.dir)
               setData(await buildJSON())
             }}>Edit</Button>
           )}
           {event?.UUID && (
             <Button type="button" onClick={async () => {
-              await deleteEvent(event.UUID, window.fs, window.dir)
+              await deleteEvent(event.UUID, window.fs.promises, window.dir)
               setData(await buildJSON())
               handleClose()
             }}>Delete</Button>
           )}
-          <Button type="button" onClick={() => {
-            let token = window.sessionStorage.getItem('token')
-            let ref = window.sessionStorage.getItem('ref')
-            commit(window.fs, window.dir, token, ref)
-          }}>Commit</Button>
           <Button type="button" onClick={handleClose}>X</Button>
           <form>
             <label>HOST_NAME:

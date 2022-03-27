@@ -147,7 +147,7 @@ const Auth = ({authorized, setAuthorized}) => {
           </label>
           <br/>
           <label>token:
-            <input className={styles.input} type="text" value={formToken} onChange={(e) => setToken(e.target.value)}/>
+            <input className={styles.input} type="password" value={formToken} onChange={(e) => setToken(e.target.value)}/>
           </label>
         </form>
         <br/>

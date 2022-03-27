@@ -51,7 +51,7 @@ async function buildJSON() {
   return array_of_objects
 }
 
-const Line = ({isEdit}) => {
+const Line = () => {
   const [data, setData] = useState([])
   const [, setDataLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
@@ -62,6 +62,7 @@ const Line = ({isEdit}) => {
   const [assetPath, setAssetPath] = useState("");
   const [lfsSrc, setLFSSrc] = useState(undefined);
   const [err, setErr] = useState("")
+  const [isEdit, setIsEdit] = useState(false)
 
   const { width: viewportWidth } = useWindowSize()
   const isMobile = useMedia('(max-width: 600px)')
@@ -74,8 +75,8 @@ const Line = ({isEdit}) => {
 
   useEffect( () => {
     async function setLine() {
-      const { REACT_APP_BUILD_MODE, REACT_APP_RENDER_MODE } = process.env;
-      let storeToken = window.sessionStorage.getItem('token')
+      // const { REACT_APP_BUILD_MODE, REACT_APP_RENDER_MODE } = process.env;
+      // let storeToken = window.sessionStorage.getItem('token')
       // if (REACT_APP_BUILD_MODE === "local" || REACT_APP_RENDER_MODE === "legacy" || storeToken == null || storeToken === "" ) {
         // handle if cannot edit
       // } else {
@@ -114,40 +115,36 @@ const Line = ({isEdit}) => {
 
   return (
     <>
-    {isEdit && (
-      <Header setEvent={setEvent}/>
-    )}
-    {isEdit || (
-      <Header/>
-    )}
+      <Header isEdit={isEdit} setIsEdit={setIsEdit} setEvent={setEvent}/>
       <Main>
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>
-        {isEdit && (
-          <SidebarEdit event={event}
-                       onClose={handleCloseEvent}
-                       loading={eventLoading}
-                       handlePlain={handlePlain}
-                       datum={datum}
-                       convertSrc={convertSrc} setConvertSrc={setConvertSrc}
-                       eventIndex={eventIndex}
-                       err={err} setErr={setErr}
-                       lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
-                       setData={setData}
-                       buildJSON={buildJSON}/>
-        )}
-        {isEdit || (
-          <Sidebar event={event}
-                   onClose={handleCloseEvent}
-                   loading={eventLoading}
-                   handlePlain={handlePlain}
-                   datum={datum}
-                   convertSrc={convertSrc} setConvertSrc={setConvertSrc}
-                   eventIndex={eventIndex}
-                   err={err} setErr={setErr}
-                   lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
-                   assetPath={assetPath}/>
+        {isEdit ? (
+          <SidebarEdit
+            event={event}
+            onClose={handleCloseEvent}
+            loading={eventLoading}
+            handlePlain={handlePlain}
+            datum={datum}
+            convertSrc={convertSrc} setConvertSrc={setConvertSrc}
+            eventIndex={eventIndex}
+            err={err} setErr={setErr}
+            lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
+            setData={setData}
+            buildJSON={buildJSON}/>
+        ) : (
+          <Sidebar
+            event={event}
+            onClose={handleCloseEvent}
+            loading={eventLoading}
+            handlePlain={handlePlain}
+            datum={datum}
+            convertSrc={convertSrc} setConvertSrc={setConvertSrc}
+            eventIndex={eventIndex}
+            err={err} setErr={setErr}
+            lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
+            assetPath={assetPath}/>
         )}
       </Main>
       <Footer />

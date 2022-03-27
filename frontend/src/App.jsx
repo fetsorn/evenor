@@ -11,7 +11,6 @@ const App = () => {
           <Routes>
             <Route path="/">
               <Route index element={<Tree/>} />
-              <Route path="edit/*" element={<Line isEdit={true}/>} />
               <Route path="*" element={<Line/>} />
             </Route>
           </Routes>

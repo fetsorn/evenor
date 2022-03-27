@@ -8,7 +8,7 @@ import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs'
 import git from 'isomorphic-git'
 
-async function fetchData() {
+async function fetchData(indexfile) {
   try {
 
     var restext
@@ -17,13 +17,13 @@ async function fetchData() {
 
     if (REACT_APP_BUILD_MODE === "local") {
       // fetch cache
-      var res = await fetch(`/api/index.ged`)
+      var res = await fetch(`/api/${indexfile}`)
       restext = await res.text()
     } else {
       var files = await window.pfs.readdir(window.dir);
       // console.log("read files", files)
-      if (files.includes("index.ged")) {
-        restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + '/index.ged'));
+      if (files.includes(indexfile)) {
+        restext = new TextDecoder().decode(await window.pfs.readFile(window.dir + `/${indexfile}`));
         // console.log("read files", files)
       } else {
         console.error("Cannot load file. Ensure there is a file called 'index.ged' in the root of the repository.");
@@ -50,22 +50,33 @@ async function dot2svg(dot) {
 const Tree = () => {
   const [data, setData] = useState("")
   const [dataLoading, setDataLoading] = useState([])
-  const [svg, setSvg] = useState("")
+  const [html, setHtml] = useState("")
   const [depth, setDepth] = useState(4)
+  const [isTree, setIsTree] = useState(true)
   const rootInput = createRef()
 
   const render = async () => {
     var root = rootInput.current.value
     var dot = ged2dot(data, root, depth)
-    setSvg(await dot2svg(dot))
+    setHtml(await dot2svg(dot))
   }
 
   useEffect( () => {
     async function setTree() {
-      var restext = await fetchData()
-      setData(restext)
-      var dot = ged2dot_(restext)
-      setSvg(await dot2svg(dot))
+      try {
+        let index = await fetchData("index.ged")
+        setData(index)
+        let dot = ged2dot_(index)
+        setHtml(await dot2svg(dot))
+      } catch(e1) {
+        try {
+          let index = await fetchData("index.html")
+          setHtml(index)
+          setIsTree(false)
+        } catch (e2) {
+          console.log(e1, e2)
+        }
+      }
     }
     setTree()
     setDataLoading(false)
@@ -74,15 +85,19 @@ const Tree = () => {
   return (
     <>
       <Header />
-      <input type="text" ref={rootInput} id="rootInput" value="F0001" onChange={(e) => {
-        render()
-      }}/>
-      <div>Depth: {depth}</div>
-      <input type="range" min="1" max="10" value={depth} onChange={(e) => {
-        setDepth(e.target.value)
-        render()
-      }}/>
-      <div className={styles.container} dangerouslySetInnerHTML={{ __html: svg }}></div>
+      {isTree && (
+        <div>
+          <input type="text" ref={rootInput} id="rootInput" value="F0001" onChange={(e) => {
+            render()
+          }}/>
+          <div>Depth: {depth}</div>
+          <input type="range" min="1" max="10" value={depth} onChange={(e) => {
+            setDepth(e.target.value)
+            render()
+          }}/>
+        </div>
+      )}
+      <div className={styles.container} dangerouslySetInnerHTML={{ __html: html }}></div>
     </>
   )
 }

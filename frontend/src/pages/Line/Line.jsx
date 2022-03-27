@@ -26,7 +26,7 @@ async function buildJSON() {
     searchParams.set('groupBy', groupBy)
   }
 
-  var cache = await queryMetadir(searchParams, window.fs.promises, window.dir)
+  var cache = await queryMetadir(searchParams, window.pfs, window.dir)
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays
@@ -87,7 +87,7 @@ const Line = () => {
     }
     setLine()
     async function getSchema() {
-      let config = JSON.parse(await fetchDataMetadir("metadir.json", window.fs.promises, window.dir))
+      let config = JSON.parse(await fetchDataMetadir("metadir.json", window.pfs, window.dir))
       setSchema(config)
     }
     getSchema()
@@ -105,7 +105,7 @@ const Line = () => {
     if (REACT_APP_BUILD_MODE === "local") {
       setAssetPath(await resolveAssetPath(event.FILE_PATH))
     } else {
-      setAssetPath(await resolveAssetPath(event.FILE_PATH, window.fs.promises, window.dir, url, token))
+      setAssetPath(await resolveAssetPath(event.FILE_PATH, window.pfs, window.dir, url, token))
     }
     setDatum("")
     setErr("")

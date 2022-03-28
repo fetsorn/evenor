@@ -3,7 +3,7 @@ import cn from 'classnames'
 
 import { Title, Paragraph, Button, Link } from '@components'
 import { formatDate } from '@utils'
-import { editEvent, deleteEvent } from '@fetsorn/csvs-js/src/tbn'
+import * as csvs from '@fetsorn/csvs-js'
 
 import styles from './SidebarEdit.module.css'
 
@@ -36,15 +36,9 @@ const SidebarEdit = ({ event: newEvent, loading, onClose: handleClose, handlePla
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
-          {/* {event?.UUID && ( */}
-          {/*   <Button type="button" onClick={async () => { */}
-          {/*     await editEvent(event, window.fs.promises, window.dir) */}
-          {/*     setData(await buildJSON()) */}
-          {/*   }}>Edit</Button> */}
-          {/* )} */}
           {event?.UUID && (
             <Button type="button" onClick={async () => {
-              await deleteEvent(event.UUID, window.fs.promises, window.dir)
+              await (await csvs).deleteEvent(event.UUID, window.fs.promises, window.dir)
               setData(await buildJSON())
               handleClose()
             }}>Delete</Button>
@@ -65,7 +59,7 @@ const SidebarEdit = ({ event: newEvent, loading, onClose: handleClose, handlePla
                                let newEvent = {...event}
                                newEvent[label] = e.target.value
                                console.log(newEvent)
-                               await editEvent(newEvent, window.fs.promises, window.dir)
+                               await (await csvs).editEvent(newEvent, window.fs.promises, window.dir)
                                setEvent(newEvent);
                                setData(await buildJSON())
                              }}

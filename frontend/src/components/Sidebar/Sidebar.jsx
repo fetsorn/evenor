@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg';
 import cn from 'classnames'
-import mime from 'mime-types'
+// import mime from 'mime-types'
 
 import { Title, Paragraph, Button, Link } from '@components'
 import { formatDate } from '@utils'
@@ -44,19 +44,19 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
   };
 
   const unoconv = async (path) => {
-    const resp1 = await fetch('/api/' + path)
-    const blob1 = await resp1.blob()
-    const mimetype = mime.lookup(path)
-    const resp2 = await fetch(`${process.env.REACT_APP_UNOCONV_URL}/convert/format/pdf/output/newname.pdf`,
-                              { method: 'POST',
-                                body: blob1,
-                                headers: {
-                                  'Content-Type': mimetype,
-                                  'Content-Disposition': 'attachment; filename="example.docx"'
-                                },
-                              })
-    const blob2 = await resp2.blob()
-    setConvertSrc(URL.createObjectURL(blob2, { type: 'application/pdf' }))
+    // const resp1 = await fetch('/api/' + path)
+    // const blob1 = await resp1.blob()
+    // const mimetype = mime.lookup(path)
+    // const resp2 = await fetch(`${process.env.REACT_APP_UNOCONV_URL}/convert/format/pdf/output/newname.pdf`,
+    //                           { method: 'POST',
+    //                             body: blob1,
+    //                             headers: {
+    //                               'Content-Type': mimetype,
+    //                               'Content-Disposition': 'attachment; filename="example.docx"'
+    //                             },
+    //                           })
+    // const blob2 = await resp2.blob()
+    // setConvertSrc(URL.createObjectURL(blob2, { type: 'application/pdf' }))
   };
 
   var re =/(?:\.([^.]+))?$/

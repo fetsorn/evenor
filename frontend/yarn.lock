@@ -1389,19 +1389,20 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/csvs-js@0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.1.6.tgz#1db828460904d871f0cd154a1f965431c8a66b95"
-  integrity sha512-sVUQx20lhnAOlxNo3rqEeT2s5ZH03key9Vex8BIgG2k24QzakSr+4Xh/vT6R5UgO8JeFhi7LAtK0hOFBMpYvZQ==
+"@fetsorn/csvs-js@0.1.11":
+  version "0.1.11"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.1.11.tgz#ae89cf19bd7e1254312f484a0f8097afb9a7c467"
+  integrity sha512-R0WXsEiYktoDVldPV275Yo74qApNi/svrQCfr3+x/9IvylG8aOKX4h/ER4qYvtDrkmQU0t5DXZrjzckZtw+5Kw==
   dependencies:
-    "@fetsorn/wasm-grep" "0.1.5"
+    "@fetsorn/wasm-grep" "0.1.6"
     "@isomorphic-git/lightning-fs" "^4.4.1"
+    buffer "^6.0.3"
     isomorphic-git "^1.10.4"
 
-"@fetsorn/wasm-grep@0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@fetsorn/wasm-grep/-/wasm-grep-0.1.5.tgz#a3463769ab80c16e7993c19d972f446820e2d6ec"
-  integrity sha512-SDTbzIuDGf0cjzuPyXmm2wsSjSWoKblvSt6WJYw8j9qizufDQ7jmzOMhrEpB4kfUnsrOjksL07LX3wLIi839xQ==
+"@fetsorn/wasm-grep@0.1.6":
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/@fetsorn/wasm-grep/-/wasm-grep-0.1.6.tgz#543c975326697905320b3d6987f50523de355394"
+  integrity sha512-oM3XZTkrqM5f8XXNo1wwLT1SW4y+rS5TaYHk3Y50N1kP0ZUVyB18KGY0pBrZx42jKhrj4z2ixiuyqcl4bHsz+w==
 
 "@ffmpeg/core@^0.10.0":
   version "0.10.0"
@@ -7003,7 +7004,7 @@ mime-db@1.51.0, "mime-db@>= 1.43.0 < 2":
   resolved "https://registry.yarnpkg.com/mime-db/-/mime-db-1.51.0.tgz#d9ff62451859b18342d960850dc3cfb77e63fb0c"
   integrity sha512-5y8A56jg7XVQx2mbv1lu49NR4dokRnhZYTtL+KGfaa27uq4pSTXkwQkFJl4pkRMyNFz/EtYDSkiiEHx3F7UN6g==
 
-mime-types@^2.1.12, mime-types@^2.1.27, mime-types@^2.1.31, mime-types@^2.1.33, mime-types@~2.1.17, mime-types@~2.1.24:
+mime-types@^2.1.12, mime-types@^2.1.27, mime-types@^2.1.31, mime-types@~2.1.17, mime-types@~2.1.24:
   version "2.1.34"
   resolved "https://registry.yarnpkg.com/mime-types/-/mime-types-2.1.34.tgz#5a712f9ec1503511a945803640fafe09d3793c24"
   integrity sha512-6cP692WwGIs9XXdOO4++N+7qjqv0rqxxVvJ3VHPh/Sc9mVZcQP+ZGhkKiTvWMQRr2tbHkJP/Yn7Y0npb3ZBs4A==

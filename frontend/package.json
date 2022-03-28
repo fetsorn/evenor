@@ -4,8 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@fetsorn/wasm-grep": "0.1.5",
-    "@fetsorn/csvs-js": "0.1.6",
+    "@fetsorn/csvs-js": "0.1.11",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@hpcc-js/wasm": "^1.12.8",
@@ -16,7 +15,6 @@
     "https-browserify": "^1.0.0",
     "isomorphic-git": "^1.10.4",
     "jest": "^27.5.1",
-    "mime-types": "^2.1.33",
     "normalize.css": "^8.0.1",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",

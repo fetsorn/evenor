@@ -3,7 +3,7 @@ import styles from './Header.module.css'
 
 import LightningFS from '@isomorphic-git/lightning-fs';
 
-import { editEvent, commit } from '@fetsorn/csvs-js/src/tbn'
+import * as csvs from '@fetsorn/csvs-js'
 
 const Header = ({isEdit, setIsEdit, setEvent}) => {
 
@@ -24,14 +24,14 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
   <header className={styles.header}>
     <h1 className={styles.title}></h1>
     <Button type="button" onClick={logout}>Logout</Button>
-    <Button type="button" onClick={() => {
+    <Button type="button" onClick={async () => {
       let token = window.sessionStorage.getItem('token')
       let ref = window.sessionStorage.getItem('ref')
-      commit(window.fs, window.dir, token, ref)
+      await (await csvs).commit(window.fs, window.dir, token, ref)
     }}>Commit</Button>
     {isEdit && (
       <Button type="button" onClick={async () => {
-        setEvent(await editEvent({}, window.fs.promises, window.dir))
+        setEvent(await (await csvs).editEvent({}, window.fs.promises, window.dir))
       }}>New event</Button>
     )}
     {setIsEdit && (

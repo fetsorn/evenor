@@ -82,9 +82,9 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
           { (process.env.REACT_APP_BUILD_MODE === "local") && (
             <div>
-              <Button type="button" onClick={() => handlePlain(event?.FILE_PATH)}>🖊</Button>
-              <Button type="button" onClick={() => unoconv(event?.FILE_PATH)}>📄</Button>
-              <Button type="button" onClick={() => doTranscode(event?.FILE_PATH)}>🔈</Button>
+              <Button type="button" onClick={() => handlePlain(assetPath)}>🖊</Button>
+              <Button type="button" onClick={() => unoconv(assetPath)}>📄</Button>
+              <Button type="button" onClick={() => doTranscode(assetPath)}>🔈</Button>
             </div>
           )}
           <Button type="button" onClick={handleClose}>X</Button>

@@ -10,48 +10,6 @@ const rowHeights = {
   desktop: 40,
 }
 
-// if there are no files in metadir, output []
-// if files are empty, output []
-// otherwise, filter and group events by group according to url query
-async function buildJSON() {
-
-  let search = window.location.search
-  let searchParams = new URLSearchParams(search);
-
-  var groupBy
-  if (searchParams.get('groupBy')) {
-    groupBy = searchParams.get('groupBy')
-  } else {
-    groupBy = "hostdate"
-    searchParams.set('groupBy', groupBy)
-  }
-
-  var cache = await (await csvs).queryMetadir(searchParams, {fetch: fetchDataMetadir})
-
-  // { "YYYY-MM-DD": [event1, event2, event3] }
-  var object_of_arrays
-  if (groupBy === "hostdate") {
-    object_of_arrays = cache.reduce((acc, item) => {
-      acc[item.HOST_DATE] = acc[item.HOST_DATE] || []
-      acc[item.HOST_DATE].push(item)
-      return acc
-    }, {})
-  } else if (groupBy === "guestdate") {
-    object_of_arrays = cache.reduce((acc, item) => {
-      acc[item.GUEST_DATE] = acc[item.GUEST_DATE] || []
-      acc[item.GUEST_DATE].push(item)
-      return acc
-    }, {})
-  }
-
-  // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
-  var array_of_objects = Object.keys(object_of_arrays).sort()
-                               .map((key) => {return {date: key,
-                                                      events: object_of_arrays[key]}})
-
-  return array_of_objects
-}
-
 const Line = () => {
   const [data, setData] = useState([])
   const [dataLoading, setDataLoading] = useState(true)
@@ -75,23 +33,52 @@ const Line = () => {
       : Math.round(viewportWidth / 100 * REM_DESKTOP * rowHeights.desktop)
   ), [viewportWidth, isMobile])
 
+  const queryWorker = new Worker(new URL("@workers/query.worker", import.meta.url))
+  queryWorker.onmessage = async (message) => {
+    console.log("main thread receives message", message)
+    if (message.data.action === "fetch") {
+      try {
+        console.log("main thread tries to fetch")
+        let contents = await fetchDataMetadir(message.data.path)
+        console.log("main thread returns fetch")
+        message.ports[0].postMessage({result: contents})
+      } catch(e) {
+        console.log("main thread errors")
+        message.ports[0].postMessage({error: e});
+      }
+    }
+  }
+  const queryMetadir = (search) => new Promise((res, rej) => {
+
+    const channel = new MessageChannel()
+
+    channel.port1.onmessage = ({data}) => {
+      channel.port1.close()
+      if (data.error) {
+        rej(data.error)
+      } else {
+        res(data.result)
+      }
+    }
+
+	  queryWorker.postMessage({action: "query", search}, [channel.port2])
+  })
+
   useEffect( () => {
+    let search = window.location.search
     async function setLine() {
-      // const { REACT_APP_BUILD_MODE, REACT_APP_RENDER_MODE } = process.env;
-      // let storeToken = window.sessionStorage.getItem('token')
-      // if (REACT_APP_BUILD_MODE === "local" || REACT_APP_RENDER_MODE === "legacy" || storeToken == null || storeToken === "" ) {
-        // handle if cannot edit
-      // } else {
-        setData(await buildJSON())
-      // }
+      console.log("called to worker for query")
+      let line = await queryMetadir(search)
+      console.log("received query result")
+      setData(line)
+      setDataLoading(false)
     }
     setLine()
     async function getSchema() {
       let config = JSON.parse(await fetchDataMetadir("metadir.json"))
-      // setSchema(config)
+      setSchema(config)
     }
     getSchema()
-    setDataLoading(false)
   }, [])
 
   let url = window.sessionStorage.getItem('url')
@@ -113,8 +100,11 @@ const Line = () => {
   }
 
   const handlePlain = (path) => {
-    fetch(`/api/${path}`)
-      .then((res) => {console.log(path, res); return res.text()})
+    fetch(path)
+      .then((res) => {
+        console.log(path, res)
+        return res.text()
+      })
       .then((d) => {console.log(d); setDatum(d)})
   }
 
@@ -140,7 +130,8 @@ const Line = () => {
             err={err} setErr={setErr}
             lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
             setData={setData}
-            buildJSON={buildJSON}
+            // TODO replace with a call to webworker
+            buildJSON={{}}
             schema={schema}
           />
         ) : (

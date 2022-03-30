@@ -54,7 +54,7 @@ async function buildJSON() {
 
 const Line = () => {
   const [data, setData] = useState([])
-  const [, setDataLoading] = useState(true)
+  const [dataLoading, setDataLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
   const [eventIndex, setEventIndex] = useState(undefined)
   const [eventLoading, setEventLoading] = useState(false)
@@ -124,6 +124,7 @@ const Line = () => {
     <>
       <Header isEdit={isEdit} setIsEdit={setIsEdit} setEvent={setEvent}/>
       <Main>
+        { dataLoading && (<p>Loading...</p>) }
         <Timeline>
           <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
         </Timeline>

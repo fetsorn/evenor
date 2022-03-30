@@ -22,22 +22,26 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
 
   return (
   <header className={styles.header}>
-    <h1 className={styles.title}></h1>
-    <Button type="button" onClick={logout}>Logout</Button>
-    <Button type="button" onClick={async () => {
-      let token = window.sessionStorage.getItem('token')
-      let ref = window.sessionStorage.getItem('ref')
-      await (await csvs).commit(window.fs, window.dir, token, ref)
-    }}>Commit</Button>
-    {isEdit && (
-      <Button type="button" onClick={async () => {
-        setEvent(await (await csvs).editEvent({}, window.fs.promises, window.dir))
-      }}>New event</Button>
-    )}
-    {setIsEdit && (
-      <label>edit:
-        <input type="checkbox" checked={isEdit} onChange={(e) => {console.log(isEdit, e.target.checked); setIsEdit(e.target.checked)}} />
-      </label>
+    { (process.env.REACT_APP_BUILD_MODE != "local") && (
+      <div>
+        <h1 className={styles.title}></h1>
+        <Button type="button" onClick={logout}>Logout</Button>
+        <Button type="button" onClick={async () => {
+          let token = window.sessionStorage.getItem('token')
+          let ref = window.sessionStorage.getItem('ref')
+          await (await csvs).commit(window.fs, window.dir, token, ref)
+        }}>Commit</Button>
+        {isEdit && (
+          <Button type="button" onClick={async () => {
+            setEvent(await (await csvs).editEvent({}, window.fs.promises, window.dir))
+          }}>New event</Button>
+        )}
+        {setIsEdit && (
+          <label>edit:
+            <input type="checkbox" checked={isEdit} onChange={(e) => {console.log(isEdit, e.target.checked); setIsEdit(e.target.checked)}} />
+          </label>
+        )}
+      </div>
     )}
   </header>
   )}

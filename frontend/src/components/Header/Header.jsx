@@ -1,7 +1,7 @@
 import { Button } from '@components'
 import styles from './Header.module.css'
 
-import LightningFS from '@isomorphic-git/lightning-fs';
+import { fetchDataMetadir, writeDataMetadir, commit, wipe } from '@utils'
 
 import * as csvs from '@fetsorn/csvs-js'
 
@@ -14,11 +14,12 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
     window.sessionStorage.removeItem('ref')
     window.sessionStorage.removeItem('token')
 
-    window.fs = new LightningFS('fs', {wipe: true});
+    await wipe()
 
     // window.location.reload()
     window.open("/","_self")
   }
+
 
   return (
   <header className={styles.header}>
@@ -29,11 +30,11 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
         <Button type="button" onClick={async () => {
           let token = window.sessionStorage.getItem('token')
           let ref = window.sessionStorage.getItem('ref')
-          await (await csvs).commit(window.fs, window.dir, token, ref)
+          await commit(token, ref)
         }}>Commit</Button>
         {isEdit && (
           <Button type="button" onClick={async () => {
-            setEvent(await (await csvs).editEvent({}, window.fs.promises, window.dir))
+            setEvent(await (await csvs).editEvent({}, {fetch: fetchDataMetadir, write: writeDataMetadir}))
           }}>New event</Button>
         )}
         {setIsEdit && (

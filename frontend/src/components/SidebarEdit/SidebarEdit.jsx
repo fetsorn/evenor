@@ -4,6 +4,7 @@ import cn from 'classnames'
 import { Title, Paragraph, Button, Link } from '@components'
 import { formatDate } from '@utils'
 import * as csvs from '@fetsorn/csvs-js'
+import { fetchDataMetadir, writeDataMetadir } from '@utils'
 
 import styles from './SidebarEdit.module.css'
 
@@ -38,7 +39,7 @@ const SidebarEdit = ({ event: newEvent, loading, onClose: handleClose, handlePla
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
           {event?.UUID && (
             <Button type="button" onClick={async () => {
-              await (await csvs).deleteEvent(event.UUID, window.fs.promises, window.dir)
+              await (await csvs).deleteEvent(event.UUID, {fetch: fetchDataMetadir, write: writeDataMetadir})
               setData(await buildJSON())
               handleClose()
             }}>Delete</Button>
@@ -59,7 +60,7 @@ const SidebarEdit = ({ event: newEvent, loading, onClose: handleClose, handlePla
                                let newEvent = {...event}
                                newEvent[label] = e.target.value
                                console.log(newEvent)
-                               await (await csvs).editEvent(newEvent, window.fs.promises, window.dir)
+                               await (await csvs).editEvent(newEvent, {fetch: fetchDataMetadir, write: writeDataMetadir})
                                setEvent(newEvent);
                                setData(await buildJSON())
                              }}

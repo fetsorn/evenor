@@ -2,55 +2,9 @@ import { useEffect, useState, useMemo } from 'react'
 import { Header, Main, Footer, Button } from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
+import { wipe, clone } from '@utils'
 
 import styles from './Auth.module.css'
-
-import http from 'isomorphic-git/http/web'
-import LightningFS from '@isomorphic-git/lightning-fs';
-import git from 'isomorphic-git'
-
-async function gitInit(url, ref, token) {
-  console.log("gitInit", url, ref, token)
-  window.fs = new LightningFS('fs');
-  window.pfs = window.fs.promises;
-  window.dir = "/git/";
-  window.url = url;
-  console.log(await window.pfs.readdir("/"))
-  if ((await window.pfs.readdir("/")).includes("git")) {
-    // presume that the repo is fine if /git exists
-    console.log("repo exists")
-  } else {
-    await window.pfs.mkdir(window.dir);
-    // attempt to clone a public repo if no token is provided
-    if (token === "") {
-      await git.clone({
-        fs: window.fs,
-        http,
-        dir: window.dir,
-        url,
-        corsProxy: "https://cors.isomorphic-git.org",
-        ref,
-        singleBranch: true,
-        depth: 10
-      })
-    } else {
-      await git.clone({
-        fs: window.fs,
-        http,
-        dir: window.dir,
-        url,
-        corsProxy: "https://cors.isomorphic-git.org",
-        ref,
-        singleBranch: true,
-        depth: 10,
-        onAuth: () => ({
-          username: token
-        })
-      })
-    }
-    console.log("repo cloned")
-  }
-}
 
 const Auth = ({authorized, setAuthorized}) => {
 
@@ -61,7 +15,7 @@ const Auth = ({authorized, setAuthorized}) => {
   // clone git repo and hide authorization
   async function authorize(url, ref, token) {
     try {
-      await gitInit(url, ref, token)
+      await clone(url, ref, token)
 
       window.sessionStorage.setItem('url', url)
       window.sessionStorage.setItem('ref', ref)
@@ -70,7 +24,7 @@ const Auth = ({authorized, setAuthorized}) => {
       setAuthorized(true)
     } catch (e) {
       // clean up if git initialization failed
-      window.fs = new LightningFS('fs', {wipe: true});
+      await wipe()
       console.log(e)
     }
   }

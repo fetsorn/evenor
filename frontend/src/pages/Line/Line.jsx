@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Header, Main, Footer, Timeline, Sidebar, SidebarEdit, VirtualScroll, Row } from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
-import { queryMetadir, resolveAssetPath, fetchDataMetadir } from '@fetsorn/csvs-js'
+import { fetchDataMetadir, resolveAssetPath } from '@utils'
 import * as csvs from '@fetsorn/csvs-js'
 
 const rowHeights = {
@@ -26,7 +26,7 @@ async function buildJSON() {
     searchParams.set('groupBy', groupBy)
   }
 
-  var cache = await (await csvs).queryMetadir(searchParams, window.pfs, window.dir)
+  var cache = await (await csvs).queryMetadir(searchParams, {fetch: fetchDataMetadir})
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays
@@ -87,7 +87,7 @@ const Line = () => {
     }
     setLine()
     async function getSchema() {
-      let config = JSON.parse(await (await csvs).fetchDataMetadir("metadir.json", window.pfs, window.dir))
+      let config = JSON.parse(await fetchDataMetadir("metadir.json"))
       // setSchema(config)
     }
     getSchema()
@@ -103,9 +103,9 @@ const Line = () => {
     setAssetPath("")
     const { REACT_APP_BUILD_MODE } = process.env;
     if (REACT_APP_BUILD_MODE === "local") {
-      setAssetPath(await (await csvs).resolveAssetPath(event.FILE_PATH))
+      setAssetPath(await resolveAssetPath(event.FILE_PATH))
     } else {
-      setAssetPath(await (await csvs).resolveAssetPath(event.FILE_PATH, window.pfs, window.dir, url, token))
+      setAssetPath(await resolveAssetPath(event.FILE_PATH, url, token))
     }
     setDatum("")
     setErr("")

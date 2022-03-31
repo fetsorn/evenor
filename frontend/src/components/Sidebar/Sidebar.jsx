@@ -80,20 +80,20 @@ const Sidebar = ({ event: newEvent, loading, onClose: handleClose, handlePlain, 
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
+          <Button type="button" onClick={handleClose}>X</Button>
           { (process.env.REACT_APP_BUILD_MODE === "local") && (
             <div>
               <Button type="button" onClick={() => handlePlain(assetPath)}>🖊</Button>
               <Button type="button" onClick={() => unoconv(assetPath)}>📄</Button>
               <Button type="button" onClick={() => doTranscode(assetPath)}>🔈</Button>
+              {assetPath && (
+                <Paragraph>
+                  <Link href={assetPath} target="_blank" rel="noreferrer">{assetPath}</Link>
+                </Paragraph>
+              )}
+              {/* <Paragraph>{event?.UUID}</Paragraph> */}
             </div>
           )}
-          <Button type="button" onClick={handleClose}>X</Button>
-          {/* {event?.FILE_PATH && ( */}
-          {/*   <Paragraph> */}
-          {/*     <Link href={"/api/" + event?.FILE_PATH} target="_blank" rel="noreferrer">{event?.FILE_PATH}</Link> */}
-          {/*   </Paragraph> */}
-          {/* )} */}
-          {/* <Paragraph>{event?.UUID}</Paragraph> */}
           {event?.DATUM && (
             <Paragraph>{event?.DATUM}</Paragraph>
           )}

@@ -70,6 +70,7 @@ const Auth = ({authorized, setAuthorized}) => {
     // try to login read-only to a public repo from address bar
     if (barUrl) {
       await authorize(barUrl, barRef, "")
+      window.history.replaceState(null, null, "/");
     }
 
   }

@@ -1,9 +1,8 @@
-const formatDate = (date) => (
-  date
-    ? Array.from(date.match(/\d+/g))
-      .reverse()
-      .join('.')
-    : ''
-)
+const formatDate = (date) => {
+  if (!date) { return '' }
+  let match = date.match(/\d+/g)
+  if (!match) { return '' }
+  return Array.from(match).reverse().join('.')
+}
 
 export default formatDate

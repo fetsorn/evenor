@@ -69,7 +69,7 @@ const Line = () => {
     async function setLine() {
       console.log("called to worker for query")
       let line = await queryMetadir(search)
-      console.log("received query result")
+      console.log("received query result", line)
       setData(line)
       setDataLoading(false)
     }

@@ -1389,17 +1389,17 @@
     minimatch "^3.0.4"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/csvs-js@0.1.23":
-  version "0.1.23"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.1.23.tgz#b975a0cfa988b87352c2e7ae04144b0ed47319de"
-  integrity sha512-M5RZna6AFhFg/7esZKMgPM1rUONvt2zQfJJWqw5krckO2DWIL2rQM1P4lUi9974eNiuWOL+ogAZhJQwSarJRXQ==
+"@fetsorn/csvs-js@0.2.8":
+  version "0.2.8"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.2.8.tgz#532cbeb982c5ba259c71b0519447363777702236"
+  integrity sha512-2BUzLTpVwcWinYnYfF6oZ3o0md+sPkv1U1SbFFzRivAo52W8POXisz2war3XbWRwuZ2zxVzdAxI1zCpcspM2zA==
   dependencies:
-    "@fetsorn/wasm-grep" "0.1.6"
+    "@fetsorn/wasm-grep" "0.1.9"
 
-"@fetsorn/wasm-grep@0.1.6":
-  version "0.1.6"
-  resolved "https://registry.yarnpkg.com/@fetsorn/wasm-grep/-/wasm-grep-0.1.6.tgz#543c975326697905320b3d6987f50523de355394"
-  integrity sha512-oM3XZTkrqM5f8XXNo1wwLT1SW4y+rS5TaYHk3Y50N1kP0ZUVyB18KGY0pBrZx42jKhrj4z2ixiuyqcl4bHsz+w==
+"@fetsorn/wasm-grep@0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@fetsorn/wasm-grep/-/wasm-grep-0.1.9.tgz#e71a98d4757aa691fa74116841afe4db321bea50"
+  integrity sha512-UfnvAs4/aD2R5zmUyAfExMvK44FMpEcZkXzrCOY1OKxoil8rUTh2qdgzy/8H9Ne5hASY9zjc4SQzO4qK7hjQ8w==
 
 "@ffmpeg/core@^0.10.0":
   version "0.10.0"

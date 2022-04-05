@@ -36,7 +36,7 @@ async function buildJSON(search) {
   }
 
   console.log("worker calls to csvs")
-  var cache = await (await csvs).queryMetadir(searchParams, {fetch: fetchDataMetadir})
+  var cache = await (await csvs).queryMetadir(searchParams, {fetch: fetchDataMetadir}, true)
   console.log("csvs completes")
 
   // { "YYYY-MM-DD": [event1, event2, event3] }

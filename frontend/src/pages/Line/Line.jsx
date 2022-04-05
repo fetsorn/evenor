@@ -48,7 +48,7 @@ const Line = () => {
       }
     }
   }
-  const queryMetadir = (search) => new Promise((res, rej) => {
+  const queryMetadir = () => new Promise((res, rej) => {
 
     const channel = new MessageChannel()
 
@@ -61,14 +61,14 @@ const Line = () => {
       }
     }
 
-	  queryWorker.postMessage({action: "query", search}, [channel.port2])
+    let search = window.location.search
+    queryWorker.postMessage({action: "query", search}, [channel.port2])
   })
 
   useEffect( () => {
-    let search = window.location.search
     async function setLine() {
       console.log("called to worker for query")
-      let line = await queryMetadir(search)
+      let line = await queryMetadir()
       console.log("received query result", line)
       setData(line)
       setDataLoading(false)
@@ -131,7 +131,7 @@ const Line = () => {
             lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
             setData={setData}
             // TODO replace with a call to webworker
-            buildJSON={{}}
+            buildJSON={queryMetadir}
             schema={schema}
           />
         ) : (

@@ -1,10 +1,10 @@
 {
   "name": "timeline-frontend",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@fetsorn/csvs-js": "0.1.23",
+    "@fetsorn/csvs-js": "0.2.8",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@hpcc-js/wasm": "^1.12.8",

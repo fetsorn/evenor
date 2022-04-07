@@ -19,6 +19,9 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
     window.open("/","_self")
   }
 
+  const home = () => {
+    window.open("/","_self")
+  }
 
   return (
   <header className={styles.header}>
@@ -26,18 +29,24 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
       <div>
         <h1 className={styles.title}></h1>
         <Button type="button" onClick={logout}>Logout</Button>
-        <Button type="button" onClick={async () => {
-          let token = window.sessionStorage.getItem('token')
-          await commit(token)
-        }}>Commit</Button>
+        <Button type="button" onClick={home}>Home</Button>
         {isEdit && (
-          <Button type="button" onClick={async () => {
-            setEvent(await (await csvs).editEvent({}, {fetch: fetchDataMetadir, write: writeDataMetadir}))
-          }}>New event</Button>
+          <div>
+            <Button type="button" onClick={async () => {
+              let token = window.sessionStorage.getItem('token')
+              await commit(token)
+            }}>Commit</Button>
+            <Button type="button" onClick={async () => {
+              setEvent(await (await csvs).editEvent({}, {fetch: fetchDataMetadir, write: writeDataMetadir}))
+            }}>New event</Button>
+          </div>
         )}
         {setIsEdit && (
           <label>edit:
-            <input type="checkbox" checked={isEdit} onChange={(e) => {console.log(isEdit, e.target.checked); setIsEdit(e.target.checked)}} />
+            <input type="checkbox" checked={isEdit} onChange={(e) => {
+              console.log(isEdit, e.target.checked);
+              setIsEdit(e.target.checked)}}
+            />
           </label>
         )}
       </div>

@@ -1,8 +1,17 @@
 import { useEffect, useState, useMemo } from 'react'
-import { Header, Main, Footer, Timeline, Sidebar, SidebarEdit, VirtualScroll, Row } from '@components'
+import {
+  Header,
+  Main,
+  Footer,
+  Timeline,
+  Sidebar,
+  SidebarEdit,
+  VirtualScroll
+} from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
 import { fetchDataMetadir, resolveAssetPath } from '@utils'
+import { queryWorkerInit } from '@workers'
 import * as csvs from '@fetsorn/csvs-js'
 
 const rowHeights = {
@@ -10,17 +19,32 @@ const rowHeights = {
   desktop: 40,
 }
 
+// search schema for first date prop that appears in data,
+// fallback to first prop in schema  that appears in data
+function defaultGroupBy(schema, data) {
+  let prop = Object.keys(schema).find(prop => {
+    let prop_label = schema[prop]['label'] ?? prop
+    return schema[prop]['type'] == "date"
+      && data[0].hasOwnProperty(prop_label)
+  })
+  if (!prop) {
+    prop = Object.keys(schema).find(prop => {
+      let prop_label = schema[prop]['label'] ?? prop
+      return data[0].hasOwnProperty(prop_label)
+    })
+  }
+  return prop
+}
+
 const Line = () => {
   const [data, setData] = useState([])
-  const [dataLoading, setDataLoading] = useState(true)
+  const [line, setLine] = useState([])
+  const [groupBy, setGroupBy] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
   const [eventIndex, setEventIndex] = useState(undefined)
-  const [eventLoading, setEventLoading] = useState(false)
   const [datum, setDatum] = useState("")
-  const [convertSrc, setConvertSrc] = useState(undefined);
   const [assetPath, setAssetPath] = useState("");
-  const [lfsSrc, setLFSSrc] = useState(undefined);
-  const [err, setErr] = useState("")
   const [isEdit, setIsEdit] = useState(false)
   const [schema, setSchema] = useState([])
 
@@ -33,70 +57,50 @@ const Line = () => {
       : Math.round(viewportWidth / 100 * REM_DESKTOP * rowHeights.desktop)
   ), [viewportWidth, isMobile])
 
-  const queryWorker = new Worker(new URL("@workers/query.worker", import.meta.url))
-  queryWorker.onmessage = async (message) => {
-    console.log("main thread receives message", message)
-    if (message.data.action === "fetch") {
-      try {
-        console.log("main thread tries to fetch")
-        let contents = await fetchDataMetadir(message.data.path)
-        console.log("main thread returns fetch")
-        message.ports[0].postMessage({result: contents})
-      } catch(e) {
-        console.log("main thread errors")
-        message.ports[0].postMessage({error: e});
-      }
-    }
-  }
-  const queryMetadir = () => new Promise((res, rej) => {
-
-    const channel = new MessageChannel()
-
-    channel.port1.onmessage = ({data}) => {
-      channel.port1.close()
-      if (data.error) {
-        rej(data.error)
-      } else {
-        res(data.result)
-      }
-    }
-
-    let search = window.location.search
-    queryWorker.postMessage({action: "query", search}, [channel.port2])
-  })
+  const queryWorker = queryWorkerInit()
 
   useEffect( () => {
-    async function setLine() {
-      console.log("called to worker for query")
-      let line = await queryMetadir()
-      console.log("received query result", line)
-      setData(line)
-      setDataLoading(false)
-    }
-    setLine()
-    async function getSchema() {
-      let config = JSON.parse(await fetchDataMetadir("metadir.json"))
-      setSchema(config)
-    }
-    getSchema()
+    (async() => {
+      // console.log("called to worker for query")
+      let searchParams = new URLSearchParams(window.location.search)
+      let _data = await queryWorker.queryMetadir(searchParams)
+      // console.log("received query result", _data)
+
+      let _schema = JSON.parse(await fetchDataMetadir("metadir.json"))
+
+      let groupBy_prop = defaultGroupBy(_schema, _data)
+      let groupBy_label = _schema[groupBy_prop]['label'] ?? groupBy_prop
+      // console.log("group by", groupBy_label)
+
+      setSchema(_schema)
+      setData(_data)
+      setGroupBy(groupBy_label)
+
+      await rebuildLine(_data, groupBy_label)
+
+      setIsLoading(false)
+    })();
   }, [])
 
-  let url = window.sessionStorage.getItem('url')
-  let token = window.sessionStorage.getItem('token')
+  const rebuildLine = async (_data = data, _groupBy = groupBy) => {
+      let _line = await queryWorker.buildLine(_data, _groupBy)
+      // console.log("received build result", _line)
+      setLine(_line)
+  }
+
   const handleOpenEvent = async (event, index) => {
-    setEventLoading(true)
     setEvent(event)
     setEventIndex(index)
+    setDatum("")
     setAssetPath("")
     const { REACT_APP_BUILD_MODE } = process.env;
     if (REACT_APP_BUILD_MODE === "local") {
       setAssetPath(await resolveAssetPath(event.FILE_PATH))
     } else {
+      let url = window.sessionStorage.getItem('url')
+      let token = window.sessionStorage.getItem('token')
       setAssetPath(await resolveAssetPath(event.FILE_PATH, url, token))
     }
-    setDatum("")
-    setErr("")
-    setConvertSrc(undefined)
   }
 
   const handlePlain = (path) => {
@@ -112,39 +116,38 @@ const Line = () => {
 
   return (
     <>
-      <Header isEdit={isEdit} setIsEdit={setIsEdit} setEvent={setEvent}/>
+      <Header
+        isEdit={isEdit} setIsEdit={setIsEdit}
+        setEvent={setEvent}
+        groupBy={groupBy} setGroupBy={setGroupBy}
+      />
       <Main>
-        { dataLoading && (<p>Loading...</p>) }
+        { isLoading && (
+          <p>Loading...</p>
+        )}
         <Timeline>
-          <VirtualScroll data={data} rowComponent={Row} rowHeight={rowHeight} onEventClick={handleOpenEvent}/>
+          <VirtualScroll
+            data={line}
+            rowHeight={rowHeight}
+            onEventClick={handleOpenEvent}
+          />
         </Timeline>
         {isEdit ? (
           <SidebarEdit
             event={event}
             onClose={handleCloseEvent}
-            loading={eventLoading}
-            handlePlain={handlePlain}
-            datum={datum}
-            convertSrc={convertSrc} setConvertSrc={setConvertSrc}
             eventIndex={eventIndex}
-            err={err} setErr={setErr}
-            lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
-            setData={setData}
-            // TODO replace with a call to webworker
-            buildJSON={queryMetadir}
+            data={data} setData={setData}
+            rebuildLine={rebuildLine}
             schema={schema}
           />
         ) : (
           <Sidebar
             event={event}
             onClose={handleCloseEvent}
-            loading={eventLoading}
             handlePlain={handlePlain}
             datum={datum}
-            convertSrc={convertSrc} setConvertSrc={setConvertSrc}
             eventIndex={eventIndex}
-            err={err} setErr={setErr}
-            lfsSrc={lfsSrc} setLFSSrc={setLFSSrc}
             assetPath={assetPath}
           />
         )}

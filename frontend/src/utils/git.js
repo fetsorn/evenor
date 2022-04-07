@@ -116,6 +116,7 @@ export async function resolveLFS(path, url, token) {
 
   var lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString()
   var lfsInfoResponse = JSON.parse(lfsInfoResponseRaw)
+  console.log(`resolveLFS, request ${lfsInfoRequestData}, response ${lfsInfoResponse}`)
   var downloadAction = lfsInfoResponse.objects[0].actions.download
   const lfsObjectDownloadURL = downloadAction.href;
   const lfsObjectDownloadHeaders = downloadAction.header ?? {};
@@ -165,8 +166,8 @@ export async function resolveAssetPath(filepath, url, token) {
   }
 }
 
-export async function clone(url, ref, token) {
-  console.log("clone", url, ref, token)
+export async function clone(url, token) {
+  console.log("clone", url, token)
   window.fs = new LightningFS('fs');
   window.pfs = window.fs.promises;
   window.dir = "/git/";
@@ -185,7 +186,6 @@ export async function clone(url, ref, token) {
         dir: window.dir,
         url,
         corsProxy: "https://cors.isomorphic-git.org",
-        ref,
         singleBranch: true,
         depth: 10
       })
@@ -196,7 +196,6 @@ export async function clone(url, ref, token) {
         dir: window.dir,
         url,
         corsProxy: "https://cors.isomorphic-git.org",
-        ref,
         singleBranch: true,
         depth: 10,
         onAuth: () => ({
@@ -208,7 +207,7 @@ export async function clone(url, ref, token) {
   }
 }
 
-export async function commit(token, ref) {
+export async function commit(token) {
   await git.add({
     fs: window.fs,
     dir: window.dir,
@@ -228,7 +227,6 @@ export async function commit(token, ref) {
     http,
     dir: window.dir,
     remote: 'origin',
-    ref,
     onAuth: () => ({
       username: token
     })

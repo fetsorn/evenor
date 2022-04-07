@@ -4,10 +4,13 @@ import {
   Main,
   Footer,
   Timeline,
-  Sidebar,
-  SidebarEdit,
   VirtualScroll
 } from '@components'
+import {
+  Sidebar,
+  SidebarEdit,
+  Row
+} from './components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
 import { fetchDataMetadir, resolveAssetPath } from '@utils'
@@ -128,6 +131,7 @@ const Line = () => {
         <Timeline>
           <VirtualScroll
             data={line}
+            rowComponent={Row}
             rowHeight={rowHeight}
             onEventClick={handleOpenEvent}
           />

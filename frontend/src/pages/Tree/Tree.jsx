@@ -1,7 +1,7 @@
 import styles from './Tree.module.css'
 
 import { useEffect, useState, useMemo, createRef } from 'react'
-import { Header, Button, StringToJSX } from '@components'
+import { Header, Button } from '@components'
 import { ged2dot, ged2dot_, fetchDataMetadir } from '@utils'
 
 async function dot2svg(dot) {

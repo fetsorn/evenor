@@ -7,15 +7,13 @@ import * as csvs from '@fetsorn/csvs-js'
 
 const Header = ({isEdit, setIsEdit, setEvent}) => {
 
-  // remove credentials to sessionStorage, wipe fs and reload
   const logout = async () => {
 
-    window.sessionStorage.removeItem('url')
-    window.sessionStorage.removeItem('token')
+    window.localStorage.removeItem('antea_url')
+    window.localStorage.removeItem('antea')
 
     await wipe()
 
-    // window.location.reload()
     window.open("/","_self")
   }
 
@@ -33,7 +31,7 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
         {isEdit && (
           <div>
             <Button type="button" onClick={async () => {
-              let token = window.sessionStorage.getItem('token')
+              let token = window.prompt('key')
               await commit(token)
             }}>Commit</Button>
             <Button type="button" onClick={async () => {

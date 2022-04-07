@@ -2,6 +2,12 @@ import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs';
 import git from 'isomorphic-git'
 
+export function gitInit() {
+  window.fs = new LightningFS('fs')
+  window.pfs = window.fs.promises
+  window.dir = "/git/"
+}
+
 export async function fetchDataMetadir(path) {
 
   var restext = undefined
@@ -168,10 +174,7 @@ export async function resolveAssetPath(filepath, url, token) {
 
 export async function clone(url, token) {
   console.log("clone", url, token)
-  window.fs = new LightningFS('fs');
-  window.pfs = window.fs.promises;
-  window.dir = "/git/";
-  window.url = url;
+
   console.log(await window.pfs.readdir("/"))
   if ((await window.pfs.readdir("/")).includes("git")) {
     // presume that the repo is fine if /git exists

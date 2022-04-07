@@ -13,7 +13,7 @@ import {
 } from './components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
-import { fetchDataMetadir, resolveAssetPath } from '@utils'
+import { fetchDataMetadir } from '@utils'
 import { queryWorkerInit } from '@workers'
 import * as csvs from '@fetsorn/csvs-js'
 
@@ -53,8 +53,6 @@ const Line = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [event, setEvent] = useState(undefined)
   const [eventIndex, setEventIndex] = useState(undefined)
-  const [datum, setDatum] = useState("")
-  const [assetPath, setAssetPath] = useState("");
   const [isEdit, setIsEdit] = useState(false)
   const [schema, setSchema] = useState([])
 
@@ -100,25 +98,6 @@ const Line = () => {
   const handleOpenEvent = async (event, index) => {
     setEvent(event)
     setEventIndex(index)
-    setDatum("")
-    setAssetPath("")
-    const { REACT_APP_BUILD_MODE } = process.env;
-    if (REACT_APP_BUILD_MODE === "local") {
-      setAssetPath(await resolveAssetPath(event.FILE_PATH))
-    } else {
-      let url = window.sessionStorage.getItem('url')
-      let token = window.sessionStorage.getItem('token')
-      setAssetPath(await resolveAssetPath(event.FILE_PATH, url, token))
-    }
-  }
-
-  const handlePlain = (path) => {
-    fetch(path)
-      .then((res) => {
-        console.log(path, res)
-        return res.text()
-      })
-      .then((d) => {console.log(d); setDatum(d)})
   }
 
   const handleCloseEvent = () => setEvent(undefined)
@@ -155,10 +134,7 @@ const Line = () => {
           <Sidebar
             event={event}
             onClose={handleCloseEvent}
-            handlePlain={handlePlain}
-            datum={datum}
             eventIndex={eventIndex}
-            assetPath={assetPath}
           />
         )}
       </Main>

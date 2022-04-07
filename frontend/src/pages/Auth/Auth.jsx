@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react'
 import { Header, Main, Footer, Button } from '@components'
 import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
-import { wipe, clone } from '@utils'
+import { gitInit, wipe, clone } from '@utils'
 
 import styles from './Auth.module.css'
 
@@ -16,8 +16,8 @@ const Auth = ({authorized, setAuthorized}) => {
     try {
       await clone(url, token)
 
-      window.sessionStorage.setItem('url', url)
-      window.sessionStorage.setItem('token', token)
+      window.localStorage.setItem('antea_url', url)
+      window.localStorage.setItem('antea', true)
 
       setAuthorized(true)
     } catch (e) {
@@ -27,24 +27,18 @@ const Auth = ({authorized, setAuthorized}) => {
     }
   }
 
-  async function login() {
+  useEffect(() => {
 
-    // read credentials from sessionStorage
-    let storeUrl = window.sessionStorage.getItem('url')
-    if (storeUrl != null) {
-      setUrl(storeUrl)
-    }
-    let storeToken = window.sessionStorage.getItem('token')
-    if (storeToken != null) {
-      setToken(storeToken)
+    // ignore git authorization if served from local
+    const { REACT_APP_BUILD_MODE } = process.env;
+    if (REACT_APP_BUILD_MODE === "local") {
+      setAuthorized(true)
     }
 
-    // console.log("store", storeUrl, storeToken)
+    gitInit()
 
-    // try to login read-write
-    if (storeUrl) {
-      console.log("try to login read-write")
-      await authorize(storeUrl, storeToken)
+    if (window.localStorage.getItem('antea')) {
+      setAuthorized(true)
     }
 
     // read url from path
@@ -58,21 +52,9 @@ const Auth = ({authorized, setAuthorized}) => {
 
     // try to login read-only to a public repo from address bar
     if (barUrl) {
-      await authorize(barUrl, "")
+      authorize(barUrl, "")
       window.history.replaceState(null, null, "/");
     }
-
-  }
-
-  useEffect(() => {
-
-    // ignore git authorization if served from local
-    const { REACT_APP_BUILD_MODE } = process.env;
-    if (REACT_APP_BUILD_MODE === "local") {
-      setAuthorized(true)
-    }
-
-    login()
 
   }, [])
 

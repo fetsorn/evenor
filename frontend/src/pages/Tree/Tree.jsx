@@ -1,18 +1,16 @@
-import styles from './Tree.module.css'
-
 import { useEffect, useState, useMemo, createRef } from 'react'
+import { graphviz } from "@hpcc-js/wasm";
 import { Header, Button } from '@components'
 import { ged2dot, ged2dot_, fetchDataMetadir } from '@utils'
+import styles from './Tree.module.css'
 
 async function dot2svg(dot) {
 
   // render dot notation with graphviz
-  var hpccWasm = window["@hpcc-js/wasm"];
-  var svg = await hpccWasm.graphviz.layout(dot, "svg", "dot")
+  var svg = await graphviz.layout(dot, "svg", "dot")
 
   return svg
 }
-
 
 const Tree = () => {
   const [data, setData] = useState("")

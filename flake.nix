@@ -40,7 +40,7 @@
           buildPhase = ''
             yarn run build
             cp -r build $out
-            find "$node_modules" -name "*.module.wasm" | while read -r wasm; do cp "$wasm" "$out/static/js"; done
+            find "$node_modules" -name "*.wasm" | while read -r wasm; do cp --no-preserve=mode,ownership "$wasm" "$out/static/js"; done
           '';
           dontInstall = true;
           doDist = false;
@@ -56,7 +56,7 @@
           buildPhase = ''
             REACT_APP_BUILD_MODE=local yarn run build
             cp -r build $out
-            find "$node_modules" -name "*.module.wasm" | while read -r wasm; do cp "$wasm" "$out/static/js"; done
+            find "$node_modules" -name "*.wasm" | while read -r wasm; do cp "$wasm" "$out/static/js"; done
           '';
           dontInstall = true;
           doDist = false;

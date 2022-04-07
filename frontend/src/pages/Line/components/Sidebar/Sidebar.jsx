@@ -1,24 +1,53 @@
 import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { Title, Paragraph, Button, Link } from '@components'
-import { formatDate, isIFrameable } from '@utils'
+import { formatDate, isIFrameable, resolveAssetPath } from '@utils'
 import styles from './Sidebar.module.css'
 
 const Sidebar = (props) => {
 
   let { event: newEvent,
         onClose: handleClose,
-        handlePlain,
-        datum,
-        eventIndex,
-        assetPath } = props
+        eventIndex } = props
 
   const [event, setEvent] = useState(newEvent)
+  const [assetPath, setAssetPath] = useState(undefined);
+  const [datum, setDatum] = useState("")
 
+  const resolvePathLocal = async (e = event) => {
+    let filePath = await resolveAssetPath(e.FILE_PATH)
+    setAssetPath(filePath)
+  }
+
+  const resolvePathLFS = async () => {
+    let url = window.localStorage.getItem('antea_url')
+    let token = window.prompt('key')
+    let blobPath = await resolveAssetPath(event.FILE_PATH, url, token)
+    setAssetPath(blobPath)
+  }
+
+  const handlePlain = (path) => {
+    fetch(path)
+      .then((res) => {
+        console.log(path, res)
+        return res.text()
+      })
+      .then((d) => {console.log(d); setDatum(d)})
+  }
 
   useEffect(() => {
+    // set local copy of event, why? TODO
     if(typeof newEvent !== 'undefined') {
       setEvent(newEvent)
+    }
+
+    // reset datum and assetPath on event switch
+    setDatum("")
+    setAssetPath(undefined)
+
+    // assign assetPath on local
+    if (process.env.REACT_APP_BUILD_MODE === "local") {
+      resolvePathLocal(newEvent)
     }
   }, [newEvent])
 
@@ -26,7 +55,7 @@ const Sidebar = (props) => {
     <div
       className={cn(
         styles.sidebar,
-        { [styles.invisible]: !newEvent },
+        { [styles.invisible]: !event },
       )}
     >
       <div className={styles.container}>
@@ -48,7 +77,10 @@ const Sidebar = (props) => {
             <Paragraph>{event?.DATUM}</Paragraph>
           )}
           <Paragraph>{datum}</Paragraph>
-          {isIFrameable(event?.FILE_PATH) && (
+          { (process.env.REACT_APP_BUILD_MODE !== "local") && isIFrameable(event?.FILE_PATH) && (
+            <Button type="button" onClick={resolvePathLFS}>Show source</Button>
+          )}
+          {isIFrameable(event?.FILE_PATH) && assetPath && (
             <Paragraph><iframe title="iframe" src={assetPath} width="100%" height="800px"></iframe></Paragraph>
           )}
           <div>

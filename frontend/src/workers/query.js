@@ -33,7 +33,7 @@ export function queryWorkerInit() {
       }
     }
 
-    worker.postMessage({action: "query", searchParams}, [channel.port2])
+    worker.postMessage({action: "query", search: searchParams.toString()}, [channel.port2])
   })
 
   const buildLine = (data, prop_label) => new Promise((res, rej) => {

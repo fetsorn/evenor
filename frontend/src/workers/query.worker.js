@@ -22,11 +22,12 @@ const fetchDataMetadir = (path) => new Promise((res, rej) => {
 
 async function _queryMetadir(message) {
   try {
-    console.log("query worker tries to query metadir", message.data.searchParams)
+    console.log("query worker tries to query metadir", message.data.search)
     var result
     try {
       // console.log("query worker calls to csvs")
-      result = await (await csvs).queryMetadir(message.data.searchParams,
+      let searchParams = new URLSearchParams(message.data.search)
+      result = await (await csvs).queryMetadir(searchParams,
                                                {fetch: fetchDataMetadir},
                                                true)
       // console.log("csvs completes")

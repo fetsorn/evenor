@@ -11,7 +11,6 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
   const logout = async () => {
 
     window.sessionStorage.removeItem('url')
-    window.sessionStorage.removeItem('ref')
     window.sessionStorage.removeItem('token')
 
     await wipe()
@@ -29,8 +28,7 @@ const Header = ({isEdit, setIsEdit, setEvent}) => {
         <Button type="button" onClick={logout}>Logout</Button>
         <Button type="button" onClick={async () => {
           let token = window.sessionStorage.getItem('token')
-          let ref = window.sessionStorage.getItem('ref')
-          await commit(token, ref)
+          await commit(token)
         }}>Commit</Button>
         {isEdit && (
           <Button type="button" onClick={async () => {

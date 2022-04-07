@@ -25,18 +25,25 @@ const rowHeights = {
 // search schema for first date prop that appears in data,
 // fallback to first prop in schema  that appears in data
 function defaultGroupBy(schema, data) {
-  let prop = Object.keys(schema).find(prop => {
+  let groupBy_prop
+  let car = data[0] ?? {}
+  groupBy_prop = Object.keys(schema).find(prop => {
     let prop_label = schema[prop]['label'] ?? prop
     return schema[prop]['type'] == "date"
-      && data[0].hasOwnProperty(prop_label)
+      && car.hasOwnProperty(prop_label)
   })
-  if (!prop) {
-    prop = Object.keys(schema).find(prop => {
+  if (!groupBy_prop) {
+    groupBy_prop = Object.keys(schema).find(prop => {
       let prop_label = schema[prop]['label'] ?? prop
-      return data[0].hasOwnProperty(prop_label)
+      return car.hasOwnProperty(prop_label)
     })
   }
-  return prop
+  if (!groupBy_prop) {
+    return ""
+  } else {
+    let groupBy_label = schema[groupBy_prop]['label'] ?? groupBy_prop
+    return groupBy_label
+  }
 }
 
 const Line = () => {
@@ -71,15 +78,14 @@ const Line = () => {
 
       let _schema = JSON.parse(await fetchDataMetadir("metadir.json"))
 
-      let groupBy_prop = defaultGroupBy(_schema, _data)
-      let groupBy_label = _schema[groupBy_prop]['label'] ?? groupBy_prop
-      // console.log("group by", groupBy_label)
+      let _groupBy = defaultGroupBy(_schema, _data)
+      // console.log("group by", _groupBy)
 
       setSchema(_schema)
       setData(_data)
-      setGroupBy(groupBy_label)
+      setGroupBy(_groupBy)
 
-      await rebuildLine(_data, groupBy_label)
+      await rebuildLine(_data, _groupBy)
 
       setIsLoading(false)
     })();

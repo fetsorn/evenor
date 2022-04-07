@@ -36,12 +36,13 @@ const Tree = () => {
         let dot = ged2dot_(index)
         setHtml(await dot2svg(dot))
       } catch(e1) {
+        console.log(e1)
         try {
           let index = await fetchDataMetadir("index.html")
           setHtml(index)
           setIsTree(false)
         } catch (e2) {
-          console.log(e1, e2)
+          console.log(e2)
         }
       }
     }

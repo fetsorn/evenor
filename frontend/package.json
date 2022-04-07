@@ -1,10 +1,10 @@
 {
   "name": "timeline-frontend",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@fetsorn/csvs-js": "0.2.8",
+    "@fetsorn/csvs-js": "0.2.20",
     "@ffmpeg/core": "^0.10.0",
     "@ffmpeg/ffmpeg": "^0.10.1",
     "@hpcc-js/wasm": "^1.12.8",
@@ -15,6 +15,7 @@
     "https-browserify": "^1.0.0",
     "isomorphic-git": "^1.10.4",
     "jest": "^27.5.1",
+    "mime": "^3.0.0",
     "normalize.css": "^8.0.1",
     "os-browserify": "^0.3.0",
     "path-browserify": "^1.0.1",

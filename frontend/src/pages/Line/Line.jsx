@@ -25,6 +25,14 @@ const rowHeights = {
 // search schema for first date prop that appears in data,
 // fallback to first prop in schema  that appears in data
 function defaultGroupBy(schema, data) {
+
+  let searchParams = new URLSearchParams(window.location.search);
+  if (searchParams.has('groupBy')) {
+    let groupBy_prop = searchParams.get('groupBy')
+    let groupBy_label = schema[groupBy_prop]['label'] ?? groupBy_prop
+    return groupBy_label
+  }
+
   let groupBy_prop
   let car = data[0] ?? {}
   groupBy_prop = Object.keys(schema).find(prop => {

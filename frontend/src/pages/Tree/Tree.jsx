@@ -14,10 +14,10 @@ async function dot2svg(dot) {
 
 const Tree = () => {
   const [data, setData] = useState("")
-  const [dataLoading, setDataLoading] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
   const [html, setHtml] = useState("")
   const [depth, setDepth] = useState(4)
-  const [isTree, setIsTree] = useState(true)
+  const [isTree, setIsTree] = useState(false)
   const rootInput = createRef()
 
   const render = async () => {
@@ -26,41 +26,53 @@ const Tree = () => {
     setHtml(await dot2svg(dot))
   }
 
-  useEffect( () => {
-    async function setTree() {
+  const reloadPage = async () => {
+
+    setIsLoading(true)
+
+    try {
+      let index = await fetchDataMetadir("index.ged")
+      setData(index)
+      let dot = ged2dot_(index)
+      setHtml(await dot2svg(dot))
+      setIsTree(true)
+    } catch(e1) {
+      console.log(e1)
       try {
-        let index = await fetchDataMetadir("index.ged")
-        setData(index)
-        let dot = ged2dot_(index)
-        setHtml(await dot2svg(dot))
-      } catch(e1) {
-        console.log(e1)
-        try {
-          let index = await fetchDataMetadir("index.html")
-          setHtml(index)
-          setIsTree(false)
-        } catch (e2) {
-          console.log(e2)
-        }
+        let index = await fetchDataMetadir("index.html")
+        setHtml(index)
+      } catch (e2) {
+        console.log(e2)
       }
     }
-    setTree()
-    setDataLoading(false)
+    setIsLoading(false)
+  }
+
+  useEffect( () => {
+    reloadPage()
   }, [])
 
   return (
     <>
-      <Header />
+      <Header reloadPage={reloadPage} />
+      { isLoading && (
+        <p>Loading...</p>
+      )}
       {isTree && (
         <div>
-          <input type="text" ref={rootInput} id="rootInput" value="F0001" onChange={(e) => {
-            render()
-          }}/>
+          <input type="text"
+                 ref={rootInput}
+                 id="rootInput"
+                 value="F0001"
+                 onChange={render}/>
           <div>Depth: {depth}</div>
-          <input type="range" min="1" max="10" value={depth} onChange={(e) => {
-            setDepth(e.target.value)
-            render()
-          }}/>
+          <input type="range"
+                 min="1" max="10"
+                 value={depth}
+                 onChange={(e) => {
+                   setDepth(e.target.value)
+                   render()
+                 }}/>
         </div>
       )}
       <div className={styles.container} dangerouslySetInnerHTML={{ __html: html }}></div>

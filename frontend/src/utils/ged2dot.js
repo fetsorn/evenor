@@ -286,7 +286,7 @@ class Individual {
       label += this.dict["forename"] + "<br/>"
       label += this.dict["surname"] + "<br/>"
     }
-    if (this.config["birth"] && this.config["death"]) {
+    if (this.config["birth"] && !this.config["death"]) {
       label += this.config["birth"] + "-"
     } else if (!this.config["birth"] && this.config["death"]) {
       label += "† " + this.config["death"]

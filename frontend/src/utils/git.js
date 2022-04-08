@@ -1,6 +1,7 @@
 import http from 'isomorphic-git/http/web'
 import LightningFS from '@isomorphic-git/lightning-fs';
 import git from 'isomorphic-git'
+import mime from 'mime'
 
 export function gitInit() {
   window.fs = new LightningFS('fs')
@@ -122,7 +123,9 @@ export async function resolveLFS(path, url, token) {
 
   var lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString()
   var lfsInfoResponse = JSON.parse(lfsInfoResponseRaw)
-  console.log(`resolveLFS, request ${lfsInfoRequestData}, response ${lfsInfoResponse}`)
+  console.log("resolveLFS")
+  console.log(lfsInfoRequestData)
+  console.log(lfsInfoResponse)
   var downloadAction = lfsInfoResponse.objects[0].actions.download
   const lfsObjectDownloadURL = downloadAction.href;
   const lfsObjectDownloadHeaders = downloadAction.header ?? {};
@@ -134,9 +137,12 @@ export async function resolveLFS(path, url, token) {
   });
 
   var lfsObjectBuffer = await bodyToBuffer(lfsObjectBody)
-  const blob = new Blob([lfsObjectBuffer]);
 
-  return URL.createObjectURL(blob)
+  const mimetype = mime.getType(path)
+
+  const blob = new Blob([lfsObjectBuffer], { type: mimetype });
+
+  return URL.createObjectURL(blob, { type: mimetype })
 
 }
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { Title, Paragraph, Button, Link } from '@components'
-import { formatDate, isIFrameable, resolveAssetPath } from '@utils'
+import { formatDate, isIFrameable, resolveLFS } from '@utils'
 import styles from './Sidebar.module.css'
 
 const Sidebar = (props) => {
@@ -15,14 +15,23 @@ const Sidebar = (props) => {
   const [datum, setDatum] = useState("")
 
   const resolvePathLocal = async (e = event) => {
-    let filePath = await resolveAssetPath(e.FILE_PATH)
+    let filePath = ""
+    let localpath = "/api/local/" + e.FILE_PATH
+    if ((await fetch(localpath)).ok) {
+      filePath = localpath
+    }
+    let lfspath = "/api/lfs/" + e.FILE_PATH
+    if ((await fetch(lfspath)).ok) {
+      filePath = lfspath
+    }
     setAssetPath(filePath)
   }
 
   const resolvePathLFS = async () => {
     let url = window.localStorage.getItem('antea_url')
     let token = window.prompt('key')
-    let blobPath = await resolveAssetPath(event.FILE_PATH, url, token)
+    let lfspath_local = "lfs/" + event.FILE_PATH
+    let blobPath = await resolveLFS(lfspath_local, url, token)
     setAssetPath(blobPath)
   }
 

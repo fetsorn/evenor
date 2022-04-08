@@ -19,7 +19,8 @@ app.use((req, res, next) => {
         next()
     // on /api/assets and /api/hosts, serve assets/ and hosts/ in current directory
     } else if (/api/i.test(req.path)) {
-        res.sendFile(path.join(process.cwd(), req.path.replace(/^\/api/, "").replace(/%20/g, "\ ")));
+        let filepath = decodeURI(req.path.replace(/^\/api/, ""))
+        res.sendFile(path.join(process.cwd(), filepath));
     // in other cases serve a react app that routes urls to /api/assets/ and /api/hosts/
     } else {
         console.log(req.path)

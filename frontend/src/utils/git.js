@@ -140,38 +140,6 @@ export async function resolveLFS(path, url, token) {
 
 }
 
-// check if a filepath exists on local,
-// try to fetch lfs on remote,
-// otherwise return empty string.
-// if filepath is "path/to",
-// return either "/api/assets/path/to"
-// or /api/lfs/path/to" for local,
-// "/lfs/blob/uri" for remote,
-// or an empty string.
-export async function resolveAssetPath(filepath, url, token) {
-
-  if (filepath === "") {
-    return ""
-  }
-  const { REACT_APP_BUILD_MODE } = process.env;
-
-  if (REACT_APP_BUILD_MODE === "local") {
-    let localpath = "/api/local/" + filepath
-    if ((await fetch(localpath)).ok) {
-      return localpath
-    }
-    let lfspath = "/api/lfs/" + filepath
-    if ((await fetch(lfspath)).ok) {
-      return lfspath
-    }
-    return ""
-  } else {
-    let lfspath_local = "lfs/" + filepath
-    let lfspath_remote = await resolveLFS(lfspath_local, url, token)
-    return lfspath_remote
-  }
-}
-
 export async function clone(url, token) {
   console.log("clone", url, token)
 

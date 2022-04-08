@@ -67,34 +67,6 @@ const Line = () => {
 
   const queryWorker = queryWorkerInit()
 
-  useEffect( () => {
-    (async() => {
-      // console.log("called to worker for query")
-      let searchParams = new URLSearchParams(window.location.search)
-      let _data = await queryWorker.queryMetadir(searchParams)
-      // console.log("received query result", _data)
-
-      let _schema = JSON.parse(await fetchDataMetadir("metadir.json"))
-
-      let _groupBy = defaultGroupBy(_schema, _data)
-      // console.log("group by", _groupBy)
-
-      setSchema(_schema)
-      setData(_data)
-      setGroupBy(_groupBy)
-
-      await rebuildLine(_data, _groupBy)
-
-      setIsLoading(false)
-    })();
-  }, [])
-
-  const rebuildLine = async (_data = data, _groupBy = groupBy) => {
-      let _line = await queryWorker.buildLine(_data, _groupBy)
-      // console.log("received build result", _line)
-      setLine(_line)
-  }
-
   const handleOpenEvent = async (event, index) => {
     setEvent(event)
     setEventIndex(index)
@@ -102,12 +74,46 @@ const Line = () => {
 
   const handleCloseEvent = () => setEvent(undefined)
 
+  const rebuildLine = async (_data = data, _groupBy = groupBy) => {
+      let _line = await queryWorker.buildLine(_data, _groupBy)
+      // console.log("received build result", _line)
+      setLine(_line)
+  }
+
+  const reloadPage = async () => {
+
+    setIsLoading(true)
+
+    // console.log("called to worker for query")
+    let searchParams = new URLSearchParams(window.location.search)
+    let _data = await queryWorker.queryMetadir(searchParams)
+    // console.log("received query result", _data)
+
+    let _schema = JSON.parse(await fetchDataMetadir("metadir.json"))
+
+    let _groupBy = defaultGroupBy(_schema, _data)
+    // console.log("group by", _groupBy)
+
+    setSchema(_schema)
+    setData(_data)
+    setGroupBy(_groupBy)
+
+    await rebuildLine(_data, _groupBy)
+
+    setIsLoading(false)
+  }
+
+  useEffect( () => {
+    reloadPage()
+  }, [])
+
   return (
     <>
       <Header
         isEdit={isEdit} setIsEdit={setIsEdit}
         setEvent={setEvent}
         groupBy={groupBy} setGroupBy={setGroupBy}
+        reloadPage={reloadPage}
       />
       <Main>
         { isLoading && (

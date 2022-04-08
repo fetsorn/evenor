@@ -32,17 +32,6 @@ const SidebarEdit = (props) => {
       let _event = {...event}
       _event[label] = e.target.value
       setEvent(_event);
-
-      await (await csvs).editEvent(_event, {fetch: fetchDataMetadir, write: writeDataMetadir})
-
-      let newData = [...data]
-      newData.map(_e => {
-        if (_e.UUID == _event.UUID) {
-          _e[label] = e.target.value
-        }
-      })
-      setData(newData)
-      rebuildLine()
     }
 
     if (prop != root) {
@@ -52,15 +41,30 @@ const SidebarEdit = (props) => {
     }
   }
 
+  const onEdit = async () => {
+    await (await csvs).editEvent(event, {fetch: fetchDataMetadir, write: writeDataMetadir})
+
+    let newData = data.map(oldEvent => {
+      if (oldEvent.UUID == event.UUID) {
+        return event
+      } else {
+        return oldEvent
+      }
+    })
+    setData(newData)
+    await rebuildLine(newData)
+  }
+
   const onDelete = async () => {
     await (await csvs).deleteEvent(event.UUID, {fetch: fetchDataMetadir, write: writeDataMetadir})
+
     let newData = data.filter(e => e.UUID != event.UUID)
     setData(newData)
-    rebuildLine()
+    await rebuildLine(newData)
+
     handleClose()
   }
 
-  // button to fetch plain text and insert as datum
   return (
     <div
       className={cn(
@@ -71,10 +75,11 @@ const SidebarEdit = (props) => {
       <div className={styles.container}>
         <div className={styles.sticky}>
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
-          {event && (
-            <Button type="button" onClick={onDelete}>Delete</Button>
-          )}
-          <Button type="button" onClick={handleClose}>X</Button>
+          <div>
+            {event && (<Button type="button" onClick={onDelete}>Delete</Button>)}
+            {event && (<Button type="button" onClick={onEdit}>Edit</Button>)}
+            <Button type="button" onClick={handleClose}>X</Button>
+          </div>
           {event &&
            <form>
              {Object.keys(schema).map(generateInput)}

@@ -41,7 +41,7 @@ const SidebarEdit = (props) => {
     }
   }
 
-  const onEdit = async () => {
+  const onSave = async () => {
     await (await csvs).editEvent(event, {fetch: fetchDataMetadir, write: writeDataMetadir})
 
     let newData = data.map(oldEvent => {
@@ -77,7 +77,7 @@ const SidebarEdit = (props) => {
           <Title>{formatDate(event?.HOST_DATE)} {eventIndex}</Title>
           <div>
             {event && (<Button type="button" onClick={onDelete}>Delete</Button>)}
-            {event && (<Button type="button" onClick={onEdit}>Edit</Button>)}
+            {event && (<Button type="button" onClick={onSave}>Save</Button>)}
             <Button type="button" onClick={handleClose}>X</Button>
           </div>
           {event &&

@@ -43,27 +43,26 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
 
   return (
   <header className={styles.header}>
+    { (window.location.pathname != "/") && <Button type="button" onClick={home}>Home</Button> }
     { (process.env.REACT_APP_BUILD_MODE != "local") && (
+      <Button type="button" onClick={pull}>Pull</Button>
+    )}
+    { (process.env.REACT_APP_BUILD_MODE != "local") && isEdit && (
       <div>
-        <h1 className={styles.title}></h1>
-        <Button type="button" onClick={logout}>Logout</Button>
-        <Button type="button" onClick={pull}>Update</Button>
-        <Button type="button" onClick={home}>Home</Button>
-        {isEdit && (
-          <div>
-            <Button type="button" onClick={save}>Save</Button>
-            <Button type="button" onClick={newEvent}>New event</Button>
-          </div>
-        )}
-        {setIsEdit && (
-          <label>edit:
-            <input type="checkbox"
-                   checked={isEdit}
-                   onChange={(e) => setIsEdit(e.target.checked)}
-            />
-          </label>
-        )}
+        <Button type="button" onClick={save}>Push</Button>
+        <Button type="button" onClick={newEvent}>New event</Button>
       </div>
+    )}
+    { (process.env.REACT_APP_BUILD_MODE != "local") && setIsEdit && (
+      <label>edit:
+        <input type="checkbox"
+               checked={isEdit}
+               onChange={(e) => setIsEdit(e.target.checked)}
+        />
+      </label>
+    )}
+    { (process.env.REACT_APP_BUILD_MODE != "local") && (
+      <Button type="button" style={{marginLeft: "auto"}} onClick={logout}>Logout</Button>
     )}
   </header>
   )}

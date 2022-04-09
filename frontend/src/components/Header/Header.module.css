@@ -1,6 +1,7 @@
 .header {
   padding-top: calc(var(--rem) * 16);
   padding-bottom: calc(var(--rem) * 16);
+  display: flex;
 }
 
 .title {

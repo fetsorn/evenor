@@ -287,11 +287,11 @@ class Individual {
       label += this.dict["surname"] + "<br/>"
     }
     if (this.config["birth"] && !this.config["death"]) {
-      label += this.config["birth"] + "-"
+      label += this.config["birth"] + "<br/>"
     } else if (!this.config["birth"] && this.config["death"]) {
-      label += "† " + this.config["death"]
+      label += "<br/>" + this.config["death"]
     } else {
-      label += this.config["birth"] + "-" + this.config["death"]
+      label += this.config["birth"] + "<br/>" + this.config["death"]
     }
     label += "</font></td></tr></table>"
     return label

@@ -17,13 +17,14 @@ const Tree = () => {
   const [isLoading, setIsLoading] = useState(true)
   const [html, setHtml] = useState("")
   const [depth, setDepth] = useState(4)
+  const [root, setRoot] = useState("F0001")
   const [isTree, setIsTree] = useState(false)
   const rootInput = createRef()
 
-  const render = async () => {
-    var root = rootInput.current.value
-    var dot = ged2dot(data, root, depth)
-    setHtml(await dot2svg(dot))
+  const render = async (_root = root, _depth = depth) => {
+    let dot = ged2dot(data, _root, _depth)
+    let svg = await dot2svg(dot)
+    setHtml(svg)
   }
 
   const reloadPage = async () => {
@@ -34,7 +35,8 @@ const Tree = () => {
       let index = await fetchDataMetadir("index.ged")
       setData(index)
       let dot = ged2dot_(index)
-      setHtml(await dot2svg(dot))
+      let svg = await dot2svg(dot)
+      setHtml(svg)
       setIsTree(true)
     } catch(e1) {
       console.log(e1)
@@ -54,7 +56,7 @@ const Tree = () => {
 
   return (
     <>
-      <Header reloadPage={reloadPage} />
+      <Header reloadPage={reloadPage}/>
       { isLoading && (
         <p>Loading...</p>
       )}
@@ -63,15 +65,18 @@ const Tree = () => {
           <input type="text"
                  ref={rootInput}
                  id="rootInput"
-                 value="F0001"
-                 onChange={render}/>
+                 value={root}
+                 onChange={async (e) => {
+                   setRoot(rootInput.current.value)
+                   await render(rootInput.current.value, depth)
+                 }}/>
           <div>Depth: {depth}</div>
           <input type="range"
                  min="1" max="10"
                  value={depth}
-                 onChange={(e) => {
+                 onChange={async (e) => {
                    setDepth(e.target.value)
-                   render()
+                   await render(root, e.target.value)
                  }}/>
         </div>
       )}

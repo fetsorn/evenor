@@ -53,7 +53,7 @@ export function colorExtension(event) {
   const src = ["PDF", "Pdf", "acsm", "chm", "djvu", "epub", "fb2", "mobi", "pdf", "pub", "xps"]
   const doc = ["DOC", "doc", "docx", "gddoc", "odt", "pages", "rtf"]
   const sh = ["bash_history", "zshrc", "bash_profile", "bashrc", "zsh", "profile", "zsh_history"]
-  const wav = ["caf", "wav", "MOD", "WMA", "aac", "aif", "amr", "m3u", "m4a", "mid", "mp3", "ogg", "pk", "wma", "flac", "aiff"]
+  const wav = ["caf", "wav", "WAV", "MOD", "WMA", "aac", "aif", "amr", "m3u", "m4a", "mid", "mp3", "ogg", "pk", "wma", "flac", "aiff"]
   const wavM = ["ardour", "mmpz", "band", "flm", "gp5", "qtr", "tg", "vst"]
   const tbl = ["csv", "ods", "XLS", "xls", "xlsx"]
   const web = ["less", "sass", "scss", "css", "htm", "html", "js", "mht", "url", "webloc", "xml"]

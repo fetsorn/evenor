@@ -212,16 +212,27 @@ class GedcomImport {
         this.handle_level1(rest)
       } else if (level === 2) {
         if (rest.startsWith("DATE")) {
-          var date_tokens = rest.split(' ')
-          var year = date_tokens[date_tokens.length - 1]
+          // remove "DATE " prefix
+          rest = rest.slice(5)
+          var date = ""
+          // if no date is known, show dash
+          if (rest === "") {
+            date = "-"
+            // if only year is known, show the year
+          } else if (rest.length == 4) {
+            date = rest
+          } else {
+            // otherwise show YYYY-MM-DD
+            date = (new Date(rest)).toISOString().slice(0,10)
+          }
           if (this.individual) {
             if (this.in_birt) {
-              this.individual.config["birth"] = year
+              this.individual.config["birth"] = date
             } else if (this.in_deat) {
-              this.individual.config["death"] = year
+              this.individual.config["death"] = date
             }
           } else if (this.family && this.in_marr) {
-            this.family.dict["marr"] = year
+            this.family.dict["marr"] = date
           }
         }
       }

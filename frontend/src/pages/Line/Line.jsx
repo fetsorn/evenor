@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Header,
+  Panel,
   Main,
   Footer,
   Timeline,
@@ -121,6 +122,10 @@ const Line = () => {
         isEdit={isEdit} setIsEdit={setIsEdit}
         setEvent={setEvent}
         groupBy={groupBy} setGroupBy={setGroupBy}
+        reloadPage={reloadPage}
+      />
+      <Panel
+        schema={schema}
         reloadPage={reloadPage}
       />
       <Main>

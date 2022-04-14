@@ -161,7 +161,6 @@ export async function clone(url, token) {
         http,
         dir: window.dir,
         url,
-        corsProxy: "https://cors.isomorphic-git.org",
         singleBranch: true,
         depth: 10,
         onAuth: () => ({
@@ -173,32 +172,89 @@ export async function clone(url, token) {
   }
 }
 
-export async function commit(token) {
-  await git.add({
+export async function commit(token, ref) {
+  const message = []
+  const statusMatrix = await git.statusMatrix({
     fs: window.fs,
-    dir: window.dir,
-    filepath: "."
+    dir: window.dir
   })
-  let sha = await git.commit({
-    fs: window.fs,
-    dir: window.dir,
-    message: 'antea edit',
-    author: {
-      name: 'name',
-      email: 'name@mail.com'
+  for (let [
+    filePath,
+    HEADStatus,
+    workingDirStatus,
+    stageStatus,
+  ] of statusMatrix) {
+    if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
+      await git.resetIndex({
+        fs: window.fs,
+        dir: window.dir,
+        filepath: filePath
+      });
+      [filePath, HEADStatus, workingDirStatus, stageStatus] = (
+        await git.statusMatrix({
+          fs: window.fs,
+          dir: window.dir,
+          filepaths: [filePath]
+        })
+      )
+      if (
+        HEADStatus === workingDirStatus &&
+        workingDirStatus === stageStatus
+      ) {
+        continue
+      }
     }
-  })
-  let pushResult = await git.push({
-    fs: window.fs,
-    http,
-    dir: window.dir,
-    remote: 'origin',
-    onAuth: () => ({
-      username: token
+    if (workingDirStatus !== stageStatus) {
+      let status
+      if (workingDirStatus === 0) {
+        status = 'deleted'
+        await git.remove({
+          fs: window.fs,
+          dir: window.dir,
+          filepath: filePath
+        })
+      } else {
+        await git.add({
+          fs: window.fs,
+          dir: window.dir,
+          filepath: filePath
+        })
+        if (HEADStatus === 1) {
+          status = 'modified'
+        } else {
+          status = 'added'
+        }
+      }
+      message.push(`${filePath} ${status}`)
+    }
+  }
+  if (message.length !== 0) {
+    const commitRef = await git.commit({
+      fs: window.fs,
+      dir: window.dir,
+      author: {
+        name: 'name',
+        email: 'name@mail.com'
+      },
+      message: message.toString()
     })
-  })
-  // console.log(pushResult)
+    let pushResult = await git.push({
+      fs: window.fs,
+      http,
+      dir: window.dir,
+      remote: 'origin'
+    })
+  }
 }
+  // let sha = await git.commit({
+  //   fs: window.fs,
+  //   dir: window.dir,
+  //   message: 'antea edit',
+  //   author: {
+  //     name: 'name',
+  //     email: 'name@mail.com'
+  //   }
+  // })
 
 export async function wipe() {
   new LightningFS('fs', {wipe: true})

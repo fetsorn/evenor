@@ -7,6 +7,36 @@ import * as csvs from '@fetsorn/csvs-js'
 
 const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
 
+  const home = () => {
+    window.open("/","_self")
+  }
+
+  const pull = async () => {
+
+    await wipe()
+    let url = window.localStorage.getItem('antea_url')
+    let token = ""
+    if (process.env.REACT_APP_BUILD_MODE !== "local") {
+      token = window.prompt('key')
+    }
+    await clone(url, token)
+
+    await reloadPage()
+  }
+
+  const push = async () => {
+    let token = ""
+    if (process.env.REACT_APP_BUILD_MODE !== "local") {
+      token = window.prompt('key')
+    }
+    await commit(token)
+  }
+
+  const newEvent = async () => {
+    let event = await (await csvs).editEvent({}, {fetch: fetchDataMetadir, write: writeDataMetadir})
+    setEvent(event)
+  }
+
   const logout = async () => {
 
     window.localStorage.removeItem('antea_url')
@@ -17,48 +47,28 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
     window.open("/","_self")
   }
 
-  const home = () => {
-    window.open("/","_self")
-  }
-
-  const save = async () => {
-    let token = window.prompt('key')
-    await commit(token)
-  }
-
-  const newEvent = async () => {
-    let event = await (await csvs).editEvent({}, {fetch: fetchDataMetadir, write: writeDataMetadir})
-    setEvent(event)
-  }
-
-  const pull = async () => {
-
-    await wipe()
-    let url = window.localStorage.getItem('antea_url')
-    let token = window.prompt('key')
-    await clone(url, token)
-
-    await reloadPage()
-  }
-
   return (
-  <header className={styles.header}>
-    { (window.location.pathname != "/") && <Button type="button" onClick={home}>Home</Button> }
+    <header className={styles.header}>
+      { (window.location.pathname != "/") && <Button type="button" onClick={home}>Home</Button> }
       <Button type="button" onClick={pull}>Pull</Button>
-      <div>
-        <Button type="button" onClick={save}>Push</Button>
-        <Button type="button" onClick={newEvent}>New event</Button>
-      </div>
-      <label>edit:
-        <input type="checkbox"
-               checked={isEdit}
-               onChange={(e) => setIsEdit(e.target.checked)}
-        />
-      </label>
-    { (process.env.REACT_APP_BUILD_MODE != "local") && (
-      <Button type="button" style={{marginLeft: "auto"}} onClick={logout}>Logout</Button>
-    )}
-  </header>
+      { isEdit && (
+        <div>
+          <Button type="button" onClick={push}>Push</Button>
+          <Button type="button" onClick={newEvent}>New event</Button>
+        </div>
+      )}
+      { setIsEdit && (
+        <label>edit:
+          <input type="checkbox"
+                 checked={isEdit}
+                 onChange={(e) => setIsEdit(e.target.checked)}
+          />
+        </label>
+      )}
+      { (process.env.REACT_APP_BUILD_MODE != "local") && (
+        <Button type="button" style={{marginLeft: "auto"}} onClick={logout}>Logout</Button>
+      )}
+    </header>
   )}
 
 export default Header

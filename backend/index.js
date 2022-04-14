@@ -7,18 +7,57 @@ const path = require('path');
 const fs = require('fs');
 const app = express();
 const Server = require('node-git-server');
+const { spawn } = require('child_process');
 
 const git = new Server.Git(process.cwd(), {});
 
-git.on('push', (push) => {
-    console.log(`push ${push.repo} / ${push.commit} ( ${push.branch} )`); // eslint-disable-line
-    push.accept();
-});
-
 git.on('fetch', (fetch) => {
-    console.log('username', fetch.username); // eslint-disable-line
+    // console.log('username', fetch.username); // eslint-disable-line
     console.log('fetch ' + fetch.repo + '/' + fetch.commit); // eslint-disable-line
     fetch.accept();
+});
+
+const spawn_cmd = (cmd) => new Promise((res,rej) => {
+
+  const ps = spawn(cmd[0], cmd.slice(1))
+
+  ps.stderr.on('data', (data) => {
+    console.error("spawn stderr:", data.toString());
+  });
+
+  ps.on('exit', async (code) => {
+    if (code !== 0) {
+      console.log(`spawn failed ${code}, "${cmd}"`);
+      rej(code)
+    } else {
+      console.log(`spawn succeeded ${code}, "${cmd}"`);
+      res(code)
+    }
+  })
+})
+
+git.on('push', async (push) => {
+    try {
+        console.log(`try to push ${push.repo} / ${push.commit} ( ${push.branch} )`); // eslint-disable-line
+        // if there are changes on checkout, log and do nothing
+        await spawn_cmd(['git', 'diff-index', '--quiet', 'HEAD'])
+        // set local repo to bare
+        await spawn_cmd(['git', 'config', '--bool', 'core.bare', 'true'])
+        // prepare cleanup after push
+        push.res.on('finish', async () => {
+            console.log(`push finished ${push.repo} / ${push.commit} ( ${push.branch} )`); // eslint-disable-line
+            // set local repo to not bare
+            await spawn_cmd(['git', 'config', '--bool', 'core.bare', 'false'])
+            // set working tree to new HEAD
+            await spawn_cmd(['git', 'reset', '--hard'])
+        })
+        // accept push
+        push.accept()
+    } catch(e) {
+        console.log("push failed", e)
+        // set local repo to not bare
+        await spawn_cmd(['git', 'config', '--bool', 'core.bare', 'false'])
+    }
 });
 
 app.use('/git', function(req, res) {

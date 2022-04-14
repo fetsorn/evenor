@@ -6,6 +6,24 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const app = express();
+const Server = require('node-git-server');
+
+const git = new Server.Git(process.cwd(), {});
+
+git.on('push', (push) => {
+    console.log(`push ${push.repo} / ${push.commit} ( ${push.branch} )`); // eslint-disable-line
+    push.accept();
+});
+
+git.on('fetch', (fetch) => {
+    console.log('username', fetch.username); // eslint-disable-line
+    console.log('fetch ' + fetch.repo + '/' + fetch.commit); // eslint-disable-line
+    fetch.accept();
+});
+
+app.use('/git', function(req, res) {
+    git.handle(req, res)
+});
 
 app.use((req, res, next) => {
     // on / serve a custom overview page in current directory

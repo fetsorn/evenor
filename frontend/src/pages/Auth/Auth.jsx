@@ -28,34 +28,38 @@ const Auth = ({authorized, setAuthorized}) => {
   }
 
   useEffect(() => {
+    (async () => {
 
-    // ignore git authorization if served from local
-    const { REACT_APP_BUILD_MODE } = process.env;
-    if (REACT_APP_BUILD_MODE === "local") {
-      setAuthorized(true)
-    }
+      gitInit()
 
-    gitInit()
+      if (window.localStorage.getItem('antea')) {
+        setAuthorized(true)
+      }
 
-    if (window.localStorage.getItem('antea')) {
-      setAuthorized(true)
-    }
+      // serve from /git on local
+      if (process.env.REACT_APP_BUILD_MODE === "local") {
+        try {
+          await authorize("http://" + window.location.host + "/git/.git", "")
+        } catch(e) {
+          console.log("failed to clone from local", e)
+          return
+        }
+      }
 
-    // read url from path
-    let search = window.location.search
-    let searchParams = new URLSearchParams(search);
-    let barUrl
-    if (searchParams.has('url')) {
-      barUrl = searchParams.get('url')
-      setUrl(barUrl)
-    }
-
-    // try to login read-only to a public repo from address bar
-    if (barUrl) {
-      authorize(barUrl, "")
-      window.history.replaceState(null, null, "/");
-    }
-
+      // read url from path
+      let searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.has('url')) {
+        let barUrl = searchParams.get('url')
+        setUrl(barUrl)
+        // try to login read-only to a public repo from address bar
+        try {
+          await authorize(barUrl, "")
+          window.history.replaceState(null, null, "/");
+        } catch(e) {
+          console.log("failed to clone from address bar", e)
+        }
+      }
+    })()
   }, [])
 
   return (

@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  "bin" : "index.js",
+  "bin": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "node-git-server": "^1.0.0-beta.30"
   }
 }

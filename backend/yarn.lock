@@ -229,6 +229,13 @@ negotiator@0.6.2:
   resolved "https://registry.yarnpkg.com/negotiator/-/negotiator-0.6.2.tgz#feacf7ccf525a77ae9634436a64883ffeca346fb"
   integrity sha512-hZXc7K2e+PgeI1eDBe/10Ard4ekbfrrqG8Ep+8Jmf4JID2bNg7NvCPOZN+kfF574pFQI7mum2AUqDidoKqcTOw==
 
+node-git-server@^1.0.0-beta.30:
+  version "1.0.0-beta.30"
+  resolved "https://registry.yarnpkg.com/node-git-server/-/node-git-server-1.0.0-beta.30.tgz#a40bbaf10d76e3d2304284dd240871ae1a2fe6ac"
+  integrity sha512-nJ9KoGJ44RdCImRCZzxDEdVZZDPY+tkdUJwaWDGU586oPDbpkeosuT718q2jgqNEBcTr4ADfn+fW8dM72PldqQ==
+  dependencies:
+    through "^2.3.8"
+
 on-finished@~2.3.0:
   version "2.3.0"
   resolved "https://registry.yarnpkg.com/on-finished/-/on-finished-2.3.0.tgz#20f1336481b083cd75337992a16971aa2d906947"
@@ -322,6 +329,11 @@ setprototypeof@1.2.0:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha1-Fhx9rBd2Wf2YEfQ3cfqZOBR4Yow=
+
+through@^2.3.8:
+  version "2.3.8"
+  resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
+  integrity sha1-DdTJ/6q8NXlgsbckEV1+Doai4fU=
 
 toidentifier@1.0.1:
   version "1.0.1"

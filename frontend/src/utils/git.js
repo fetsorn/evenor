@@ -242,19 +242,13 @@ export async function commit(token, ref) {
       fs: window.fs,
       http,
       dir: window.dir,
-      remote: 'origin'
+      remote: 'origin',
+      onAuth: () => ({
+        username: token
+      })
     })
   }
 }
-  // let sha = await git.commit({
-  //   fs: window.fs,
-  //   dir: window.dir,
-  //   message: 'antea edit',
-  //   author: {
-  //     name: 'name',
-  //     email: 'name@mail.com'
-  //   }
-  // })
 
 export async function wipe() {
   new LightningFS('fs', {wipe: true})

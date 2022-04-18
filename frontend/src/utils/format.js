@@ -1,5 +1,6 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
 import mime from 'mime'
+import _mammoth from 'mammoth'
 
 export function formatDate(date) {
   if (!date) { return '' }
@@ -19,7 +20,7 @@ export function isIFrameable(path) {
 
   const img = ["BMP", "GIF", "ICO", "JPEG", "JPG", "NPO", "PNG", "TIF", "bmp", "eps", "gif", "ico", "jpeg", "jpg", "png", "svg", "tif", "webp", "MPO"]
   const vid = ["AVI", "BUP", "IFO", "MOV", "MP4", "VOB", "avi", "flv", "m2v", "m4v", "mov", "mp4", "swf", "webm"]
-  const src = ["PDF", "Pdf", "acsm", "mobi", "pdf", "pub", "xps"]
+  const src = ["PDF", "Pdf", "acsm", "mobi", "pdf", "xps"]
   const wav = ["caf", "MOD", "aac", "m3u", "m4a", "mid", "mp3", "ogg", "pk", "flac"]
   const web = ["less", "sass", "scss", "css", "htm", "html", "js", "mht", "url", "xml"]
   const iframeable = img + vid + src + wav + web
@@ -109,10 +110,10 @@ export async function ffmpegInit() {
   return { doTranscode }
 }
 
-const unoconv = async (path) => {
-  const resp1 = await fetch('/api/' + path)
+export const unoconvert = async (path) => {
+  const resp1 = await fetch(path)
   const blob1 = await resp1.blob()
-  const mimetype = mime.lookup(path)
+  const mimetype = mime.getType(path)
   const resp2 = await fetch(`${process.env.REACT_APP_UNOCONV_URL}/convert/format/pdf/output/newname.pdf`,
                             { method: 'POST',
                               body: blob1,
@@ -124,4 +125,16 @@ const unoconv = async (path) => {
   const blob2 = await resp2.blob()
   let blobURL = URL.createObjectURL(blob2, { type: 'application/pdf' })
   return blobURL
-};
+}
+
+export const docxToHtml = async (path) => {
+  const resp1 = await fetch(path)
+  const arr = await resp1.arrayBuffer()
+  let _html = await _mammoth.convertToHtml(
+    { arrayBuffer: arr },
+    { includeDefaultStyleMap: true },
+  )
+  let blob = new Blob([_html.value])
+  let blobURL = URL.createObjectURL(blob)
+  return blobURL
+}

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { Title, Paragraph, Button, Link } from '@components'
-import { formatDate, isIFrameable, resolveLFS } from '@utils'
+import { formatDate, isIFrameable, resolveLFS, docxToHtml } from '@utils'
 import styles from './Sidebar.module.css'
 
 const Sidebar = (props) => {
@@ -12,6 +12,7 @@ const Sidebar = (props) => {
 
   const [event, setEvent] = useState(newEvent)
   const [assetPath, setAssetPath] = useState(undefined);
+  const [docPath, setDocPath] = useState(undefined);
   const [datum, setDatum] = useState("")
 
   const resolvePathLocal = async (e = event) => {
@@ -44,6 +45,16 @@ const Sidebar = (props) => {
       .then((d) => {console.log(d); setDatum(d)})
   }
 
+  const handleDoc = async (path) => {
+    try {
+      let docURL = await docxToHtml(path)
+      setDocPath(docURL)
+      console.log("handleDoc succeeded:", docURL)
+    } catch(e) {
+      console.log("handleDoc failed:", e)
+    }
+  }
+
   useEffect(() => {
     // set local copy of event, why? TODO
     if(typeof newEvent !== 'undefined') {
@@ -74,6 +85,7 @@ const Sidebar = (props) => {
           { (process.env.REACT_APP_BUILD_MODE === "local") && (
             <div>
               <Button type="button" onClick={() => handlePlain(assetPath)}>🖊</Button>
+              <Button type="button" onClick={() => handleDoc(assetPath)}>📄</Button>
               {assetPath && (
                 <Paragraph>
                   <Link href={assetPath} target="_blank" rel="noreferrer">{assetPath}</Link>
@@ -91,6 +103,9 @@ const Sidebar = (props) => {
           )}
           {isIFrameable(event?.FILE_PATH) && assetPath && (
             <Paragraph><iframe title="iframe" src={assetPath} width="100%" height="800px"></iframe></Paragraph>
+          )}
+          { (process.env.REACT_APP_BUILD_MODE == "local") && docPath && (
+            <Paragraph><iframe title="iframe" src={docPath} width="100%" height="800px"></iframe></Paragraph>
           )}
           <div>
           </div>

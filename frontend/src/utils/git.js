@@ -153,7 +153,7 @@ export async function clone(url, token) {
         dir: window.dir,
         url,
         singleBranch: true,
-        depth: 10
+        depth: 1
       })
     } else {
       await git.clone({
@@ -162,7 +162,7 @@ export async function clone(url, token) {
         dir: window.dir,
         url,
         singleBranch: true,
-        depth: 10,
+        depth: 1,
         onAuth: () => ({
           username: token
         })

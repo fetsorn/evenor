@@ -49,7 +49,7 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
 
   return (
     <header className={styles.header}>
-      { (window.location.pathname != "/") && <Button type="button" onClick={home}>Home</Button> }
+      { (window.location.pathname !== "/") && <Button type="button" onClick={home}>Home</Button> }
       <Button type="button" onClick={pull}>Pull</Button>
       { isEdit && (
         <div>
@@ -65,7 +65,7 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
           />
         </label>
       )}
-      { (process.env.REACT_APP_BUILD_MODE != "local") && (
+      { (process.env.REACT_APP_BUILD_MODE !== "local") && (
         <Button type="button" style={{marginLeft: "auto"}} onClick={logout}>Logout</Button>
       )}
     </header>

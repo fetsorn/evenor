@@ -1,7 +1,5 @@
-import { useEffect, useState, useMemo } from 'react'
-import { Header, Main, Footer, Button } from '@components'
-import { useWindowSize, useMedia } from '@hooks'
-import { REM_DESKTOP, REM_MOBILE } from '@constants'
+import { useEffect, useState } from 'react'
+import { Main, Footer, Button } from '@components'
 import { gitInit, wipe, clone } from '@utils'
 
 import styles from './Auth.module.css'

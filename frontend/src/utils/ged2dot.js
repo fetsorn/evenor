@@ -219,7 +219,7 @@ class GedcomImport {
           if (rest === "") {
             date = "-"
             // if only year is known, show the year
-          } else if (rest.length == 4) {
+          } else if (rest.length === 4) {
             date = rest
           } else {
             // otherwise show YYYY-MM-DD
@@ -284,9 +284,9 @@ class Individual {
   get_label(name_order) {
     var label = "<table border=\"0\" cellborder=\"0\"><tr><td>"
     var href
-    if (this.dict["hostname"] != "") {
+    if (this.dict["hostname"] !== "") {
       href = "href=\"q?hostname=" + this.dict["hostname"] + "\""
-    } else if (this.dict["uuid"] != "") {
+    } else if (this.dict["uuid"] !== "") {
       href = "href=\"q?hostname=" + this.dict["uuid"] + "\""
     } else {
       href = ""

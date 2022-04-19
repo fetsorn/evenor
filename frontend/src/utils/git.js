@@ -45,14 +45,14 @@ export async function writeDataMetadir(path, content) {
                              'utf8')
 }
 
-const SPEC_URL = 'https://git-lfs.github.com/spec/v1';
-const LFS_POINTER_PREAMBLE = `version ${SPEC_URL}\n`;
-function pointsToLFS(content) {
-  return (
-    content[0] === 118) // 'v'
+// const SPEC_URL = 'https://git-lfs.github.com/spec/v1';
+// const LFS_POINTER_PREAMBLE = `version ${SPEC_URL}\n`;
+// function pointsToLFS(content) {
+//   return (
+//     content[0] === 118) // 'v'
     // && content.subarray(0, 100).indexOf(LFS_POINTER_PREAMBLE) === 0);
     // tries to find preamble at the start of the pointer, fails for some reason
-}
+// }
 
 async function bodyToBuffer(body) {
   const buffers = [];
@@ -86,7 +86,7 @@ export async function resolveLFS(path, url, token) {
   }
 
   var lfsInfoBody
-  if (token != "") {
+  if (token !== "") {
     const { body } = await http.request({
       url: `${url}/info/lfs/objects/batch`,
       method: 'POST',
@@ -229,7 +229,7 @@ export async function commit(token, ref) {
     }
   }
   if (message.length !== 0) {
-    const commitRef = await git.commit({
+    await git.commit({
       fs: window.fs,
       dir: window.dir,
       author: {
@@ -238,7 +238,7 @@ export async function commit(token, ref) {
       },
       message: message.toString()
     })
-    let pushResult = await git.push({
+    await git.push({
       fs: window.fs,
       http,
       dir: window.dir,

@@ -2,6 +2,7 @@ const path = require("path")
 
 const CracoWasm = require('./plugins/craco-wasm')
 const CracoCompatibility = require('./plugins/craco-compatibility')
+const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   devServer: {
@@ -24,6 +25,17 @@ module.exports = {
           buffer: require.resolve('buffer/'),
           util: require.resolve("util/"),
         },
+    },
+    plugins: {
+      add: [
+        new CopyPlugin({
+          patterns: [
+            { from: "**/*.wasm", to: "static/js/[name][ext]", context: "node_modules/@fetsorn/" },
+            { from: "**/*.wasm", to: "static/js/[name][ext]", context: "node_modules/@ffmpeg/" },
+            { from: "**/*.wasm", to: "static/js/[name][ext]", context: "node_modules/@hpcc-js/" },
+          ],
+        }),
+      ],
     },
   },
   plugins: [

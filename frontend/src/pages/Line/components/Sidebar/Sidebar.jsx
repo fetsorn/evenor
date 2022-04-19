@@ -104,7 +104,7 @@ const Sidebar = (props) => {
           {isIFrameable(event?.FILE_PATH) && assetPath && (
             <Paragraph><iframe title="iframe" src={assetPath} width="100%" height="800px"></iframe></Paragraph>
           )}
-          { (process.env.REACT_APP_BUILD_MODE == "local") && docPath && (
+          { (process.env.REACT_APP_BUILD_MODE === "local") && docPath && (
             <Paragraph><iframe title="iframe" src={docPath} width="100%" height="800px"></iframe></Paragraph>
           )}
           <div>

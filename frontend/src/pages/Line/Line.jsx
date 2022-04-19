@@ -15,7 +15,6 @@ import { useWindowSize, useMedia } from '@hooks'
 import { REM_DESKTOP, REM_MOBILE } from '@constants'
 import { fetchDataMetadir } from '@utils'
 import { queryWorkerInit } from '@workers'
-import * as csvs from '@fetsorn/csvs-js'
 
 const rowHeights = {
   mobile: 40,
@@ -37,7 +36,7 @@ function defaultGroupBy(schema, data) {
   let car = data[0] ?? {}
   groupBy_prop = Object.keys(schema).find(prop => {
     let prop_label = schema[prop]['label'] ?? prop
-    return schema[prop]['type'] == "date"
+    return schema[prop]['type'] === "date"
       && car.hasOwnProperty(prop_label)
   })
   if (!groupBy_prop) {

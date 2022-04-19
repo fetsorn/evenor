@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import * as csvs from '@fetsorn/csvs-js'
 
-import { Title, Paragraph, Button, Link } from '@components'
+import { Title, Button } from '@components'
 import { TextInput, TextAreaInput } from './components'
 import { formatDate, fetchDataMetadir, writeDataMetadir } from '@utils'
 import styles from './SidebarEdit.module.css'
@@ -34,7 +34,7 @@ const SidebarEdit = (props) => {
       setEvent(_event);
     }
 
-    if (prop != root) {
+    if (prop !== root) {
       return (<TextInput label={label} value={event[label]} onChange={onChange}/>)
     } else {
       return (<TextAreaInput label={label} value={event[label]} onChange={onChange}/>)
@@ -45,7 +45,7 @@ const SidebarEdit = (props) => {
     await (await csvs).editEvent(event, {fetch: fetchDataMetadir, write: writeDataMetadir})
 
     let newData = data.map(oldEvent => {
-      if (oldEvent.UUID == event.UUID) {
+      if (oldEvent.UUID === event.UUID) {
         return event
       } else {
         return oldEvent
@@ -58,7 +58,7 @@ const SidebarEdit = (props) => {
   const onDelete = async () => {
     await (await csvs).deleteEvent(event.UUID, {fetch: fetchDataMetadir, write: writeDataMetadir})
 
-    let newData = data.filter(e => e.UUID != event.UUID)
+    let newData = data.filter(e => e.UUID !== event.UUID)
     setData(newData)
     await rebuildLine(newData)
 

@@ -1,6 +1,6 @@
-import { useEffect, useState, useMemo, createRef } from 'react'
+import { useEffect, useState, createRef } from 'react'
 import { graphviz } from "@hpcc-js/wasm";
-import { Header, Button } from '@components'
+import { Header } from '@components'
 import { ged2dot, ged2dot_, fetchDataMetadir } from '@utils'
 import styles from './Tree.module.css'
 

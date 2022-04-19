@@ -223,7 +223,9 @@ class GedcomImport {
             date = rest
           } else {
             // otherwise show YYYY-MM-DD
-            date = (new Date(rest)).toISOString().slice(0,10)
+            let _date = new Date(rest)
+            let _isoDate = new Date(_date.getTime() - _date.getTimezoneOffset() * 60000).toISOString()
+            date = _isoDate.slice(0,10)
           }
           if (this.individual) {
             if (this.in_birt) {

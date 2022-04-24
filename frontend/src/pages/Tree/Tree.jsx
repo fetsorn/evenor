@@ -1,5 +1,6 @@
 import { useEffect, useState, createRef } from 'react'
 import { graphviz } from "@hpcc-js/wasm";
+import Draggable from 'react-draggable'
 import { Header } from '@components'
 import { ged2dot, ged2dot_, fetchDataMetadir } from '@utils'
 import styles from './Tree.module.css'
@@ -80,7 +81,7 @@ const Tree = () => {
                  }}/>
         </div>
       )}
-      <div className={styles.container} dangerouslySetInnerHTML={{ __html: html }}></div>
+      <Draggable><div className={styles.container} dangerouslySetInnerHTML={{ __html: html }}></div></Draggable>
     </>
   )
 }

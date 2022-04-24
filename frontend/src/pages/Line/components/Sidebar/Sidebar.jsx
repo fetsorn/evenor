@@ -36,18 +36,18 @@ const Sidebar = (props) => {
     setAssetPath(blobPath)
   }
 
-  const handlePlain = (path) => {
-    fetch(path)
-      .then((res) => {
-        console.log(path, res)
-        return res.text()
-      })
-      .then((d) => {console.log(d); setDatum(d)})
+  const handlePlain = async () => {
+    let res = await fetch(assetPath)
+    let buf = await res.arrayBuffer()
+    // expose buffer to decode alternate encodings in console
+    // (new TextDecoder("windows-1251")).decode(window.buf)
+    window.buf = buf
+    let text = (new TextDecoder("utf-8")).decode(buf)
+    setDatum(text)
   }
-
-  const handleDoc = async (path) => {
+  const handleDoc = async () => {
     try {
-      let docURL = await docxToHtml(path)
+      let docURL = await docxToHtml(assetPath)
       setDocPath(docURL)
       console.log("handleDoc succeeded:", docURL)
     } catch(e) {
@@ -64,6 +64,8 @@ const Sidebar = (props) => {
     // reset datum and assetPath on event switch
     setDatum("")
     setAssetPath(undefined)
+    window.buf = {}
+
 
     // assign assetPath on local
     if (process.env.REACT_APP_BUILD_MODE === "local") {
@@ -84,8 +86,8 @@ const Sidebar = (props) => {
           <Button type="button" onClick={handleClose}>X</Button>
           { (process.env.REACT_APP_BUILD_MODE === "local") && (
             <div>
-              <Button type="button" onClick={() => handlePlain(assetPath)}>🖊</Button>
-              <Button type="button" onClick={() => handleDoc(assetPath)}>📄</Button>
+              <Button type="button" onClick={handlePlain}>🖊</Button>
+              <Button type="button" onClick={handleDoc}>📄</Button>
               {assetPath && (
                 <Paragraph>
                   <Link href={assetPath} target="_blank" rel="noreferrer">{assetPath}</Link>

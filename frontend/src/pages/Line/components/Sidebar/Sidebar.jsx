@@ -28,10 +28,9 @@ const Sidebar = (props) => {
     setAssetPath(filePath)
   }
 
-  const resolvePathLFS = async () => {
+  const resolvePathLFS = async (token, e = event) => {
     let url = window.localStorage.getItem('antea_url')
-    let token = window.prompt('key')
-    let lfspath_local = "lfs/" + event.FILE_PATH
+    let lfspath_local = "lfs/" + e.FILE_PATH
     let blobPath = await resolveLFS(lfspath_local, url, token)
     setAssetPath(blobPath)
   }
@@ -68,9 +67,11 @@ const Sidebar = (props) => {
 
 
     // assign assetPath on local
-    if ((process.env.REACT_APP_BUILD_MODE === "local") ||
-        (window.localStorage.getItem('antea_public'))) {
+    if ((process.env.REACT_APP_BUILD_MODE === "local")) {
       resolvePathLocal(newEvent)
+    }
+    if (isIFrameable(newEvent?.FILE_PATH) && window.localStorage.getItem('antea_public')) {
+      resolvePathLFS("", newEvent)
     }
   }, [newEvent])
 
@@ -104,7 +105,7 @@ const Sidebar = (props) => {
           { (process.env.REACT_APP_BUILD_MODE !== "local") &&
             (!window.localStorage.getItem('antea_public')) &&
             isIFrameable(event?.FILE_PATH) && (
-              <Button type="button" onClick={resolvePathLFS}>Show source</Button>
+              <Button type="button" onClick={async () => {await resolvePathLFS(window.prompt('key'))}}>Show source</Button>
           )}
           {isIFrameable(event?.FILE_PATH) && assetPath && (
             <Paragraph><iframe title="iframe" src={assetPath} width="100%" height="800px"></iframe></Paragraph>

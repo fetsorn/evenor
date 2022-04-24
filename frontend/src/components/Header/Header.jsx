@@ -5,7 +5,14 @@ import { fetchDataMetadir, writeDataMetadir, clone, commit, push, wipe } from '@
 
 import * as csvs from '@fetsorn/csvs-js'
 
-const Header = ({isEdit, setIsEdit, schema, setEvent, reloadPage}) => {
+const Header = (props) => {
+
+  let { isEdit, setIsEdit,
+        schema,
+        setEvent,
+        data, setData,
+        groupBy, setGroupBy, defaultGroupBy,
+        reloadPage } = props
 
   const home = () => {
     window.open("/","_self")
@@ -46,7 +53,10 @@ const Header = ({isEdit, setIsEdit, schema, setEvent, reloadPage}) => {
     })
 
     let event = await (await csvs).editEvent(_event, {fetch: fetchDataMetadir, write: writeDataMetadir})
+    let newData = data.concat([event])
     setEvent(event)
+    setData(newData)
+    setGroupBy(defaultGroupBy(schema, newData))
   }
 
   const logout = async () => {

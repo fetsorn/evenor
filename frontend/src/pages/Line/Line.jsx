@@ -120,7 +120,8 @@ const Line = () => {
         isEdit={isEdit} setIsEdit={setIsEdit}
         schema={schema}
         setEvent={setEvent}
-        groupBy={groupBy} setGroupBy={setGroupBy}
+        data={data} setData={setData}
+        groupBy={groupBy} setGroupBy={setGroupBy} defaultGroupBy={defaultGroupBy}
         reloadPage={reloadPage}
       />
       <Main>

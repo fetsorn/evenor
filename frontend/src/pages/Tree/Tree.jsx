@@ -2,7 +2,8 @@ import { useEffect, useState, createRef } from 'react'
 import { graphviz } from "@hpcc-js/wasm";
 import Draggable from 'react-draggable'
 import { Header } from '@components'
-import { ged2dot, ged2dot_, fetchDataMetadir } from '@utils'
+import { fetchDataMetadir } from '@utils'
+import { ged2dot, ged2dot_ } from '@fetsorn/ged2dot'
 import styles from './Tree.module.css'
 
 async function dot2svg(dot) {

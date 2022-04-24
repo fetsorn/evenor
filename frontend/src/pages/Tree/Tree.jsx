@@ -63,7 +63,7 @@ const Tree = () => {
         <p>Loading...</p>
       )}
       {isTree && (
-        <div>
+        <div style={{backgroundColor: "white"}}>
           <input type="text"
                  ref={rootInput}
                  id="rootInput"

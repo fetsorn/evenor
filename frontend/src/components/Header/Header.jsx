@@ -5,7 +5,7 @@ import { fetchDataMetadir, writeDataMetadir, clone, commit, wipe } from '@utils'
 
 import * as csvs from '@fetsorn/csvs-js'
 
-const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
+const Header = ({isEdit, setIsEdit, schema, setEvent, reloadPage}) => {
 
   const home = () => {
     window.open("/","_self")
@@ -34,7 +34,17 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
   }
 
   const newEvent = async () => {
-    let event = await (await csvs).editEvent({}, {fetch: fetchDataMetadir, write: writeDataMetadir})
+    let _event = {}
+
+    // fill event with values from search query
+    Object.keys(schema).map((prop)=>{
+      let label = schema[prop]["label"] ?? prop
+      let searchParams = new URLSearchParams(window.location.search)
+      let value = searchParams.has(prop) ? searchParams.get(prop) : ""
+      _event[label] = value
+    })
+
+    let event = await (await csvs).editEvent(_event, {fetch: fetchDataMetadir, write: writeDataMetadir})
     setEvent(event)
   }
 

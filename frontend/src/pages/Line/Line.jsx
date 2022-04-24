@@ -118,6 +118,7 @@ const Line = () => {
     <>
       <Header
         isEdit={isEdit} setIsEdit={setIsEdit}
+        schema={schema}
         setEvent={setEvent}
         groupBy={groupBy} setGroupBy={setGroupBy}
         reloadPage={reloadPage}

@@ -17,6 +17,11 @@ const Auth = ({authorized, setAuthorized}) => {
       window.localStorage.setItem('antea_url', url)
       window.localStorage.setItem('antea', true)
 
+      if (token === "") {
+          // remember that read access does not require a token
+          window.localStorage.setItem('antea_public', true)
+      }
+
       setAuthorized(true)
     } catch (e) {
       // clean up if git initialization failed
@@ -52,10 +57,11 @@ const Auth = ({authorized, setAuthorized}) => {
         // try to login read-only to a public repo from address bar
         try {
           await authorize(barUrl, "")
-          window.history.replaceState(null, null, "/");
         } catch(e) {
           console.log("failed to clone from address bar", e)
         }
+        // remove url from address bar
+        window.history.replaceState(null, null, "/");
       }
     })()
   }, [])

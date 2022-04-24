@@ -1,7 +1,7 @@
 import { Button } from '@components'
 import styles from './Header.module.css'
 
-import { fetchDataMetadir, writeDataMetadir, clone, commit, wipe } from '@utils'
+import { fetchDataMetadir, writeDataMetadir, clone, commit, push, wipe } from '@utils'
 
 import * as csvs from '@fetsorn/csvs-js'
 
@@ -25,12 +25,13 @@ const Header = ({isEdit, setIsEdit, schema, setEvent, reloadPage}) => {
     await reloadPage()
   }
 
-  const push = async () => {
+  const commitpush = async () => {
     let token = ""
     if (process.env.REACT_APP_BUILD_MODE !== "local") {
       token = window.prompt('key')
     }
-    await commit(token)
+    await commit()
+    await push(token)
   }
 
   const newEvent = async () => {
@@ -65,7 +66,7 @@ const Header = ({isEdit, setIsEdit, schema, setEvent, reloadPage}) => {
       <Button type="button" onClick={pull}>Pull</Button>
       { isEdit && (
         <div>
-          <Button type="button" onClick={push}>Push</Button>
+          <Button type="button" onClick={commitpush}>Push</Button>
           <Button type="button" onClick={newEvent}>New event</Button>
         </div>
       )}

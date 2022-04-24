@@ -172,7 +172,7 @@ export async function clone(url, token) {
   }
 }
 
-export async function commit(token, ref) {
+export async function commit() {
   const message = []
   const statusMatrix = await git.statusMatrix({
     fs: window.fs,
@@ -238,16 +238,19 @@ export async function commit(token, ref) {
       },
       message: message.toString()
     })
-    await git.push({
-      fs: window.fs,
-      http,
-      dir: window.dir,
-      remote: 'origin',
-      onAuth: () => ({
-        username: token
-      })
-    })
   }
+}
+
+export async function push(token) {
+  await git.push({
+    fs: window.fs,
+    http,
+    dir: window.dir,
+    remote: 'origin',
+    onAuth: () => ({
+      username: token
+    })
+  })
 }
 
 export async function wipe() {

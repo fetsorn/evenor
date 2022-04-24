@@ -16,7 +16,8 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
     await wipe()
     let url = window.localStorage.getItem('antea_url')
     let token = ""
-    if (process.env.REACT_APP_BUILD_MODE !== "local") {
+    if (process.env.REACT_APP_BUILD_MODE !== "local" &&
+        !window.localStorage.getItem('antea_public')) {
       token = window.prompt('key')
     }
     await clone(url, token)
@@ -41,6 +42,7 @@ const Header = ({isEdit, setIsEdit, setEvent, reloadPage}) => {
 
     window.localStorage.removeItem('antea_url')
     window.localStorage.removeItem('antea')
+    window.localStorage.removeItem('antea_public')
 
     await wipe()
 

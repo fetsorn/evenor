@@ -68,7 +68,8 @@ const Sidebar = (props) => {
 
 
     // assign assetPath on local
-    if (process.env.REACT_APP_BUILD_MODE === "local") {
+    if ((process.env.REACT_APP_BUILD_MODE === "local") ||
+        (window.localStorage.getItem('antea_public'))) {
       resolvePathLocal(newEvent)
     }
   }, [newEvent])
@@ -100,8 +101,10 @@ const Sidebar = (props) => {
             <Paragraph>{event?.DATUM}</Paragraph>
           )}
           <Paragraph>{datum}</Paragraph>
-          { (process.env.REACT_APP_BUILD_MODE !== "local") && isIFrameable(event?.FILE_PATH) && (
-            <Button type="button" onClick={resolvePathLFS}>Show source</Button>
+          { (process.env.REACT_APP_BUILD_MODE !== "local") &&
+            (!window.localStorage.getItem('antea_public')) &&
+            isIFrameable(event?.FILE_PATH) && (
+              <Button type="button" onClick={resolvePathLFS}>Show source</Button>
           )}
           {isIFrameable(event?.FILE_PATH) && assetPath && (
             <Paragraph><iframe title="iframe" src={assetPath} width="100%" height="800px"></iframe></Paragraph>

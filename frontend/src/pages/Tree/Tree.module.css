@@ -1,7 +1,5 @@
 .container {
   overflow: scroll;
-  z-index: -1;
-  position: absolute;
   width: max-content;
   height: max-content;
 }

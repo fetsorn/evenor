@@ -54,14 +54,14 @@ const Auth = ({authorized, setAuthorized}) => {
       if (searchParams.has('url')) {
         let barUrl = searchParams.get('url')
         setUrl(barUrl)
+        // remove url from address bar
+        window.history.replaceState(null, null, "/");
         // try to login read-only to a public repo from address bar
         try {
           await authorize(barUrl, "")
         } catch(e) {
           console.log("failed to clone from address bar", e)
         }
-        // remove url from address bar
-        window.history.replaceState(null, null, "/");
       }
     })()
   }, [])

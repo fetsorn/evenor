@@ -1,5 +1,10 @@
 .container {
   overflow: scroll;
-  /* width: max-content; */
-  /* height: max-content; */
+}
+
+.csv {
+  overflow: scroll;
+  position: relative;
+  width: max-content;
+  height: max-content;
 }

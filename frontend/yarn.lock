@@ -1396,10 +1396,10 @@
   dependencies:
     "@fetsorn/wasm-grep" "0.1.9"
 
-"@fetsorn/ged2dot@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@fetsorn/ged2dot/-/ged2dot-0.1.1.tgz#607a3b93697e20d4cbee97fa3ed472d7a074ff48"
-  integrity sha512-Mzf/FBkBJA0Iw/UnYQbskcIRFmvjlWj0LZkacHsRD1pzSfqGhWE78ROzT+nwYYV1IwlpQ649amnQubZ6zsmXog==
+"@fetsorn/ged2dot@^0.1.2":
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/@fetsorn/ged2dot/-/ged2dot-0.1.2.tgz#6ea1a4cb959ed27358d86ead34c3fb597f1742e3"
+  integrity sha512-u3mCSHh7Z9wM/6eUt18uvAwojD2LrGcC3ew2dljSFoEhWsb1XVBW74awFZVcSJPlS/ZCafKZUZJohAz5g/yl/w==
 
 "@fetsorn/wasm-grep@0.1.9":
   version "0.1.9"

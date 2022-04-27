@@ -1,0 +1,59 @@
+#+TITLE: csvs-ui
+#+OPTIONS: toc:nil
+
+Query and edit data in csvs databases, preview documents and media files.
+
+* Examples
+Genealogy: [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_en][english]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tohmatsarr][armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_ru-am][russian-armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_ru][russian]]
+
+* Setup
+#+begin_src sh
+# remote mode - accesses csvs on a git server
+## with nix
+nix run .#csvs-ui-backend-remote
+
+## or install nodejs-16_x, yarn
+cd frontend
+yarn start
+
+
+# local mode - accesses csvs in a local git directory
+cd my-csvs-database/
+nix run ~/csvs-ui#csvs-ui-backend-local
+
+
+# deploy remote mode as a static website
+## with nix
+nix build .#csvs-ui-frontend-remote
+
+## or install nodejs-16_x, yarn
+cd frontend
+yarn build
+cd build
+npx http-server
+#+end_src
+* Structure of the repo
+[[backend/][backend]] - a local nodejs and git server.
+
+[[frontend/][frontend]] - a static web application to access, visualize and modify a csvs database.
+
+* More csvs projects
+[[https://github.com/fetsorn/csvs-spec][csvs-spec]] - format description.
+
+[[https://github.com/fetsorn/csvs-js][csvs-js]] - WASM/JS implementation. Serverless CRUD.
+
+[[https://github.com/fetsorn/csvs-sh][csvs-sh]] - command-line interface. A reference implementation.
+
+
+[[https://github.com/fetsorn/ged2dot.js][ged2dot.js]] - GEDCOM to Graphviz converter.
+
+[[https://github.com/fetsorn/wasm-grep][wasm-grep]] - ripgrep compiled to WASM.
+
+* Thanks
+[[https://github.com/isomorphic-git/isomorphic-git][isomorphic-git]] - A pure JavaScript implementation of git for node and browsers.
+
+[[https://github.com/genea-app/genea-app][genea]] - Completely serverless solution for consuming and authoring GEDCOM genealogy data.
+
+[[https://github.com/vmiklos/ged2dot][ged2dot]] - GEDCOM to Graphviz converter.
+
+[[https://github.com/hpcc-systems/hpcc-js-wasm][hpcc-js-wasm]] - Graphviz compiled to WASM.

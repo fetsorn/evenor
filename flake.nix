@@ -1,5 +1,5 @@
 {
-  description = "timeline";
+  description = "csvs-ui - web UI for a comma-separated value store";
 
   inputs = { nixpkgs.url = "github:fetsorn/nixpkgs/yarn2nix-doDist"; };
 
@@ -30,8 +30,8 @@
       let
         pkgs = import nixpkgs { inherit system; };
         # interacts with git, served publicly
-        timeline-frontend = pkgs.mkYarnPackage rec {
-          name = "timeline-frontend";
+        csvs-ui-frontend-remote = pkgs.mkYarnPackage rec {
+          name = "csvs-ui-frontend";
           src = ./frontend;
           configurePhase = ''
             cp -r $node_modules node_modules
@@ -45,8 +45,8 @@
           doDist = false;
         };
         # interacts with fs, served locally
-        timeline-frontend-local = pkgs.mkYarnPackage rec {
-          name = "timeline-frontend";
+        csvs-ui-frontend-local = pkgs.mkYarnPackage rec {
+          name = "csvs-ui-frontend";
           src = ./frontend;
           configurePhase = ''
             cp -r $node_modules node_modules
@@ -59,31 +59,31 @@
           dontInstall = true;
           doDist = false;
         };
-        timeline-backend = pkgs.mkYarnPackage rec {
-          name = "timeline-backend";
+        csvs-ui-backend-remote = pkgs.mkYarnPackage rec {
+          name = "csvs-ui-backend";
           src = ./backend;
           buildPhase = ''
             mkdir -p deps/${name}/build
-            cp -r ${timeline-frontend}/* deps/${name}/build/
+            cp -r ${csvs-ui-frontend-remote}/* deps/${name}/build/
             chmod -R 755 deps/${name}/build/*
           '';
         };
-        timeline-backend-local = pkgs.mkYarnPackage rec {
-          name = "timeline-backend";
+        csvs-ui-backend-local = pkgs.mkYarnPackage rec {
+          name = "csvs-ui-backend";
           src = ./backend;
           buildPhase = ''
             mkdir -p deps/${name}/build
-            cp -r ${timeline-frontend-local}/* deps/${name}/build/
+            cp -r ${csvs-ui-frontend-local}/* deps/${name}/build/
             chmod -R 755 deps/${name}/build/*
           '';
         };
       in {
         packages = {
-          inherit timeline-frontend timeline-backend timeline-backend-local
-            timeline-frontend-local;
+          inherit csvs-ui-frontend-remote csvs-ui-backend-remote
+            csvs-ui-backend-local csvs-ui-frontend-local;
         };
-        defaultPackage = timeline-backend-local;
-        defaultApp = timeline-backend-local;
+        defaultPackage = csvs-ui-backend-local;
+        defaultApp = csvs-ui-backend-local;
         devShell =
           pkgs.mkShell { buildInputs = [ pkgs.nodejs-16_x pkgs.yarn ]; };
       });

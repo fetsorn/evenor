@@ -1,0 +1,22 @@
+{
+  "files": {
+    "main.css": "/csvs-ui/static/css/main.8ddda668.css",
+    "main.js": "/csvs-ui/static/js/main.6d41da3d.js",
+    "static/js/281.63c2c088.chunk.js": "/csvs-ui/static/js/281.63c2c088.chunk.js",
+    "static/js/50.52601a8d.chunk.js": "/csvs-ui/static/js/50.52601a8d.chunk.js",
+    "static/js/ffmpeg-core.wasm": "/csvs-ui/static/js/ffmpeg-core.wasm",
+    "static/js/wasm_grep_bg.wasm": "/csvs-ui/static/js/wasm_grep_bg.wasm",
+    "static/js/module.wasm": "/csvs-ui/static/js/7805cc9681d38a532b66.module.wasm",
+    "static/js/graphvizlib.wasm": "/csvs-ui/static/js/graphvizlib.wasm",
+    "static/js/expatlib.wasm": "/csvs-ui/static/js/expatlib.wasm",
+    "index.html": "/csvs-ui/index.html",
+    "main.8ddda668.css.map": "/csvs-ui/static/css/main.8ddda668.css.map",
+    "main.6d41da3d.js.map": "/csvs-ui/static/js/main.6d41da3d.js.map",
+    "281.63c2c088.chunk.js.map": "/csvs-ui/static/js/281.63c2c088.chunk.js.map",
+    "50.52601a8d.chunk.js.map": "/csvs-ui/static/js/50.52601a8d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.8ddda668.css",
+    "static/js/main.6d41da3d.js"
+  ]
+}

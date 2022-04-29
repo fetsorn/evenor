@@ -1,5 +1,5 @@
 {
-  "name": "timeline-frontend",
+  "name": "csvs-ui-frontend",
   "version": "0.1.3",
   "private": true,
   "dependencies": {

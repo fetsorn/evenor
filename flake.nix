@@ -84,7 +84,15 @@
         };
         defaultPackage = csvs-ui-backend-local;
         defaultApp = csvs-ui-backend-local;
-        devShell =
-          pkgs.mkShell { buildInputs = [ pkgs.nodejs-16_x pkgs.yarn ]; };
+        devShell = pkgs.mkShell {
+          buildInputs = [
+            csvs-ui-backend-local
+            csvs-ui-backend-remote
+            csvs-ui-frontend-local
+            csvs-ui-frontend-remote
+            pkgs.nodejs-16_x
+            pkgs.yarn
+          ];
+        };
       });
 }

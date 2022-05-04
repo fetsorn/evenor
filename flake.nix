@@ -1,7 +1,7 @@
 {
   description = "csvs-ui - web UI for a comma-separated value store";
 
-  inputs = { nixpkgs.url = "github:fetsorn/nixpkgs/yarn2nix-doDist"; };
+  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable"; };
 
   outputs = inputs@{ self, nixpkgs }:
     let
@@ -29,7 +29,7 @@
     in eachSystem defaultSystems (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        # interacts with git, served publicly
+        # interacts with remote git repo
         csvs-ui-frontend-remote = pkgs.mkYarnPackage rec {
           name = "csvs-ui-frontend";
           src = ./frontend;
@@ -42,9 +42,11 @@
             cp -r build $out
           '';
           dontInstall = true;
-          doDist = false;
+          distPhase = ''
+            true
+          '';
         };
-        # interacts with fs, served locally
+        # interacts with local git repo
         csvs-ui-frontend-local = pkgs.mkYarnPackage rec {
           name = "csvs-ui-frontend";
           src = ./frontend;
@@ -57,7 +59,9 @@
             cp -r build $out
           '';
           dontInstall = true;
-          doDist = false;
+          distPhase = ''
+            true
+          '';
         };
         csvs-ui-backend-remote = pkgs.mkYarnPackage rec {
           name = "csvs-ui-backend";

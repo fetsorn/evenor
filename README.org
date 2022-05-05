@@ -4,33 +4,32 @@
 Query and edit data in csvs databases, preview documents and media files.
 
 * Examples
-Genealogy: [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_en][english]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tohmatsarr][armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_ru-am][russian-armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_ru][russian]]
+Genealogy: [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_en][english]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tohmatsarr][armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_am.git][russian-armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_ru][russian]]
 
 * Setup
 #+begin_src sh
+# local mode - accesses csvs in a local git directory
+# get a metadir repo
+git clone https://github.com/fetsorn/csvs-init.git
+cd csvs-init/
+## with nix
+nix run ~/csvs-ui#csvs-ui-backend-local
+
 # remote mode - accesses csvs on a git server
 ## with nix
 nix run .#csvs-ui-backend-remote
-
 ## or install nodejs-16_x, yarn
 cd frontend
 yarn start
 
-
-# local mode - accesses csvs in a local git directory
-cd my-csvs-database/
-nix run ~/csvs-ui#csvs-ui-backend-local
-
-
 # deploy remote mode as a static website
 ## with nix
 nix build .#csvs-ui-frontend-remote
-
 ## or install nodejs-16_x, yarn
 cd frontend
 yarn build
 cd build
-npx http-server
+npx serve
 #+end_src
 * Structure of the repo
 [[backend/][backend]] - a local nodejs and git server.
@@ -43,7 +42,6 @@ npx http-server
 [[https://github.com/fetsorn/csvs-js][csvs-js]] - WASM/JS implementation. Serverless CRUD.
 
 [[https://github.com/fetsorn/csvs-sh][csvs-sh]] - command-line interface. A reference implementation.
-
 
 [[https://github.com/fetsorn/ged2dot.js][ged2dot.js]] - GEDCOM to Graphviz converter.
 

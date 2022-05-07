@@ -20,19 +20,13 @@ module.exports = {
       "@pages": path.resolve(__dirname, "./src/pages"),
       "@workers": path.resolve(__dirname, "./src/workers"),
     },
-    resolve: {
-        fallback: {
-          buffer: require.resolve('buffer/'),
-          util: require.resolve("util/"),
-        },
-    },
     plugins: {
       add: [
         new CopyPlugin({
           patterns: [
-            { from: "**/*.wasm", to: "static/js/[name][ext]", context: "node_modules/@fetsorn/" },
-            { from: "**/*.wasm", to: "static/js/[name][ext]", context: "node_modules/@ffmpeg/" },
-            { from: "**/*.wasm", to: "static/js/[name][ext]", context: "node_modules/@hpcc-js/" },
+            { context: "node_modules/@fetsorn/", from: "**/*.wasm", to: "static/js/[name][ext]" },
+            { context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
+            { context: "node_modules/@hpcc-js/", from: "**/*.wasm", to: "static/js/[name][ext]" },
           ],
         }),
       ],

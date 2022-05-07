@@ -1,6 +1,6 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
 import mime from 'mime'
-import _mammoth from 'mammoth'
+import mammoth from 'mammoth'
 
 export function formatDate(date) {
   if (!date) { return '' }
@@ -127,14 +127,21 @@ export const unoconvert = async (path) => {
   return blobURL
 }
 
-export const docxToHtml = async (path) => {
-  const resp1 = await fetch(path)
-  const arr = await resp1.arrayBuffer()
-  let _html = await _mammoth.convertToHtml(
-    { arrayBuffer: arr },
+export const docxToHtml = async (buf) => {
+  let html = await mammoth.convertToHtml(
+    { arrayBuffer: buf },
     { includeDefaultStyleMap: true },
   )
-  let blob = new Blob([_html.value])
-  let blobURL = URL.createObjectURL(blob)
-  return blobURL
+  return html.value
+}
+
+export const toHtml = async (path) => {
+  const res = await fetch(path)
+  const buf = await res.arrayBuffer()
+
+  if ((/.docx$/).test(path)) {
+    return await docxToHtml(buf)
+  }
+
+  throw Error("unknown extension")
 }

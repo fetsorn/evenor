@@ -28,7 +28,7 @@ const overrideWebpackConfig = ({ context, webpackConfig, pluginOptions }) => {
     https: require.resolve('https-browserify'),
     path: require.resolve('path-browserify'),
     fs: false,
-    // buffer: require.resolve("buffer/"),
+    buffer: require.resolve("buffer/"),
     util: require.resolve("util/"),
     zlib: require.resolve('zlib-browserify'),
     // process: require.resolve('process/browser'),

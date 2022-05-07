@@ -40,7 +40,7 @@
   },
   "scripts": {
     "start": "craco start",
-    "build": "craco build",
+    "build": "GENERATE_SOURCEMAP=false craco --max_old_space_size=1024 build",
     "test": "craco test"
   },
   "eslintConfig": {

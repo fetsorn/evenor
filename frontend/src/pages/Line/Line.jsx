@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from 'react'
 import {
   Header,
+  Panel,
   Main,
   Footer,
   Timeline,
@@ -124,6 +125,12 @@ const Line = () => {
         groupBy={groupBy} setGroupBy={setGroupBy} defaultGroupBy={defaultGroupBy}
         reloadPage={reloadPage}
       />
+      { process.env.REACT_APP_BUILD_MODE === "local" && (
+        <Panel
+          schema={schema}
+          reloadPage={reloadPage}
+        />
+      )}
       <Main>
         { isLoading && (
           <p>Loading...</p>

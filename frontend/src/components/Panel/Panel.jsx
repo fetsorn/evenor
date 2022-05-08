@@ -1,113 +1,103 @@
-import { useEffect, useState } from 'react'
-import { useNavigate } from "react-router-dom";
-import { Button } from '@components'
+import { useEffect, useState, useMemo } from 'react'
+import { useNavigate } from "react-router-dom"
+import { Button, DropdownMenu } from '@components'
+import { paramsToObject, objectToParams } from './utils'
 import styles from './Panel.module.css'
 
-function params2object(searchParams) {
-  let _params = {}
-  for (var entry of searchParams.entries()) {
-    _params[entry[0]] = entry[1]
-  }
-  return _params
-}
-
-function object2params(_params) {
-  let searchParams = new URLSearchParams()
-  for (var key of Object.keys(_params)) {
-    let value = _params[key]
-    if (value != "") {
-      searchParams.set(key, value)
-    }
-  }
-  return searchParams
-}
-
-const Panel = ({schema, reloadPage}) => {
-
+const Panel = ({ schema: rawSchema, reloadPage }) => {
   const [params, setParams] = useState({})
-  const [isShown, setIsShown] = useState(false)
-  const navigate = useNavigate();
+  const navigate = useNavigate()
+
+  const addField = (prop) => (
+    () => {
+      const searchParams = new URLSearchParams(window.location.search)
+      const value = searchParams.has(prop) ? searchParams.get(prop) : ""
+
+      setParams({ ...params, [prop]: value })
+    }
+  )
+
+  const removeField = (prop) => (
+    () => {
+      const newParams = { ...params }
+      delete newParams[prop]
+      setParams(newParams)
+    }
+  )
+
+  const onChangeField = (prop) => (
+    (e) => {
+      const newParams = {...params}
+      newParams[prop] = e.target.value
+      setParams(newParams)
+    }
+  )
 
   const search = async () => {
-    let searchParams = object2params(params)
+    const searchParams = objectToParams(params)
+
     navigate({
       pathname: window.location.pathname,
       search: "?" + searchParams.toString()
     })
+
     await reloadPage()
   }
 
-  const showMenu = async () => {
-    setIsShown(!isShown)
-  }
+  const schema = useMemo(() => (
+    Object.keys(rawSchema).reduce((acc, key) => (
+      rawSchema[key]?.hasOwnProperty('parent') // without root of schema
+        ? [...acc, { ...rawSchema[key], name: key }]
+        : acc
+    ), [])
+  ), [rawSchema])
 
-  const generateInput = (prop) => {
-    let root = Object.keys(schema).find(prop => !schema[prop].hasOwnProperty("parent"))
+  const notAddedFields = useMemo(() => (
+    schema.filter((item) => !params?.hasOwnProperty(item.name))
+  ), [schema, params])
 
-    const remove = () => {
-      let _params = {...params}
-      delete _params[prop]
-      setParams(_params)
-    }
+  const addedFields = useMemo(() => (
+    Object.keys(params).reduce((acc, key) => (
+      rawSchema[key]?.hasOwnProperty('parent')
+        ? [ ...acc, { key, value: params[key] }]
+        : acc
+    ), [])
+  ), [params, rawSchema])
 
-    const onChange = (e) => {
-      let _params = {...params}
-      _params[prop] = e.target.value
-      setParams(_params)
-    }
+  const menuItems = useMemo(() => (
+    notAddedFields.map((field) => (
+      { label: field.name, onClick: addField(field.name) }
+    ))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  ), [notAddedFields])
 
-    if (prop == root) { return }
-    return (
-      <div>
-        <label>{prop}</label>
-        <span onClick={remove}>X</span>
-        <br/>
-        <input
-          className={styles.input}
-          type="text"
-          value={params[prop]}
-          placeholder={prop}
-          onChange={onChange}
-        />
-      </div>
-    )
-  }
-
-  const generateButton = (prop) => {
-    let root = Object.keys(schema).find(prop => !schema[prop].hasOwnProperty("parent"))
-
-    const add = () => {
-      let _params = {...params}
-      let searchParams = new URLSearchParams(window.location.search)
-      let value = searchParams.has(prop) ? searchParams.get(prop) : ""
-      _params[prop] = value
-      setParams(_params)
-      showMenu()
-    }
-
-    if (!Object.keys(params).includes(prop) && prop != root) {
-      return (
-        <button onClick={add}>{prop}</button>
-      )
-    }
-  }
-
-  useEffect( () => {
-    let searchParams = new URLSearchParams(window.location.search)
-    setParams(params2object(searchParams))
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search)
+    setParams(paramsToObject(searchParams))
   }, [])
 
   return (
     <>
       <form className={styles.form}>
-        {Object.keys(params).map(generateInput)}
+        {addedFields.map(({ key, value }) => (
+          <div>
+            <label>{key}</label>
+            <span onClick={removeField(key)}>X</span>
+            <br/>
+            <input
+              className={styles.input}
+              type="text"
+              value={value}
+              placeholder={key}
+              onChange={onChangeField(key)}
+            />
+          </div>
+        ))}
       </form>
-      <Button type="button" onClick={showMenu}>+</Button>
-      { isShown && (
-        <div className="menu">
-          {Object.keys(schema).map(generateButton)}
-        </div>
-      )}
+      <DropdownMenu
+        label='Выбрать'
+        menuItems={menuItems}
+      />
       <Button type="button" onClick={search}>Search</Button>
     </>
   )}

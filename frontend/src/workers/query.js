@@ -36,6 +36,22 @@ export function queryWorkerInit() {
     worker.postMessage({action: "query", search: searchParams.toString()}, [channel.port2])
   })
 
+  const queryOptions = (param) => new Promise((res, rej) => {
+
+    const channel = new MessageChannel()
+
+    channel.port1.onmessage = ({data}) => {
+      channel.port1.close()
+      if (data.error) {
+        rej(data.error)
+      } else {
+        res(data.result)
+      }
+    }
+
+    worker.postMessage({action: "options", param}, [channel.port2])
+  })
+
   const buildLine = (data, prop_label) => new Promise((res, rej) => {
 
     const channel = new MessageChannel()
@@ -52,5 +68,5 @@ export function queryWorkerInit() {
     worker.postMessage({action: "build", data, prop_label}, [channel.port2])
   })
 
-  return { buildLine, queryMetadir }
+  return { buildLine, queryMetadir, queryOptions }
 }

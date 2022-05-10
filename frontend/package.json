@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@craco/craco": "^6.4.3",
-    "@fetsorn/csvs-js": "0.3.6",
+    "@fetsorn/csvs-js": "0.4.6",
     "@fetsorn/ged2dot": "^0.1.3",
     "@fetsorn/ppt": "^0.0.1",
     "@ffmpeg/core": "^0.10.0",

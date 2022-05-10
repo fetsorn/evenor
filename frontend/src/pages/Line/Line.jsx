@@ -128,6 +128,7 @@ const Line = () => {
       { process.env.REACT_APP_BUILD_MODE === "local" && (
         <Panel
           schema={schema}
+          worker={queryWorker}
           reloadPage={reloadPage}
         />
       )}

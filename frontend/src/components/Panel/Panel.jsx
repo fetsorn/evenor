@@ -4,8 +4,9 @@ import { Button, DropdownMenu } from '@components'
 import { paramsToObject, objectToParams } from './utils'
 import styles from './Panel.module.css'
 
-const Panel = ({ schema: rawSchema, reloadPage }) => {
+const Panel = ({ schema: rawSchema, worker, reloadPage }) => {
   const [params, setParams] = useState({})
+  const [options, setOptions] = useState({})
   const navigate = useNavigate()
 
   const addField = (prop) => (
@@ -13,6 +14,8 @@ const Panel = ({ schema: rawSchema, reloadPage }) => {
       const searchParams = new URLSearchParams(window.location.search)
       const value = searchParams.has(prop) ? searchParams.get(prop) : ""
 
+      console.log(options)
+      console.log(addedFields)
       setParams({ ...params, [prop]: value })
     }
   )
@@ -71,6 +74,16 @@ const Panel = ({ schema: rawSchema, reloadPage }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   ), [notAddedFields])
 
+  useEffect(() => (
+    (async () => {
+      var _options = {}
+      for (const param of schema) {
+        _options[param.name] = await worker.queryOptions(param.name)
+      }
+      setOptions(_options)
+    })()
+  ), [schema])
+
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search)
     setParams(paramsToObject(searchParams))
@@ -82,20 +95,26 @@ const Panel = ({ schema: rawSchema, reloadPage }) => {
         {addedFields.map(({ key, value }) => (
           <div>
             <label>{key}</label>
-            <span onClick={removeField(key)}>X</span>
+            <span onClick={removeField(key)}>  X</span>
             <br/>
             <input
               className={styles.input}
               type="text"
+              list={`${key}_list`}
               value={value}
               placeholder={key}
               onChange={onChangeField(key)}
             />
+            <datalist id={`${key}_list`}>
+              {options[key]?.map(option => (
+                <option value={option}/>
+              ))}
+            </datalist>
           </div>
         ))}
       </form>
       <DropdownMenu
-        label='Выбрать'
+        label=''
         menuItems={menuItems}
       />
       <Button type="button" onClick={search}>Search</Button>

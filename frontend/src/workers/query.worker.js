@@ -20,7 +20,7 @@ const fetchDataMetadir = (path) => new Promise((res, rej) => {
   postMessage({action: "fetch", path}, [channel.port2]);
 });
 
-async function _queryMetadir(message) {
+async function queryMetadir(message) {
   try {
     console.log("query worker tries to query metadir", message.data.search)
     var result
@@ -43,8 +43,29 @@ async function _queryMetadir(message) {
   }
 }
 
+async function queryOptions(message) {
+  try {
+    console.log("query worker tries to query options", message.data.param)
+    var result
+    try {
+      // console.log("query worker calls to csvs")
+      result = await (await csvs).queryOptions(message.data.param,
+                                               {fetch: fetchDataMetadir})
+      // console.log("csvs completes")
+    } catch(e) {
+      console.log("csvs.queryOptions fails", e)
+      result = []
+    }
+    // console.log("query worker returns query")
+    message.ports[0].postMessage({result})
+  } catch(e) {
+    console.log("query worker errors", e)
+    message.ports[0].postMessage({error: e});
+  }
+}
+
 // group events in data by prop_label
-function buildLine(data, prop_label) {
+function _buildLine(data, prop_label) {
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   var object_of_arrays = data.reduce((acc, item) => {
@@ -66,12 +87,12 @@ function buildLine(data, prop_label) {
   return array_of_objects
 }
 
-async function _buildLine(message) {
+async function buildLine(message) {
   try {
     console.log("query worker tries to build line", message.data.prop_label)
     var result
     try {
-      result = buildLine(message.data.data, message.data.prop_label)
+      result = _buildLine(message.data.data, message.data.prop_label)
       // console.log("csvs completes")
     } catch(e) {
       console.log("buildLine fails", e)
@@ -88,8 +109,10 @@ async function _buildLine(message) {
 onmessage = async (message) => {
   // console.log("query worker received message", message)
   if (message.data.action === "query") {
-    await _queryMetadir(message)
+    await queryMetadir(message)
+  } else if (message.data.action === "options") {
+    await queryOptions(message)
   } else if (message.data.action === "build") {
-    await _buildLine(message)
+    await buildLine(message)
   }
 }

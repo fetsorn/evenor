@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import cn from 'classnames'
 import { Title, Paragraph, Button, Link } from '@components'
-import { formatDate, isIFrameable, resolveLFS, docxToHtml } from '@utils'
+import { formatDate, isIFrameable, resolveLFS, toHtml } from '@utils'
 import styles from './Sidebar.module.css'
 
 const Sidebar = (props) => {
@@ -44,11 +44,13 @@ const Sidebar = (props) => {
     let text = (new TextDecoder("utf-8")).decode(buf)
     setDatum(text)
   }
+
   const handleDoc = async () => {
     try {
-      let docURL = await docxToHtml(assetPath)
-      setDocPath(docURL)
-      console.log("handleDoc succeeded:", docURL)
+      let html = await toHtml(assetPath)
+      let blob = new Blob([html])
+      let blobURL = URL.createObjectURL(blob)
+      setDocPath(blobURL)
     } catch(e) {
       console.log("handleDoc failed:", e)
     }
@@ -60,9 +62,10 @@ const Sidebar = (props) => {
       setEvent(newEvent)
     }
 
-    // reset datum and assetPath on event switch
+    // reset sidebar contents on event switch
     setDatum("")
     setAssetPath(undefined)
+    setDocPath(undefined)
     window.buf = {}
 
 

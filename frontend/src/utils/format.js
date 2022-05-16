@@ -1,6 +1,16 @@
 import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
 import mime from 'mime'
-import _mammoth from 'mammoth'
+import mammoth from 'mammoth'
+import {
+  // docx,
+  pptx,
+  // xlsx,
+  // drawml
+} from "docx4js"
+import WordExtractor from "word-extractor"
+import { RTFJS } from 'rtf.js'
+import cfb from 'cfb'
+import PPT from '@fetsorn/ppt'
 
 export function formatDate(date) {
   if (!date) { return '' }
@@ -127,14 +137,76 @@ export const unoconvert = async (path) => {
   return blobURL
 }
 
-export const docxToHtml = async (path) => {
-  const resp1 = await fetch(path)
-  const arr = await resp1.arrayBuffer()
-  let _html = await _mammoth.convertToHtml(
-    { arrayBuffer: arr },
+export const docxToHtml = async (buf) => {
+  let html = await mammoth.convertToHtml(
+    { arrayBuffer: buf },
     { includeDefaultStyleMap: true },
   )
-  let blob = new Blob([_html.value])
-  let blobURL = URL.createObjectURL(blob)
-  return blobURL
+  return html.value
+}
+
+const pptxToHtml = async (buf) => {
+  let _pptx = await pptx.load(buf)
+  let html = await _pptx.render((type, props, children) => {
+    return children.join("\n")
+  })
+  return html
+}
+
+const docToHtml = async (buf) => {
+  let _buf = new Buffer.from(buf)
+  const extractor = new WordExtractor()
+  const document = await extractor.extract(_buf)
+  let html = document.getBody()
+  return html
+}
+
+const pptToHtml = async (buf) => {
+  let _buf = new Buffer.from(buf)
+  // ppt requires cfb^0.10.0
+  let _cfb = cfb.read(_buf, {type: "buffer"})
+  let _ppt = PPT.parse_pptcfb(_cfb)
+  // { docs: [ { slideList: [ "" ] } ]
+  //   slides: [ { drawing: { groupShape: [ { clientTextbox: { t: "" } } ] } } ] }
+  let textboxes = _ppt.slides.map(
+    slide => slide.drawing?.groupShape?.map(
+      shape => shape.clientTextbox?.t
+    ).join("\n")
+  )
+  let headings = _ppt.docs.map(
+    doc => doc.slideList?.join("\n")
+  )
+  let html = headings.join("\n") + textboxes.join("\n")
+  return html
+}
+
+const rtfToHtml = async (buf) => {
+  RTFJS.loggingEnabled(false);
+  const doc = new RTFJS.Document(buf);
+  let divs = await doc.render()
+  let html = divs.map(e=>e.outerHTML)
+  return html
+}
+
+export const toHtml = async (path) => {
+  const res = await fetch(path)
+  const buf = await res.arrayBuffer()
+
+  if ((/.docx$/).test(path)) {
+    return await docxToHtml(buf)
+  }
+  if ((/.pptx$/).test(path)) {
+    return await pptxToHtml(buf)
+  }
+  if ((/.doc$/).test(path)) {
+    return await docToHtml(buf)
+  }
+  if ((/.ppt$/).test(path)) {
+    return await pptToHtml(buf)
+  }
+  if ((/.rtf$/).test(path)) {
+    return await rtfToHtml(buf)
+  }
+
+  throw Error("unknown extension")
 }

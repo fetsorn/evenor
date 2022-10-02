@@ -1,23 +1,44 @@
 {
   "nodes": {
+    "csvs-js": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1663281806,
+        "narHash": "sha256-hby6n7OaD6Er3hPjHDCbA4eJ3aI8rtIvypDPmlXLQGo=",
+        "ref": "refs/heads/main",
+        "rev": "517d8c79aac600745e841cbd64ac6ac183cd4190",
+        "revCount": 83,
+        "type": "git",
+        "url": "https://source.fetsorn.website/fetsorn/csvs-js"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://source.fetsorn.website/fetsorn/csvs-js"
+      }
+    },
     "nixpkgs": {
       "locked": {
-        "lastModified": 1651634615,
-        "narHash": "sha256-VtvcS61bLh5mIBm9cV3idUHdlfPRFus/NwdJfaj5s8o=",
+        "lastModified": 1664029467,
+        "narHash": "sha256-ir7JbsLp2mqseCs3qI+Z/pkt+Gh+GfANbYcI5I+Gvnk=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "abfd31179174133ab8131139d650297bf4da63b7",
+        "rev": "893b6b9f6c4ed0c7efdb84bd300a499a2da9fa51",
         "type": "github"
       },
       "original": {
         "owner": "nixos",
-        "ref": "nixpkgs-unstable",
+        "ref": "nixos-22.05",
         "repo": "nixpkgs",
         "type": "github"
       }
     },
     "root": {
       "inputs": {
+        "csvs-js": "csvs-js",
         "nixpkgs": "nixpkgs"
       }
     }

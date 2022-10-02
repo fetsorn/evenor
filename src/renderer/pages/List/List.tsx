@@ -122,6 +122,12 @@ const List = () => {
           }
 
           try {
+            await rimraf("/show");
+          } catch (e) {
+            console.log("nothing to remove");
+          }
+
+          try {
             await clone(barUrl, barToken, "show");
           } catch (e) {
             await rimraf("/show");

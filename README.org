@@ -1,57 +1,84 @@
-#+TITLE: csvs-ui
+#+TITLE: qualia
 #+OPTIONS: toc:nil
 
-Query and edit data in csvs databases, preview documents and media files.
-
-* Examples
-Genealogy: [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_en][english]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tohmatsarr][armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_am.git][russian-armenian]], [[https://antea.fetsorn.website/q?url=https://source.fetsorn.website/public/tree_ru][russian]]
+Qualia ("QUAlitatum temporaLIA") - query and edit timelines
 
 * Setup
+** browser
+a React webapp
 #+begin_src sh
-# local mode - accesses csvs in a local git directory
-# get a metadir repo
+## build with nix
+nix build https://github.com/fetsorn/qualia#webapp
+
+## or build with yarn
+git clone https://github.com/fetsorn/qualia
+cd ~/qualia
+yarn build:webapp
+#+end_src
+** desktop
+a desktop Electron app
+#+begin_src sh
+## with nix
+nix build https://github.com/fetsorn/qualia#macos.arm64.zip
+## supported architectures:
+### linux.x64.deb
+### linux.x64.rpm
+### linux.ia32.deb
+### linux.ia32.rpm
+### windows.x64.exe
+### windows.ia32.exe
+### macos.x64.zip
+### macos.arm64.zip
+
+## or install nodejs-16_x, yarn
+git clone https://github.com/fetsorn/qualia
+cd ~/qualia
+yarn build:electron
+#+end_src
+** server
+a local ExpressJS server
+#+begin_src sh
+## get a sample csvs project
 git clone https://github.com/fetsorn/csvs-init.git
 cd csvs-init/
-## with nix
-nix run ~/csvs-ui#csvs-ui-backend-local
 
-# remote mode - accesses csvs on a git server
-## with nix
-nix run .#csvs-ui-backend-remote
-## or install nodejs-16_x, yarn
-cd frontend
-yarn start
+## run with nix
+nix run https://github.com/fetsorn/qualia#server
 
-# deploy remote mode as a static website
-## with nix
-nix build .#csvs-ui-frontend-remote
-## or install nodejs-16_x, yarn
-cd frontend
-yarn build
-cd build
-npx serve
+## or build with yarn
+git clone https://github.com/fetsorn/qualia
+cd ~/qualia
+yarn build:server
+## and run with node
+cd ~/csvs-init
+node ~/qualia/src/server/index.js
 #+end_src
 * Structure of the repo
-[[backend/][backend]] - a local nodejs and git server.
+[[src/renderer][renderer]] - a React app, packaged both as a webapp and as an Electron renderer
 
-[[frontend/][frontend]] - a static web application to access, visualize and modify a csvs database.
+[[src/main][main]] - main Electron thread
 
+[[src/server][server]] - a local ExpressJS server
 * More csvs projects
-[[https://github.com/fetsorn/csvs-spec][csvs-spec]] - format description.
+[[https://github.com/fetsorn/csvs-spec][csvs-spec]] - specification
 
-[[https://github.com/fetsorn/csvs-js][csvs-js]] - WASM/JS implementation. Serverless CRUD.
+[[https://github.com/fetsorn/csvs-js][csvs-js]] - WASM/JS implementation
 
-[[https://github.com/fetsorn/csvs-sh][csvs-sh]] - command-line interface. A reference implementation.
+[[https://github.com/fetsorn/csvs-sh][csvs-sh]] - Borne shell implementation
 
-[[https://github.com/fetsorn/ged2dot.js][ged2dot.js]] - GEDCOM to Graphviz converter.
+[[https://github.com/fetsorn/ged2dot.js][ged2dot.js]] - GEDCOM to Graphviz converter
 
-[[https://github.com/fetsorn/wasm-grep][wasm-grep]] - ripgrep compiled to WASM.
+[[https://github.com/fetsorn/wasm-grep][wasm-grep]] - ripgrep compiled to WASM
 
 * Thanks
-[[https://github.com/isomorphic-git/isomorphic-git][isomorphic-git]] - A pure JavaScript implementation of git for node and browsers.
+[[https://github.com/isomorphic-git/isomorphic-git][isomorphic-git]] - A pure JavaScript implementation of git for node and browsers
 
-[[https://github.com/genea-app/genea-app][genea]] - Completely serverless solution for consuming and authoring GEDCOM genealogy data.
+[[https://github.com/genea-app/genea-app][genea]] - Completely serverless solution for consuming and authoring GEDCOM genealogy data
 
-[[https://github.com/vmiklos/ged2dot][ged2dot]] - GEDCOM to Graphviz converter.
+[[https://github.com/vmiklos/ged2dot][ged2dot]] - GEDCOM to Graphviz converter
 
-[[https://github.com/hpcc-systems/hpcc-js-wasm][hpcc-js-wasm]] - Graphviz compiled to WASM.
+[[https://github.com/hpcc-systems/hpcc-js-wasm][hpcc-js-wasm]] - Graphviz compiled to WASM
+
+[[https://github.com/electron-react-boilerplate/electron-react-boilerplate][electron-react-boilerplate]] - electron-builder with TypeScript and React
+
+[[https://github.com/MatrixAI/TypeScript-Demo-Electron.git][@matrixai/typescript-demo-electron]] - electron-forge with TypeScript, Vue and Nix

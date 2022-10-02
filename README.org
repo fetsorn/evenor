@@ -1,7 +1,7 @@
 #+TITLE: qualia
 #+OPTIONS: toc:nil
 
-Qualia ("QUAlitatum temporaLIA") - query and edit timelines
+Qualia ("QUAlitatum temporaLIA") - query and edit timelines. Tell the story of your own data.
 
 * Setup
 ** browser

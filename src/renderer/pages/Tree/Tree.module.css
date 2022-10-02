@@ -1,0 +1,19 @@
+.container {
+  overflow: scroll;
+}
+
+.csv {
+  overflow: scroll;
+  position: relative;
+  width: max-content;
+  height: max-content;
+}
+
+.slider {
+  position: sticky;
+  bottom: 0;
+  width: max-content;
+  height: max-content;
+  background-color: white;
+  padding: 10px;
+}

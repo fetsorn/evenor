@@ -1,0 +1,45 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+}
+
+.search {
+  display: flex;
+}
+
+.header {
+  padding-top: calc(var(--rem) * 16);
+  padding-bottom: calc(var(--rem) * 16);
+  display: flex;
+}
+
+.title {
+  margin: 0;
+
+  font-family: var(--title-font);
+  font-size: calc(var(--rem) * 16);
+  font-weight: 900;
+  line-height: 1em;
+  text-align: center;
+  text-transform: uppercase;
+
+  color: var(--color-font-base);
+}
+
+@media (max-width: 600px) {
+  .title {
+    font-size: calc(var(--rem) * 12);
+  }
+}
+
+.form {
+  display: flex;
+  /* width: 100vw; */
+  flex-wrap: wrap;
+}
+
+.queries {
+  display: flex;
+  /* width: 100vw; */
+  flex-wrap: wrap;
+}

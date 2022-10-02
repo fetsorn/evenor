@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Main, Footer, Button } from "../../components";
 import {
   gitInit,
-  /* wipe, */
+  wipe,
   clone,
   gitListRepos,
   gitCreate,
@@ -112,17 +112,27 @@ const List = () => {
         const barToken = searchParams.get("token") ?? "";
         // remove url from address bar
         /* window.history.replaceState(null, null, "/"); */
-        // try to login read-only to a public repo from address bar
-        try {
-          // check if path is a url
-          new URL(barUrl);
-          await rimraf("/show");
-          await clone(barUrl, barToken, "show");
+        const tryShow = async () => {
+          try {
+            // check if path is a url
+            new URL(barUrl);
+          } catch (e) {
+            console.log("not a url", barUrl, e);
+            return
+          }
+
+          try {
+            await clone(barUrl, barToken, "show");
+          } catch (e) {
+            await rimraf("/show");
+            console.log("couldn't clone from url", barUrl, e);
+            return
+          }
+
           navigate("show/");
-        } catch (_) {
-          await rimraf("/show");
-          console.log("couldn't clone from url");
         }
+        // try to login read-only to a public repo from address bar
+        await tryShow();
       }
 
       await listRepos();
@@ -219,9 +229,9 @@ const List = () => {
               </div>
             ))}
           </div>
-          {/* <Button type="button" onClick={() => wipe()}>
-              Wipe
-              </Button> */}
+          <Button type="button" onClick={() => wipe()}>
+            Wipe
+          </Button>
         </div>
       </Main>
       <Footer />

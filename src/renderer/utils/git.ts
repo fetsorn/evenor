@@ -663,7 +663,12 @@ export async function rimraf(path: string) {
     }
   } else {
     // console.log("rimraf");
-    const files = await window.pfs.readdir(path);
+    let files;
+    try {
+      files = await window.pfs.readdir(path);
+    } catch {
+      throw Error(`can't read ${path} to rimraf it`)
+    }
     // console.log(files);
     for (const file of files) {
       const filepath = path + "/" + file;

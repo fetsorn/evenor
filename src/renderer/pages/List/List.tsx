@@ -6,7 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Main, Footer, Button } from "../../components";
 import {
   gitInit,
-  wipe,
+  /* wipe, */
   clone,
   gitListRepos,
   gitCreate,
@@ -229,9 +229,9 @@ const List = () => {
               </div>
             ))}
           </div>
-          <Button type="button" onClick={() => wipe()}>
-            Wipe
-          </Button>
+          {/* <Button type="button" onClick={() => wipe()}>
+              Wipe
+              </Button> */}
         </div>
       </Main>
       <Footer />

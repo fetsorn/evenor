@@ -176,7 +176,7 @@
             preConfigure = ''
               substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace webpack.renderer.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
-              substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --platform win32 --targets @electron-forge/maker-zip"
+              substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --platform win32 --arch ${arch} --targets @electron-forge/maker-zip"
             '';
             buildPhase = ''
               # electron-forge needs 'home' with a skip check file
@@ -261,6 +261,40 @@
             x64 = { zip = buildZip "x64"; };
             arm64 = { zip = buildZip "arm64"; };
           };
+          all = pkgs.linkFarm "electron-qualia" [
+            {
+              name = "linux-x64-deb";
+              path = packages.linux.x64.deb;
+            }
+            {
+              name = "linux-x64-rpm";
+              path = packages.linux.x64.rpm;
+            }
+            {
+              name = "linux-ia32-deb";
+              path = packages.linux.ia32.deb;
+            }
+            {
+              name = "linux-ia32-rpm";
+              path = packages.linux.ia32.rpm;
+            }
+            {
+              name = "windows-x64-exe";
+              path = packages.windows.x64.exe;
+            }
+            {
+              name = "windows-ia32-exe";
+              path = packages.windows.ia32.exe;
+            }
+            {
+              name = "macos-arm64-zip";
+              path = packages.macos.arm64.zip;
+            }
+            {
+              name = "macos-x64-zip";
+              path = packages.macos.x64.zip;
+            }
+          ];
         };
         defaultPackage = packages.webapp;
         defaultApp = server;

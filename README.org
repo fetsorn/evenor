@@ -34,6 +34,12 @@ nix build https://github.com/fetsorn/qualia#macos.arm64.zip
 git clone https://github.com/fetsorn/qualia
 cd ~/qualia
 yarn build:electron
+### electron-forge make  --platform darwin --arch x64   --targets @electron-forge/maker-zip;
+### electron-forge make  --platform darwin --arch arm64 --targets @electron-forge/maker-zip;
+### electron-forge make  --platform win32  --arch x64   --targets @electron-forge/maker-squirrel;
+### electron-forge make  --platform win32  --arch x64   --targets @electron-forge/maker-zip;
+### electron-forge make  --platform linux  --arch x64   --targets @electron-forge/maker-rpm;
+### electron-forge make  --platform linux  --arch x64   --targets @electron-forge/maker-deb;
 #+end_src
 ** server
 a local ExpressJS server

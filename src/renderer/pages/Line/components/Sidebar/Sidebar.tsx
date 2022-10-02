@@ -188,7 +188,7 @@ const Sidebar = (props: ISidebarProps) => {
     () =>
       notAddedFields.map((prop: any) => {
         const label = schema[prop]["label"];
-        const lang = i18n.language;
+        const lang = i18n.resolvedLanguage;
         const description = schema?.[prop]?.description?.[lang] ?? label;
         return {
           label: description,
@@ -220,7 +220,7 @@ const Sidebar = (props: ISidebarProps) => {
         !Object.prototype.hasOwnProperty.call(schema[prop], "parent")
     );
 
-    const lang = i18n.language;
+    const lang = i18n.resolvedLanguage;
     const description = schema?.[prop]?.description?.[lang] ?? label;
 
     async function onChange(e: any) {
@@ -305,7 +305,7 @@ const Sidebar = (props: ISidebarProps) => {
     const prop = Object.keys(schema).find(
       (prop: any) => schema[prop]["label"] === label
     );
-    const lang = i18n.language;
+    const lang = i18n.resolvedLanguage;
     const description = schema?.[prop]?.description?.[lang] ?? label;
     if (event?.[label])
       return (

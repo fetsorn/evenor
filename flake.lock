@@ -1,25 +1,5 @@
 {
   "nodes": {
-    "csvs-js": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ]
-      },
-      "locked": {
-        "lastModified": 1663281806,
-        "narHash": "sha256-hby6n7OaD6Er3hPjHDCbA4eJ3aI8rtIvypDPmlXLQGo=",
-        "ref": "refs/heads/main",
-        "rev": "517d8c79aac600745e841cbd64ac6ac183cd4190",
-        "revCount": 83,
-        "type": "git",
-        "url": "https://source.fetsorn.website/fetsorn/csvs-js"
-      },
-      "original": {
-        "type": "git",
-        "url": "https://source.fetsorn.website/fetsorn/csvs-js"
-      }
-    },
     "nixpkgs": {
       "locked": {
         "lastModified": 1664029467,
@@ -38,7 +18,6 @@
     },
     "root": {
       "inputs": {
-        "csvs-js": "csvs-js",
         "nixpkgs": "nixpkgs"
       }
     }

@@ -16,6 +16,8 @@ export const resources = {
 use(LanguageDetector)
   .use(initReactI18next)
   .init({
+    debug: true,
+    fallbackLng: 'en',
     detection: {
       order: ["navigator"],
     },

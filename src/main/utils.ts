@@ -29,7 +29,7 @@ export async function uploadFile(_event: any, repo: string) {
     const pathSource = res.filePaths[0];
     const filename = pathSource.substring(pathSource.lastIndexOf("/") + 1);
     const homePath = app.getPath("home");
-    const rootPath = path.join(homePath, ".qualia");
+    const rootPath = path.join(homePath, "qualia");
     const localDir = "local";
     const localPath = path.join(rootPath, repo, localDir);
     if (!fs.existsSync(localPath)) {

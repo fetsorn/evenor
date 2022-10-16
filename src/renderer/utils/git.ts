@@ -340,8 +340,8 @@ export async function clone(
   if (__BUILD_MODE__ === "electron") {
     try {
       await window.electron.clone(url, token, dir);
-    } catch {
-      throw Error(`Could not clone`);
+    } catch (e) {
+      throw e;
     }
   } else {
     dir = await dirNew(dir);

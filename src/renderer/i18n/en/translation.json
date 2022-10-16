@@ -22,7 +22,8 @@
       "save": "save event",
       "edit": "edit event",
       "delete": "delete event",
-      "remove": "remove {{ field }} field"
+      "remove": "remove {{ field }} field",
+      "upload": "upload"
     },
     "dropdown": {
       "input": "add field to event"

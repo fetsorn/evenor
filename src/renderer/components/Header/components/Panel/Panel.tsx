@@ -77,7 +77,8 @@ const Panel = ({ schema: rawSchema, reloadPage, options }: IPanelProps) => {
     const searchParams = new URLSearchParams(location.search);
     const _params = paramsToObject(searchParams);
     setParams(_params);
-  }, []);
+    reloadPage(searchParams).catch(console.error);
+  }, [location]);
 
   return (
     <div className={styles.panel}>
@@ -125,12 +126,13 @@ const Panel = ({ schema: rawSchema, reloadPage, options }: IPanelProps) => {
             <div>
               {prop} {params[prop]}
             </div>
-            <div
+            <a
               title={t("header.button.remove", { field: prop })}
               onClick={() => removeQuery(prop)}
+              style={{marginLeft: '5px', color: 'red', cursor: 'pointer'}}
             >
               X
-            </div>
+            </a>
           </div>
         ))}
       </div>

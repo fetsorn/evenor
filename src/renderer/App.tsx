@@ -1,6 +1,6 @@
 import * as React from "react";
 import { HashRouter as Router, Routes, Route } from "react-router-dom";
-import { List, Tree, Line } from "./pages";
+import { List, Tree, Line } from "./components";
 
 export default function App() {
   return (

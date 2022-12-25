@@ -1,3 +1,10 @@
+    useEffect(() => {
+        inUseEffect()
+    }, [eventOriginal]);
+
+    useEffect(() => {
+        inUseEffect2()
+    }, [event]);
 
                     {isIFrameable(event?.FILE_PATH) && iframeFetchPath && (
                         <Paragraph>

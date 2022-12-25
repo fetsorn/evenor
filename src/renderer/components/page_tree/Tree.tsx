@@ -1,19 +1,45 @@
-import { useEffect } from "react";
-import { Header } from "../../components";
-import { TreeGraph, TreeControl } from "./components";
-import { inUseEffect } from "./Tree";
+import { useEffect, useState } from "react";
+import { Graph, InputDepth, InputFamily } from "..";
+import { setupVars, load } from "./Tree";
+import styles from "./Tree.module.css";
 
 const Tree = () => {
 
+  const [depth, setDepth] = useState(4);
+
+  const [familyID, setFamilyID] = useState("F0001");
+
+  const [html, setHTML] = useState(undefined);
+
   useEffect(() => {
-    inUseEffect();
+
+    setupVars();
+
   }, []);
+
+  useEffect(() => {
+
+    (async () => {
+
+      const newHTML = await load(depth, familyID);
+
+      setHTML(newHTML);
+
+    })();
+
+  }, [depth, familyID])
 
   return (
     <>
-      <Header />
-      <TreeGraph/>
-      <TreeControl/>
+      <Graph html={html}/>
+
+      <div className={styles.slider}>
+
+        <InputFamily familyID={familyID} setFamilyID={setFamilyID}/>
+
+        <InputDepth depth={depth} setDepth={setDepth}/>
+
+      </div>
     </>
   );
 };

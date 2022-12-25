@@ -1,0 +1,4829 @@
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+^C
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2022-01-01' }
+grep moddate in date index for ,2022-01-01$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 95 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2022-01-01' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2022-01-01$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 95 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+pair for filehash
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+get api /api/metadir/props/filetype/index.csv
+index for moddate
+index for filetype
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-08' }
+grep moddate in date index for ,2006-01-08$
+
+pair for filehash
+grep cli returned empty
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/content'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/content'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-08' }
+grep moddate in date index for ,2006-01-08$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-01-08' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-01-08$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/props/date/index.csv
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir.json
+get api /api/metadir/props/date/index.csv
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+get api /api/index.ged
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/index.ged'
+get api /api/index.html
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+pair for datum
+pair for hostdate
+get api /api/metadir/props/filetype/index.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+grep cli returned empty
+pair for tag
+get api /api/metadir/props/filesize/index.csv
+grep cli returned empty
+pair for filepath
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-08' }
+grep moddate in date index for ,2006-01-08$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-01-08' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-01-08$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+pair for datum
+pair for hostdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-02' }
+index for datum
+grep moddate in date index for ,2006-01-02$
+
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-02' }
+grep moddate in date index for ,2006-01-02$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 3 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-01-02' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-01-02$
+
+recurseBranches
+grep 659753 branch filepath uuids against 1 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 3 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/lfs/2017/2017/Verbatim/%D0%A4%D0%BE%D1%82%D0%BE1.%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%BE/99%20%D0%92%D0%B7%D1%80%D0%BE%D1%81%D0%BB%D1%8B%D0%B5/Image(002).jpg
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/lfs/2017/2017/Verbatim/Фото1.Закрыто/99 Взрослые/Image(002).jpg'
+get api /api/local/2017/2017/Verbatim/%D0%A4%D0%BE%D1%82%D0%BE1.%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%BE/99%20%D0%92%D0%B7%D1%80%D0%BE%D1%81%D0%BB%D1%8B%D0%B5/Image(002).jpg
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/local/2017/2017/Verbatim/Фото1.Закрыто/99 Взрослые/Image(002).jpg'
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-0.*' }
+grep moddate in date index for ,2006-01-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 4 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 11 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-01-0.*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-01-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 4 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 11 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+pair for filehash
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+index for datum
+get api /api/metadir/props/filetype/index.csv
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/lfs/2017/2017/Verbatim/%D0%A4%D0%BE%D1%82%D0%BE1.%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%BE/99%20%D0%92%D0%B7%D1%80%D0%BE%D1%81%D0%BB%D1%8B%D0%B5/Image(003).jpg
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/lfs/2017/2017/Verbatim/Фото1.Закрыто/99 Взрослые/Image(003).jpg'
+get api /api/local/2017/2017/Verbatim/%D0%A4%D0%BE%D1%82%D0%BE1.%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%BE/99%20%D0%92%D0%B7%D1%80%D0%BE%D1%81%D0%BB%D1%8B%D0%B5/Image(003).jpg
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/local/2017/2017/Verbatim/Фото1.Закрыто/99 Взрослые/Image(003).jpg'
+get api /api/lfs/2017/2017/Verbatim/%D0%A4%D0%BE%D1%82%D0%BE1.%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%BE/99%20%D0%92%D0%B7%D1%80%D0%BE%D1%81%D0%BB%D1%8B%D0%B5/Image(002).jpg
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/lfs/2017/2017/Verbatim/Фото1.Закрыто/99 Взрослые/Image(002).jpg'
+get api /api/local/2017/2017/Verbatim/%D0%A4%D0%BE%D1%82%D0%BE1.%D0%97%D0%B0%D0%BA%D1%80%D1%8B%D1%82%D0%BE/99%20%D0%92%D0%B7%D1%80%D0%BE%D1%81%D0%BB%D1%8B%D0%B5/Image(002).jpg
+Error: ENOENT: no such file or directory, stat '/Users/fetsorn/mm/yodes/axles/lines/local/2017/2017/Verbatim/Фото1.Закрыто/99 Взрослые/Image(002).jpg'
+/
+post query /query URLSearchParams { 'moddate' => '2006-01-.*' }
+grep moddate in date index for ,2006-01-.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 24 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1802 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-01-.*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-01-.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 24 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1802 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+pair for filesize
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+pair for filehash
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+index for datum
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-01.*' }
+grep moddate in date index for ,2006-01.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 24 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1802 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-01.*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-01.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 24 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1802 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+pair for filetype
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+pair for filesize
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for filehash
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0.*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for datum
+pair for hostdate
+get api /api/metadir/props/filesize/index.csv
+grep cli returned empty
+pair for hostname
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1-2]*' }
+grep moddate in date index for ,2006-0[1-2]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[1-2]*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[1-2]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+get api /api/metadir/props/filepath/index.csv
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[12]*' }
+grep moddate in date index for ,2006-0[12]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[12]*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[12]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0\\[12\\]*' }
+grep moddate in date index for ,2006-0\[12\]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0\\[12\\]*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0\[12\]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0\\[1\\]*' }
+grep moddate in date index for ,2006-0\[1\]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0\\[1\\]*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0\[1\]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+get api /api/metadir/props/filepath/index.csv
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir.json
+get api /api/metadir/props/date/index.csv
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1]*' }
+grep moddate in date index for ,2006-0[1]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[1]*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[1]*$
+
+grep cli returned empty
+recurseBranches
+grep 659753 branch filepath uuids against 0 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+grep cli returned empty
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 0 filepath uuids
+grep cli returned empty
+pair for datum
+pair for hostdate
+pair for hostname
+pair for guestdate
+pair for guestname
+pair for tag
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+grep cli returned empty
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir.json
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1-2]*.*' }
+grep moddate in date index for ,2006-0[1-2]*.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[1-2]*.*' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[1-2]*.*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+pair for datum
+pair for hostdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[2].*' }
+grep moddate in date index for ,2006-0[2].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 19 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 519 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[2].*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[2].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 19 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 519 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+index for datum
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+get api /api/metadir/props/filetype/index.csv
+index for moddate
+index for filetype
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[23].*' }
+grep moddate in date index for ,2006-0[23].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 41 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1518 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[23].*' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[23].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 41 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1518 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+pair for filesize
+get api /api/metadir/props/filetype/index.csv
+pair for filehash
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[2-4].*' }
+grep moddate in date index for ,2006-0[2-4].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 63 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1713 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[2-4].*' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[2-4].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 63 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 1713 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+pair for filetype
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+pair for filesize
+get api /api/metadir/props/filetype/index.csv
+pair for filehash
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[2-6].*' }
+grep moddate in date index for ,2006-0[2-6].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 101 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 2684 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[2-6].*' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[2-6].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 101 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 2684 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+pair for moddate
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+pair for filetype
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+pair for filesize
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[2-8].*' }
+grep moddate in date index for ,2006-0[2-8].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 154 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5202 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[2-8].*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[2-8].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 154 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5202 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1-9].*' }
+index for datum
+grep moddate in date index for ,2006-0[1-9].*$
+
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1-9].*' }
+grep moddate in date index for ,2006-0[1-9].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[1-9].*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[1-9].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 202 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7511 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+/
+pair for filehash
+post query /query URLSearchParams { 'moddate' => '2006-0[1-8].*' }
+grep moddate in date index for ,2006-0[1-8].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 178 moddate uuids
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1-8].*' }
+grep moddate in date index for ,2006-0[1-8].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 178 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7004 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[1-8].*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[1-8].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 178 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 7004 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+/
+pair for filehash
+post query /query URLSearchParams { 'moddate' => '2006-0[0-7].*' }
+grep moddate in date index for ,2006-0[0-7].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 152 moddate uuids
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-0[1-7].*' }
+grep moddate in date index for ,2006-0[1-7].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 152 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5574 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-0[1-7].*' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-0[1-7].*$
+
+recurseBranches
+grep 659753 branch filepath uuids against 152 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5574 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+get api /api/metadir/props/filesize/index.csv
+grep cli returned empty
+pair for guestdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+3pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-01' }
+grep moddate in date index for ,2006-.*-01$
+
+recurseBranches
+grep 659753 branch filepath uuids against 7 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 230 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-.*-01' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-.*-01$
+
+recurseBranches
+grep 659753 branch filepath uuids against 7 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 230 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-0[0-9]' }
+grep moddate in date index for ,2006-.*-0[0-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 78 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 2887 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-.*-0[0-9]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-.*-0[0-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 78 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 2887 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for moddate
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][0-9]' }
+grep moddate in date index for ,2006-.*-[01][0-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 166 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 6378 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][0-9]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-.*-[01][0-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 166 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 6378 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+pair for datum
+pair for hostdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][5-9]' }
+grep moddate in date index for ,2006-.*-[01][5-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 85 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 3421 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][5-9]' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-.*-[01][5-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 85 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 3421 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+grep cli returned empty
+pair for filepath
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for moddate
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+/
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][3-9]' }
+index for moddate
+index for filetype
+grep moddate in date index for ,2006-.*-[01][3-9]$
+
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/content'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/content'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][3-9]' }
+grep moddate in date index for ,2006-.*-[01][3-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 119 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5443 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][3-9]' }
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-.*-[01][3-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 119 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5443 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][1-9]' }
+grep moddate in date index for ,2006-.*-[01][1-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 153 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 6216 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+/
+grep cli returned empty
+pair for filepath
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][1-8]' }
+grep moddate in date index for ,2006-.*-[01][1-8]$
+
+pair for moddate
+grep cli returned empty
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][1-8]' }
+grep moddate in date index for ,2006-.*-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5835 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-.*-[01][1-8]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-.*-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5835 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+pair for datum
+pair for hostdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+get api /api/metadir/props/filesize/index.csv
+grep cli returned empty
+pair for guestname
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][0-9]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][0-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 166 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 6378 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][0-9]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-[01][0-9]-[01][0-9]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 166 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 6378 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+pair for datum
+pair for hostdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][0-8]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][0-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 152 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5997 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][0-8]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-[01][0-9]-[01][0-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 152 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5997 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+grep cli returned empty
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][0-7]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][0-7]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 136 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5164 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][1-8]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][1-8]$
+
+index for datum
+grep cli returned empty
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][1-8]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5835 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][1-8]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-[01][0-9]-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5835 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for datum
+pair for hostdate
+get api /api/metadir/props/filesize/index.csv
+grep cli returned empty
+pair for hostname
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+/
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][1-8]' }
+index for datum
+grep moddate in date index for ,2006-[01][0-9]-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+grep cli returned empty
+node:internal/process/promises:289
+            triggerUncaughtException(err, true /* fromPromise */);
+            ^
+
+[Error: ENOENT: no such file or directory, unlink '/tmp/pattern'] {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'unlink',
+  path: '/tmp/pattern'
+}
+
+Node.js v19.1.0
+❯ node ~/mm/codes/qualia/src/server/index.js
+App listening on port 8080
+Press Ctrl+C to quit.
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][1-8]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5835 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+2index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][1-8]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-[01][0-9]-[01][1-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 139 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5835 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+get api /api/metadir/props/filesize/index.csv
+grep cli returned empty
+pair for guestdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+/
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][2-8]' }
+grep moddate in date index for ,2006-[01][0-9]-[01][2-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 123 moddate uuids
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5504 filepath uuids
+pair for datum
+pair for hostdate
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+post query /query URLSearchParams { 'moddate' => '2006-[01][0-9]-[01][2-8]' }
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+grep moddate in date index for ,2006-[01][0-9]-[01][2-8]$
+
+recurseBranches
+grep 659753 branch filepath uuids against 123 moddate uuids
+get api /api/metadir/props/filepath/index.csv
+moddate's branch filepath is not root datum
+recurseBranches
+grep 659085 branch datum uuids against 5504 filepath uuids
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+pair for datum
+pair for hostdate
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv
+grep cli returned empty
+pair for hostname
+grep cli returned empty
+pair for guestdate
+grep cli returned empty
+pair for guestname
+grep cli returned empty
+pair for tag
+grep cli returned empty
+pair for filepath
+pair for moddate
+pair for filetype
+pair for filesize
+pair for filehash
+index for datum
+index for hostdate
+index for hostname
+index for guestdate
+index for guestname
+index for tag
+index for filepath
+index for moddate
+index for filetype
+index for filesize
+index for filehash
+get api /api/metadir.json
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-hostname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestdate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-guestname.csv
+get api /api/metadir/props/name/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-tag.csv
+get api /api/metadir/props/tag/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/datum-filepath.csv
+get api /api/metadir/props/filepath/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-moddate.csv
+get api /api/metadir/props/date/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filetype.csv
+get api /api/metadir/props/filetype/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filesize.csv
+get api /api/metadir/props/filesize/index.csv
+get api /api/metadir.json
+get api /api/metadir/pairs/filepath-filehash.csv

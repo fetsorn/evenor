@@ -1,6 +1,6 @@
 import { exportPDF, generateLatex } from "./latex";
 import { app, BrowserWindow, dialog } from "electron";
-import { manifest } from "../renderer/utils/git_template";
+import { manifest } from "../renderer/workers/git_template";
 import fs from "fs";
 import path from "path";
 import git from "isomorphic-git";

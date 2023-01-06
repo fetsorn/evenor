@@ -1,13 +1,20 @@
 import React from "react";
+import styles from "./dropdown_item_button.module.css";
 
-export default function DropdownItemButton({ idx: any, onSelect: any }) {
+interface IDropdownItemButtonProps {
+  index: any;
+  label: any;
+  onSelect: any;
+}
+
+export default function DropdownItemButton({
+  index,
+  label,
+  onSelect,
+}: IDropdownItemButtonProps) {
   return (
-    <button
-      key={idx}
-      className={styles.menuItem}
-      onClick={handleClick(item.onClick)}
-    >
-      {item.label}
+    <button key={index} className={styles.menuItem} onClick={onSelect}>
+      {label}
     </button>
   );
 }

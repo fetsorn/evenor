@@ -1,43 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Button } from "..";
+import { onUseEffect, onConvert, isIFrameable } from "./tbn";
 
-export default function IFrames({ event: any }) {
-  useEffect(() => {
-    inUseEffect();
-  }, [eventOriginal]);
+interface IAssetViewProps {
+  filepath: any;
+}
+
+export default function AssetView({ filepath }: IAssetViewProps) {
+  const [blob, setBlob] = useState(undefined);
 
   useEffect(() => {
-    inUseEffect2();
-  }, [event]);
+    onUseEffect(filepath, setBlob);
+  }, [filepath]);
 
   return (
     <>
-      {isIFrameable(event?.FILE_PATH) && iframeFetchPath && (
-        <Paragraph>
-          <iframe
-            title="iframe"
-            src={iframeFetchPath}
-            width="100%"
-            height="800px"
-          ></iframe>
-        </Paragraph>
+      {blob && (
+        <iframe title="iframe" src={blob} width="100%" height="800px"></iframe>
       )}
-      {iframeConvertPath && (
-        <Paragraph>
-          <iframe
-            title="iframe"
-            src={iframeConvertPath}
-            width="100%"
-            height="800px"
-          ></iframe>
-        </Paragraph>
+      {filepath && !blob && !isIFrameable(filepath) && (
+        <Button
+          type="button"
+          onClick={async () => {
+            await onConvert(filepath, setBlob);
+          }}
+        >
+          Convert
+        </Button>
       )}
-      {event?.FILE_PATH &&
-        !iframeConvertPath &&
-        !isIFrameable(event?.FILE_PATH) && (
-          <Button type="button" onClick={onConvert}>
-            Convert
-          </Button>
-        )}
     </>
   );
 }

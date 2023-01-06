@@ -1,6 +1,19 @@
-import { useEffect, useState, useMemo } from "react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-export default function SearchBarDropdown() {
+interface ISearchBarDropdownProps {
+  notAddedFields: any;
+  selected: any;
+  setSelected: any;
+}
+
+export default function SearchBarDropdown({
+  notAddedFields,
+  selected,
+  setSelected,
+}: ISearchBarDropdownProps) {
+  const { t } = useTranslation();
+
   return (
     <select
       name="fields"

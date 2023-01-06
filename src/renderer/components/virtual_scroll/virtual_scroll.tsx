@@ -1,17 +1,21 @@
 import { useState, useEffect, useMemo, useRef } from "react";
 import { useMedia, useWindowSize } from "../../hooks";
 import { REM_DESKTOP, REM_MOBILE } from "../../constants";
-import { ItineraryWaypoint } from "..";
 
 interface IVirtualScrollProps {
   data?: any;
   rowComponent?: any;
   rowHeight?: any;
-  onBarchSelect?: any;
+  onBatchSelect?: any;
   onEntrySelect?: any;
   onEntryAdd?: any;
   tolerance?: number;
 }
+
+const rowHeights = {
+  mobile: 40,
+  desktop: 40,
+};
 
 const VirtualScroll = ({
   data,

@@ -1,8 +1,8 @@
 import React from "react";
 import {
-  ProfileBatchEdit,
-  ProfileBatchView,
-  ProfileSingleEdit,
+  /* ProfileBatchEdit,
+   * ProfileBatchView,
+   * ProfileSingleEdit, */
   ProfileSingleView,
 } from "..";
 
@@ -27,15 +27,18 @@ export default function ObservatoryProfile({
   onEdit,
   onRevert,
 }: IObservatoryProfileProps) {
-  isBatch ? (
-    isEdit ? (
-      <ProfileBatchEdit {...{ onRevert }} />
-    ) : (
-      <ProfileBatchView {...{ onEdit }} />
-    )
-  ) : isEdit ? (
-    <ProfileSingleEdit {...{ onRevert }} />
-  ) : (
-    <ProfileSingleView {...{ schema, entry, index, waypoint, onEdit }} />
-  );
+  return <ProfileSingleView {...{ schema, entry, index, waypoint, onEdit }} />;
 }
+
+/*
+ *   isBatch ? (
+ *     isEdit ? (
+ *       <ProfileBatchEdit {...{ onRevert }} />
+ *     ) : (
+ *       <ProfileBatchView {...{ onEdit }} />
+ *     )
+ *   ) : isEdit ? (
+ *     <ProfileSingleEdit {...{ onRevert }} />
+ *   ) : (
+ *     <ProfileSingleView {...{ schema, entry, index, waypoint, onEdit }} />
+ *   ); */

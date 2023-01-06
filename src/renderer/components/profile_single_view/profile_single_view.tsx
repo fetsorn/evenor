@@ -1,4 +1,6 @@
 import React from "react";
+import cn from "classnames";
+import styles from "./profile_single_view.module.css";
 import {
   AssetView,
   SingleViewTitle,
@@ -29,9 +31,9 @@ export default function ProfileSingleView({
 
           <SingleViewToolbar {...{ onEdit }} />
 
-          <SingleViewForm {...{ schema, entry, addedFields }} />
+          <SingleViewForm {...{ schema, entry }} />
 
-          <AssetView />
+          <AssetView filepath={entry?.FILE_PATH} />
         </div>
       </div>
     </div>

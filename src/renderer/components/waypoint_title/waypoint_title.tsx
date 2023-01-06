@@ -1,5 +1,7 @@
 import React from "react";
-import styles from "./Title.module.css";
+import styles from "./waypoint_title.module.css";
+import { Title } from "..";
+import { isDate, formatDate } from "./tbn";
 
 interface IWaypointTitleProps {
   title?: any;
@@ -13,7 +15,7 @@ export default function WaypointTitle({ title }: IWaypointTitleProps) {
           {formatDate(title)}
         </time>
       ) : (
-        <Title className={styles.date}>{title}</Title>
+        <Title>{title}</Title>
       )}
     </>
   );

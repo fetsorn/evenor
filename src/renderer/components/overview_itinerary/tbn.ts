@@ -20,9 +20,21 @@ export async function onUseEffect(
   overview: any,
   setItinerary: any
 ) {
-  const groupByLabel = getGroupByLabel(schema, groupBy);
+  try {
+    const stub = {
+      undefined: [{ HOST_DATE: "repo1" }, { HOST_DATE: "repo2" }],
+    };
 
-  const itinerary = await buildItinerary(overview, groupByLabel);
+    console.log(stub);
 
-  setItinerary(itinerary);
+    setItinerary(stub);
+
+    // const groupByLabel = getGroupByLabel(schema, groupBy);
+    // const itinerary = await buildItinerary(overview, groupByLabel);
+    // setItinerary(itinerary);
+  } catch (e) {
+    console.log(e);
+
+    setItinerary([]);
+  }
 }

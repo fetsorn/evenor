@@ -1,0 +1,6 @@
+.csv {
+  overflow: scroll;
+  position: relative;
+  width: max-content;
+  height: max-content;
+}

@@ -1,4 +1,4 @@
-import styles from "../../Sidebar.module.css";
+import styles from "./form_date_input.module.css";
 import { useTranslation } from "react-i18next";
 
 interface IDateInputProps {

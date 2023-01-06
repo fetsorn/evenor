@@ -1,10 +1,21 @@
-import { useEffect, useState, useMemo } from "react";
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-export default function QueryList() {
+interface IQueryListRemoveButtonProps {
+  prop: any;
+  onQueryRemove: any;
+}
+
+export default function QueryListRemoveButton({
+  prop,
+  onQueryRemove,
+}: IQueryListRemoveButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <a
       title={t("header.button.remove", { field: prop })}
-      onClick={() => removeQuery(prop)}
+      onClick={() => onQueryRemove(prop)}
       style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
     >
       X

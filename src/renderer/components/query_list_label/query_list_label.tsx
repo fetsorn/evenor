@@ -1,9 +1,14 @@
-import { useEffect, useState, useMemo } from "react";
+import React from "react";
 
-export default function QueryListLabel() {
+interface IQueryListLabelProps {
+  prop: any;
+  value: any;
+}
+
+export default function QueryListLabel({ prop, value }: IQueryListLabelProps) {
   return (
     <div>
-      {prop} {params[prop]}
+      {prop} {value}
     </div>
   );
 }

@@ -1,10 +1,19 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+
+interface IHeaderGroupByDropdownProps {
+  groupBy: any;
+  setGroupBy: any;
+  schema: any;
+}
 
 export default function HeaderGroupByDropdown({
-  groupBy: any,
-  setGroupBy: any,
-  schema: any,
-}) {
+  groupBy,
+  setGroupBy,
+  schema,
+}: IHeaderGroupByDropdownProps) {
+  const { t } = useTranslation();
+
   return (
     <select
       name="fields"

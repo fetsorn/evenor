@@ -1,5 +1,7 @@
 import React from "react";
-import styles from "./Title.module.css";
+import styles from "./single_view_title.module.css";
+import { Title } from "..";
+import { formatDate, isDate } from "./tbn";
 
 interface ISingleViewTitleProps {
   waypoint: any;
@@ -13,11 +15,11 @@ export default function SingleViewTitle({
   return (
     <>
       {isDate(waypoint) ? ( // try to parse as date, otherwise render as is
-        <time className={styles.date} dateTime={waypoint.slice(1, -1)}>
+        <time className={styles.date} dateTime={waypoint?.slice(1, -1)}>
           {formatDate(waypoint)} {index}
         </time>
       ) : (
-        <Title className={styles.date}>
+        <Title>
           {waypoint} {index}
         </Title>
       )}

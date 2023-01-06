@@ -1,6 +1,17 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
-export default function TreeDepthInput({ children: any }) {
+interface IGraphRangeInputProps {
+  depth: any;
+  onSetDepth: any;
+}
+
+export default function GraphRangeInput({
+  depth,
+  onSetDepth,
+}: IGraphRangeInputProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <div>
@@ -13,8 +24,7 @@ export default function TreeDepthInput({ children: any }) {
         value={depth}
         title={t("tree.field.depth")}
         onChange={async (e: any) => {
-          setDepth(e.target.value);
-          await render(familyID, e.target.value);
+          await onSetDepth(e.target.value);
         }}
       />
     </>

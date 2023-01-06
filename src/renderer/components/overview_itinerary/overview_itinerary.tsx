@@ -1,27 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./overview_itinerary.module.css";
-import { EntryAddButton, VirtualScroll, ItineraryWaypoint } from "..";
+import { EntryCreateButton, VirtualScroll, ItineraryWaypoint } from "..";
+import { onUseEffect } from "./tbn";
 
 interface IOverviewItineraryProps {
-  data: any;
+  schema: any;
+  groupBy: any;
+  overview: any;
   onEntrySelect: any;
   onEntryCreate: any;
   onBatchSelect: any;
 }
 
 export default function OverviewItinerary({
-  data,
+  schema,
+  groupBy,
+  overview,
   onEntrySelect,
   onEntryCreate,
   onBatchSelect,
 }: IOverviewItineraryProps) {
+  const [itinerary, setItinerary] = useState([]);
+
+  useEffect(() => {
+    onUseEffect(schema, groupBy, overview, setItinerary);
+  }, []);
+
   return (
     <div className={styles.timeline}>
-      {!data.length ? (
-        <EntryAddButton {...{ onEntryCreate }} />
+      {!itinerary.length ? (
+        <EntryCreateButton {...{ onEntryCreate }} date="" index="1" />
       ) : (
         <VirtualScroll
-          {...{ data, onEntrySelect, onEntryCreate, onBatchSelect }}
+          {...{ itinerary, onEntrySelect, onEntryCreate, onBatchSelect }}
           rowComponent={ItineraryWaypoint}
         />
       )}

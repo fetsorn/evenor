@@ -1,4 +1,5 @@
 import React from "react";
+import { Paragraph } from "..";
 
 interface IFormOutputProps {
   description: any;

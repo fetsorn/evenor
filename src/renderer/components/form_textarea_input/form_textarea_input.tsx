@@ -1,4 +1,4 @@
-import styles from "../../Sidebar.module.css";
+import styles from "./form_textarea_input.module.css";
 import { useTranslation } from "react-i18next";
 
 interface ITextAreaInputProps {

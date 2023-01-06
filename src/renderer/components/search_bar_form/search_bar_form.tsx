@@ -1,6 +1,24 @@
-import { useEffect, useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
+import { onUseEffect } from "./tbn";
+import styles from "./search_bar_form.module.css";
 
-export default function SearchBarForm() {
+interface ISearchBarFormProps {
+  selected: any;
+  searched: any;
+  setSearched: any;
+}
+
+export default function SearchBarForm({
+  selected,
+  searched,
+  setSearched,
+}: ISearchBarFormProps) {
+  const [options, setOptions]: any[] = useState([]);
+
+  useEffect(() => {
+    onUseEffect(selected, setOptions);
+  }, [selected]);
+
   return (
     <form className={styles.form}>
       <input
@@ -12,8 +30,9 @@ export default function SearchBarForm() {
           setSearched(value);
         }}
       />
+
       <datalist id={`panel_list`}>
-        {options[selected]?.map((option: any, idx: any) => (
+        {options.map((option: any, idx: any) => (
           <option key={idx} value={option}></option>
         ))}
       </datalist>

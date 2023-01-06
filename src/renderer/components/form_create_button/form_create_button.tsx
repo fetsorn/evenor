@@ -1,6 +1,14 @@
 import React from "react";
+import { Button } from "..";
+import { useTranslation } from "react-i18next";
 
-export default function ButtonRepoCreate({ onCreate: any }) {
+interface IFormCreateButtonProps {
+  onCreate: any;
+}
+
+export default function FormCreateButton({ onCreate }: IFormCreateButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <Button
       type="button"

@@ -1,36 +1,32 @@
-import styles from "./Header.module.css";
+import styles from "./header.module.css";
 
-import { Panel } from "./components";
+import {
+  HeaderBackButton,
+  HeaderFilter,
+  HeaderGroupbyDropdown,
+  HeaderExportButton,
+} from "..";
 
 interface IHeaderProps {
   schema?: any;
   groupBy?: any;
   setGroupBy?: any;
-  queryWorker?: any;
-  options?: any;
-  reloadPage?: any;
-  exportPage?: any;
+  setOverview?: any;
 }
 
-export default function Header(props: IHeaderProps) {
-  const { schema, exportPage, groupBy, setGroupBy, options, reloadPage } =
-    props;
-
+export default function Header({
+  schema,
+  groupBy,
+  setGroupBy,
+  setOverview,
+}: IHeaderProps) {
   return (
     <header className={styles.header}>
-      <ButtonBack />
+      <HeaderBackButton />
 
-      <LabelRepo />
+      <HeaderFilter {...{ schema }} />
 
-      <Panel schema={schema} options={options} reloadPage={reloadPage} />
-
-      <DropdownGroupBy
-        groupBy={groupBy}
-        setGroupBy={setGroupBy}
-        schema={schema}
-      />
-
-      <ButtonExport onExport={exportPage} />
+      <HeaderGroupbyDropdown {...{ groupBy, setGroupBy, schema }} />
     </header>
   );
 }

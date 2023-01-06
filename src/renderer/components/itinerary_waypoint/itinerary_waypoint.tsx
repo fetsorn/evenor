@@ -1,16 +1,18 @@
 import cn from "classnames";
 
-import styles from "./Row.module.css";
+import styles from "./itinerary_waypoint.module.css";
+
+import { WaypointTitle, EntryCreateButton, WaypointEntries } from "..";
 
 interface IItineraryWaypointProps {
-  data?: any;
+  waypoint?: any;
   onEntrySelect?: any;
   onEntryCreate?: any;
   isLast?: any;
 }
 
 export default function ItineraryWaypoint({
-  data,
+  waypoint,
   onEntrySelect,
   onEntryCreate,
   isLast,
@@ -18,15 +20,15 @@ export default function ItineraryWaypoint({
 }: IItineraryWaypointProps) {
   return (
     <section className={cn(styles.row, { [styles.last]: isLast })} {...others}>
-      <WaypointTitle title={data.date} />
+      <WaypointTitle title={waypoint.date} />
 
-      <WaypointEntryCreateButton {...{ onEntryCreate }} />
-
-      <WaypointEntries
-        {...{ onEntryCreate, onEntrySelect }}
-        date={data.date}
-        events={data.events}
+      <EntryCreateButton
+        {...{ onEntryCreate }}
+        date={waypoint.date}
+        index={waypoint.events.length + 1}
       />
+
+      <WaypointEntries {...{ onEntrySelect }} entries={waypoint.events} />
     </section>
   );
 }

@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import styles from "./observatory.module.css";
 import {
   Header,
   ObservatoryOverview,
@@ -6,29 +8,34 @@ import {
   ObservatoryProfile,
   Footer,
 } from "..";
+import { onUseEffect } from "./tbn";
 
 export default function Observatory() {
   const [schema, setSchema] = useState({});
 
-  const [entry, setEntry] = useState(false);
+  const [entry, setEntry] = useState(undefined);
 
-  const [index, setIndex] = useState(false);
+  const [index, setIndex] = useState(undefined);
 
-  const [waypoint, setWaypoint] = useState(false);
+  const [waypoint, setWaypoint] = useState(undefined);
 
   const [isEdit, setIsEdit] = useState(false);
 
   const [isBatch, setIsBatch] = useState(false);
 
+  const [groupBy, setGroupBy] = useState(undefined);
+
+  const [overview, setOverview] = useState([]);
+
   const [overviewType, setOverviewType] = useState(OverviewType.Itinerary);
 
-  const [data, setData] = useState([]);
+  const location = useLocation();
 
   function onBatchSelect() {
     setIsBatch(true);
   }
 
-  function onEntrySelect(_entry, _index, _waypoint) {
+  function onEntrySelect(_entry: any, _index: any, _waypoint: any) {
     setEntry(_entry);
     setIndex(_index);
     setWaypoint(_waypoint);
@@ -47,14 +54,20 @@ export default function Observatory() {
     setIsEdit(false);
   }
 
+  useEffect(() => {
+    onUseEffect(location.search, setGroupBy, setOverview, setSchema);
+  }, []);
+
   return (
     <>
-      <Header {...{ setOverviewType }} />
+      <Header {...{ schema, groupBy, setGroupBy, setOverviewType }} />
 
       <main className={styles.main}>
         <ObservatoryOverview
           {...{
-            data,
+            schema,
+            groupBy,
+            overview,
             overviewType,
             onEntrySelect,
             onEntryCreate,

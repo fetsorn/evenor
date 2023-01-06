@@ -1,14 +1,26 @@
 import { useEffect, useState } from "react";
-import { Graph, InputDepth, InputFamily } from "..";
-import { setupVars, load } from "./Tree";
-import styles from "./Tree.module.css";
+import { GraphSvg, GraphTextInput, GraphRangeInput } from "..";
+import { setupVars, load } from "./tbn";
+import styles from "./overview_graph.module.css";
 
 export default function Tree() {
   const [depth, setDepth] = useState(4);
 
-  const [familyID, setFamilyID] = useState("F0001");
+  const [family, setFamily] = useState("F0001");
 
   const [html, setHTML] = useState(undefined);
+
+  async function onSetDepth(_depth: any) {
+    setDepth(_depth);
+
+    await load(_depth, family);
+  }
+
+  async function onSetFamily(_family: any) {
+    setFamily(_family);
+
+    await load(depth, _family);
+  }
 
   useEffect(() => {
     setupVars();
@@ -16,20 +28,20 @@ export default function Tree() {
 
   useEffect(() => {
     (async () => {
-      const newHTML = await load(depth, familyID);
+      const newHTML = await load(depth, family);
 
       setHTML(newHTML);
     })();
-  }, [depth, familyID]);
+  }, [depth, family]);
 
   return (
     <>
-      <Graph html={html} />
+      <GraphSvg html={html} />
 
       <div className={styles.slider}>
-        <InputFamily familyID={familyID} setFamilyID={setFamilyID} />
+        <GraphTextInput {...{ family, onSetFamily }} />
 
-        <InputDepth depth={depth} setDepth={setDepth} />
+        <GraphRangeInput {...{ depth, onSetDepth }} />
       </div>
     </>
   );

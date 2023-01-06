@@ -1,1 +1,1 @@
-export { default } from "./Observatory";
+export { default } from "./observatory";

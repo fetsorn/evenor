@@ -1,16 +1,27 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import styles from "./graph_text_input.module.css";
 
-export default function TreeFamilyInput({ children: any }) {
+interface IGraphTextInputProps {
+  family: any;
+  onSetFamily: any;
+}
+
+export default function GraphTextInput({
+  family,
+  onSetFamily,
+}: IGraphTextInputProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       <div className={styles.slider}>
         <input
           type="text"
-          value={familyID}
+          value={family}
           title={t("tree.field.id")}
           onChange={async (e: any) => {
-            setFamilyID(e.target.value);
-            await render(e.target.value, depth);
+            await onSetFamily(e.target.value);
           }}
         />
       </div>

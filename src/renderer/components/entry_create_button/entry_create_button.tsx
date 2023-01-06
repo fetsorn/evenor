@@ -1,22 +1,27 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
+import styles from "./entry_create_button.module.css";
 
-export default function EntryCreateButton() {
+interface IEntryCreateButtonProps {
+  onEntryCreate: any;
+  date: any;
+  index: any;
+}
+
+export default function EntryCreateButton({
+  onEntryCreate,
+  date,
+  index,
+}: IEntryCreateButtonProps) {
+  const { t } = useTranslation();
+
   return (
     <>
-      {/* this comes from Row */}
-      <div
-        className={styles.add}
-        title={t("line.button.add")}
-        onClick={() => addEvent(data.date, data.events.length + 1)}
-      >
-        +
-      </div>
-      {/* this comes from timeline */}
+      {/* className={styles.add} */}
       <button
-        className={rowStyles.star}
-        style={{ backgroundColor: "blue" }}
+        className={styles.star}
         type="button"
-        onClick={() => addEvent("", "1")}
+        onClick={() => onEntryCreate(date, index)}
         title={t("line.button.add")}
         key="addevent"
       >

@@ -1,0 +1,15 @@
+.content {
+  padding-left: calc(var(--rem) * 10);
+}
+
+.stars {
+  box-sizing: border-box;
+  display: flex;
+
+  padding: calc(var(--rem) * 2);
+  width: calc(100% - calc(var(--rem) * 7));
+
+  gap: var(--rem);
+
+  overflow-x: auto;
+}

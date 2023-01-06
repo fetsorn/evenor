@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 import styles from "./observatory.module.css";
 import {
   Header,
@@ -11,6 +11,8 @@ import {
 import { onUseEffect } from "./tbn";
 
 export default function Observatory() {
+  const { repoName } = useParams();
+
   const [schema, setSchema] = useState({});
 
   const [entry, setEntry] = useState(undefined);

@@ -64,7 +64,7 @@ export default function HeaderFilter({
 
   useEffect(() => {
     search(params);
-  }, [params]);
+  }, []);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);

@@ -17,7 +17,7 @@ export default function FilterSearchBar({
 
   useEffect(() => {
     setSelected(notAddedFields?.[0]?.name);
-  }, [notAddedFields]);
+  }, []);
 
   return (
     <div className={styles.search}>

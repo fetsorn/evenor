@@ -2,9 +2,10 @@ import http from "isomorphic-git/http/web";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import git from "isomorphic-git";
 import mime from "mime";
-import { manifest } from "./git_template";
 import axios from "axios";
 import { saveAs } from "file-saver";
+import { useNavigate } from "react-router-dom";
+import { digestMessage } from "@fetsorn/csvs-js";
 
 export function gitInit(pathname: string) {
   // console.log("gitInit");
@@ -19,54 +20,6 @@ export function gitInit(pathname: string) {
   //   url.lastIndexOf("/"),
   //   window.dir
   // );
-}
-
-export async function fetchDataMetadir(path: string) {
-  // console.log(
-  //   `fetchDataMetadir: window.dir ${
-  //     window.dir
-  //   }, path ${path}, path_elements ${path.split("/")}`
-  // );
-  if (__BUILD_MODE__ === "server") {
-    const localpath = "/api/" + path;
-    try {
-      const result = await fetch(localpath);
-      return result.text();
-    } catch {
-      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
-    }
-  } else if (__BUILD_MODE__ === "electron") {
-    try {
-      const result = await window.electron.fetchDataMetadir(window.dir, path);
-      return result;
-    } catch {
-      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
-    }
-  } else {
-    // check if path exists in the repo
-    const path_elements = [window.dir].concat(path.split("/"));
-    // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
-    let root = "";
-    for (let i = 0; i < path_elements.length; i++) {
-      const path_element = path_elements[i];
-      root += "/";
-      const files = await window.pfs.readdir(root);
-      // console.log("fetchDataMetadir: files", files);
-      if (files.includes(path_element)) {
-        root += path_element;
-        // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
-      } else {
-        throw Error(
-          `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
-        );
-      }
-    }
-    const restext = new TextDecoder().decode(
-      await window.pfs.readFile("/" + window.dir + "/" + path)
-    );
-    // console.log(restext)
-    return restext;
-  }
 }
 
 export async function writeDataMetadir(path: string, content: string) {
@@ -667,7 +620,7 @@ export async function rimraf(path: string) {
     try {
       files = await window.pfs.readdir(path);
     } catch {
-      throw Error(`can't read ${path} to rimraf it`)
+      throw Error(`can't read ${path} to rimraf it`);
     }
     // console.log(files);
     for (const file of files) {
@@ -685,3 +638,164 @@ export async function rimraf(path: string) {
     await window.pfs.rmdir(path);
   }
 }
+
+// const handleOpenEvent = async (event: any, index: any) => {
+//   setEvent(event);
+//   setEventIndex(index);
+// };
+
+// const addEvent = async (date: string, index: string) => {
+//   const _event: Record<string, string> = {};
+
+//   // file event with a random UUID
+//   _event.UUID = await digestMessage(crypto.randomUUID());
+//   _event.DATUM = "";
+
+//   // fill event with the date from which it was pulled
+//   const groupBy_label = schema[groupBy]["label"] ?? groupBy;
+//   _event[groupBy_label] = date ?? "0000-00-00";
+
+//   // fill event with values from search query
+//   Object.keys(schema).map((prop: any) => {
+//     const label = schema[prop]["label"] ?? prop;
+//     const searchParams = new URLSearchParams(location.search);
+//     if (searchParams.has(prop)) {
+//       _event[label] = searchParams.get(prop);
+//     }
+//   });
+
+//   setEventIndex(index);
+//   setEvent(_event);
+//   setIsEdit(true);
+// };
+
+// const reloadPage = async (
+//   searchParams = new URLSearchParams(location.search)
+// ) => {
+//   // setIsLoading(true);
+
+//   gitInit(location.pathname);
+
+//   /* console.log("called worker to query"); */
+//   let _data: any = [];
+//   try {
+//     _data = await queryWorker.queryMetadir(searchParams);
+//   } catch (e: any) {
+//     console.log("query fails", e);
+//   }
+
+//   console.log("received query result", _data);
+
+//   const _schema = JSON.parse(await fetchDataMetadir("metadir.json"));
+
+//   const _groupBy = groupBy ?? defaultGroupBy(_schema, _data, location.search);
+//   setGroupBy(_groupBy);
+
+//   setSchema(_schema);
+//   setData(_data);
+
+//   /* console.log("getOptions"); */
+//   const _options: any = {};
+//   const root = Object.keys(_schema).find(
+//     (prop: any) =>
+//       !Object.prototype.hasOwnProperty.call(_schema[prop], "parent")
+//   );
+//   for (const prop of Object.keys(_schema)) {
+//     /* const propType = _schema[prop]["type"]; */
+//     if (/* propType != "date" && */ prop != root) {
+//       try {
+//         const res = await queryWorker.queryOptions(prop);
+//         _options[prop] = res;
+//         /* console.log("getOption", prop, res); */
+//       } catch (e) {
+//         console.log(e);
+//       }
+//     }
+//   }
+
+//   setOptions(_options);
+
+//   await rebuildLine(_data, _schema, _groupBy);
+
+//   // setIsLoading(false);
+// };
+
+// // TODO: if build mode is server, navigate to server/
+// // but do not just always navigate to server/ to allow for custom server URLs
+// function redirectToServer() {
+//   const navigate = useNavigate();
+//   if (__BUILD_MODE__ === "server") {
+//     try {
+//       navigate("server/");
+//     } catch {
+//       return;
+//     }
+//   }
+// }
+
+// // try to login read-only to a public repo from address bar
+// async function tryShow(barUrl: any, barToken: any) {
+//   // remove url from address bar
+//   /* window.history.replaceState(null, null, "/"); */
+//   try {
+//     // check if path is a url
+//     new URL(barUrl);
+//   } catch (e) {
+//     console.log("not a url", barUrl, e);
+//     return;
+//   }
+
+//   try {
+//     await rimraf("/show");
+//   } catch (e) {
+//     console.log("nothing to remove");
+//   }
+
+//   try {
+//     await clone(barUrl, barToken, "show");
+//   } catch (e) {
+//     await rimraf("/show");
+//     console.log("couldn't clone from url", barUrl, e);
+//     return;
+//   }
+
+//   const navigate = useNavigate();
+//   navigate("show/");
+// }
+
+// async function redirectToBarURL() {
+//   // read url from path
+//   const searchParams = new URLSearchParams(location.search);
+//   if (searchParams.has("url")) {
+//     const barUrl = searchParams.get("url");
+//     const barToken = searchParams.get("token") ?? "";
+
+//     // try to login read-only to a public repo from address bar
+//     await tryShow(barUrl, barToken);
+//   }
+// }
+
+// const onDelete = async () => {
+//   let dataNew;
+//   if (data.find((e: any) => e.UUID === event.UUID)) {
+//     await csvs.deleteEvent(event.UUID, {
+//       fetch: fetchDataMetadir,
+//       write: writeDataMetadir,
+//     });
+//     dataNew = data.filter((e: any) => e.UUID !== event.UUID);
+//   } else {
+//     dataNew = data;
+//   }
+
+//   setData(dataNew);
+//   setEvent(undefined);
+//   await rebuildLine(dataNew);
+// };
+
+// const onRevert = async () => {
+//   setEvent(eventOriginal);
+//   if (!data.find((e: any) => e.UUID === event.UUID)) {
+//     setEvent(undefined);
+//   }
+//   setIsEdit(false);
+// };

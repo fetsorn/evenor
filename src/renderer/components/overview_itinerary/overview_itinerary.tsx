@@ -12,6 +12,31 @@ interface IOverviewItineraryProps {
   onBatchSelect: any;
 }
 
+export async function onUseEffect(
+  schema: any,
+  groupBy: any,
+  overview: any,
+  setItinerary: any
+) {
+  try {
+    const stub = {
+      undefined: [{ HOST_DATE: "repo1" }, { HOST_DATE: "repo2" }],
+    };
+
+    console.log(stub);
+
+    setItinerary(stub);
+
+    // const groupByLabel = getGroupByLabel(schema, groupBy);
+    // const itinerary = await buildItinerary(overview, groupByLabel);
+    // setItinerary(itinerary);
+  } catch (e) {
+    console.log(e);
+
+    setItinerary([]);
+  }
+}
+
 export default function OverviewItinerary({
   schema,
   groupBy,

@@ -1,6 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useMedia, useWindowSize } from "../../hooks";
-import { REM_DESKTOP, REM_MOBILE } from "../../constants";
+import { useMedia, useWindowSize } from "..";
 
 interface IVirtualScrollProps {
   data?: any;
@@ -11,6 +10,9 @@ interface IVirtualScrollProps {
   onEntryAdd?: any;
   tolerance?: number;
 }
+
+const REM_DESKTOP = 0.277777;
+const REM_MOBILE = 0.8;
 
 const rowHeights = {
   mobile: 40,

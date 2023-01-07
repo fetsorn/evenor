@@ -1,9 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "..";
-import { onUseEffect, onConvert, isIFrameable } from "./tbn";
+import { convert, fetchBlob, isIFrameable } from "./tbn";
 
 interface IAssetViewProps {
   filepath: any;
+}
+
+async function onConvert(filepath: string, setBlob: any): void {
+  const blob = await convert(filepath);
+
+  setBlob(blob);
+}
+
+function onUseEffect(filepath: string, setBlob: any): void {
+  if (isIFrameable(filepath)) {
+    const blob = fetchBlob(filepath);
+
+    setBlob(blob);
+  }
 }
 
 export default function AssetView({ filepath }: IAssetViewProps) {

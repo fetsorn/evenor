@@ -8,6 +8,12 @@ interface ISearchBarFormProps {
   setSearched: any;
 }
 
+export async function onUseEffect(selected: any, setOptions: any) {
+  const options = await queryOptions(selected);
+
+  setOptions(options);
+}
+
 export default function SearchBarForm({
   selected,
   searched,

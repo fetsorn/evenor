@@ -23,7 +23,7 @@ export default function Tree() {
   }
 
   useEffect(() => {
-    setupVars();
+    setupVars(setFamily);
   }, []);
 
   useEffect(() => {

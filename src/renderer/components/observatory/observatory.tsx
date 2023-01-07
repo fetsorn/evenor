@@ -8,7 +8,6 @@ import {
   ObservatoryProfile,
   Footer,
 } from "..";
-import { onUseEffect } from "./tbn";
 
 export default function Observatory() {
   const { repoName } = useParams();
@@ -39,8 +38,11 @@ export default function Observatory() {
 
   function onEntrySelect(_entry: any, _index: any, _waypoint: any) {
     setEntry(_entry);
+
     setIndex(_index);
+
     setWaypoint(_waypoint);
+
     return;
   }
 
@@ -56,8 +58,24 @@ export default function Observatory() {
     setIsEdit(false);
   }
 
+  async function onUseEffect() {
+    const _schema = await fetchSchema();
+
+    setSchema(_schema);
+
+    const searchParams = getSearchParams(location.search);
+
+    const _overview = await fetchOverview(searchParams);
+
+    setOverview(_overview);
+
+    const _groupBy = defaultGroupBy(schema, overview, searchParams);
+
+    setGroupBy(_groupBy);
+  }
+
   useEffect(() => {
-    onUseEffect(location.search, setGroupBy, setOverview, setSchema);
+    onUseEffect();
   }, []);
 
   return (

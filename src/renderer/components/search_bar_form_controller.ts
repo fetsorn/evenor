@@ -1,5 +1,7 @@
-export async function queryOptions(selected: any) {
-  const queryWorker = queryWorkerInit();
+import { fetchDataMetadir } from ".";
+
+export async function queryOptions(dir: string, selected: any) {
+  const queryWorker = queryWorkerInit(dir);
 
   try {
     const options = await queryWorker.queryOptions(selected);
@@ -12,9 +14,7 @@ export async function queryOptions(selected: any) {
   }
 }
 
-import { fetchDataMetadir } from "./git";
-
-function queryWorkerInit() {
+function queryWorkerInit(dir: string) {
   const worker = new Worker(new URL("./worker", import.meta.url));
 
   async function callback(message: any) {
@@ -24,7 +24,7 @@ function queryWorkerInit() {
       try {
         // console.log("main thread tries to fetch", message.data.path);
 
-        const contents = await fetchDataMetadir(message.data.path);
+        const contents = await fetchDataMetadir(dir, message.data.path);
 
         // console.log("main thread returns fetch")
 

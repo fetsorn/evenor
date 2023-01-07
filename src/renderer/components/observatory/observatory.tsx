@@ -7,28 +7,26 @@ import {
   OverviewType,
   ObservatoryProfile,
   Footer,
+  ensureRoot,
+  searchRepo,
 } from "..";
 
 export default function Observatory() {
-  const { repoName } = useParams();
-
-  const [schema, setSchema] = useState({});
+  const { repoRoute } = useParams();
 
   const [entry, setEntry] = useState(undefined);
 
   const [index, setIndex] = useState(undefined);
 
-  const [waypoint, setWaypoint] = useState(undefined);
-
-  const [isEdit, setIsEdit] = useState(false);
-
-  const [isBatch, setIsBatch] = useState(false);
-
-  const [groupBy, setGroupBy] = useState(undefined);
+  const [group, setGroup] = useState(undefined);
 
   const [overview, setOverview] = useState([]);
 
+  const [isBatch, setIsBatch] = useState(false);
+
   const [overviewType, setOverviewType] = useState(OverviewType.Itinerary);
+
+  const [isLoaded, setIsLoaded] = useState(false);
 
   const location = useLocation();
 
@@ -36,43 +34,54 @@ export default function Observatory() {
     setIsBatch(true);
   }
 
-  function onEntrySelect(_entry: any, _index: any, _waypoint: any) {
+  function onEntrySelect(_entry: any, _index: any, _group: any) {
     setEntry(_entry);
 
     setIndex(_index);
 
-    setWaypoint(_waypoint);
+    setGroup(_group);
 
     return;
   }
 
   function onEntryCreate() {
+    // create entity in repo
+    // if route is root, create repo
     return;
   }
 
-  function onEdit() {
-    setIsEdit(true);
+  function onSave() {
+    // edit entity in repo
+    // if route is root, create repo
+    return;
   }
 
-  function onRevert() {
-    setIsEdit(false);
+  async function onLocation() {
+    if (isLoaded) {
+      const _overview = await searchRepo(repoRoute, location.search);
+
+      setOverview(_overview);
+
+      // TODO: resolve overview type from searchParams
+      setOverviewType(OverviewType.Itinerary);
+    }
   }
 
   async function onUseEffect() {
-    const _schema = await fetchSchema();
+    if (repoRoute === undefined) {
+      await ensureRoot();
+    }
 
-    setSchema(_schema);
-
-    const searchParams = getSearchParams(location.search);
-
-    const _overview = await fetchOverview(searchParams);
+    const _overview = await searchRepo(repoRoute, location.search);
 
     setOverview(_overview);
 
-    const _groupBy = defaultGroupBy(schema, overview, searchParams);
-
-    setGroupBy(_groupBy);
+    setIsLoaded(true);
   }
+
+  useEffect(() => {
+    onLocation();
+  }, [location]);
 
   useEffect(() => {
     onUseEffect();
@@ -80,13 +89,11 @@ export default function Observatory() {
 
   return (
     <>
-      <Header {...{ schema, groupBy, setGroupBy, setOverviewType }} />
+      <Header />
 
       <main className={styles.main}>
         <ObservatoryOverview
           {...{
-            schema,
-            groupBy,
             overview,
             overviewType,
             onEntrySelect,
@@ -97,14 +104,11 @@ export default function Observatory() {
 
         <ObservatoryProfile
           {...{
-            schema,
             entry,
             index,
-            waypoint,
+            group,
             isBatch,
-            isEdit,
-            onEdit,
-            onRevert,
+            onSave,
           }}
         />
       </main>

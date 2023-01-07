@@ -23,7 +23,6 @@ export { default as GraphTextInput } from "./graph_text_input";
 export { default as Header } from "./header";
 export { default as HeaderBackButton } from "./header_back_button";
 export { default as HeaderExportButton } from "./header_export_button";
-export { default as HeaderGroupbyDropdown } from "./header_groupby_dropdown";
 export { default as HeaderRootPropDropdown } from "./header_root_prop_dropdown";
 export { default as ItineraryWaypoint } from "./itinerary_waypoint";
 export { default as Link } from "./link";
@@ -60,3 +59,14 @@ export { default as ToolbarSaveButton } from "./toolbar_save_button";
 export { default as VirtualScroll } from "./virtual_scroll";
 export { default as WaypointEntries } from "./waypoint_entries";
 export { default as WaypointTitle } from "./waypoint_title";
+export { default as useMedia } from "./use_media";
+export { default as useWindowSize } from "./use_window_size";
+export {
+  fetchDataMetadir,
+  ensureRoot,
+  searchRepo,
+  fetchSchema,
+} from "./observatory_controller";
+export { setupVars, load } from "./overview_graph_controller";
+export { queryOptions } from "./search_bar_form_controller";
+export { convert, fetchBlob, isIFrameable } from "./asset_view_controller";

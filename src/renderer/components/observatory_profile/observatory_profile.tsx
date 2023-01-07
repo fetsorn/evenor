@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   /* ProfileBatchEdit,
    * ProfileBatchView,
@@ -7,27 +7,31 @@ import {
 } from "..";
 
 interface IObservatoryProfileProps {
-  schema: any;
   entry: any;
   index: any;
-  waypoint: any;
+  group: any;
   isBatch: any;
-  isEdit: any;
-  onEdit: any;
-  onRevert: any;
+  onSave: any;
 }
 
 export default function ObservatoryProfile({
-  schema,
   entry,
   index,
-  waypoint,
+  group,
   isBatch,
-  isEdit,
-  onEdit,
-  onRevert,
+  onSave,
 }: IObservatoryProfileProps) {
-  return <ProfileSingleView {...{ schema, entry, index, waypoint, onEdit }} />;
+  const [isEdit, setIsEdit] = useState(false);
+
+  function onEdit() {
+    setIsEdit(true);
+  }
+
+  function onRevert() {
+    setIsEdit(false);
+  }
+
+  return <ProfileSingleView {...{ entry, index, group, onEdit }} />;
 }
 
 /*

@@ -1,23 +1,15 @@
 import React, { useEffect, useState } from "react";
 import styles from "./overview_itinerary.module.css";
 import { EntryCreateButton, VirtualScroll, ItineraryWaypoint } from "..";
-import { onUseEffect } from "./tbn";
 
 interface IOverviewItineraryProps {
-  schema: any;
-  groupBy: any;
   overview: any;
   onEntrySelect: any;
   onEntryCreate: any;
   onBatchSelect: any;
 }
 
-export async function onUseEffect(
-  schema: any,
-  groupBy: any,
-  overview: any,
-  setItinerary: any
-) {
+export async function onUseEffect(overview: any, setItinerary: any) {
   try {
     const stub = {
       undefined: [{ HOST_DATE: "repo1" }, { HOST_DATE: "repo2" }],
@@ -38,8 +30,6 @@ export async function onUseEffect(
 }
 
 export default function OverviewItinerary({
-  schema,
-  groupBy,
   overview,
   onEntrySelect,
   onEntryCreate,
@@ -48,7 +38,7 @@ export default function OverviewItinerary({
   const [itinerary, setItinerary] = useState([]);
 
   useEffect(() => {
-    onUseEffect(schema, groupBy, overview, setItinerary);
+    onUseEffect(overview, setItinerary);
   }, []);
 
   return (

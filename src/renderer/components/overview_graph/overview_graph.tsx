@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { GraphSvg, GraphTextInput, GraphRangeInput } from "..";
-import { setupVars, load } from "./tbn";
+import { useParams } from "react-router-dom";
+import { GraphSvg, GraphTextInput, GraphRangeInput, setupVars, load } from "..";
 import styles from "./overview_graph.module.css";
 
 export default function Tree() {
@@ -10,16 +10,18 @@ export default function Tree() {
 
   const [html, setHTML] = useState(undefined);
 
+  const { repoRoute } = useParams();
+
   async function onSetDepth(_depth: any) {
     setDepth(_depth);
 
-    await load(_depth, family);
+    await load(repoRoute, _depth, family);
   }
 
   async function onSetFamily(_family: any) {
     setFamily(_family);
 
-    await load(depth, _family);
+    await load(repoRoute, depth, _family);
   }
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function Tree() {
 
   useEffect(() => {
     (async () => {
-      const newHTML = await load(depth, family);
+      const newHTML = await load(repoRoute, depth, family);
 
       setHTML(newHTML);
     })();

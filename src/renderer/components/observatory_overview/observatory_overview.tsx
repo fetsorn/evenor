@@ -2,8 +2,6 @@ import React from "react";
 import { OverviewItinerary, OverviewGraph } from "..";
 
 interface IObservatoryOverviewProps {
-  schema: any;
-  groupBy: any;
   overview: any;
   overviewType: any;
   onEntrySelect: any;
@@ -17,8 +15,6 @@ export enum OverviewType {
 }
 
 export default function ObservatoryOverview({
-  schema,
-  groupBy,
   overview,
   overviewType,
   onEntrySelect,
@@ -30,8 +26,6 @@ export default function ObservatoryOverview({
       return (
         <OverviewItinerary
           {...{
-            schema,
-            groupBy,
             overview,
             onEntrySelect,
             onEntryCreate,

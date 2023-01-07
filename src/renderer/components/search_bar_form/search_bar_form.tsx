@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { onUseEffect } from "./tbn";
+import { useParams } from "react-router-dom";
+import { queryOptions } from "..";
 import styles from "./search_bar_form.module.css";
 
 interface ISearchBarFormProps {
@@ -8,10 +9,9 @@ interface ISearchBarFormProps {
   setSearched: any;
 }
 
-export async function onUseEffect(selected: any, setOptions: any) {
-  const options = await queryOptions(selected);
-
-  setOptions(options);
+export async function onUseEffect(dir: string, selected: any, setOptions: any) {
+  /* const options = await queryOptions(dir, selected); */
+  /* setOptions(options); */
 }
 
 export default function SearchBarForm({
@@ -19,10 +19,12 @@ export default function SearchBarForm({
   searched,
   setSearched,
 }: ISearchBarFormProps) {
+  const { repoRoute } = useParams();
+
   const [options, setOptions]: any[] = useState([]);
 
   useEffect(() => {
-    onUseEffect(selected, setOptions);
+    onUseEffect(repoRoute, selected, setOptions);
   }, [selected]);
 
   return (

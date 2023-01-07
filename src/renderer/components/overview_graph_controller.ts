@@ -27,9 +27,13 @@ export function setupVars(setFamily: any): void {
   };
 }
 
-export async function load(depth: any, familyID: any): string {
+export async function load(
+  dir: string,
+  depth: any,
+  familyID: any
+): Promise<string> {
   try {
-    const html = await render(depth, familyID);
+    const html = await render(dir, depth, familyID);
 
     return html;
   } catch (e3) {
@@ -40,10 +44,10 @@ export async function load(depth: any, familyID: any): string {
   }
 }
 
-async function render(depth: any, familyID: any): string {
+async function render(dir: string, depth: any, familyID: any): Promise<string> {
   // if there's a gedcom file, render tree
   try {
-    const html = await renderGed(depth, familyID);
+    const html = await renderGed(dir, depth, familyID);
 
     console.log("set index.ged");
 
@@ -54,7 +58,7 @@ async function render(depth: any, familyID: any): string {
 
   // if there's an index file, render it as overview
   try {
-    const html = await renderIndex();
+    const html = await renderIndex(dir);
 
     console.log("set index.html");
 
@@ -66,8 +70,12 @@ async function render(depth: any, familyID: any): string {
   throw "render failed for unknown reason";
 }
 
-async function renderGed(depth: any, familyID: any): string {
-  const index = await fetchDataMetadir("index.ged");
+async function renderGed(
+  dir: string,
+  depth: any,
+  familyID: any
+): Promise<string> {
+  const index = await fetchDataMetadir(dir, "index.ged");
 
   // TODO: ged2dot needs to be able to figure out familyID
   // when passed familyID is undefined or non-existing
@@ -79,8 +87,8 @@ async function renderGed(depth: any, familyID: any): string {
   return svg;
 }
 
-async function renderIndex(): string {
-  const index = await fetchDataMetadir("index.html");
+async function renderIndex(dir: string): Promise<string> {
+  const index = await fetchDataMetadir(dir, "index.html");
 
   return index;
 }

@@ -69,7 +69,6 @@ async function queryMetadir(message: any) {
 
       result = await csvs.queryMetadir(searchParams, {
         fetch: fetchDataMetadir,
-
         grep,
       });
 
@@ -101,7 +100,6 @@ async function queryOptions(message: any) {
 
       result = await csvs.queryOptions(message.data.param, {
         fetch: fetchDataMetadir,
-
         grep,
       });
 

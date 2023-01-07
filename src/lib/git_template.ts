@@ -63,3 +63,14 @@ export const manifest = `{
         }
     }
 }`;
+
+export const manifestRoot = `{
+    "reponame": {
+        "type": "string",
+        "label": "REPO_NAME",
+        "description": {
+           "en": "Name of the repo",
+           "ru": "Название проекта"
+        }
+    }
+}`;

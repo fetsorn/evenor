@@ -9,29 +9,27 @@ import {
 } from "..";
 
 interface IProfileSingleViewProps {
-  schema: any;
   entry: any;
   index: any;
-  waypoint: any;
+  group: any;
   onEdit: any;
 }
 
 export default function ProfileSingleView({
-  schema,
   entry,
   index,
-  waypoint,
+  group,
   onEdit,
 }: IProfileSingleViewProps) {
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       <div className={styles.container}>
         <div id="scrollcontainer" className={styles.sticky}>
-          <SingleViewTitle {...{ waypoint, index }}></SingleViewTitle>
+          <SingleViewTitle {...{ group, index }}></SingleViewTitle>
 
           <SingleViewToolbar {...{ onEdit }} />
 
-          <SingleViewForm {...{ schema, entry }} />
+          <SingleViewForm {...{ entry }} />
 
           <AssetView filepath={entry?.FILE_PATH} />
         </div>

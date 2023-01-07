@@ -1,7 +1,16 @@
 import React from "react";
 import styles from "./waypoint_title.module.css";
 import { Title } from "..";
-import { isDate, formatDate } from "./tbn";
+
+// TODO: replace with Day.js
+function isDate(title: string): boolean {
+  return true;
+}
+
+// TODO: replace with Day.js
+function formatDate(title: string): string {
+  return title;
+}
 
 interface IWaypointTitleProps {
   title?: any;

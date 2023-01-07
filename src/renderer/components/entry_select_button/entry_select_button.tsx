@@ -1,5 +1,4 @@
 import React from "react";
-import { colorExtension } from "./tbn";
 import styles from "./entry_select_button.module.css";
 
 interface IEntrySelectButtonProps {

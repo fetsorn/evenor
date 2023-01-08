@@ -17,15 +17,6 @@ interface ISingleEditFormProps {
   onInputUploadElectron: any;
 }
 
-export function getDescription(prop: any, schema: any, label: any) {
-  const { i18n } = useTranslation();
-
-  const lang = i18n.resolvedLanguage;
-  const description = schema?.[prop]?.description?.[lang] ?? label;
-
-  return description;
-}
-
 export default function SingleEditForm({
   schema,
   entry,
@@ -34,6 +25,8 @@ export default function SingleEditForm({
   onInputUpload,
   onInputUploadElectron,
 }: ISingleEditFormProps) {
+  const { i18n } = useTranslation();
+
   const addedFields = useMemo(
     () =>
       entry ? Object.keys(entry).filter((prop: any) => prop != "UUID") : [],
@@ -56,7 +49,9 @@ export default function SingleEditForm({
                   !Object.prototype.hasOwnProperty.call(schema[prop], "parent")
               );
 
-              const description = getDescription(prop, schema, label);
+              const lang = i18n.resolvedLanguage;
+
+              const description = schema?.[prop]?.description?.[lang] ?? label;
 
               const value = entry[label] ?? "";
 

@@ -25,7 +25,7 @@ export default function TextInput({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={onInputRemove}
+          onClick={() => onInputRemove(label)}
         >
           X
         </button>

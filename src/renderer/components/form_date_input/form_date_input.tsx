@@ -23,7 +23,7 @@ export default function FormDateInput({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={onInputRemove}
+          onClick={() => onInputRemove(label)}
         >
           X
         </button>

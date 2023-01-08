@@ -60,8 +60,6 @@ export default function Observatory() {
 
     _entry.UUID = await digestMessage(crypto.randomUUID());
 
-    _entry.REPO_NAME = "adf";
-
     setIndex(index);
 
     setEntry(_entry);
@@ -100,8 +98,12 @@ export default function Observatory() {
     setEntry(undefined);
   }
 
-  function onAddProp() {
-    return;
+  function onAddProp(label: string) {
+    const _entry = { ...entry };
+
+    _entry[label] = "";
+
+    setEntry(_entry);
   }
 
   function onInputChange(label: string, value: string) {

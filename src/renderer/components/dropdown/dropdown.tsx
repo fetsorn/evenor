@@ -34,11 +34,12 @@ export default function DropdownMenu({
 
       <div className={cn(styles.menu, { [styles.opened]: opened })}>
         {menuItems.map((item: any, index: any) => (
-          <DropdownItemButton
-            {...{ index }}
-            label={item.label}
-            onSelect={onSelect(item.onClick)}
-          />
+          <div key={index}>
+            <DropdownItemButton
+              label={item.label}
+              onSelect={onSelect(item.onClick)}
+            />
+          </div>
         ))}
       </div>
     </div>

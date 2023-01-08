@@ -17,7 +17,7 @@ export default function ToolbarPropsDropdown({
 
   const notAddedFields = useMemo(
     () =>
-      event
+      entry
         ? Object.keys(schema).filter((prop: any) => {
             return !Object.prototype.hasOwnProperty.call(
               entry,
@@ -39,7 +39,7 @@ export default function ToolbarPropsDropdown({
 
         return {
           label: description,
-          onClick: onAddProp,
+          onClick: () => onAddProp(label),
         };
       }),
 
@@ -49,10 +49,14 @@ export default function ToolbarPropsDropdown({
   );
 
   return (
-    <Dropdown
-      title={t("line.dropdown.input")}
-      label="+"
-      menuItems={menuItems}
-    />
+    <>
+      {menuItems.length > 0 && (
+        <Dropdown
+          title={t("line.dropdown.input")}
+          label="+"
+          menuItems={menuItems}
+        />
+      )}
+    </>
   );
 }

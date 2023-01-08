@@ -24,7 +24,7 @@ export default function WaypointTitle({ title }: IWaypointTitleProps) {
           {formatDate(title)}
         </time>
       ) : (
-        <Title>{title}</Title>
+        <div className={styles.date}>{title}</div>
       )}
     </>
   );

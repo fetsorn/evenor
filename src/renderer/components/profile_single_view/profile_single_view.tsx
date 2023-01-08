@@ -14,6 +14,7 @@ interface IProfileSingleViewProps {
   index: any;
   group: any;
   onEdit: any;
+  onDelete: any;
 }
 
 export default function ProfileSingleView({
@@ -22,6 +23,7 @@ export default function ProfileSingleView({
   index,
   group,
   onEdit,
+  onDelete,
 }: IProfileSingleViewProps) {
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
@@ -30,7 +32,7 @@ export default function ProfileSingleView({
           <div id="scrollcontainer" className={styles.sticky}>
             <SingleViewTitle {...{ group, index }} />
 
-            <SingleViewToolbar {...{ onEdit }} />
+            <SingleViewToolbar {...{ onEdit, onDelete }} />
 
             <SingleViewForm {...{ schema, entry }} />
 

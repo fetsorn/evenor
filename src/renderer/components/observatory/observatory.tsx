@@ -14,6 +14,7 @@ import {
   uploadFile,
   updateOverview,
   editEntry,
+  deleteEntry,
 } from "..";
 
 export default function Observatory() {
@@ -91,8 +92,12 @@ export default function Observatory() {
     setIsEdit(false);
   }
 
-  function onDelete() {
-    return;
+  async function onDelete() {
+    const overviewNew = await deleteEntry(repoRoute, overview, entry);
+
+    setOverview(overviewNew);
+
+    setEntry(undefined);
   }
 
   function onAddProp() {

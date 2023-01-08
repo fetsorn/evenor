@@ -71,7 +71,10 @@ export {
   searchRepo,
   fetchSchema,
   uploadFile,
+  updateOverview,
+  editEntry,
 } from "./observatory_controller";
+export { buildItinerary } from "./overview_itinerary_controller";
 export { setupVars, load } from "./overview_graph_controller";
 export { queryOptions } from "./search_bar_form_controller";
 export { convert, fetchBlob, isIFrameable } from "./asset_view_controller";

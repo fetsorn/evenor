@@ -46,8 +46,7 @@ export default function SingleEditForm({
         <div>
           <Paragraph>{entry?.UUID}</Paragraph>
           <form>
-            {addedFields.map((label: any, key: any) => {
-              /* console.log(entry); */
+            {addedFields.map((label: any, index: any) => {
               const prop = Object.keys(schema).find(
                 (prop: any) => schema[prop]["label"] === label
               );
@@ -61,58 +60,50 @@ export default function SingleEditForm({
 
               const value = entry[label] ?? "";
 
-              /* console.log(label, prop, root); */
-              if (prop !== root && schema[prop]["type"] == "date") {
-                /* console.log("DATE"); */
-                return (
-                  <FormDateInput
-                    {...{
-                      key,
-                      description,
-                      label,
-                      value,
-                      onInputChange,
-                      onInputRemove,
-                    }}
-                  />
-                );
-              } else if (prop !== root && prop === "filepath") {
-                return (
-                  <FormUploadInput
-                    {...{
-                      key,
-                      description,
-                      label,
-                      onInputUpload,
-                      onInputUploadElectron,
-                    }}
-                  />
-                );
-              } else if (prop !== root) {
-                <FormTextInput
-                  {...{
-                    key,
-                    description,
-                    label,
-                    value,
-                    onInputChange,
-                    onInputRemove,
-                  }}
-                />;
-              } else {
-                return (
-                  <FormTextareaInput
-                    {...{
-                      key,
-                      description,
-                      label,
-                      value,
-                      onInputChange,
-                      onInputRemove,
-                    }}
-                  />
-                );
-              }
+              return (
+                <div key={index}>
+                  {prop === root ? (
+                    <FormTextareaInput
+                      {...{
+                        description,
+                        label,
+                        value,
+                        onInputChange,
+                        onInputRemove,
+                      }}
+                    />
+                  ) : schema[prop]["type"] == "date" ? (
+                    <FormDateInput
+                      {...{
+                        description,
+                        label,
+                        value,
+                        onInputChange,
+                        onInputRemove,
+                      }}
+                    />
+                  ) : prop === "filepath" ? (
+                    <FormUploadInput
+                      {...{
+                        description,
+                        label,
+                        onInputUpload,
+                        onInputUploadElectron,
+                      }}
+                    />
+                  ) : (
+                    <FormTextInput
+                      {...{
+                        description,
+                        label,
+                        value,
+                        onInputChange,
+                        onInputRemove,
+                      }}
+                    />
+                  )}
+                </div>
+              );
             })}
           </form>
         </div>

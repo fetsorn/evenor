@@ -4,17 +4,17 @@ import { useTranslation } from "react-i18next";
 interface ITextAreaInputProps {
   description?: any;
   label?: any;
-  value?: any;
-  onChange?: any;
-  onRemove?: any;
+  value: any;
+  onInputChange: any;
+  onInputRemove: any;
 }
 
 export default function TextAreaInput({
   description,
   label,
   value,
-  onChange,
-  onRemove,
+  onInputChange,
+  onInputRemove,
 }: ITextAreaInputProps) {
   const { t } = useTranslation();
   return (
@@ -23,7 +23,7 @@ export default function TextAreaInput({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={onRemove}
+          onClick={onInputRemove}
         >
           X
         </button>
@@ -31,7 +31,7 @@ export default function TextAreaInput({
         <textarea
           className={styles.inputtext}
           value={value}
-          onChange={onChange}
+          onChange={(e) => onInputChange(label, e.target.value)}
         />
       </label>
     </div>

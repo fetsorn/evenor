@@ -6,8 +6,8 @@ interface ITextInputProps {
   description?: any;
   value?: any;
   list?: any;
-  onChange?: any;
-  onRemove?: any;
+  onInputChange?: any;
+  onInputRemove?: any;
 }
 
 export default function TextInput({
@@ -15,8 +15,8 @@ export default function TextInput({
   description,
   value,
   list,
-  onChange,
-  onRemove,
+  onInputChange,
+  onInputRemove,
 }: ITextInputProps) {
   const { t } = useTranslation();
   return (
@@ -25,7 +25,7 @@ export default function TextInput({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={onRemove}
+          onClick={onInputRemove}
         >
           X
         </button>
@@ -35,7 +35,7 @@ export default function TextInput({
           type="text"
           list={list}
           value={value}
-          onChange={onChange}
+          onChange={(e) => onInputChange(label, e.target.value)}
         />
       </label>
     </div>

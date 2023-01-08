@@ -1,48 +1,75 @@
 import React, { useState } from "react";
 import {
-  /* ProfileBatchEdit,
-   * ProfileBatchView,
-   * ProfileSingleEdit, */
+  ProfileBatchEdit,
+  ProfileBatchView,
+  ProfileSingleEdit,
   ProfileSingleView,
 } from "..";
 
 interface IObservatoryProfileProps {
+  schema: any;
   entry: any;
   index: any;
   group: any;
   isBatch: any;
+  isEdit: any;
   onSave: any;
+  onEdit: any;
+  onRevert: any;
+  onDelete: any;
+  onAddProp: any;
+  onInputChange: any;
+  onInputRemove: any;
+  onInputUpload: any;
+  onInputUploadElectron: any;
 }
 
 export default function ObservatoryProfile({
+  schema,
   entry,
   index,
   group,
   isBatch,
+  isEdit,
   onSave,
+  onEdit,
+  onRevert,
+  onDelete,
+  onAddProp,
+  onInputChange,
+  onInputRemove,
+  onInputUpload,
+  onInputUploadElectron,
 }: IObservatoryProfileProps) {
-  const [isEdit, setIsEdit] = useState(false);
-
-  function onEdit() {
-    setIsEdit(true);
-  }
-
-  function onRevert() {
-    setIsEdit(false);
-  }
-
-  return <ProfileSingleView {...{ entry, index, group, onEdit }} />;
+  return (
+    <>
+      {isBatch ? (
+        isEdit ? (
+          <ProfileBatchEdit />
+        ) : (
+          <ProfileBatchView />
+        )
+      ) : isEdit ? (
+        <ProfileSingleEdit
+          {...{
+            schema,
+            group,
+            onAddProp,
+            entry,
+            index,
+            onSave,
+            onRevert,
+            onInputChange,
+            onInputRemove,
+            onInputUpload,
+            onInputUploadElectron,
+          }}
+        />
+      ) : (
+        <ProfileSingleView
+          {...{ schema, entry, index, group, onEdit, onDelete }}
+        />
+      )}
+    </>
+  );
 }
-
-/*
- *   isBatch ? (
- *     isEdit ? (
- *       <ProfileBatchEdit {...{ onRevert }} />
- *     ) : (
- *       <ProfileBatchView {...{ onEdit }} />
- *     )
- *   ) : isEdit ? (
- *     <ProfileSingleEdit {...{ onRevert }} />
- *   ) : (
- *     <ProfileSingleView {...{ schema, entry, index, waypoint, onEdit }} />
- *   ); */

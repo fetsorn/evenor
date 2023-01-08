@@ -13,16 +13,10 @@ export default function FormOutput({
   index,
 }: IFormOutputProps) {
   return (
-    <>
-      {value ? (
-        <div>
-          <div key={`output_${index}`}>{description}</div>
+    <div key={index}>
+      <div>{description}</div>
 
-          <Paragraph key={`label_${index}`}>{value}</Paragraph>
-        </div>
-      ) : (
-        <></>
-      )}
-    </>
+      <Paragraph>{value}</Paragraph>
+    </div>
   );
 }

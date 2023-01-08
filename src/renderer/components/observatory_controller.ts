@@ -7,7 +7,7 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
   // check if path exists in the repo
   const path_elements = [dir].concat(path.split("/"));
 
-  console.log("fetchDataMetadir: path_elements, path", path_elements, path);
+  // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
 
   let root = "";
 
@@ -22,12 +22,12 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
 
     const files = await pfs.readdir(root);
 
-    console.log("fetchDataMetadir: files", root, files);
+    // console.log("fetchDataMetadir: files", root, files);
 
     if (files.includes(path_element)) {
       root += path_element;
 
-      console.log(`fetchDataMetadir: ${root} has ${path_element}`);
+      // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
     } else {
       throw Error(
         `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
@@ -349,4 +349,64 @@ export async function fetchSchema(dir: string): Promise<string> {
   const schema = await fetchDataMetadir(dir, "metadir.json");
 
   return schema;
+}
+
+export async function uploadFile(dir: string, file: File) {
+  if (__BUILD_MODE__ === "server") {
+    const form = new FormData();
+
+    form.append("file", file);
+
+    await axios.post("/upload", form);
+  } else {
+    const pfs = new LightningFS("fs").promises;
+
+    const root = "/";
+
+    const rootFiles = await pfs.readdir("/");
+
+    const repoDir = root + dir;
+
+    if (!rootFiles.includes(dir)) {
+      await pfs.mkdir(repoDir);
+    }
+
+    const repoFiles = await pfs.readdir(repoDir);
+
+    const local = "local";
+
+    const localDir = repoDir + "/" + local;
+
+    if (!repoFiles.includes(local)) {
+      await pfs.mkdir(localDir);
+    }
+
+    const localFiles = await pfs.readdir(localDir);
+
+    const filename = file.name;
+
+    const filepath = localDir + "/" + filename;
+
+    if (!localFiles.includes(filename)) {
+      const buf: any = await file.arrayBuffer();
+
+      await pfs.writeFile(filepath, buf);
+    }
+  }
+}
+
+async function onDelete() {
+  // let dataNew;
+  // if (data.find((e: any) => e.UUID === event.UUID)) {
+  //   await csvs.deleteEvent(event.UUID, {
+  //     fetch: fetchDataMetadir,
+  //     write: writeDataMetadir,
+  //   });
+  //   dataNew = data.filter((e: any) => e.UUID !== event.UUID);
+  // } else {
+  //   dataNew = data;
+  // }
+  // setData(dataNew);
+  // setEvent(undefined);
+  // await rebuildLine(dataNew);
 }

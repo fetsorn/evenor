@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
+import { digestMessage } from "@fetsorn/csvs-js";
 import styles from "./observatory.module.css";
 import {
   Header,
@@ -9,6 +10,8 @@ import {
   Footer,
   ensureRoot,
   searchRepo,
+  fetchSchema,
+  uploadFile,
 } from "..";
 
 export default function Observatory() {
@@ -20,7 +23,11 @@ export default function Observatory() {
 
   const [group, setGroup] = useState(undefined);
 
+  const [schema, setSchema] = useState(undefined);
+
   const [overview, setOverview] = useState([]);
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const [isBatch, setIsBatch] = useState(false);
 
@@ -44,8 +51,18 @@ export default function Observatory() {
     return;
   }
 
-  function onEntryCreate() {
+  async function onEntryCreate(index: string) {
     // create entity in repo
+    const _entry: Record<string, string> = {};
+
+    _entry.UUID = await digestMessage(crypto.randomUUID());
+
+    _entry.REPO_NAME = "adf";
+
+    setIndex(index);
+
+    setEntry(_entry);
+
     // if route is root, create repo
     return;
   }
@@ -54,6 +71,58 @@ export default function Observatory() {
     // edit entity in repo
     // if route is root, create repo
     return;
+  }
+
+  function onEdit() {
+    setIsEdit(true);
+  }
+
+  function onRevert() {
+    setIsEdit(false);
+  }
+
+  function onDelete() {
+    return;
+  }
+
+  function onAddProp() {
+    return;
+  }
+
+  function onInputChange(label: string, value: string) {
+    const _entry = { ...entry };
+
+    _entry[label] = value;
+
+    setEntry(_entry);
+  }
+
+  async function onInputUpload(label: string, file: any) {
+    await uploadFile(repoRoute, file);
+
+    const _entry = { ...entry };
+
+    _entry[label] = file.name;
+
+    setEntry(_entry);
+  }
+
+  function onInputRemove(label: string) {
+    const _entry = { ...entry };
+
+    delete _entry[label];
+
+    setEntry(_entry);
+  }
+
+  async function onInputUploadElectron(label: string) {
+    const filepath = await window.electron.uploadFile(repoRoute);
+
+    const _entry = { ...entry };
+
+    _entry[label] = filepath;
+
+    setEntry(_entry);
   }
 
   async function onLocation() {
@@ -75,6 +144,10 @@ export default function Observatory() {
     const _overview = await searchRepo(repoRoute, location.search);
 
     setOverview(_overview);
+
+    const _schema = await fetchSchema(repoRoute);
+
+    setSchema(_schema);
 
     setIsLoaded(true);
   }
@@ -105,10 +178,20 @@ export default function Observatory() {
         <ObservatoryProfile
           {...{
             entry,
+            schema,
             index,
             group,
             isBatch,
+            isEdit,
             onSave,
+            onEdit,
+            onRevert,
+            onDelete,
+            onAddProp,
+            onInputChange,
+            onInputRemove,
+            onInputUpload,
+            onInputUploadElectron,
           }}
         />
       </main>

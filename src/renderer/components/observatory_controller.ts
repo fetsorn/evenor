@@ -505,3 +505,21 @@ export async function writeDataMetadir(
     throw Error(`Cannot write file ${path}.`);
   }
 }
+
+export async function deleteEntry(
+  repoRoute: string,
+  overview: any,
+  entry: any
+) {
+  if (overview.find((e: any) => e.UUID === entry.UUID)) {
+    await csvs.deleteEvent(entry.UUID, {
+      fetch: (path: string) => fetchDataMetadir(repoRoute, path),
+      write: (path: string, content: string) =>
+        writeDataMetadir(repoRoute, path, content),
+    });
+
+    return overview.filter((e: any) => e.UUID !== entry.UUID);
+  } else {
+    return overview;
+  }
+}

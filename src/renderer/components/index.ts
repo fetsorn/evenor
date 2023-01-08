@@ -25,6 +25,7 @@ export { default as HeaderBackButton } from "./header_back_button";
 export { default as HeaderExportButton } from "./header_export_button";
 export { default as HeaderRootPropDropdown } from "./header_root_prop_dropdown";
 export { default as ItineraryWaypoint } from "./itinerary_waypoint";
+export { default as ItineraryCreateButton } from "./itinerary_create_button";
 export { default as Link } from "./link";
 export { default as Observatory } from "./observatory";
 export { default as ObservatoryProfile } from "./observatory_profile";
@@ -73,6 +74,7 @@ export {
   uploadFile,
   updateOverview,
   editEntry,
+  deleteEntry,
 } from "./observatory_controller";
 export { buildItinerary } from "./overview_itinerary_controller";
 export { setupVars, load } from "./overview_graph_controller";

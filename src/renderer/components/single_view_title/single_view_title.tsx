@@ -22,16 +22,8 @@ export default function SingleViewTitle({
   index,
 }: ISingleViewTitleProps) {
   return (
-    <>
-      {isDate(group) ? ( // try to parse as date, otherwise render as is
-        <time className={styles.date} dateTime={group?.slice(1, -1)}>
-          {formatDate(group)} {index}
-        </time>
-      ) : (
-        <Title>
-          {group} {index}
-        </Title>
-      )}
-    </>
+    <Title>
+      {isDate(group) ? formatDate(group) : group} {index}
+    </Title>
   );
 }

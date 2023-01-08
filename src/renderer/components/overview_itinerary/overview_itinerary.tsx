@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./overview_itinerary.module.css";
 import {
-  EntryCreateButton,
+  ItineraryCreateButton,
   VirtualScroll,
   ItineraryWaypoint,
   buildItinerary,
@@ -38,7 +38,7 @@ export default function OverviewItinerary({
   return (
     <div className={styles.timeline}>
       {!itinerary.length ? (
-        <EntryCreateButton {...{ onEntryCreate }} date="" index="1" />
+        <ItineraryCreateButton date="" index="1" {...{ onEntryCreate }} />
       ) : (
         <VirtualScroll
           {...{ onEntrySelect, onEntryCreate, onBatchSelect }}

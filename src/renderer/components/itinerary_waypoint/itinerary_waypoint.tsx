@@ -20,13 +20,15 @@ export default function ItineraryWaypoint({
 }: IItineraryWaypointProps) {
   return (
     <section className={cn(styles.row, { [styles.last]: isLast })} {...others}>
-      <WaypointTitle title={waypoint.date} />
+      <div>
+        <WaypointTitle title={waypoint.date} />
 
-      <EntryCreateButton
-        {...{ onEntryCreate }}
-        date={waypoint.date}
-        index={waypoint.events.length + 1}
-      />
+        <EntryCreateButton
+          {...{ onEntryCreate }}
+          date={waypoint.date}
+          index={waypoint.events.length + 1}
+        />
+      </div>
 
       <WaypointEntries {...{ onEntrySelect }} entries={waypoint.events} />
     </section>

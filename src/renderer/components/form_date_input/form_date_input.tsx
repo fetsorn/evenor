@@ -1,24 +1,26 @@
 import styles from "./form_date_input.module.css";
 import { useTranslation } from "react-i18next";
 
-interface IDateInputProps {
+interface IFormDateInputProps {
+  description?: any;
   label?: any;
   value?: any;
   onChange?: any;
   onRemove?: any;
 }
 
-export default function DateInput({
+export default function FormDateInput({
+  description,
   label,
   value,
   onChange,
   onRemove,
-}: IDateInputProps) {
+}: IFormDateInputProps) {
   const { t } = useTranslation();
   return (
     <div>
       <label>
-        {label}
+        {description}
         <button
           title={t("line.button.remove", { field: label })}
           onClick={onRemove}
@@ -30,7 +32,7 @@ export default function DateInput({
           className={styles.input}
           type="date"
           value={value}
-          onChange={onChange}
+          onChange={(e) => onChange(label, e.target.value)}
         />
       </label>
     </div>

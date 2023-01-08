@@ -2,20 +2,31 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Dropdown } from "..";
 
-interface IFormPropsDropdownProps {
+interface IToolbarPropsDropdownProps {
   schema: any;
-  notAddedFields: any;
-  event: any;
-  setEvent: any;
+  entry: any;
+  onAddProp: any;
 }
 
-export default function FormPropsDropdown({
+export default function ToolbarPropsDropdown({
   schema,
-  notAddedFields,
-  event,
-  setEvent,
-}: IFormPropsDropdownProps) {
+  entry,
+  onAddProp,
+}: IToolbarPropsDropdownProps) {
   const { i18n, t } = useTranslation();
+
+  const notAddedFields = useMemo(
+    () =>
+      event
+        ? Object.keys(schema).filter((prop: any) => {
+            return !Object.prototype.hasOwnProperty.call(
+              entry,
+              schema[prop]["label"]
+            );
+          })
+        : [],
+    [entry]
+  );
 
   const menuItems = useMemo(
     () =>
@@ -28,14 +39,7 @@ export default function FormPropsDropdown({
 
         return {
           label: description,
-
-          onClick: () => {
-            const e = { ...event };
-
-            e[label] = "";
-
-            setEvent(e);
-          },
+          onClick: onAddProp,
         };
       }),
 

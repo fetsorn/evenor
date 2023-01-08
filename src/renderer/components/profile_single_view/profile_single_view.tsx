@@ -9,6 +9,7 @@ import {
 } from "..";
 
 interface IProfileSingleViewProps {
+  schema: any;
   entry: any;
   index: any;
   group: any;
@@ -16,6 +17,7 @@ interface IProfileSingleViewProps {
 }
 
 export default function ProfileSingleView({
+  schema,
   entry,
   index,
   group,
@@ -23,17 +25,19 @@ export default function ProfileSingleView({
 }: IProfileSingleViewProps) {
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
-      <div className={styles.container}>
-        <div id="scrollcontainer" className={styles.sticky}>
-          <SingleViewTitle {...{ group, index }}></SingleViewTitle>
+      {entry && schema && (
+        <div className={styles.container}>
+          <div id="scrollcontainer" className={styles.sticky}>
+            <SingleViewTitle {...{ group, index }} />
 
-          <SingleViewToolbar {...{ onEdit }} />
+            <SingleViewToolbar {...{ onEdit }} />
 
-          <SingleViewForm {...{ entry }} />
+            <SingleViewForm {...{ schema, entry }} />
 
-          <AssetView filepath={entry?.FILE_PATH} />
+            <AssetView filepath={entry?.FILE_PATH} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 
 interface ITextInputProps {
   label?: any;
+  description?: any;
   value?: any;
   list?: any;
   onChange?: any;
@@ -11,6 +12,7 @@ interface ITextInputProps {
 
 export default function TextInput({
   label,
+  description,
   value,
   list,
   onChange,
@@ -20,7 +22,7 @@ export default function TextInput({
   return (
     <div>
       <label>
-        {label}
+        {description}
         <button
           title={t("line.button.remove", { field: label })}
           onClick={onRemove}

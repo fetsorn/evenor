@@ -11,9 +11,9 @@ export { default as FilterSearchBar } from "./filter_search_bar";
 export { default as Footer } from "./footer";
 export { default as FormCreateButton } from "./form_create_button";
 export { default as FormDateInput } from "./form_date_input";
+export { default as FormUploadInput } from "./form_upload_input";
 export { default as FormOutput } from "./form_output";
 export { default as FormKeyInput } from "./form_key_input";
-export { default as FormPropsDropdown } from "./form_props_dropdown";
 export { default as FormTextInput } from "./form_text_input";
 export { default as FormTextareaInput } from "./form_textarea_input";
 export { default as FormUrlInput } from "./form_url_input";
@@ -50,12 +50,16 @@ export { default as SearchBarForm } from "./search_bar_form";
 export { default as SingleViewForm } from "./single_view_form";
 export { default as SingleViewTitle } from "./single_view_title";
 export { default as SingleViewToolbar } from "./single_view_toolbar";
+export { default as SingleEditForm } from "./single_edit_form";
+export { default as SingleEditTitle } from "./single_edit_title";
+export { default as SingleEditToolbar } from "./single_edit_toolbar";
 export { default as Title } from "./title";
 export { default as ToolbarDeleteButton } from "./toolbar_delete_button";
 export { default as ToolbarDownloadButton } from "./toolbar_download_button";
 export { default as ToolbarEditButton } from "./toolbar_edit_button";
 export { default as ToolbarRevertButton } from "./toolbar_revert_button";
 export { default as ToolbarSaveButton } from "./toolbar_save_button";
+export { default as ToolbarPropsDropdown } from "./toolbar_props_dropdown";
 export { default as VirtualScroll } from "./virtual_scroll";
 export { default as WaypointEntries } from "./waypoint_entries";
 export { default as WaypointTitle } from "./waypoint_title";
@@ -66,6 +70,7 @@ export {
   ensureRoot,
   searchRepo,
   fetchSchema,
+  uploadFile,
 } from "./observatory_controller";
 export { setupVars, load } from "./overview_graph_controller";
 export { queryOptions } from "./search_bar_form_controller";

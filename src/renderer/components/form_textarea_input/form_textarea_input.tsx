@@ -2,6 +2,7 @@ import styles from "./form_textarea_input.module.css";
 import { useTranslation } from "react-i18next";
 
 interface ITextAreaInputProps {
+  description?: any;
   label?: any;
   value?: any;
   onChange?: any;
@@ -9,6 +10,7 @@ interface ITextAreaInputProps {
 }
 
 export default function TextAreaInput({
+  description,
   label,
   value,
   onChange,
@@ -18,7 +20,7 @@ export default function TextAreaInput({
   return (
     <div>
       <label>
-        {label}
+        {description}
         <button
           title={t("line.button.remove", { field: label })}
           onClick={onRemove}

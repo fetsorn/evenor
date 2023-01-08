@@ -13,18 +13,13 @@ export function description(schema: any, dir: string, label: any) {
     (prop: any) => schema[prop]["label"] === label
   );
 
-  /* const { i18n } = useTranslation(); */
+  const { i18n } = useTranslation();
 
-  /* const lang = i18n.resolvedLanguage; */
-  const lang = "en";
+  const lang = i18n.resolvedLanguage;
 
   const description = schema?.[prop]?.description?.[lang] ?? label;
 
   return description;
-}
-
-export function value(event: any, label: any) {
-  event[label];
 }
 
 export default function SingleViewForm({
@@ -41,15 +36,16 @@ export default function SingleViewForm({
 
   return (
     <div>
-      <Paragraph key="af">{entry?.UUID}</Paragraph>
+      <Paragraph>{entry?.UUID}</Paragraph>
 
       <div>
-        {addedFields.map((label: any, index: any) => (
-          <FormOutput
-            {...{ index }}
-            description={description(schema, repoRoute, label)}
-            value={value(event, label)}
-          />
+        {addedFields.map((label: string, index: any) => (
+          <div key={index}>
+            <FormOutput
+              description={description(schema, repoRoute, label)}
+              value={entry[label]}
+            />
+          </div>
         ))}
       </div>
     </div>

@@ -2,6 +2,7 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 import git from "isomorphic-git";
 import axios from "axios";
 import { manifestRoot } from "../../lib/git_template";
+import * as csvs from "@fetsorn/csvs-js";
 
 async function fetchDataMetadirBrowser(dir: string, path: string) {
   // check if path exists in the repo
@@ -345,8 +346,10 @@ export async function searchRepo(dir: string, search: any): Promise<any> {
   return overview;
 }
 
-export async function fetchSchema(dir: string): Promise<string> {
-  const schema = await fetchDataMetadir(dir, "metadir.json");
+export async function fetchSchema(dir: string): Promise<any> {
+  const schemaFile = await fetchDataMetadir(dir, "metadir.json");
+
+  const schema = JSON.parse(schemaFile);
 
   return schema;
 }
@@ -409,4 +412,96 @@ async function onDelete() {
   // setData(dataNew);
   // setEvent(undefined);
   // await rebuildLine(dataNew);
+}
+
+export function updateOverview(overview: any, entryNew: any) {
+  if (overview.find((e: any) => e.UUID === entryNew.UUID)) {
+    return overview.map((e: any) => {
+      if (e.UUID === entryNew.UUID) {
+        return entryNew;
+      } else {
+        return e;
+      }
+    });
+  } else {
+    return overview.concat([entryNew]);
+  }
+}
+
+export async function editEntry(repoRoute: string, entry: any) {
+  await csvs.editEvent(entry, {
+    fetch: (path: string) => fetchDataMetadir(repoRoute, path),
+    write: (path: string, content: string) =>
+      writeDataMetadir(repoRoute, path, content),
+    random: () => crypto.randomUUID(),
+  });
+}
+
+async function writeDataMetadirBrowser(
+  dir: string,
+  path: string,
+  content: string
+) {
+  // if path doesn't exist, create it
+  // split path into array of directory names
+  const path_elements = [dir].concat(path.split("/"));
+
+  // console.log(path_elements, path)
+
+  // remove file name
+  path_elements.pop();
+
+  let root = "";
+
+  const fs = new LightningFS("fs");
+
+  const pfs = fs.promises;
+
+  for (let i = 0; i < path_elements.length; i++) {
+    const path_element = path_elements[i];
+
+    root += "/";
+
+    const files = await pfs.readdir(root);
+
+    // console.log(files)
+
+    if (!files.includes(path_element)) {
+      // console.log(`creating directory ${path_element} in ${root}`)
+
+      await pfs.mkdir(root + "/" + path_element);
+    } else {
+      // console.log(`${root} has ${path_element}`)
+    }
+
+    root += path_element;
+  }
+
+  await pfs.writeFile("/" + dir + "/" + path, content, "utf8");
+}
+
+export async function writeDataMetadir(
+  repoRoute: string,
+  path: string,
+  content: string
+) {
+  // console.log("writeDataMetadir");
+  const repoPath = repoRoute === undefined ? "root" : "repos/" + repoRoute;
+
+  try {
+    switch (__BUILD_MODE__) {
+      case "server":
+        await axios.post("/api/" + path, {
+          content,
+        });
+
+      case "electron":
+        await window.electron.writeDataMetadir(repoPath, path, content);
+
+      default:
+        await writeDataMetadirBrowser(repoPath, path, content);
+    }
+  } catch {
+    throw Error(`Cannot write file ${path}.`);
+  }
 }

@@ -5,14 +5,14 @@ import styles from "./itinerary_waypoint.module.css";
 import { WaypointTitle, EntryCreateButton, WaypointEntries } from "..";
 
 interface IItineraryWaypointProps {
-  waypoint?: any;
-  onEntrySelect?: any;
-  onEntryCreate?: any;
+  data: any;
+  onEntrySelect: any;
+  onEntryCreate: any;
   isLast?: any;
 }
 
 export default function ItineraryWaypoint({
-  waypoint,
+  data: waypoint,
   onEntrySelect,
   onEntryCreate,
   isLast,

@@ -12,6 +12,8 @@ import {
   searchRepo,
   fetchSchema,
   uploadFile,
+  updateOverview,
+  editEntry,
 } from "..";
 
 export default function Observatory() {
@@ -67,10 +69,18 @@ export default function Observatory() {
     return;
   }
 
-  function onSave() {
+  async function onSave() {
     // edit entity in repo
+    await editEntry(repoRoute, entry);
+
+    const overviewNew = updateOverview(overview, entry);
+
+    setOverview(overviewNew);
+
+    setIsEdit(false);
+
+    /* document.getElementById(entryNew?.UUID).scrollIntoView(); */
     // if route is root, create repo
-    return;
   }
 
   function onEdit() {

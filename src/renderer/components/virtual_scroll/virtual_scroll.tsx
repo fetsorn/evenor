@@ -2,12 +2,12 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useMedia, useWindowSize } from "..";
 
 interface IVirtualScrollProps {
-  data?: any;
-  rowComponent?: any;
+  data: any;
+  rowComponent: any;
   rowHeight?: any;
   onBatchSelect?: any;
   onEntrySelect?: any;
-  onEntryAdd?: any;
+  onEntryCreate?: any;
   tolerance?: number;
 }
 
@@ -22,9 +22,9 @@ const rowHeights = {
 const VirtualScroll = ({
   data,
   rowComponent: Component,
-  onEntrySelect: onEventClick,
+  onEntrySelect,
   onBatchSelect,
-  onEntryAdd: addEvent,
+  onEntryCreate,
   tolerance = 2,
 }: IVirtualScrollProps) => {
   const { width: viewportWidth } = useWindowSize();
@@ -90,8 +90,8 @@ const VirtualScroll = ({
           data={elem}
           key={elem.key}
           isLast={elem.key === dataWithKeys.length - 1}
-          onEventClick={onEventClick}
-          addEvent={addEvent}
+          onEntrySelect={onEntrySelect}
+          onEntryCreate={onEntryCreate}
           style={{ height: rowHeight }}
         />
       ))}

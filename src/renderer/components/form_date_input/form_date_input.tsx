@@ -5,16 +5,16 @@ interface IFormDateInputProps {
   description?: any;
   label?: any;
   value?: any;
-  onChange?: any;
-  onRemove?: any;
+  onInputChange?: any;
+  onInputRemove?: any;
 }
 
 export default function FormDateInput({
   description,
   label,
   value,
-  onChange,
-  onRemove,
+  onInputChange,
+  onInputRemove,
 }: IFormDateInputProps) {
   const { t } = useTranslation();
   return (
@@ -23,7 +23,7 @@ export default function FormDateInput({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={onRemove}
+          onClick={onInputRemove}
         >
           X
         </button>
@@ -32,7 +32,7 @@ export default function FormDateInput({
           className={styles.input}
           type="date"
           value={value}
-          onChange={(e) => onChange(label, e.target.value)}
+          onChange={(e) => onInputChange(label, e.target.value)}
         />
       </label>
     </div>

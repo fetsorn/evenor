@@ -260,6 +260,14 @@ async function createRootBrowser() {
       "utf8"
     );
 
+    await pfs.mkdir(repoDir + "/metadir/props/schema");
+
+    await pfs.writeFile(
+      repoDir + "/metadir/props/schema/index.csv",
+      "",
+      "utf8"
+    );
+
     await gitcommit(repo);
   }
 }
@@ -278,16 +286,14 @@ async function createRoot() {
   }
 }
 
-export async function ensureRoot(): Promise<void> {
-  const pfs = new LightningFS("fs").promises;
+export async function ensureRoot() {
+  const fs = new LightningFS("fs", { wipe: true } as any);
 
-  // try {
-  //   await rimraf("/root");
-  // } catch (e) {
-  //   console.log("rimraf failed");
-  // }
+  const pfs = fs.promises;
 
   const files = await pfs.readdir("/");
+
+  console.log(files);
 
   if (!files.includes("root")) {
     await createRoot();
@@ -398,22 +404,6 @@ export async function uploadFile(dir: string, file: File) {
   }
 }
 
-async function onDelete() {
-  // let dataNew;
-  // if (data.find((e: any) => e.UUID === event.UUID)) {
-  //   await csvs.deleteEvent(event.UUID, {
-  //     fetch: fetchDataMetadir,
-  //     write: writeDataMetadir,
-  //   });
-  //   dataNew = data.filter((e: any) => e.UUID !== event.UUID);
-  // } else {
-  //   dataNew = data;
-  // }
-  // setData(dataNew);
-  // setEvent(undefined);
-  // await rebuildLine(dataNew);
-}
-
 export function updateOverview(overview: any, entryNew: any) {
   if (overview.find((e: any) => e.UUID === entryNew.UUID)) {
     return overview.map((e: any) => {
@@ -521,5 +511,62 @@ export async function deleteEntry(
     return overview.filter((e: any) => e.UUID !== entry.UUID);
   } else {
     return overview;
+  }
+}
+
+async function createRepo(repo: string, schema: string) {
+  try {
+    switch (__BUILD_MODE__) {
+      case "electron":
+        // TODO: add schema
+        await window.electron.gitCreate(repo);
+
+      default:
+        await createRepoBrowser(repo, schema);
+    }
+  } catch (e) {
+    throw Error(`Could not create git repo` + e);
+  }
+}
+
+export async function updateRepo(entry: any) {
+  await ensureRepo(entry.UUID, entry.SCHEMA);
+}
+
+export async function ensureRepo(repo: string, schema: string) {
+  const pfs = new LightningFS("fs").promises;
+
+  // try {
+  //   await rimraf("/root");
+  // } catch (e) {
+  //   console.log("rimraf failed");
+  // }
+
+  const files = await pfs.readdir("/");
+
+  if (!files.includes(repo)) {
+    await createRepo(repo, schema);
+  }
+}
+
+async function createRepoBrowser(repo: string, schema: string) {
+  const fs = new LightningFS("fs");
+
+  const pfs = fs.promises;
+
+  const repoDir = "/" + repo;
+
+  if ((await pfs.readdir("/")).includes(repo)) {
+    console.log("repo exists");
+  } else {
+    await pfs.mkdir(repoDir);
+
+    await git.init({ fs: fs, dir: repoDir });
+
+    await pfs.mkdir(repoDir + "/metadir");
+
+    await pfs.writeFile(repoDir + "/metadir.json", schema, "utf8");
+
+    await gitcommit(repo);
   }
 }

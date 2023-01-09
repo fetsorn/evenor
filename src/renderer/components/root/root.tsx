@@ -7,7 +7,7 @@ export default function Root() {
     <Router>
       <Routes>
         <Route index element={<Observatory />} />
-        <Route path=":repoName" element={<Observatory />} />
+        <Route path=":repoRoute" element={<Observatory />} />
       </Routes>
     </Router>
   );

@@ -15,7 +15,9 @@ export default function WaypointEntries({
     <div className={styles.content}>
       <div className={styles.stars}>
         {entries.map((entry: any, index: number) => (
-          <EntrySelectButton {...{ entry, index, onEntrySelect }} />
+          <div key={index}>
+            <EntrySelectButton {...{ entry, index, onEntrySelect }} />
+          </div>
         ))}
       </div>
     </div>

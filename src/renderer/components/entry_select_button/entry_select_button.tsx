@@ -20,7 +20,6 @@ export default function EntrySelectButton({
       onClick={() => onEntrySelect(entry, index + 1)}
       title={entry?.FILE_PATH}
       id={entry?.UUID}
-      key={entry}
     >
       {index + 1}
     </button>

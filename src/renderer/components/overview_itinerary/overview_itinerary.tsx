@@ -27,8 +27,6 @@ export default function OverviewItinerary({
 
     const _itinerary = await buildItinerary(overview, "REPO_NAME");
 
-    console.log(_itinerary);
-
     setItinerary(_itinerary);
   }
   useEffect(() => {

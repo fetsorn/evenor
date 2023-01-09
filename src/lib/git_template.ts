@@ -1,6 +1,6 @@
 export const manifest = `{
     "datum": {
-        "type": "string",
+        "type": "text",
         "label": "DATUM",
         "description": {
            "en": "Description of the event",
@@ -56,7 +56,7 @@ export const manifest = `{
     "filepath": {
         "parent": "datum",
         "label": "FILE_PATH",
-        "type": "string",
+        "type": "path",
         "description": {
            "en": "Path to a digital asset",
            "ru": "Путь к файлу"

@@ -56,7 +56,6 @@ async function queryMetadir(message: any) {
   try {
     console.log(
       "query worker tries to query metadir",
-
       message.data.searchParams
     );
 
@@ -135,7 +134,7 @@ function _buildLine(data: any, prop_label: any) {
     return acc;
   }, {});
 
-  console.log(object_of_arrays);
+  // console.log(object_of_arrays);
 
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
 
@@ -147,7 +146,7 @@ function _buildLine(data: any, prop_label: any) {
       return { date: key, events: object_of_arrays[key] };
     });
 
-  console.log(array_of_objects);
+  // console.log(array_of_objects);
 
   return array_of_objects;
 }

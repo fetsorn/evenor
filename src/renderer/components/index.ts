@@ -75,6 +75,7 @@ export {
   updateOverview,
   editEntry,
   deleteEntry,
+  updateRepo,
 } from "./observatory_controller";
 export { buildItinerary } from "./overview_itinerary_controller";
 export { setupVars, load } from "./overview_graph_controller";

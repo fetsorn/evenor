@@ -15,6 +15,7 @@ import {
   updateOverview,
   editEntry,
   deleteEntry,
+  updateRepo,
 } from "..";
 
 export default function Observatory() {
@@ -63,9 +64,6 @@ export default function Observatory() {
     setIndex(index);
 
     setEntry(_entry);
-
-    // if route is root, create repo
-    return;
   }
 
   async function onSave() {
@@ -79,7 +77,10 @@ export default function Observatory() {
     setIsEdit(false);
 
     /* document.getElementById(entryNew?.UUID).scrollIntoView(); */
-    // if route is root, create repo
+    // if route is root, create or edit repo
+    if (repoRoute === undefined) {
+      await updateRepo(entry);
+    }
   }
 
   function onEdit() {

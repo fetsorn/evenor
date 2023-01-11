@@ -55,6 +55,7 @@ export { default as SingleEditForm } from "./single_edit_form";
 export { default as SingleEditTitle } from "./single_edit_title";
 export { default as SingleEditToolbar } from "./single_edit_toolbar";
 export { default as Title } from "./title";
+export { default as ToolbarCloseButton } from "./toolbar_close_button";
 export { default as ToolbarDeleteButton } from "./toolbar_delete_button";
 export { default as ToolbarDownloadButton } from "./toolbar_download_button";
 export { default as ToolbarEditButton } from "./toolbar_edit_button";

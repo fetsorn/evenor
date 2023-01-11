@@ -25,9 +25,9 @@ export default function SingleEditToolbar({
     <div className={styles.buttonbar}>
       <ToolbarRevertButton {...{ onRevert }} />
 
-      <ToolbarSaveButton {...{ onSave }} />
-
       <ToolbarPropsDropdown {...{ schema, entry, onAddProp }} />
+
+      <ToolbarSaveButton {...{ onSave }} />
     </div>
   );
 }

@@ -77,7 +77,7 @@ export default function Observatory() {
 
     /* document.getElementById(entryNew?.UUID).scrollIntoView(); */
 
-    await dispenserUpdate(repoRoute, schema, entry);
+    /* await dispenserUpdate(repoRoute, schema, entry); */
   }
 
   function onEdit() {
@@ -93,8 +93,12 @@ export default function Observatory() {
 
     setOverview(overviewNew);
 
-    await dispenserDelete(repoRoute, schema, entry);
+    /* await dispenserDelete(repoRoute, schema, entry); */
 
+    setEntry(undefined);
+  }
+
+  function onClose() {
     setEntry(undefined);
   }
 
@@ -202,6 +206,7 @@ export default function Observatory() {
             isEdit,
             onSave,
             onEdit,
+            onClose,
             onRevert,
             onDelete,
             onAddProp,

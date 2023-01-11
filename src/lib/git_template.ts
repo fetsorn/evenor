@@ -74,7 +74,7 @@ export const manifestRoot = `{
         }
     },
     "schema": {
-        "parent": "reponame",
+        "trunk": "reponame",
         "type": "schema",
         "label": "SCHEMA",
         "description": {

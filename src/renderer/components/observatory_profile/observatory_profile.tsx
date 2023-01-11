@@ -15,6 +15,7 @@ interface IObservatoryProfileProps {
   isEdit: any;
   onSave: any;
   onEdit: any;
+  onClose: any;
   onRevert: any;
   onDelete: any;
   onAddProp: any;
@@ -33,6 +34,7 @@ export default function ObservatoryProfile({
   isEdit,
   onSave,
   onEdit,
+  onClose,
   onRevert,
   onDelete,
   onAddProp,
@@ -67,7 +69,7 @@ export default function ObservatoryProfile({
         />
       ) : (
         <ProfileSingleView
-          {...{ schema, entry, index, group, onEdit, onDelete }}
+          {...{ schema, entry, index, group, onEdit, onClose, onDelete }}
         />
       )}
     </>

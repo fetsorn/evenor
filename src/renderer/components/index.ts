@@ -68,15 +68,19 @@ export { default as useMedia } from "./use_media";
 export { default as useWindowSize } from "./use_window_size";
 export {
   fetchDataMetadir,
-  ensureRoot,
   searchRepo,
   fetchSchema,
   uploadFile,
   updateOverview,
   editEntry,
   deleteEntry,
-  updateRepo,
 } from "./observatory_controller";
+export {
+  dispenserDelete,
+  dispenserUpdate,
+  ensureRoot,
+  ls,
+} from "./dispenser_controller";
 export { buildItinerary } from "./overview_itinerary_controller";
 export { setupVars, load } from "./overview_graph_controller";
 export { queryOptions } from "./search_bar_form_controller";

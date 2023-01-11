@@ -15,7 +15,8 @@ import {
   updateOverview,
   editEntry,
   deleteEntry,
-  updateRepo,
+  dispenserUpdate,
+  dispenserDelete,
 } from "..";
 
 export default function Observatory() {
@@ -56,7 +57,6 @@ export default function Observatory() {
   }
 
   async function onEntryCreate(index: string) {
-    // create entity in repo
     const _entry: Record<string, string> = {};
 
     _entry.UUID = await digestMessage(crypto.randomUUID());
@@ -67,7 +67,6 @@ export default function Observatory() {
   }
 
   async function onSave() {
-    // edit entity in repo
     await editEntry(repoRoute, entry);
 
     const overviewNew = updateOverview(overview, entry);
@@ -77,10 +76,8 @@ export default function Observatory() {
     setIsEdit(false);
 
     /* document.getElementById(entryNew?.UUID).scrollIntoView(); */
-    // if route is root, create or edit repo
-    if (repoRoute === undefined) {
-      await updateRepo(entry);
-    }
+
+    await dispenserUpdate(repoRoute, schema, entry);
   }
 
   function onEdit() {
@@ -95,6 +92,8 @@ export default function Observatory() {
     const overviewNew = await deleteEntry(repoRoute, overview, entry);
 
     setOverview(overviewNew);
+
+    await dispenserDelete(repoRoute, schema, entry);
 
     setEntry(undefined);
   }

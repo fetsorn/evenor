@@ -15,13 +15,21 @@ export default function ToolbarPropsDropdown({
 }: IToolbarPropsDropdownProps) {
   const { i18n, t } = useTranslation();
 
+  // always list array items
+  // list schema props that are not in the entry
+  // never list arrays or object fields
   const notAddedFields = useMemo(
     () =>
       entry
         ? Object.keys(schema).filter((prop: any) => {
-            return !Object.prototype.hasOwnProperty.call(
-              entry,
-              schema[prop]["label"]
+            return (
+              schema[schema[prop].trunk]?.type === "array" ||
+              (!Object.prototype.hasOwnProperty.call(
+                entry,
+                schema[prop].label
+              ) &&
+                schema[prop].type !== "array" &&
+                schema[schema[prop].trunk]?.type !== "object")
             );
           })
         : [],

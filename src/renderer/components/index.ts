@@ -73,8 +73,10 @@ export {
   fetchSchema,
   uploadFile,
   updateOverview,
+  createEntry,
   editEntry,
   deleteEntry,
+  addProp,
 } from "./observatory_controller";
 export {
   dispenserDelete,

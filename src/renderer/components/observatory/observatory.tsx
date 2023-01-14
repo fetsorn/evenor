@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
-import { digestMessage } from "@fetsorn/csvs-js";
 import styles from "./observatory.module.css";
 import {
   Header,
@@ -13,8 +12,10 @@ import {
   fetchSchema,
   uploadFile,
   updateOverview,
+  createEntry,
   editEntry,
   deleteEntry,
+  addProp,
 } from "..";
 
 export default function Observatory() {
@@ -55,15 +56,13 @@ export default function Observatory() {
   }
 
   async function onEntryCreate(index: string) {
-    const _entry: Record<string, string> = {};
-
-    _entry.UUID = await digestMessage(crypto.randomUUID());
+    const entryNew = await createEntry();
 
     setIndex(index);
 
     setIsEdit(true);
 
-    setEntry(_entry);
+    setEntry(entryNew);
   }
 
   async function onSave() {
@@ -98,12 +97,10 @@ export default function Observatory() {
     setEntry(undefined);
   }
 
-  function onAddProp(label: string) {
-    const _entry = { ...entry };
+  async function onAddProp(label: string) {
+    const entryNew = await addProp(schema, { ...entry }, label);
 
-    _entry[label] = "";
-
-    setEntry(_entry);
+    setEntry(entryNew);
   }
 
   function onInputChange(label: string, value: string) {

@@ -1,6 +1,7 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
 import * as csvs from "@fetsorn/csvs-js";
+import { digestMessage } from "@fetsorn/csvs-js";
 
 function queryWorkerInit(dir: string) {
   const worker = new Worker(new URL("./worker", import.meta.url));
@@ -308,4 +309,60 @@ export async function uploadFile(dir: string, file: File) {
       await pfs.writeFile(filepath, buf);
     }
   }
+}
+
+export async function addProp(schema: any, entry: any, label: string) {
+  const prop =
+    Object.keys(schema).find((p: any) => schema[p].label === label) ?? label;
+
+  const { trunk } = schema[prop];
+
+  if (trunk && schema[trunk].type === "array") {
+    const trunkLabel = schema[trunk].label;
+
+    // ensure trunk array
+    if (entry[trunkLabel] === undefined) {
+      const trunk: any = {};
+
+      const arrayUUID = await digestMessage(crypto.randomUUID());
+
+      trunk.UUID = arrayUUID;
+
+      trunk.items = [];
+
+      entry[trunkLabel] = { ...trunk };
+    }
+
+    // assume that array items are always objects
+    const obj: any = {};
+
+    const itemUUID = await digestMessage(crypto.randomUUID());
+
+    obj.UUID = itemUUID;
+
+    obj.ITEM_NAME = prop;
+
+    entry[trunkLabel].items.push({ ...obj });
+  } else if (trunk && schema[prop].type === "object") {
+    const obj: any = {};
+
+    const uuid = await digestMessage(crypto.randomUUID());
+
+    obj.UUID = uuid;
+
+    schema[label] = { ...obj };
+  } else {
+    entry[label] = "";
+  }
+
+  return entry;
+}
+
+// TODO: set default values for required fields
+export async function createEntry() {
+  const entry: Record<string, string> = {};
+
+  entry.UUID = await digestMessage(crypto.randomUUID());
+
+  return entry;
 }

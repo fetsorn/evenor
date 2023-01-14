@@ -15,8 +15,6 @@ import {
   updateOverview,
   editEntry,
   deleteEntry,
-  dispenserUpdate,
-  dispenserDelete,
 } from "..";
 
 export default function Observatory() {
@@ -63,6 +61,8 @@ export default function Observatory() {
 
     setIndex(index);
 
+    setIsEdit(true);
+
     setEntry(_entry);
   }
 
@@ -75,9 +75,7 @@ export default function Observatory() {
 
     setIsEdit(false);
 
-    /* document.getElementById(entryNew?.UUID).scrollIntoView(); */
-
-    /* await dispenserUpdate(repoRoute, schema, entry); */
+    document.getElementById(entry.UUID).scrollIntoView();
   }
 
   function onEdit() {
@@ -92,8 +90,6 @@ export default function Observatory() {
     const overviewNew = await deleteEntry(repoRoute, overview, entry);
 
     setOverview(overviewNew);
-
-    /* await dispenserDelete(repoRoute, schema, entry); */
 
     setEntry(undefined);
   }

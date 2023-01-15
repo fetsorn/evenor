@@ -2,6 +2,7 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
 import * as csvs from "@fetsorn/csvs-js";
 import { digestMessage } from "@fetsorn/csvs-js";
+import { useTranslation } from "react-i18next";
 
 function queryWorkerInit(dir: string) {
   const worker = new Worker(new URL("./worker", import.meta.url));
@@ -365,4 +366,18 @@ export async function createEntry() {
   entry.UUID = await digestMessage(crypto.randomUUID());
 
   return entry;
+}
+
+export function getDescription(schema: any, label: any) {
+  const prop = Object.keys(schema).find(
+    (prop: any) => schema[prop]["label"] === label
+  );
+
+  const { i18n } = useTranslation();
+
+  const lang = i18n.resolvedLanguage;
+
+  const description = schema?.[prop]?.description?.[lang] ?? label;
+
+  return description;
 }

@@ -1,12 +1,15 @@
 import React from "react";
 import { Paragraph } from "..";
 
-interface IFormOutputProps {
+interface IFormOutputParagraphProps {
   description: any;
   value: any;
 }
 
-export default function FormOutput({ description, value }: IFormOutputProps) {
+export default function FormOutputParagraph({
+  description,
+  value,
+}: IFormOutputParagraphProps) {
   return (
     <div>
       <div>{description}</div>

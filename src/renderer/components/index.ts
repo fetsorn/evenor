@@ -13,6 +13,7 @@ export { default as FormCreateButton } from "./form_create_button";
 export { default as FormDateInput } from "./form_date_input";
 export { default as FormUploadInput } from "./form_upload_input";
 export { default as FormOutput } from "./form_output";
+export { default as FormInput } from "./form_input";
 export { default as FormKeyInput } from "./form_key_input";
 export { default as FormTextInput } from "./form_text_input";
 export { default as FormTextareaInput } from "./form_textarea_input";
@@ -84,6 +85,7 @@ export {
   ensureRoot,
   ls,
 } from "./dispenser_controller";
+export { deepClone } from "./curse_controller";
 export { buildItinerary } from "./overview_itinerary_controller";
 export { setupVars, load } from "./overview_graph_controller";
 export { queryOptions } from "./search_bar_form_controller";

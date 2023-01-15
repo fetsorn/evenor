@@ -19,6 +19,7 @@ export default function TextInput({
   onInputRemove,
 }: ITextInputProps) {
   const { t } = useTranslation();
+
   return (
     <div>
       <label>

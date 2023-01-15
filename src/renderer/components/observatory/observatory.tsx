@@ -16,12 +16,13 @@ import {
   editEntry,
   deleteEntry,
   addProp,
+  deepClone,
 } from "..";
 
 export default function Observatory() {
   const { repoRoute } = useParams();
 
-  const [entry, setEntry] = useState(undefined);
+  const [entry, _setEntry] = useState(undefined);
 
   const [index, setIndex] = useState(undefined);
 
@@ -41,12 +42,16 @@ export default function Observatory() {
 
   const location = useLocation();
 
+  function setEntry(e: any) {
+    _setEntry(e);
+  }
+
   function onBatchSelect() {
     setIsBatch(true);
   }
 
-  function onEntrySelect(_entry: any, _index: any, _group: any) {
-    setEntry(_entry);
+  function onEntrySelect(entryNew: any, _index: any, _group: any) {
+    setEntry(entryNew);
 
     setIndex(_index);
 
@@ -66,9 +71,9 @@ export default function Observatory() {
   }
 
   async function onSave() {
-    await editEntry(repoRoute, entry);
+    await editEntry(repoRoute, deepClone(entry));
 
-    const overviewNew = updateOverview(overview, entry);
+    const overviewNew = updateOverview(overview, deepClone(entry));
 
     setOverview(overviewNew);
 
@@ -98,45 +103,45 @@ export default function Observatory() {
   }
 
   async function onAddProp(label: string) {
-    const entryNew = await addProp(schema, { ...entry }, label);
+    const entryNew = await addProp(schema, deepClone(entry), label);
 
     setEntry(entryNew);
   }
 
   function onInputChange(label: string, value: string) {
-    const _entry = { ...entry };
+    const entryNew = deepClone(entry);
 
-    _entry[label] = value;
+    entryNew[label] = value;
 
-    setEntry(_entry);
+    setEntry(entryNew);
   }
 
   async function onInputUpload(label: string, file: any) {
     await uploadFile(repoRoute, file);
 
-    const _entry = { ...entry };
+    const entryNew = deepClone(entry);
 
-    _entry[label] = file.name;
+    entryNew[label] = file.name;
 
-    setEntry(_entry);
+    setEntry(entryNew);
   }
 
   function onInputRemove(label: string) {
-    const _entry = { ...entry };
+    const entryNew = deepClone(entry);
 
-    delete _entry[label];
+    delete entryNew[label];
 
-    setEntry(_entry);
+    setEntry(entryNew);
   }
 
   async function onInputUploadElectron(label: string) {
     const filepath = await window.electron.uploadFile(repoRoute);
 
-    const _entry = { ...entry };
+    const entryNew = deepClone(entry);
 
-    _entry[label] = filepath;
+    entryNew[label] = filepath;
 
-    setEntry(_entry);
+    setEntry(entryNew);
   }
 
   async function onLocation() {

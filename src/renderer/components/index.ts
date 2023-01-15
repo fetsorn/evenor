@@ -12,7 +12,9 @@ export { default as Footer } from "./footer";
 export { default as FormCreateButton } from "./form_create_button";
 export { default as FormDateInput } from "./form_date_input";
 export { default as FormUploadInput } from "./form_upload_input";
-export { default as FormOutput } from "./form_output";
+export { default as FormOutputParagraph } from "./form_output_paragraph";
+export { default as FormOutputArray } from "./form_output_array";
+export { default as FormOutputObject } from "./form_output_object";
 export { default as FormKeyInput } from "./form_key_input";
 export { default as FormTextInput } from "./form_text_input";
 export { default as FormTextareaInput } from "./form_textarea_input";
@@ -77,6 +79,7 @@ export {
   editEntry,
   deleteEntry,
   addProp,
+  getDescription,
 } from "./observatory_controller";
 export {
   dispenserDelete,

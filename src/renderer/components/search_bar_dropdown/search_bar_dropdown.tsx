@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 interface ISearchBarDropdownProps {
   notAddedFields: any;
   selected: any;
-  setSelected: any;
+  onChangeSelected: any;
 }
 
 export default function SearchBarDropdown({
   notAddedFields,
   selected,
-  setSelected,
+  onChangeSelected,
 }: ISearchBarDropdownProps) {
   const { t } = useTranslation();
 
@@ -19,7 +19,7 @@ export default function SearchBarDropdown({
       name="fields"
       value={selected}
       title={t("header.dropdown.search", { field: selected })}
-      onChange={({ target: { value } }) => setSelected(value)}
+      onChange={({ target: { value } }) => onChangeSelected(value)}
     >
       {notAddedFields.map((field: any, idx: any) => (
         <option key={idx} value={field.name}>

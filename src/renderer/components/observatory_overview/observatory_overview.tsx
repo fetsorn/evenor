@@ -2,6 +2,7 @@ import React from "react";
 import { OverviewItinerary, OverviewGraph } from "..";
 
 interface IObservatoryOverviewProps {
+  groupBy: any;
   overview: any;
   overviewType: any;
   onEntrySelect: any;
@@ -10,11 +11,12 @@ interface IObservatoryOverviewProps {
 }
 
 export enum OverviewType {
-  Itinerary,
-  Graph,
+  itinerary = "itinerary",
+  graph = "graph",
 }
 
 export default function ObservatoryOverview({
+  groupBy,
   overview,
   overviewType,
   onEntrySelect,
@@ -22,10 +24,11 @@ export default function ObservatoryOverview({
   onBatchSelect,
 }: IObservatoryOverviewProps) {
   switch (overviewType) {
-    case OverviewType.Itinerary:
+    case OverviewType.itinerary:
       return (
         <OverviewItinerary
           {...{
+            groupBy,
             overview,
             onEntrySelect,
             onEntryCreate,
@@ -34,7 +37,7 @@ export default function ObservatoryOverview({
         />
       );
 
-    /* case OverviewType.Graph:
+    /* case OverviewType.graph:
      *   return <OverviewGraph {...{ data, onEntrySelect }} />; */
 
     default:

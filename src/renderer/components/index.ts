@@ -24,7 +24,8 @@ export { default as GraphTextInput } from "./graph_text_input";
 export { default as Header } from "./header";
 export { default as HeaderBackButton } from "./header_back_button";
 export { default as HeaderExportButton } from "./header_export_button";
-export { default as HeaderRootPropDropdown } from "./header_root_prop_dropdown";
+export { default as HeaderGroupByDropdown } from "./header_groupby_dropdown";
+export { default as HeaderOverviewTypeDropdown } from "./header_overview_type_dropdown";
 export { default as ItineraryWaypoint } from "./itinerary_waypoint";
 export { default as ItineraryCreateButton } from "./itinerary_create_button";
 export { default as Link } from "./link";
@@ -78,6 +79,7 @@ export {
   editEntry,
   deleteEntry,
   addProp,
+  getDefaultGroupBy,
 } from "./observatory_controller";
 export {
   dispenserDelete,

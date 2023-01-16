@@ -44,7 +44,6 @@ function queryWorkerInit(dir: string) {
 
         const contents = await wasm.grep(
           message.data.contentFile,
-
           message.data.patternFile
         );
 

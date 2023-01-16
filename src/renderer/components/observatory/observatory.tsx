@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import styles from "./observatory.module.css";
 import {
   Header,
@@ -17,18 +17,21 @@ import {
   deleteEntry,
   addProp,
   deepClone,
+  getDefaultGroupBy,
 } from "..";
 
 export default function Observatory() {
   const { repoRoute } = useParams();
 
-  const [entry, _setEntry] = useState(undefined);
+  const [entry, setEntry] = useState(undefined);
 
   const [index, setIndex] = useState(undefined);
 
   const [group, setGroup] = useState(undefined);
 
-  const [schema, setSchema] = useState(undefined);
+  const [groupBy, setGroupBy] = useState(undefined);
+
+  const [schema, setSchema] = useState<any>({});
 
   const [overview, setOverview] = useState([]);
 
@@ -36,26 +39,24 @@ export default function Observatory() {
 
   const [isBatch, setIsBatch] = useState(false);
 
-  const [overviewType, setOverviewType] = useState(OverviewType.Itinerary);
+  const [overviewType, setOverviewType] = useState(OverviewType.itinerary);
 
   const [isLoaded, setIsLoaded] = useState(false);
 
   const location = useLocation();
 
-  function setEntry(e: any) {
-    _setEntry(e);
-  }
+  const navigate = useNavigate();
 
   function onBatchSelect() {
     setIsBatch(true);
   }
 
-  function onEntrySelect(entryNew: any, _index: any, _group: any) {
+  function onEntrySelect(entryNew: any, indexNew: any, groupNew: any) {
     setEntry(entryNew);
 
-    setIndex(_index);
+    setIndex(indexNew);
 
-    setGroup(_group);
+    setGroup(groupNew);
 
     return;
   }
@@ -144,14 +145,53 @@ export default function Observatory() {
     setEntry(entryNew);
   }
 
+  function onChangeGroupBy(groupByNew: string) {
+    const groupByProp =
+      Object.keys(schema).find((p) => schema[p].label === groupByNew) ??
+      groupByNew;
+
+    const searchParams = new URLSearchParams(location.search);
+
+    searchParams.set("groupBy", groupByProp);
+
+    navigate({
+      pathname: location.pathname,
+      search: "?" + searchParams.toString(),
+    });
+  }
+
+  function onChangeOverviewType(overviewTypeNew: string) {
+    const searchParams = new URLSearchParams(location.search);
+
+    searchParams.set("overviewType", overviewTypeNew);
+
+    navigate({
+      pathname: location.pathname,
+      search: "?" + searchParams.toString(),
+    });
+  }
+
+  async function onChangeQuery(searchString: string) {
+    const overviewNew = await searchRepo(repoRoute, searchString);
+
+    setOverview(overviewNew);
+  }
+
   async function onLocation() {
+    const searchParams = new URLSearchParams(location.search);
+
+    const overviewTypeNew = searchParams.get(
+      "overviewType"
+    ) as keyof typeof OverviewType;
+
+    if (overviewTypeNew) {
+      setOverviewType(OverviewType[overviewTypeNew]);
+    }
+
     if (isLoaded) {
-      const _overview = await searchRepo(repoRoute, location.search);
+      const groupByNew = getDefaultGroupBy(schema, overview, location.search);
 
-      setOverview(_overview);
-
-      // TODO: resolve overview type from searchParams
-      setOverviewType(OverviewType.Itinerary);
+      setGroupBy(groupByNew);
     }
   }
 
@@ -160,13 +200,21 @@ export default function Observatory() {
       await ensureRoot();
     }
 
-    const _overview = await searchRepo(repoRoute, location.search);
+    const schemaNew = await fetchSchema(repoRoute);
 
-    setOverview(_overview);
+    const overviewNew = await searchRepo(repoRoute, location.search);
 
-    const _schema = await fetchSchema(repoRoute);
+    const groupByNew = getDefaultGroupBy(
+      schemaNew,
+      overviewNew,
+      location.search
+    );
 
-    setSchema(_schema);
+    setSchema(schemaNew);
+
+    setGroupBy(groupByNew);
+
+    setOverview(overviewNew);
 
     setIsLoaded(true);
   }
@@ -181,11 +229,21 @@ export default function Observatory() {
 
   return (
     <>
-      <Header {...{ schema }} />
-
+      <Header
+        {...{
+          isLoaded,
+          schema,
+          groupBy,
+          onChangeQuery,
+          onChangeGroupBy,
+          overviewType,
+          onChangeOverviewType,
+        }}
+      />
       <main className={styles.main}>
         <ObservatoryOverview
           {...{
+            groupBy,
             overview,
             overviewType,
             onEntrySelect,
@@ -215,7 +273,6 @@ export default function Observatory() {
           }}
         />
       </main>
-
       <Footer />
     </>
   );

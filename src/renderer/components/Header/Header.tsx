@@ -1,21 +1,45 @@
 import styles from "./header.module.css";
 
-import { HeaderBackButton, HeaderFilter, HeaderExportButton } from "..";
+import {
+  HeaderBackButton,
+  HeaderFilter,
+  HeaderGroupByDropdown,
+  HeaderOverviewTypeDropdown,
+} from "..";
 
 interface IHeaderProps {
-  schema?: any;
-  /* groupBy?: any;
-   * setGroupBy?: any;
-   * setOverview?: any; */
+  isLoaded: boolean;
+  schema: any;
+  groupBy: any;
+  onChangeGroupBy: any;
+  overviewType: any;
+  onChangeOverviewType: any;
+  onChangeQuery: any;
 }
 
-export default function Header({ schema }: IHeaderProps) {
+export default function Header({
+  isLoaded,
+  schema,
+  groupBy,
+  onChangeGroupBy,
+  overviewType,
+  onChangeOverviewType,
+  onChangeQuery,
+}: IHeaderProps) {
   return (
     <header className={styles.header}>
       <HeaderBackButton />
 
-      <HeaderFilter {...{ schema }} />
+      <HeaderOverviewTypeDropdown
+        {...{
+          overviewType,
+          onChangeOverviewType,
+        }}
+      />
 
+      <HeaderFilter {...{ isLoaded, schema, onChangeQuery }} />
+
+      <HeaderGroupByDropdown {...{ schema, groupBy, onChangeGroupBy }} />
       <div></div>
     </header>
   );

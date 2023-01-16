@@ -3,6 +3,7 @@ import { SearchBarDropdown, SearchBarForm, SearchBarButton } from "..";
 import styles from "./filter_search_bar.module.css";
 
 interface IFilterSearchBarProps {
+  isLoaded: boolean;
   notAddedFields: any;
   searched: any;
   selected: any;
@@ -12,6 +13,7 @@ interface IFilterSearchBarProps {
 }
 
 export default function FilterSearchBar({
+  isLoaded,
   notAddedFields,
   searched,
   selected,
@@ -23,7 +25,7 @@ export default function FilterSearchBar({
     <div className={styles.search}>
       <SearchBarDropdown {...{ notAddedFields, selected, onChangeSelected }} />
 
-      <SearchBarForm {...{ selected, searched, onChangeSearched }} />
+      <SearchBarForm {...{ isLoaded, selected, searched, onChangeSearched }} />
 
       <SearchBarButton {...{ onQueryAdd }} />
     </div>

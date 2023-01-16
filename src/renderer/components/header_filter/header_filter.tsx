@@ -4,7 +4,9 @@ import { FilterSearchBar, FilterQueryList } from "..";
 import styles from "./header_filter.module.css";
 
 interface IHeaderFilterProps {
-  schema?: any;
+  isLoaded: boolean;
+  schema: any;
+  onChangeQuery: any;
 }
 
 function paramsToQueries(searchParams: URLSearchParams) {
@@ -25,7 +27,9 @@ function queriesToParams(params: any) {
 }
 
 export default function HeaderFilter({
+  isLoaded,
   schema: rawSchema,
+  onChangeQuery,
 }: IHeaderFilterProps) {
   const [queries, setQueries]: any[] = useState({});
 
@@ -45,7 +49,6 @@ export default function HeaderFilter({
             []
           )
         : [],
-
     [rawSchema]
   );
 
@@ -56,24 +59,31 @@ export default function HeaderFilter({
           !Object.prototype.hasOwnProperty.call(queries, item.name) &&
           item.type !== "array"
       ),
-
     [schema, queries]
   );
 
-  function onQueryAdd() {
+  async function onQueryAdd() {
     if (searched) {
       const queriesNew = { ...queries, [selected]: searched };
 
-      setQueriesLocation(queriesNew);
+      const searchString = setQueriesLocation(queriesNew);
+
+      await onChangeQuery(searchString);
+
+      setSearched("");
     }
   }
 
-  function onQueryRemove(removed: string) {
+  async function onQueryRemove(removed: string) {
     const queriesNew: any = { ...queries };
 
     delete queriesNew[removed];
 
-    setQueriesLocation(queriesNew);
+    const searchString = setQueriesLocation(queriesNew);
+
+    await onChangeQuery(searchString);
+
+    setSearched("");
   }
 
   function onChangeSelected(selectedNew: string) {
@@ -87,10 +97,14 @@ export default function HeaderFilter({
   function setQueriesLocation(queriesNew: any) {
     const searchParams = queriesToParams(queriesNew);
 
+    const search = "?" + searchParams.toString();
+
     navigate({
       pathname: location.pathname,
-      search: "?" + searchParams.toString(),
+      search,
     });
+
+    return search;
   }
 
   function onLocation() {
@@ -98,25 +112,32 @@ export default function HeaderFilter({
 
     const queriesNew = paramsToQueries(searchParams);
 
-    setQueries(queriesNew);
+    const queriesNewFiltered = Object.fromEntries(
+      Object.entries(queriesNew).filter(
+        ([key]) => key !== "groupBy" && key !== "overviewType"
+      )
+    );
+
+    setQueries(queriesNewFiltered);
   }
 
-  async function onUseEffect() {
+  function onQueries() {
     setSelected(notAddedFields?.[0]?.name);
   }
+
+  useEffect(() => {
+    onQueries();
+  }, [schema, queries]);
 
   useEffect(() => {
     onLocation();
   }, [location]);
 
-  useEffect(() => {
-    onUseEffect();
-  }, []);
-
   return (
     <div className={styles.panel}>
       <FilterSearchBar
         {...{
+          isLoaded,
           notAddedFields,
           onQueryAdd,
           selected,

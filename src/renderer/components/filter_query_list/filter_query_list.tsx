@@ -3,19 +3,19 @@ import { QueryListLabel, QueryListRemoveButton } from "..";
 import styles from "./filter_query_list.module.css";
 
 interface IFilterQueryListProps {
-  params: any;
+  queries: any;
   onQueryRemove: any;
 }
 
 export default function FilterQueryList({
-  params,
+  queries,
   onQueryRemove,
 }: IFilterQueryListProps) {
   return (
     <div className={styles.query}>
-      {Object.keys(params).map((prop: any, idx: any) => (
+      {Object.keys(queries).map((prop: any, idx: any) => (
         <div key={idx} className={styles.queries}>
-          <QueryListLabel prop={prop} value={params[prop]} />
+          <QueryListLabel {...{ prop }} value={queries[prop]} />
 
           <QueryListRemoveButton {...{ prop, onQueryRemove }} />
         </div>

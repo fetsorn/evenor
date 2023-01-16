@@ -181,7 +181,7 @@ export default function Observatory() {
 
   return (
     <>
-      <Header />
+      <Header {...{ schema }} />
 
       <main className={styles.main}>
         <ObservatoryOverview

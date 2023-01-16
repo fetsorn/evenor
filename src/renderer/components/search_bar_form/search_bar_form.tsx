@@ -6,25 +6,26 @@ import styles from "./search_bar_form.module.css";
 interface ISearchBarFormProps {
   selected: any;
   searched: any;
-  setSearched: any;
-}
-
-export async function onUseEffect(dir: string, selected: any, setOptions: any) {
-  /* const options = await queryOptions(dir, selected); */
-  /* setOptions(options); */
+  onChangeSearched: any;
 }
 
 export default function SearchBarForm({
   selected,
   searched,
-  setSearched,
+  onChangeSearched,
 }: ISearchBarFormProps) {
   const { repoRoute } = useParams();
 
   const [options, setOptions]: any[] = useState([]);
 
+  async function onUseEffect() {
+    const options = await queryOptions(repoRoute, selected);
+
+    setOptions(options);
+  }
+
   useEffect(() => {
-    onUseEffect(repoRoute, selected, setOptions);
+    onUseEffect();
   }, [selected]);
 
   return (
@@ -35,7 +36,7 @@ export default function SearchBarForm({
         list={`panel_list`}
         value={searched}
         onChange={({ target: { value } }) => {
-          setSearched(value);
+          onChangeSearched(value);
         }}
       />
 

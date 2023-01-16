@@ -4,12 +4,14 @@ import { queryOptions } from "..";
 import styles from "./search_bar_form.module.css";
 
 interface ISearchBarFormProps {
+  isLoaded: boolean;
   selected: any;
   searched: any;
   onChangeSearched: any;
 }
 
 export default function SearchBarForm({
+  isLoaded,
   selected,
   searched,
   onChangeSearched,
@@ -19,9 +21,11 @@ export default function SearchBarForm({
   const [options, setOptions]: any[] = useState([]);
 
   async function onUseEffect() {
-    const options = await queryOptions(repoRoute, selected);
+    if (isLoaded) {
+      const options = await queryOptions(repoRoute, selected);
 
-    setOptions(options);
+      setOptions(options);
+    }
   }
 
   useEffect(() => {

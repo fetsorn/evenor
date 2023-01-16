@@ -3,6 +3,66 @@ import axios from "axios";
 import * as csvs from "@fetsorn/csvs-js";
 import { digestMessage } from "@fetsorn/csvs-js";
 
+async function fetchDataMetadirBrowser(dir: string, path: string) {
+  // check if path exists in the repo
+  const path_elements = [dir].concat(path.split("/"));
+
+  // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
+
+  let root = "";
+
+  const fs = new LightningFS("fs");
+
+  const pfs = fs.promises;
+
+  for (let i = 0; i < path_elements.length; i++) {
+    const path_element = path_elements[i];
+
+    root += "/";
+
+    const files = await pfs.readdir(root);
+
+    // console.log("fetchDataMetadir: files", root, files);
+
+    if (files.includes(path_element)) {
+      root += path_element;
+
+      // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
+    } else {
+      throw Error(
+        `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
+      );
+    }
+  }
+
+  const file: any = await pfs.readFile("/" + dir + "/" + path);
+
+  const restext = new TextDecoder().decode(file);
+
+  // console.log(restext)
+
+  return restext;
+}
+
+export async function fetchDataMetadir(repoRoute: string, path: string) {
+  const repoPath = repoRoute === undefined ? "root" : repoRoute;
+
+  try {
+    switch (__BUILD_MODE__) {
+      case "server":
+        return (await fetch("/api/" + path)).text();
+
+      case "electron":
+        return await window.electron.fetchDataMetadir(repoPath, path);
+
+      default:
+        return await fetchDataMetadirBrowser(repoPath, path);
+    }
+  } catch {
+    throw Error(`Cannot load file. Ensure there is a file ${path}.`);
+  }
+}
+
 function queryWorkerInit(dir: string) {
   const worker = new Worker(new URL("./worker", import.meta.url));
 
@@ -78,66 +138,6 @@ function queryWorkerInit(dir: string) {
           });
 
   return { queryMetadir };
-}
-
-async function fetchDataMetadirBrowser(dir: string, path: string) {
-  // check if path exists in the repo
-  const path_elements = [dir].concat(path.split("/"));
-
-  // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
-
-  let root = "";
-
-  const fs = new LightningFS("fs");
-
-  const pfs = fs.promises;
-
-  for (let i = 0; i < path_elements.length; i++) {
-    const path_element = path_elements[i];
-
-    root += "/";
-
-    const files = await pfs.readdir(root);
-
-    // console.log("fetchDataMetadir: files", root, files);
-
-    if (files.includes(path_element)) {
-      root += path_element;
-
-      // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
-    } else {
-      throw Error(
-        `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
-      );
-    }
-  }
-
-  const file: any = await pfs.readFile("/" + dir + "/" + path);
-
-  const restext = new TextDecoder().decode(file);
-
-  // console.log(restext)
-
-  return restext;
-}
-
-export async function fetchDataMetadir(repoRoute: string, path: string) {
-  const repoPath = repoRoute === undefined ? "root" : repoRoute;
-
-  try {
-    switch (__BUILD_MODE__) {
-      case "server":
-        return (await fetch("/api/" + path)).text();
-
-      case "electron":
-        return await window.electron.fetchDataMetadir(repoPath, path);
-
-      default:
-        return await fetchDataMetadirBrowser(repoPath, path);
-    }
-  } catch {
-    throw Error(`Cannot load file. Ensure there is a file ${path}.`);
-  }
 }
 
 async function writeDataMetadirBrowser(
@@ -373,4 +373,63 @@ export async function createEntry() {
   entry.UUID = await digestMessage(crypto.randomUUID());
 
   return entry;
+}
+
+// pick a param to group data by
+export function getDefaultGroupBy(schema: any, data: any, search: any) {
+  // fallback to groupBy param from the search query
+  const searchParams = new URLSearchParams(search);
+
+  if (searchParams.has("groupBy")) {
+    const groupByProp = searchParams.get("groupBy");
+
+    const groupByLabel = schema[groupByProp].label;
+
+    return groupByLabel;
+  }
+
+  let groupByProp;
+
+  const car = data[0] ?? {};
+
+  // fallback to first date param present in data
+  groupByProp = Object.keys(schema).find((prop: any) => {
+    const propLabel = schema[prop].label ?? prop;
+
+    return (
+      schema[prop].type === "date" &&
+      Object.prototype.hasOwnProperty.call(car, propLabel)
+    );
+  });
+
+  // fallback to first param present in data
+  if (!groupByProp) {
+    groupByProp = Object.keys(schema).find((prop: any) => {
+      const propLabel = schema[prop].label ?? prop;
+
+      return Object.prototype.hasOwnProperty.call(car, propLabel);
+    });
+  }
+
+  // fallback to first date param present in schema
+  if (!groupByProp) {
+    groupByProp = Object.keys(schema).find(
+      (prop: any) => schema[prop].type === "date"
+    );
+  }
+
+  // fallback to first param present in schema
+  if (!groupByProp) {
+    groupByProp = Object.keys(schema)[0];
+  }
+
+  // unreachable with a valid scheme
+  // fallback to empty string
+  if (!groupByProp) {
+    groupByProp = "";
+  }
+
+  const groupByLabel = schema[groupByProp].label;
+
+  return groupByLabel;
 }

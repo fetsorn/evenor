@@ -8,6 +8,7 @@ import {
 } from "..";
 
 interface IOverviewItineraryProps {
+  groupBy: any;
   overview: any;
   onEntrySelect: any;
   onEntryCreate: any;
@@ -15,6 +16,7 @@ interface IOverviewItineraryProps {
 }
 
 export default function OverviewItinerary({
+  groupBy,
   overview,
   onEntrySelect,
   onEntryCreate,
@@ -23,15 +25,14 @@ export default function OverviewItinerary({
   const [itinerary, setItinerary] = useState<any>([]);
 
   async function onUseEffect() {
-    /* const groupByLabel = getGroupByLabel(schema, groupBy); */
+    const itineraryNew = await buildItinerary(overview, groupBy);
 
-    const _itinerary = await buildItinerary(overview, "REPO_NAME");
-
-    setItinerary(_itinerary);
+    setItinerary(itineraryNew);
   }
+
   useEffect(() => {
     onUseEffect();
-  }, [overview]);
+  }, [overview, groupBy]);
 
   return (
     <div className={styles.timeline}>

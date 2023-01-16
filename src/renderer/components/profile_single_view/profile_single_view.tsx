@@ -27,7 +27,6 @@ export default function ProfileSingleView({
   onClose,
   onDelete,
 }: IProfileSingleViewProps) {
-  console.log(entry);
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       {entry && schema && (

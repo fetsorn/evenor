@@ -1,9 +1,12 @@
 import React, { useMemo } from "react";
 import {
-  FormTextareaInput,
-  FormTextInput,
-  FormUploadInput,
-  FormDateInput,
+  InputTextarea,
+  InputText,
+  InputUpload,
+  InputDate,
+  InputPropsDropdown,
+  InputArray,
+  InputObject,
 } from "..";
 import { useTranslation } from "react-i18next";
 
@@ -11,10 +14,12 @@ interface ISingleEditFormProps {
   schema: any;
   label: string;
   value: any;
-  onInputChange: any;
-  onInputRemove: any;
-  onInputUpload: any;
-  onInputUploadElectron: any;
+  onInputChange?: any;
+  onInputRemove?: any;
+  onInputUpload?: any;
+  onInputUploadElectron?: any;
+  onAddProp?: any;
+  notAddedFields?: any;
 }
 
 export default function FormInput({
@@ -25,6 +30,8 @@ export default function FormInput({
   onInputRemove,
   onInputUpload,
   onInputUploadElectron,
+  onAddProp,
+  notAddedFields,
 }: ISingleEditFormProps) {
   const { i18n } = useTranslation();
 
@@ -49,100 +56,55 @@ export default function FormInput({
     return description;
   }, [schema, label]);
 
+  if (label === "UUID") {
+    return (
+      <div>
+        <div>{description}</div>
+
+        <div>{value}</div>
+
+        <InputPropsDropdown {...{ schema, notAddedFields, onAddProp }} />
+      </div>
+    );
+  }
+
   switch (propType) {
     case "array":
       return (
-        <div>
-          <div>array {description}</div>
-          {value.items.map((item: any, index: any) => {
-            function onInputChangeArray(
-              fieldLabel: string,
-              fieldValue: string
-            ) {
-              const itemNew = { ...item };
-
-              itemNew[fieldLabel] = fieldValue;
-
-              const itemsNew = value.items.filter(
-                (i: any) => i.UUID !== item.UUID
-              );
-
-              itemsNew.push(itemNew);
-
-              const arrayNew = { UUID: value.UUID, items: itemsNew };
-
-              onInputChange(label, arrayNew);
-            }
-
-            function onInputRemoveArray(fieldLabel: string) {
-              const itemNew = { ...item };
-
-              delete itemNew[fieldLabel];
-
-              const itemsNew = value.items.filter(
-                (i: any) => i.UUID !== item.UUID
-              );
-
-              itemsNew.push(itemNew);
-
-              const arrayNew = { UUID: value.UUID, items: itemsNew };
-
-              onInputChange(label, arrayNew);
-            }
-
-            return (
-              <div key={index}>
-                <FormInput
-                  {...{
-                    schema,
-                    onInputChange: onInputChangeArray,
-                    onInputRemove: onInputRemoveArray,
-                    onInputUpload,
-                    onInputUploadElectron,
-                  }}
-                  label={item.ITEM_NAME}
-                  value={item}
-                />
-              </div>
-            );
-          })}
-        </div>
+        <InputArray
+          {...{
+            schema,
+            label,
+            value,
+            description,
+            onInputChange,
+            onInputRemove,
+          }}
+        />
       );
 
     case "object":
       return (
-        <div>
-          <div>
-            object {description} {value.UUID}
-          </div>
-          {Object.keys(value)
-            .filter((l) => l !== "UUID" && l !== "ITEM_NAME")
-            .map((field: any, index: any) => (
-              <div key={index}>
-                <FormInput
-                  {...{
-                    schema,
-                    onInputChange,
-                    onInputRemove,
-                    onInputUpload,
-                    onInputUploadElectron,
-                  }}
-                  label={field}
-                  value={value[field]}
-                />
-              </div>
-            ))}
-        </div>
+        <InputObject
+          {...{
+            label,
+            value,
+            description,
+            schema,
+            onInputChange,
+            onInputRemove,
+          }}
+        />
       );
 
     case "text":
     case "schema":
       return (
-        <FormTextareaInput
+        <InputTextarea
           {...{
-            description,
             label,
             value,
+            description,
             onInputChange,
             onInputRemove,
           }}
@@ -151,11 +113,11 @@ export default function FormInput({
 
     case "date":
       return (
-        <FormDateInput
+        <InputDate
           {...{
-            description,
             label,
             value,
+            description,
             onInputChange,
             onInputRemove,
           }}
@@ -164,10 +126,10 @@ export default function FormInput({
 
     case "path":
       return (
-        <FormUploadInput
+        <InputUpload
           {...{
-            description,
             label,
+            description,
             onInputUpload,
             onInputUploadElectron,
           }}
@@ -176,11 +138,11 @@ export default function FormInput({
 
     default:
       return (
-        <FormTextInput
+        <InputText
           {...{
-            description,
             label,
             value,
+            description,
             onInputChange,
             onInputRemove,
           }}

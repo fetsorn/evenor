@@ -1,21 +1,21 @@
-import styles from "./form_date_input.module.css";
+import styles from "./input_textarea.module.css";
 import { useTranslation } from "react-i18next";
 
-interface IFormDateInputProps {
+interface IInputTextareaProps {
   description?: any;
   label?: any;
-  value?: any;
-  onInputChange?: any;
-  onInputRemove?: any;
+  value: any;
+  onInputChange: any;
+  onInputRemove: any;
 }
 
-export default function FormDateInput({
+export default function InputTextarea({
   description,
   label,
   value,
   onInputChange,
   onInputRemove,
-}: IFormDateInputProps) {
+}: IInputTextareaProps) {
   const { t } = useTranslation();
   return (
     <div>
@@ -28,9 +28,8 @@ export default function FormDateInput({
           X
         </button>
         <br />
-        <input
-          className={styles.input}
-          type="date"
+        <textarea
+          className={styles.inputtext}
           value={value}
           onChange={(e) => onInputChange(label, e.target.value)}
         />

@@ -16,7 +16,7 @@ export default function SearchBarDropdown({
 
   return (
     <select
-      name="fields"
+      name="searchBarDropdown"
       value={selected}
       title={t("header.dropdown.search", { field: selected })}
       onChange={({ target: { value } }) => onChangeSelected(value)}

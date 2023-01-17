@@ -1,22 +1,25 @@
-import styles from "./form_textarea_input.module.css";
+import styles from "./input_text.module.css";
 import { useTranslation } from "react-i18next";
 
-interface ITextAreaInputProps {
-  description?: any;
+interface IInputTextProps {
   label?: any;
-  value: any;
-  onInputChange: any;
-  onInputRemove: any;
+  description?: any;
+  value?: any;
+  list?: any;
+  onInputChange?: any;
+  onInputRemove?: any;
 }
 
-export default function TextAreaInput({
-  description,
+export default function InputText({
   label,
+  description,
   value,
+  list,
   onInputChange,
   onInputRemove,
-}: ITextAreaInputProps) {
+}: IInputTextProps) {
   const { t } = useTranslation();
+
   return (
     <div>
       <label>
@@ -28,8 +31,10 @@ export default function TextAreaInput({
           X
         </button>
         <br />
-        <textarea
-          className={styles.inputtext}
+        <input
+          className={styles.input}
+          type="text"
+          list={list}
           value={value}
           onChange={(e) => onInputChange(label, e.target.value)}
         />

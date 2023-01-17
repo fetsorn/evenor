@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Button } from "..";
 
-interface IFormUploadInputProps {
+interface IInputUploadProps {
   key?: any;
   description?: any;
   label?: any;
@@ -9,13 +9,13 @@ interface IFormUploadInputProps {
   onInputUploadElectron?: any;
 }
 
-export default function FormUploadInput({
+export default function InputUpload({
   key,
   label,
   description,
   onInputUpload,
   onInputUploadElectron,
-}: IFormUploadInputProps) {
+}: IInputUploadProps) {
   const { t } = useTranslation();
 
   return (

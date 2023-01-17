@@ -95,14 +95,15 @@ export default function HeaderFilter({
   }
 
   function setQueriesLocation(queriesNew: any) {
+    console.log("AAAAAAAAAAAAAAAAAAA");
     const searchParams = queriesToParams(queriesNew);
 
     const search = "?" + searchParams.toString();
 
-    navigate({
-      pathname: location.pathname,
-      search,
-    });
+    /* navigate({
+     *   pathname: location.pathname,
+     *   search,
+     * }); */
 
     return search;
   }

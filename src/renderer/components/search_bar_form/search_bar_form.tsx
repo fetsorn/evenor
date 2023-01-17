@@ -33,7 +33,7 @@ export default function SearchBarForm({
   }, [selected]);
 
   return (
-    <form className={styles.form}>
+    <form name="search_bar_form" className={styles.form}>
       <input
         className={styles.input}
         type="text"

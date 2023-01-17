@@ -2,39 +2,18 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Dropdown } from "..";
 
-interface IToolbarPropsDropdownProps {
+interface IInputPropsDropdownProps {
   schema: any;
-  entry: any;
+  notAddedFields: any;
   onAddProp: any;
 }
 
-export default function ToolbarPropsDropdown({
+export default function InputPropsDropdown({
   schema,
-  entry,
+  notAddedFields,
   onAddProp,
-}: IToolbarPropsDropdownProps) {
+}: IInputPropsDropdownProps) {
   const { i18n, t } = useTranslation();
-
-  // always list array items
-  // list schema props that are not in the entry
-  // never list arrays or object fields
-  const notAddedFields = useMemo(
-    () =>
-      entry
-        ? Object.keys(schema).filter((prop: any) => {
-            return (
-              schema[schema[prop].trunk]?.type === "array" ||
-              (!Object.prototype.hasOwnProperty.call(
-                entry,
-                schema[prop].label
-              ) &&
-                schema[prop].type !== "array" &&
-                schema[schema[prop].trunk]?.type !== "object")
-            );
-          })
-        : [],
-    [entry]
-  );
 
   const menuItems = useMemo(
     () =>
@@ -68,3 +47,11 @@ export default function ToolbarPropsDropdown({
     </>
   );
 }
+
+/* <select onChange={({ target: { value } }) => onAddProp(value)}>
+          {menuItems.map((field: any, idx: any) => (
+          <option key={idx} value={field.label}>
+          {field.description}
+          </option>
+          ))}
+          </select> */

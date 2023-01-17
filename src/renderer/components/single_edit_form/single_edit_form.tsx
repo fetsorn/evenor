@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { FormOutput, FormInput } from "..";
+import { FormInput } from "..";
 
 interface ISingleEditFormProps {
   schema: any;
@@ -8,6 +8,7 @@ interface ISingleEditFormProps {
   onInputRemove: any;
   onInputUpload: any;
   onInputUploadElectron: any;
+  onAddProp: any;
 }
 
 export default function SingleEditForm({
@@ -17,10 +18,28 @@ export default function SingleEditForm({
   onInputRemove,
   onInputUpload,
   onInputUploadElectron,
+  onAddProp,
 }: ISingleEditFormProps) {
-  const addedFields = useMemo(
+  const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
+
+  // always list array items
+  // list schema props that are not in the entry
+  // never list arrays or object fields
+  const notAddedFields = useMemo(
     () =>
-      entry ? Object.keys(entry).filter((prop: any) => prop != "UUID") : [],
+      entry
+        ? Object.keys(schema).filter((prop: any) => {
+            return (
+              schema[schema[prop].trunk]?.type === "array" ||
+              (!Object.prototype.hasOwnProperty.call(
+                entry,
+                schema[prop].label
+              ) &&
+                schema[prop].type !== "array" &&
+                schema[schema[prop].trunk]?.type !== "object")
+            );
+          })
+        : [],
     [entry]
   );
 
@@ -28,8 +47,7 @@ export default function SingleEditForm({
     <>
       {entry && schema && (
         <div>
-          <FormOutput {...{ schema }} label="UUID" value={entry.UUID} />
-          <form>
+          <form name="single_edit_form">
             {addedFields.map((label: any, index: any) => (
               <div key={index}>
                 <FormInput
@@ -40,6 +58,8 @@ export default function SingleEditForm({
                     onInputRemove,
                     onInputUpload,
                     onInputUploadElectron,
+                    onAddProp,
+                    notAddedFields,
                   }}
                   value={entry[label]}
                 />

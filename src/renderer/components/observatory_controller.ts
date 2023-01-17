@@ -342,13 +342,13 @@ export async function addProp(schema: any, entry: any, label: string) {
 
     obj.ITEM_NAME = prop;
 
-    const fieldLabels = Object.keys(schema)
-      .filter((p) => schema[p].trunk === prop)
-      .map((p) => schema[p].label);
+    // const fieldLabels = Object.keys(schema)
+    //   .filter((p) => schema[p].trunk === prop)
+    //   .map((p) => schema[p].label);
 
-    for (const fieldLabel of fieldLabels) {
-      obj[fieldLabel] = "";
-    }
+    // for (const fieldLabel of fieldLabels) {
+    //   obj[fieldLabel] = "";
+    // }
 
     entry[trunkLabel].items.push({ ...obj });
   } else if (trunk && schema[prop].type === "object") {

@@ -16,7 +16,7 @@ export default function HeaderGroupbyDropdown({
 
   return (
     <select
-      name="fields"
+      name="HeaderGroupByDropdown"
       value={groupBy}
       title={t("header.dropdown.search", { field: groupBy })}
       onChange={({ target: { value } }) => onChangeGroupBy(value)}

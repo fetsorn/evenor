@@ -15,7 +15,7 @@ export default function HeaderOverviewTypeDropdown({
 
   return (
     <select
-      name="fields"
+      name="HeaderOverviewTypeDropdown"
       value={overviewType}
       title={t("header.dropdown.search", { field: overviewType })}
       onChange={({ target: { value } }) => onChangeOverviewType(value)}

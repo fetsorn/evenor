@@ -42,9 +42,7 @@ export default function ProfileSingleEdit({
           <div id="scrollcontainer" className={styles.sticky}>
             <SingleEditTitle {...{ group, index }} />
 
-            <SingleEditToolbar
-              {...{ schema, entry, onRevert, onSave, onAddProp }}
-            />
+            <SingleEditToolbar {...{ onRevert, onSave }} />
 
             <SingleEditForm
               {...{
@@ -54,6 +52,7 @@ export default function ProfileSingleEdit({
                 onInputRemove,
                 onInputUpload,
                 onInputUploadElectron,
+                onAddProp,
               }}
             />
 

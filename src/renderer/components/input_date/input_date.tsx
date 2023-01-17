@@ -1,25 +1,22 @@
-import styles from "./form_text_input.module.css";
+import styles from "./input_date.module.css";
 import { useTranslation } from "react-i18next";
 
-interface ITextInputProps {
-  label?: any;
+interface IInputDateProps {
   description?: any;
+  label?: any;
   value?: any;
-  list?: any;
   onInputChange?: any;
   onInputRemove?: any;
 }
 
-export default function TextInput({
-  label,
+export default function InputDate({
   description,
+  label,
   value,
-  list,
   onInputChange,
   onInputRemove,
-}: ITextInputProps) {
+}: IInputDateProps) {
   const { t } = useTranslation();
-
   return (
     <div>
       <label>
@@ -33,8 +30,7 @@ export default function TextInput({
         <br />
         <input
           className={styles.input}
-          type="text"
-          list={list}
+          type="date"
           value={value}
           onChange={(e) => onInputChange(label, e.target.value)}
         />

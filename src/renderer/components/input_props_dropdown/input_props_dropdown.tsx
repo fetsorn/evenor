@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Dropdown } from "..";
 
 interface IInputPropsDropdownProps {
   schema: any;
@@ -25,8 +24,8 @@ export default function InputPropsDropdown({
         const description = schema?.[prop]?.description?.[lang] ?? label;
 
         return {
-          label: description,
-          onClick: () => onAddProp(label),
+          label,
+          description,
         };
       }),
 
@@ -38,16 +37,20 @@ export default function InputPropsDropdown({
   return (
     <>
       {menuItems.length > 0 && (
-        <Dropdown title={t("line.dropdown.input")} label="+" menuItems={[]} />
+        <select
+          value="default"
+          onChange={({ target: { value } }) => onAddProp(value)}
+        >
+          <option hidden disabled selected value="default">
+            {t("line.dropdown.input")}
+          </option>
+          {menuItems.map((field: any, idx: any) => (
+            <option key={idx} value={field.label}>
+              {field.description}
+            </option>
+          ))}
+        </select>
       )}
     </>
   );
 }
-
-/* <select onChange={({ target: { value } }) => onAddProp(value)}>
-          {menuItems.map((field: any, idx: any) => (
-          <option key={idx} value={field.label}>
-          {field.description}
-          </option>
-          ))}
-          </select> */

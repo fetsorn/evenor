@@ -47,7 +47,7 @@ export default function SingleEditForm({
     <>
       {entry && schema && (
         <div>
-          <form name="single_edit_form">
+          <div>
             {addedFields.map((label: any, index: any) => (
               <div key={index}>
                 <FormInput
@@ -65,7 +65,7 @@ export default function SingleEditForm({
                 />
               </div>
             ))}
-          </form>
+          </div>
         </div>
       )}
     </>

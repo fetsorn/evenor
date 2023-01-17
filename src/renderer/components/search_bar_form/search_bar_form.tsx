@@ -33,7 +33,7 @@ export default function SearchBarForm({
   }, [selected]);
 
   return (
-    <form name="search_bar_form" className={styles.form}>
+    <div className={styles.form}>
       <input
         className={styles.input}
         type="text"
@@ -49,6 +49,6 @@ export default function SearchBarForm({
           <option key={idx} value={option}></option>
         ))}
       </datalist>
-    </form>
+    </div>
   );
 }

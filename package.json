@@ -32,7 +32,7 @@
     "@electron-forge/maker-squirrel": "^6.0.0-beta.65",
     "@electron-forge/maker-zip": "^6.0.0-beta.65",
     "@electron-forge/plugin-webpack": "6.0.0-beta.65",
-    "@fetsorn/csvs-js": "0.7.2",
+    "@fetsorn/csvs-js": "0.7.4",
     "@fetsorn/ged2dot": "^0.2.0",
     "@fetsorn/ppt": "^0.0.1",
     "@fetsorn/wasm-grep": "0.2.0",

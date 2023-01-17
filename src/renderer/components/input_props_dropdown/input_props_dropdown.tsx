@@ -18,7 +18,7 @@ export default function InputPropsDropdown({
   const menuItems = useMemo(
     () =>
       notAddedFields.map((prop: any) => {
-        const label = schema[prop]["label"];
+        const label = schema[prop].label;
 
         const lang = i18n.resolvedLanguage;
 
@@ -38,11 +38,7 @@ export default function InputPropsDropdown({
   return (
     <>
       {menuItems.length > 0 && (
-        <Dropdown
-          title={t("line.dropdown.input")}
-          label="+"
-          menuItems={menuItems}
-        />
+        <Dropdown title={t("line.dropdown.input")} label="+" menuItems={[]} />
       )}
     </>
   );

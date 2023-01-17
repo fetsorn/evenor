@@ -58,7 +58,7 @@ export async function fetchDataMetadir(repoRoute: string, path: string) {
       default:
         return await fetchDataMetadirBrowser(repoPath, path);
     }
-  } catch {
+  } catch (e) {
     throw Error(`Cannot load file. Ensure there is a file ${path}.`);
   }
 }
@@ -67,7 +67,7 @@ function queryWorkerInit(dir: string) {
   const worker = new Worker(new URL("./worker", import.meta.url));
 
   async function callback(message: any) {
-    // console.log("main thread receives message", message)
+    // console.log("main thread receives message", message);
 
     if (message.data.action === "fetch") {
       try {
@@ -75,13 +75,14 @@ function queryWorkerInit(dir: string) {
 
         const contents = await fetchDataMetadir(dir, message.data.path);
 
-        // console.log("main thread returns fetch")
+        // console.log("main thread returns fetch");
 
         message.ports[0].postMessage({ result: contents });
       } catch (e) {
-        // console.log("main thread errors");
+        // console.log("main thread errors", e);
 
-        message.ports[0].postMessage({ error: e });
+        // safari cannot clone the error object, force to string
+        message.ports[0].postMessage({ error: `${e}` });
       }
     }
 

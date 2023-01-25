@@ -41,7 +41,7 @@ export default function InputPropsDropdown({
           value="default"
           onChange={({ target: { value } }) => onAddProp(value)}
         >
-          <option hidden disabled selected value="default">
+          <option hidden disabled value="default">
             {t("line.dropdown.input")}
           </option>
           {menuItems.map((field: any, idx: any) => (

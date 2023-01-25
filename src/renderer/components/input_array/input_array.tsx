@@ -32,11 +32,16 @@ export default function InputArray({
         </button>
       </label>
 
+      <div>{value.UUID}</div>
+
       {value.items.map((item: any, index: any) => {
         function onInputChangeArrayItem(itemLabel: string, itemValue: any) {
           const itemsNew = value.items.filter((i: any) => i.UUID !== item.UUID);
 
           itemsNew.push(itemValue);
+
+          // sort so that the order of objects remains the same after push
+          itemsNew.sort((a: any, b: any) => a.UUID.localeCompare(b.UUID));
 
           const arrayNew = { UUID: value.UUID, items: itemsNew };
 

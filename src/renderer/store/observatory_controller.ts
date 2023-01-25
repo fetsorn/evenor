@@ -5,9 +5,9 @@ import { digestMessage } from "@fetsorn/csvs-js";
 
 async function fetchDataMetadirBrowser(dir: string, path: string) {
   // check if path exists in the repo
-  const path_elements = [dir].concat(path.split("/"));
+  const path_elements = dir.split("/").concat(path.split("/"));
 
-  // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
+  console.log("fetchDataMetadir: path_elements, path", path_elements, path);
 
   let root = "";
 
@@ -45,7 +45,7 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
 }
 
 export async function fetchDataMetadir(repoRoute: string, path: string) {
-  const repoPath = repoRoute === undefined ? "root" : repoRoute;
+  const repoPath = repoRoute === undefined ? "store/root" : `repos/${repoRoute}`;
 
   try {
     switch (__BUILD_MODE__) {
@@ -59,7 +59,7 @@ export async function fetchDataMetadir(repoRoute: string, path: string) {
         return await fetchDataMetadirBrowser(repoPath, path);
     }
   } catch (e) {
-    throw Error(`Cannot load file. Ensure there is a file ${path}.`);
+    throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
   }
 }
 
@@ -148,7 +148,7 @@ async function writeDataMetadirBrowser(
 ) {
   // if path doesn't exist, create it
   // split path into array of directory names
-  const path_elements = [dir].concat(path.split("/"));
+  const path_elements = dir.split("/").concat(path.split("/"));
 
   // console.log(path_elements, path)
 
@@ -189,7 +189,7 @@ export async function writeDataMetadir(
   path: string,
   content: string
 ) {
-  const repoPath = repoRoute === undefined ? "root" : repoRoute;
+  const repoPath = repoRoute === undefined ? "store/root" : `repos/${repoRoute}`;
 
   try {
     switch (__BUILD_MODE__) {

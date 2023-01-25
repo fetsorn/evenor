@@ -188,34 +188,13 @@ export const manifestRoot = `{
     "type": "array",
     "label": "TAGS"
   },
-  "export1_tag": {
+  "export_root": {
     "type": "object",
     "trunk": "export_tags",
-    "label": "EXPORT1_TAG"
-  },
-  "export1_channel": {
-    "trunk": "export1_tag",
-    "type": "string",
-    "label": "EXPORT1_CHANNEL"
-  },
-  "export1_key": {
-    "trunk": "export1_tag",
-    "type": "string",
-    "label": "EXPORT1_KEY"
-  },
-  "export2_tag": {
-    "type": "object",
-    "trunk": "export_tags",
-    "label": "EXPORT2_TAG"
-  },
-  "export2_username": {
-    "trunk": "export2_tag",
-    "type": "string",
-    "label": "EXPORT2_USERNAME"
-  },
-  "export2_password": {
-    "trunk": "export2_tag",
-    "type": "string",
-    "label": "EXPORT2_PASSWORD"
+    "label": "EXPORT_ROOT",
+    "description": {
+      "en": "Export tag for root repo",
+      "ru": "Экспорт тег коренного проекта"
+    }
   }
 }`;

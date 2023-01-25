@@ -13,8 +13,12 @@ export {
 export {
   dispenserDelete,
   dispenserUpdate,
-  ensureRoot,
-  ls,
 } from "./dispenser_controller";
+export {
+  ensureRoot,
+} from "./dispenser_repo_controller";
+export {
+  ls,
+} from "./git_controller";
 export { deepClone } from "./curse_controller";
 export { queryOptions } from "./search_bar_form_controller";

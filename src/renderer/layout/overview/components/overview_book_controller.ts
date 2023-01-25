@@ -1,4 +1,4 @@
-import * as latex from "../../lib/pdf_tex_engine";
+import * as latex from "../../../../lib/pdf_tex_engine";
 
 export async function exportPDF(textext: string) {
   const globalEn = new latex.PdfTeXEngine();

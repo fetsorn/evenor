@@ -36,7 +36,7 @@ export default function FormOutput({ schema, label, value }: IFormOutputProps) {
     <div>
       {propType === "array" ? (
         <div>
-          <div>array {propDescription} </div>
+          {/* <div>array {propDescription} </div> */}
           {value.items.map((item: any, index: any) => (
             <div key={index}>
               <FormOutput {...{ schema }} label={item.ITEM_NAME} value={item} />

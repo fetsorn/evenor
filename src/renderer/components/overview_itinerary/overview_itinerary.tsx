@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import styles from "./overview_itinerary.module.css";
 import {
-  ItineraryCreateButton,
   VirtualScroll,
   ItineraryWaypoint,
   buildItinerary,
@@ -23,6 +23,7 @@ export default function OverviewItinerary({
   onBatchSelect,
 }: IOverviewItineraryProps) {
   const [itinerary, setItinerary] = useState<any>([]);
+  const { t } = useTranslation();
 
   async function onUseEffect() {
     const itineraryNew = await buildItinerary(overview, groupBy);
@@ -37,7 +38,15 @@ export default function OverviewItinerary({
   return (
     <div className={styles.timeline}>
       {!itinerary.length ? (
-        <ItineraryCreateButton date="" index="1" {...{ onEntryCreate }} />
+        <button
+          className={styles.star}
+          type="button"
+          onClick={() => onEntryCreate("", "1")}
+          title={t("line.button.add")}
+          key="addevent"
+        >
+          +
+        </button>
       ) : (
         <VirtualScroll
           {...{ onEntrySelect, onEntryCreate, onBatchSelect }}

@@ -1,7 +1,8 @@
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import styles from "./header.module.css";
-
 import {
-  HeaderBackButton,
+  Button,
   HeaderFilter,
   HeaderGroupByDropdown,
   HeaderOverviewTypeDropdown,
@@ -26,9 +27,18 @@ export default function Header({
   onChangeOverviewType,
   onChangeQuery,
 }: IHeaderProps) {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+
   return (
     <header className={styles.header}>
-      <HeaderBackButton />
+      <Button
+        type="button"
+        title={t("header.button.back")}
+        onClick={() => navigate(-1)}
+      >
+        &lt;=
+      </Button>
 
       <HeaderOverviewTypeDropdown
         {...{

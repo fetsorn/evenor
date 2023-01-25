@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./waypoint_entries.module.css";
-import { EntrySelectButton } from "..";
+import { colorExtension } from "..";
 
 interface IWaypointEntriesProps {
   entries?: any;
@@ -16,7 +16,16 @@ export default function WaypointEntries({
       <div className={styles.stars}>
         {entries.map((entry: any, index: number) => (
           <div key={index}>
-            <EntrySelectButton {...{ entry, index, onEntrySelect }} />
+            <button
+              className={styles.star}
+              style={{ backgroundColor: colorExtension(entry) }}
+              type="button"
+              onClick={() => onEntrySelect(entry, index + 1)}
+              title={entry?.FILE_PATH}
+              id={entry?.UUID}
+            >
+              {index + 1}
+            </button>
           </div>
         ))}
       </div>

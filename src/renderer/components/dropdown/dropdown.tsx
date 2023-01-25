@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import cn from "classnames";
 import styles from "./dropdown.module.css";
-import { DropdownMenuButton, DropdownItemButton } from "..";
 
 interface IDropdownMenuProps {
   label?: string;
@@ -30,15 +29,19 @@ export default function DropdownMenu({
 
   return (
     <div title={title} className={styles.dropdown}>
-      <DropdownMenuButton {...{ onOpen, opened, label }} />
+      <button className={styles.menuItem} onClick={onOpen}>
+        {label}
+      </button>
 
       <div className={cn(styles.menu, { [styles.opened]: opened })}>
         {menuItems.map((item: any, index: any) => (
           <div key={index}>
-            <DropdownItemButton
-              label={item.label}
-              onSelect={onSelect(item.onClick)}
-            />
+            <button
+              className={cn(styles.dropdownButton, { [styles.opened]: opened })}
+              onClick={onSelect(item.onClick)}
+            >
+              {item.label}
+            </button>
           </div>
         ))}
       </div>

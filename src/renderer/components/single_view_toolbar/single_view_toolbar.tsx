@@ -1,6 +1,7 @@
 import React from "react";
-import { ToolbarEditButton, ToolbarDeleteButton, ToolbarCloseButton } from "..";
+import { Button } from "..";
 import styles from "./single_view_toolbar.module.css";
+import { useTranslation } from "react-i18next";
 
 interface ISingleViewToolbarProps {
   onEdit: any;
@@ -13,13 +14,21 @@ export default function SingleViewToolbar({
   onClose,
   onDelete,
 }: ISingleViewToolbarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.buttonbar}>
-      <ToolbarEditButton {...{ onEdit }} />
+      <Button type="button" title={t("line.button.edit")} onClick={onEdit}>
+        ✏️
+      </Button>
 
-      <ToolbarDeleteButton {...{ onDelete }} />
+      <Button type="button" title={t("line.button.delete")} onClick={onDelete}>
+        🗑️
+      </Button>
 
-      <ToolbarCloseButton {...{ onClose }} />
+      <Button type="button" title={t("line.button.close")} onClick={onClose}>
+        X
+      </Button>
     </div>
   );
 }

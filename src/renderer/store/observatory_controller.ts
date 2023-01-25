@@ -7,7 +7,7 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
   // check if path exists in the repo
   const path_elements = dir.split("/").concat(path.split("/"));
 
-  console.log("fetchDataMetadir: path_elements, path", path_elements, path);
+  // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
 
   let root = "";
 

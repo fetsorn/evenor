@@ -74,7 +74,7 @@ export const manifest = `{
     }
   },
   "hostdate": {
-    "parent": "datum",
+    "trunk": "datum",
     "dir": "date",
     "type": "date",
     "label": "HOST_DATE",
@@ -84,7 +84,7 @@ export const manifest = `{
     }
   },
   "hostname": {
-    "parent": "datum",
+    "trunk": "datum",
     "dir": "name",
     "label": "HOST_NAME",
     "description": {
@@ -93,7 +93,7 @@ export const manifest = `{
     }
   },
   "guestdate": {
-    "parent": "datum",
+    "trunk": "datum",
     "dir": "date",
     "type": "date",
     "label": "GUEST_DATE",
@@ -103,7 +103,7 @@ export const manifest = `{
     }
   },
   "guestname": {
-    "parent": "datum",
+    "trunk": "datum",
     "dir": "name",
     "label": "GUEST_NAME",
     "description": {
@@ -112,7 +112,7 @@ export const manifest = `{
     }
   },
   "tag": {
-    "parent": "datum",
+    "trunk": "datum",
     "label": "TAG",
     "description": {
       "en": "Tag",
@@ -120,7 +120,7 @@ export const manifest = `{
     }
   },
   "filepath": {
-    "parent": "datum",
+    "trunk": "datum",
     "label": "FILE_PATH",
     "type": "path",
     "description": {

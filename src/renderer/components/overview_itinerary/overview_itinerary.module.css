@@ -12,3 +12,41 @@
     width: calc(var(--rem) * 109);
   }
 }
+
+/* star, waypoint */
+
+.star {
+  display: inline-flex;
+  border-radius: 50%;
+  border: none;
+
+  justify-content: center;
+  align-items: center;
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  width: calc(var(--rem) * 8);
+  height: calc(var(--rem) * 8);
+
+  background-color: var(--color-button-default);
+
+  font-family: var(--title-font);
+  font-weight: 700;
+  font-size: calc(var(--rem) * 3);
+  color: var(--color-font-accent);
+
+  cursor: pointer;
+}
+
+.star:hover {
+  background-color: var(--color-button-hover);
+}
+
+.star:active {
+  background-color: var(--color-button-active);
+}
+
+.star:focus {
+  outline: none;
+  box-shadow: inset 0 0 0 var(--rem) var(--color-button-focus);
+}

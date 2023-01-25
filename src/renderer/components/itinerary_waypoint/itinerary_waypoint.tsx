@@ -1,8 +1,7 @@
 import cn from "classnames";
-
+import { useTranslation } from "react-i18next";
 import styles from "./itinerary_waypoint.module.css";
-
-import { WaypointTitle, EntryCreateButton, WaypointEntries } from "..";
+import { WaypointTitle, WaypointEntries } from "..";
 
 interface IItineraryWaypointProps {
   data: any;
@@ -18,16 +17,22 @@ export default function ItineraryWaypoint({
   isLast,
   ...others
 }: IItineraryWaypointProps) {
+  const { t } = useTranslation();
+
   return (
     <section className={cn(styles.row, { [styles.last]: isLast })} {...others}>
       <div>
         <WaypointTitle title={waypoint.date} />
 
-        <EntryCreateButton
-          {...{ onEntryCreate }}
-          date={waypoint.date}
-          index={waypoint.events.length + 1}
-        />
+        <button
+          className={styles.add}
+          type="button"
+          onClick={() => onEntryCreate(waypoint.date, waypoint.events.length + 1)}
+          title={t("line.button.add")}
+          key="addevent"
+        >
+          +
+        </button>
       </div>
 
       <WaypointEntries {...{ onEntrySelect }} entries={waypoint.events} />

@@ -1,6 +1,7 @@
 import React from "react";
-import { ToolbarRevertButton, ToolbarSaveButton } from "..";
+import { Button } from "..";
 import styles from "./single_edit_toolbar.module.css";
+import { useTranslation } from "react-i18next";
 
 interface ISingleEditToolbarProps {
   onRevert: any;
@@ -11,11 +12,17 @@ export default function SingleEditToolbar({
   onRevert,
   onSave,
 }: ISingleEditToolbarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.buttonbar}>
-      <ToolbarSaveButton {...{ onSave }} />
+      <Button type="button" title={t("line.button.save")} onClick={onSave}>
+        💾
+      </Button>
 
-      <ToolbarRevertButton {...{ onRevert }} />
+      <Button type="button" title={t("line.button.revert")} onClick={onRevert}>
+        ↩
+      </Button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { SearchBarDropdown, SearchBarForm, SearchBarButton } from "..";
+import { useTranslation } from "react-i18next";
+import { SearchBarDropdown, SearchBarForm, Button } from "..";
 import styles from "./filter_search_bar.module.css";
 
 interface IFilterSearchBarProps {
@@ -21,13 +22,21 @@ export default function FilterSearchBar({
   onChangeSearched,
   onQueryAdd,
 }: IFilterSearchBarProps) {
+  const { t } = useTranslation();
+
   return (
     <div className={styles.search}>
       <SearchBarDropdown {...{ notAddedFields, selected, onChangeSelected }} />
 
       <SearchBarForm {...{ isLoaded, selected, searched, onChangeSearched }} />
 
-      <SearchBarButton {...{ onQueryAdd }} />
+      <Button
+        type="button"
+        title={t("header.button.search")}
+        onClick={onQueryAdd}
+      >
+        🔎
+      </Button>
     </div>
   );
 }

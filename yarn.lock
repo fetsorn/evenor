@@ -570,10 +570,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/csvs-js@0.7.2":
-  version "0.7.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.7.2.tgz#593bcf32180cec5661983763e9f02133aaae245f"
-  integrity sha512-8us23AfFAZYqi+oRPXUBC+7UlBguYIOu0JbhgTlykXNp1BIMX8x7rvuPSTpe1isFDhsW9aUEwXo/D+a7pTwJ/w==
+"@fetsorn/csvs-js@0.7.4":
+  version "0.7.4"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.7.4.tgz#bd5873b14336f41a8f98409a63fe2d422d70f45a"
+  integrity sha512-yt1Voq5v54EWHhBq8y9htQ1fbn1vioLEWF5ORoGOQUYm8WeAgYbyfeEni6rpY7B6mfYLCnvPJFP9B1hd2hC2Ww==
 
 "@fetsorn/ged2dot@^0.2.0":
   version "0.2.0"

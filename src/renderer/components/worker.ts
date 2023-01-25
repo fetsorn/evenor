@@ -66,10 +66,10 @@ async function queryMetadir(message: any) {
 
       const searchParams = new URLSearchParams(message.data.searchParams);
 
-      result = await csvs.queryMetadir(searchParams, {
+      result = await csvs.queryMetadir({searchParams, callback: {
         fetch: fetchDataMetadir,
         grep,
-      });
+      }});
 
       // console.log("csvs completes")
     } catch (e) {

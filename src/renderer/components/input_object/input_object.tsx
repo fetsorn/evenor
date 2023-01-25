@@ -1,6 +1,8 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import { FormInput, InputPropsDropdown } from "..";
 import { useTranslation } from "react-i18next";
+import { queryOptions } from "..";
 
 interface IInputObjectProps {
   label: any;
@@ -21,6 +23,10 @@ export default function InputObject({
 }: IInputObjectProps) {
   const { t } = useTranslation();
 
+  const { repoRoute } = useParams();
+
+  const [options, setOptions]: any[] = useState([]);
+
   const notAddedFields = useMemo(
     () =>
       value
@@ -40,7 +46,7 @@ export default function InputObject({
     [value]
   );
 
-  function onAddProp(fieldLabel: string) {
+  function onAddObjectField(fieldLabel: string) {
     const objectNew = { ...value };
 
     objectNew[fieldLabel] = "";
@@ -48,10 +54,20 @@ export default function InputObject({
     onInputChange(label, objectNew);
   }
 
+  async function onUseEffect() {
+    const options = await queryOptions(repoRoute, label);
+
+    setOptions(options);
+  }
+
+  useEffect(() => {
+    onUseEffect();
+  }, []);
+
   return (
     <div>
       <label>
-        array {description}
+        object {description}
         <button
           title={t("line.button.remove", { field: label })}
           onClick={() => onInputRemove(label)}
@@ -60,44 +76,67 @@ export default function InputObject({
         </button>
       </label>
 
-      <InputPropsDropdown {...{ schema, notAddedFields, onAddProp }} />
+      <br />
+
+      <div>{value.UUID}</div>
+      { options && (
+          <select
+            value="default"
+            onChange={({ target: { value } }) => {
+              onInputChange(label, JSON.parse(value))
+            }}
+          >
+            <option hidden disabled value="default">
+              {t("line.dropdown.input")}
+            </option>
+            {options.map((field: any, idx: any) => (
+              <option key={idx} value={JSON.stringify(field)}>
+                {JSON.stringify(field)}
+              </option>
+            ))}
+          </select>
+        )}
+
+      <InputPropsDropdown
+        {...{ schema, notAddedFields, onAddProp: onAddObjectField }}
+      />
 
       {Object.keys(value)
-        .filter((l) => l !== "UUID" && l !== "ITEM_NAME")
-        .map((field: any, index: any) => {
-          function onInputChangeObjectField(
-            fieldLabel: string,
-            fieldValue: string
-          ) {
-            const objectNew = { ...value };
+             .filter((l) => l !== "UUID" && l !== "ITEM_NAME")
+             .map((field: any, index: any) => {
+               function onInputChangeObjectField(
+                 fieldLabel: string,
+                 fieldValue: string
+               ) {
+                 const objectNew = { ...value };
 
-            objectNew[fieldLabel] = fieldValue;
+                 objectNew[fieldLabel] = fieldValue;
 
-            onInputChange(label, objectNew);
-          }
+                 onInputChange(label, objectNew);
+               }
 
-          function onInputRemoveObjectField(fieldLabel: string) {
-            const objectNew = { ...value };
+               function onInputRemoveObjectField(fieldLabel: string) {
+                 const objectNew = { ...value };
 
-            delete objectNew[fieldLabel];
+                 delete objectNew[fieldLabel];
 
-            onInputChange(label, objectNew);
-          }
+                 onInputChange(label, objectNew);
+               }
 
-          return (
-            <div key={index}>
-              <FormInput
-                {...{
-                  schema,
-                  onInputChange: onInputChangeObjectField,
-                  onInputRemove: onInputRemoveObjectField,
-                }}
-                label={field}
-                value={value[field]}
-              />
-            </div>
-          );
-        })}
+               return (
+                 <div key={index}>
+                   <FormInput
+                     {...{
+                       schema,
+                       onInputChange: onInputChangeObjectField,
+                       onInputRemove: onInputRemoveObjectField,
+                     }}
+                     label={field}
+                     value={value[field]}
+                   />
+                 </div>
+               );
+      })}
     </div>
   );
 }

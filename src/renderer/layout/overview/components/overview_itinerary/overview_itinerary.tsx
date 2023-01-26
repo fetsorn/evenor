@@ -11,21 +11,7 @@ import {
   buildItinerary,
 } from "..";
 
-interface IOverviewItineraryProps {
-  groupBy: any;
-  overview: any;
-  onEntrySelect: any;
-  onEntryCreate: any;
-  onBatchSelect: any;
-}
-
-export default function OverviewItinerary({
-  groupBy,
-  overview,
-  onEntrySelect,
-  onEntryCreate,
-  onBatchSelect,
-}: IOverviewItineraryProps) {
+export default function OverviewItinerary() {
   const [itinerary, setItinerary] = useState<any>([]);
   const { t } = useTranslation();
 

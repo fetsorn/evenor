@@ -4,7 +4,7 @@ import { setupVars, load } from "..";
 import { GraphSvg, GraphTextInput, GraphRangeInput } from "./components";
 import styles from "./overview_graph.module.css";
 
-export default function Tree() {
+export default function OverviewGraph() {
   const [depth, setDepth] = useState(4);
 
   const [family, setFamily] = useState("F0001");

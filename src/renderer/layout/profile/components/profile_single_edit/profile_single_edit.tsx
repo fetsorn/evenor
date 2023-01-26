@@ -5,58 +5,22 @@ import {
   AssetView,
 } from "../../../../components";
 import {
-  SingleEditToolbar,
-  SingleEditTitle,
   SingleEditForm,
+  SingleEditTitle,
+  SingleEditToolbar,
 } from "./components";
 
-interface IProfileSingleEditProps {
-  schema: any;
-  group: any;
-  entry: any;
-  index: any;
-  onSave: any;
-  onRevert: any;
-  onAddProp: any;
-  onInputChange: any;
-  onInputRemove: any;
-  onInputUpload: any;
-  onInputUploadElectron: any;
-}
-
-export default function ProfileSingleEdit({
-  schema,
-  group,
-  entry,
-  index,
-  onSave,
-  onRevert,
-  onAddProp,
-  onInputChange,
-  onInputRemove,
-  onInputUpload,
-  onInputUploadElectron,
-}: IProfileSingleEditProps) {
+export default function ProfileSingleEdit() {
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       {entry && schema && (
         <div className={styles.container}>
           <div id="scrollcontainer" className={styles.sticky}>
-            <SingleEditTitle {...{ group, index }} />
+            <SingleEditTitle />
 
-            <SingleEditToolbar {...{ onRevert, onSave }} />
+            <SingleEditToolbar />
 
-            <SingleEditForm
-              {...{
-                schema,
-                entry,
-                onInputChange,
-                onInputRemove,
-                onInputUpload,
-                onInputUploadElectron,
-                onAddProp,
-              }}
-            />
+            <SingleEditForm />
 
             <AssetView filepath={entry?.FILE_PATH} />
           </div>

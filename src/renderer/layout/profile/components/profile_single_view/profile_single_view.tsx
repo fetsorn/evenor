@@ -5,40 +5,22 @@ import {
   AssetView,
 } from "../../../../components";
 import {
+  SingleViewForm,
   SingleViewTitle,
   SingleViewToolbar,
-  SingleViewForm,
 } from "./components";
 
-interface IProfileSingleViewProps {
-  schema: any;
-  entry: any;
-  index: any;
-  group: any;
-  onEdit: any;
-  onClose: any;
-  onDelete: any;
-}
-
-export default function ProfileSingleView({
-  schema,
-  entry,
-  index,
-  group,
-  onEdit,
-  onClose,
-  onDelete,
-}: IProfileSingleViewProps) {
+export default function ProfileSingleView() {
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       {entry && schema && (
         <div className={styles.container}>
           <div id="scrollcontainer" className={styles.sticky}>
-            <SingleViewTitle {...{ group, index }} />
+            <SingleViewTitle />
 
-            <SingleViewToolbar {...{ onEdit, onClose, onDelete }} />
+            <SingleViewToolbar />
 
-            <SingleViewForm {...{ schema, entry }} />
+            <SingleViewForm />
 
             <AssetView filepath={entry?.FILE_PATH} />
           </div>

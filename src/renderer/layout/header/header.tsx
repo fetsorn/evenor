@@ -10,26 +10,9 @@ import {
   HeaderOverviewTypeDropdown,
 } from "./components";
 
-interface IHeaderProps {
-  isLoaded: boolean;
-  schema: any;
-  groupBy: any;
-  onChangeGroupBy: any;
-  overviewType: any;
-  onChangeOverviewType: any;
-  onChangeQuery: any;
-}
-
-export default function Header({
-  isLoaded,
-  schema,
-  groupBy,
-  onChangeGroupBy,
-  overviewType,
-  onChangeOverviewType,
-  onChangeQuery,
-}: IHeaderProps) {
+export default function Header() {
   const { t } = useTranslation();
+
   const navigate = useNavigate();
 
   return (
@@ -42,16 +25,12 @@ export default function Header({
         &lt;=
       </Button>
 
-      <HeaderOverviewTypeDropdown
-        {...{
-          overviewType,
-          onChangeOverviewType,
-        }}
-      />
+      <HeaderOverviewTypeDropdown />
 
-      <HeaderFilter {...{ isLoaded, schema, onChangeQuery }} />
+      <HeaderFilter />
 
-      <HeaderGroupByDropdown {...{ schema, groupBy, onChangeGroupBy }} />
+      <HeaderGroupByDropdown />
+
       <div></div>
     </header>
   );

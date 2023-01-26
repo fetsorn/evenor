@@ -1,1 +1,1 @@
-export { default, OverviewType } from "./observatory_overview";
+export { default, OverviewType } from "./overview";

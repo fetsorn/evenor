@@ -1,25 +1,7 @@
 import React, { useMemo } from "react";
 import { FormInput } from "..";
 
-interface ISingleEditFormProps {
-  schema: any;
-  entry: any;
-  onInputChange: any;
-  onInputRemove: any;
-  onInputUpload: any;
-  onInputUploadElectron: any;
-  onAddProp: any;
-}
-
-export default function SingleEditForm({
-  schema,
-  entry,
-  onInputChange,
-  onInputRemove,
-  onInputUpload,
-  onInputUploadElectron,
-  onAddProp,
-}: ISingleEditFormProps) {
+export default function SingleEditForm() {
   const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
 
   // always list array items

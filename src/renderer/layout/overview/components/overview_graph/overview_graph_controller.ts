@@ -1,7 +1,7 @@
 import { graphviz } from "@hpcc-js/wasm";
 import { useNavigate } from "react-router-dom";
 import { ged2dot } from "@fetsorn/ged2dot";
-import { fetchDataMetadir } from "../../../store";
+import { fetchDataMetadir } from "../../../../store";
 
 declare global {
   interface Window {

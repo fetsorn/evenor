@@ -25,14 +25,14 @@ function Page() {
 
   const onLocation = useStore((state) => state.onLocation)
 
-  const onUseEffect = useStore((state) => state.onUseEffect)
+  const onFirstRender = useStore((state) => state.onFirstRender)
 
   useEffect(() => {
     onLocation(location.search);
   }, [location]);
 
   useEffect(() => {
-    onUseEffect(repoRoute, location.search);
+    onFirstRender(repoRoute, location.search);
   }, []);
 
   return (

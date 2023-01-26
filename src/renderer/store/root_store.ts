@@ -1,6 +1,6 @@
 import { create } from 'zustand'
+import { ensureRoot } from "../dispensers";
 import {
-  ensureRoot,
   searchRepo,
   fetchSchema,
   uploadFile,
@@ -46,7 +46,7 @@ interface State {
   onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => void
   onChangeQuery: (repoRoute: any, searchString: string) => Promise<void>
   onLocation: (search: any) => void
-  onUseEffect: (repoRoute: any, search: any) => Promise<void>
+  onFirstRender: (repoRoute: any, search: any) => Promise<void>
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -196,7 +196,7 @@ export const useStore = create<State>((set, get) => ({
     return { overviewType, groupBy }
   }),
 
-  onUseEffect: async (repoRoute: any, search: any) => {
+  onFirstRender: async (repoRoute: any, search: any) => {
     if (repoRoute === undefined) {
       await ensureRoot();
     }

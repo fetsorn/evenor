@@ -1,18 +1,17 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useFilterStore } from "../../header_filter_store";
 
 interface ISearchBarDropdownProps {
   notAddedFields: any;
-  selected: any;
-  onChangeSelected: any;
 }
 
-export default function SearchBarDropdown({
-  notAddedFields,
-  selected,
-  onChangeSelected,
-}: ISearchBarDropdownProps) {
+export default function SearchBarDropdown({ notAddedFields }: ISearchBarDropdownProps) {
   const { t } = useTranslation();
+
+  const selected = useFilterStore((state) => state.selected)
+
+  const onChangeSelected = useFilterStore((state) => state.onChangeSelected)
 
   return (
     <select

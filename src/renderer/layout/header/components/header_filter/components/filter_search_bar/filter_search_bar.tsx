@@ -1,38 +1,35 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SearchBarDropdown, SearchBarForm } from "..";
 import { Button } from "../../../../../../components";
 import styles from "./filter_search_bar.module.css";
+import { useStore } from "../../../../../../store";
+import { useFilterStore } from "../../header_filter_store";
 
 interface IFilterSearchBarProps {
   notAddedFields: any;
-  searched: any;
-  selected: any;
-  onChangeSelected: any;
-  onChangeSearched: any;
-  onQueryAdd: any;
 }
 
-export default function FilterSearchBar({
-  notAddedFields,
-  searched,
-  selected,
-  onChangeSelected,
-  onChangeSearched,
-  onQueryAdd,
-}: IFilterSearchBarProps) {
+export default function FilterSearchBar({ notAddedFields }: IFilterSearchBarProps) {
   const { t } = useTranslation();
+
+  const { repoRoute } = useParams();
+
+  const onChangeQuery = useStore((state) => state.onChangeQuery)
+
+  const onQueryAdd = useFilterStore((state) => state.onQueryAdd)
 
   return (
     <div className={styles.search}>
-      <SearchBarDropdown {...{ notAddedFields, selected, onChangeSelected }} />
+      <SearchBarDropdown {...{notAddedFields}} />
 
-      <SearchBarForm {...{ selected, searched, onChangeSearched }} />
+      <SearchBarForm />
 
       <Button
         type="button"
         title={t("header.button.search")}
-        onClick={onQueryAdd}
+        onClick={() => onQueryAdd(repoRoute, onChangeQuery)}
       >
         🔎
       </Button>

@@ -1,7 +1,8 @@
 import React, { useMemo } from "react";
 import { FormOutput } from "..";
 import { useParams } from "react-router-dom";
-import { dispenserUpdate , useStore } from "../../../../../../store";
+import { useStore } from "../../../../../../store";
+import { dispenserUpdate } from "../../../../../../dispensers";
 
 export default function SingleViewForm() {
   const { repoRoute } = useParams();

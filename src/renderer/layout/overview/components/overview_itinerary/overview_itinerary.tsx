@@ -9,7 +9,7 @@ import {
 } from "./components";
 import {
   buildItinerary,
-} from "..";
+} from "./overview_itinerary_controller";
 import { useStore } from "../../../../store";
 
 export default function OverviewItinerary() {

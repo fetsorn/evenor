@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { setupVars, load } from "..";
+import { setupVars, load } from "./overview_graph_controller";
 import { GraphSvg, GraphTextInput, GraphRangeInput } from "./components";
 import styles from "./overview_graph.module.css";
 

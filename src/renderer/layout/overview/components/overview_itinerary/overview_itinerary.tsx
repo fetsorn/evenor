@@ -10,10 +10,22 @@ import {
 import {
   buildItinerary,
 } from "..";
+import { useStore } from "../../../../store";
 
 export default function OverviewItinerary() {
   const [itinerary, setItinerary] = useState<any>([]);
+
   const { t } = useTranslation();
+
+  const onEntrySelect = useStore((state) => state.onEntrySelect)
+
+  const onEntryCreate = useStore((state) => state.onEntryCreate)
+
+  const onBatchSelect = useStore((state) => state.onBatchSelect)
+
+  const overview = useStore((state) => state.overview)
+
+  const groupBy = useStore((state) => state.groupBy)
 
   async function onUseEffect() {
     const itineraryNew = await buildItinerary(overview, groupBy);

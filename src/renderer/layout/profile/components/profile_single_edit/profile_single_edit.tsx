@@ -9,8 +9,13 @@ import {
   SingleEditTitle,
   SingleEditToolbar,
 } from "./components";
+import { useStore } from "../../../../store";
 
 export default function ProfileSingleEdit() {
+  const entry = useStore((state) => state.entry)
+
+  const schema = useStore((state) => state.schema)
+
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       {entry && schema && (

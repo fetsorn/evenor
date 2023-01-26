@@ -97,6 +97,7 @@
     "webpack-cli": "^4.10.0",
     "webpack-dev-server": "^4.10.1",
     "word-extractor": "^1.0.4",
-    "zlib-browserify": "^0.0.3"
+    "zlib-browserify": "^0.0.3",
+    "zustand": "^4.3.2"
   }
 }

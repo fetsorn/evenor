@@ -22,3 +22,7 @@ export {
 } from "./git_controller";
 export { deepClone } from "./curse_controller";
 export { queryOptions } from "./search_bar_form_controller";
+export {
+  useStore,
+  OverviewType,
+} from "./root_reducer";

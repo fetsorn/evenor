@@ -9,14 +9,19 @@ import {
   SingleViewTitle,
   SingleViewToolbar,
 } from "./components";
+import { useStore } from "../../../../store";
 
 export default function ProfileSingleView() {
+  const entry = useStore((state) => state.entry)
+
+  const schema = useStore((state) => state.schema)
+
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       {entry && schema && (
         <div className={styles.container}>
           <div id="scrollcontainer" className={styles.sticky}>
-            <SingleViewTitle />
+            <SingleViewTitle/>
 
             <SingleViewToolbar />
 

@@ -1,3 +1,4 @@
+import { create } from 'zustand'
 import {
   ensureRoot,
   searchRepo,
@@ -10,139 +11,147 @@ import {
   addProp,
   deepClone,
   getDefaultGroupBy,
-} from "../store";
+} from ".";
 
 export enum OverviewType {
-  itinerary = "itinerary",
-  graph = "graph",
+    itinerary = "itinerary",
+    graph = "graph",
 }
 
-  const [entry, setEntry] = useState(undefined);
+interface State {
+  entry: any
+  index: any
+  group: any
+  groupBy: any
+  schema: any
+  overview: any
+  isEdit: boolean
+  isBatch: boolean
+  overviewType: OverviewType
+  isLoaded: boolean
+  onBatchSelect: () => void
+  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => void
+  onEntryCreate: any
+  onSave: (repoRoute: any) => Promise<void>
+  onEdit: () => void
+  onRevert: () => void
+  onDelete: any
+  onClose: () => void
+  onAddProp: (label: string) => Promise<void>
+  onInputChange: (label: string, value: string) => void
+  onInputUpload: (repoRoute: any, label: string, file: any) => void
+  onInputRemove: (label: string) => void
+  onInputUploadElectron: (repoRoute: string, label: string) => void
+  onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => void
+  onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => void
+  onChangeQuery: (repoRoute: any, searchString: string) => Promise<void>
+  onLocation: (search: any) => void
+  onUseEffect: (repoRoute: any, search: any) => Promise<void>
+}
 
-  const [index, setIndex] = useState(undefined);
+export const useStore = create<State>((set, get) => ({
+  entry: undefined,
 
-  const [group, setGroup] = useState(undefined);
+  index: undefined,
 
-  const [groupBy, setGroupBy] = useState(undefined);
+  group: undefined,
 
-  const [schema, setSchema] = useState<any>({});
+  groupBy: undefined,
 
-  const [overview, setOverview] = useState([]);
+  schema: {},
 
-  const [isEdit, setIsEdit] = useState(false);
+  overview: [],
 
-  const [isBatch, setIsBatch] = useState(false);
+  isEdit: false,
 
-  const [overviewType, setOverviewType] = useState(OverviewType.itinerary);
+  isBatch: false,
 
-  const [isLoaded, setIsLoaded] = useState(false);
+  overviewType: OverviewType.itinerary,
 
-  const location = useLocation();
+  isLoaded: false,
 
-  const navigate = useNavigate();
+  onBatchSelect: () => set({ isBatch: true }),
 
-  function onBatchSelect() {
-    setIsBatch(true);
-  }
+  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => set({ entry: entryNew, index: indexNew, group: groupNew }),
 
-  function onEntrySelect(entryNew: any, indexNew: any, groupNew: any) {
-    setEntry(entryNew);
+  onEntryCreate: async (index: string) => {
+    const entry = await createEntry();
 
-    setIndex(indexNew);
+    set({ index, isEdit: true, entry })
+  },
 
-    setGroup(groupNew);
+  onSave: async (repoRoute: any) => {
+    await editEntry(repoRoute, deepClone(get().entry));
 
-    return;
-  }
+    const overview = updateOverview(get().overview, deepClone(get().entry));
 
-  async function onEntryCreate(index: string) {
-    const entryNew = await createEntry();
+    set({ overview, isEdit: false })
 
-    setIndex(index);
+    document.getElementById(get().entry.UUID).scrollIntoView();
+  },
 
-    setIsEdit(true);
+  onEdit: () => set({ isEdit: true }),
 
-    setEntry(entryNew);
-  }
+  onRevert: () => set({ isEdit: false }),
 
-  async function onSave() {
-    await editEntry(repoRoute, deepClone(entry));
+  onDelete: async (repoRoute: any) => {
+    const overview = await deleteEntry(repoRoute, get().overview, get().entry);
 
-    const overviewNew = updateOverview(overview, deepClone(entry));
+    set({ overview, entry: undefined });
+  },
 
-    setOverview(overviewNew);
+  onClose: () => set({ entry: undefined }),
 
-    setIsEdit(false);
+  onAddProp: async (label: string) => {
+    const entry = await addProp(get().schema, deepClone(get().entry), label);
 
-    document.getElementById(entry.UUID).scrollIntoView();
-  }
+    set({ entry })
+  },
 
-  function onEdit() {
-    setIsEdit(true);
-  }
+  onInputChange: (label: string, value: string) => set((state) => {
+    const entry = deepClone(state.entry);
 
-  function onRevert() {
-    setIsEdit(false);
-  }
+    entry[label] = value;
 
-  async function onDelete() {
-    const overviewNew = await deleteEntry(repoRoute, overview, entry);
+    return ({ entry })
+  }),
 
-    setOverview(overviewNew);
-
-    setEntry(undefined);
-  }
-
-  function onClose() {
-    setEntry(undefined);
-  }
-
-  async function onAddProp(label: string) {
-    const entryNew = await addProp(schema, deepClone(entry), label);
-
-    setEntry(entryNew);
-  }
-
-  function onInputChange(label: string, value: string) {
-    const entryNew = deepClone(entry);
-
-    entryNew[label] = value;
-
-    setEntry(entryNew);
-  }
-
-  async function onInputUpload(label: string, file: any) {
+  onInputUpload: async (repoRoute: any, label: string, file: any) => {
     await uploadFile(repoRoute, file);
 
-    const entryNew = deepClone(entry);
+    set((state) => {
+      const entry = deepClone(state.entry);
 
-    entryNew[label] = file.name;
+      entry[label] = file.name;
 
-    setEntry(entryNew);
-  }
+      return { entry }
+    })
+  },
 
-  function onInputRemove(label: string) {
-    const entryNew = deepClone(entry);
+  onInputRemove: (label: string) => set((state) => {
+    const entry = deepClone(state.entry);
 
-    delete entryNew[label];
+    delete entry[label];
 
-    setEntry(entryNew);
-  }
+    return { entry }
+  }),
 
-  async function onInputUploadElectron(label: string) {
+  onInputUploadElectron: async (repoRoute: string, label: string) => {
     const filepath = await window.electron.uploadFile(repoRoute);
 
-    const entryNew = deepClone(entry);
+    set((state) => {
+      const entry = deepClone(state.entry);
 
-    entryNew[label] = filepath;
+      entry[label] = filepath;
 
-    setEntry(entryNew);
-  }
+      return { entry }
+    })
+  },
 
-  function onChangeGroupBy(groupByNew: string) {
+  onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => set((state) => {
     const groupByProp =
-      Object.keys(schema).find((p) => schema[p].label === groupByNew) ??
-      groupByNew;
+        Object.keys(state.schema).find((p) => state.schema[p].label === groupByNew) ??
+        groupByNew;
 
     const searchParams = new URLSearchParams(location.search);
 
@@ -152,10 +161,12 @@ export enum OverviewType {
       pathname: location.pathname,
       search: "?" + searchParams.toString(),
     });
-  }
 
-  function onChangeOverviewType(overviewTypeNew: string) {
-    const searchParams = new URLSearchParams(location.search);
+    return {}
+  }),
+
+  onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => {
+    const searchParams = new URLSearchParams(search);
 
     searchParams.set("overviewType", overviewTypeNew);
 
@@ -163,60 +174,43 @@ export enum OverviewType {
       pathname: location.pathname,
       search: "?" + searchParams.toString(),
     });
-  }
+  },
 
-  async function onChangeQuery(searchString: string) {
-    const overviewNew = await searchRepo(repoRoute, searchString);
+  onChangeQuery: async (repoRoute: any, searchString: string) => {
+    const overview = await searchRepo(repoRoute, searchString);
 
-    setOverview(overviewNew);
-  }
+    set({ overview })
+  },
 
-  async function onLocation() {
-    const searchParams = new URLSearchParams(location.search);
+  onLocation: (search: any) => set((state) => {
+    const searchParams = new URLSearchParams(search);
 
-    const overviewTypeNew = searchParams.get(
+    const overviewTypeParam = searchParams.get(
       "overviewType"
     ) as keyof typeof OverviewType;
 
-    if (overviewTypeNew) {
-      setOverviewType(OverviewType[overviewTypeNew]);
-    }
+    const overviewType = overviewTypeParam ? OverviewType[overviewTypeParam] : state.overviewType;
 
-    if (isLoaded) {
-      const groupByNew = getDefaultGroupBy(schema, overview, location.search);
+    const groupBy = state.isLoaded ? getDefaultGroupBy(state.schema, state.overview, search) : state.groupBy;
 
-      setGroupBy(groupByNew);
-    }
-  }
+    return { overviewType, groupBy }
+  }),
 
-  async function onUseEffect() {
+  onUseEffect: async (repoRoute: any, search: any) => {
     if (repoRoute === undefined) {
       await ensureRoot();
     }
 
-    const schemaNew = await fetchSchema(repoRoute);
+    const schema = await fetchSchema(repoRoute);
 
-    const overviewNew = await searchRepo(repoRoute, location.search);
+    const overview = await searchRepo(repoRoute, search);
 
-    const groupByNew = getDefaultGroupBy(
-      schemaNew,
-      overviewNew,
-      location.search
+    const groupBy = getDefaultGroupBy(
+      schema,
+      overview,
+      search
     );
 
-    setSchema(schemaNew);
-
-    setGroupBy(groupByNew);
-
-    setOverview(overviewNew);
-
-    setIsLoaded(true);
+    set({schema, overview, groupBy, isLoaded: true})
   }
-
-  useEffect(() => {
-    onLocation();
-  }, [location]);
-
-  useEffect(() => {
-    onUseEffect();
-  }, []);
+}))

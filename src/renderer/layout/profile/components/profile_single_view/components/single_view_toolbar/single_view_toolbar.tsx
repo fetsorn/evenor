@@ -2,19 +2,16 @@ import React from "react";
 import { Button } from "../../../../../../components";
 import styles from "./single_view_toolbar.module.css";
 import { useTranslation } from "react-i18next";
+import { useStore } from "../../../../../../store";
 
-interface ISingleViewToolbarProps {
-  onEdit: any;
-  onClose: any;
-  onDelete: any;
-}
-
-export default function SingleViewToolbar({
-  onEdit,
-  onClose,
-  onDelete,
-}: ISingleViewToolbarProps) {
+export default function SingleViewToolbar() {
   const { t } = useTranslation();
+
+  const onEdit = useStore((state) => state.onEdit)
+
+  const onClose = useStore((state) => state.onClose)
+
+  const onDelete = useStore((state) => state.onDelete)
 
   return (
     <div className={styles.buttonbar}>

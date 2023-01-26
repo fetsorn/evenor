@@ -4,14 +4,30 @@ import { SearchBarDropdown, SearchBarForm } from "..";
 import { Button } from "../../../../../../components";
 import styles from "./filter_search_bar.module.css";
 
-export default function FilterSearchBar() {
+interface IFilterSearchBarProps {
+  notAddedFields: any;
+  searched: any;
+  selected: any;
+  onChangeSelected: any;
+  onChangeSearched: any;
+  onQueryAdd: any;
+}
+
+export default function FilterSearchBar({
+  notAddedFields,
+  searched,
+  selected,
+  onChangeSelected,
+  onChangeSearched,
+  onQueryAdd,
+}: IFilterSearchBarProps) {
   const { t } = useTranslation();
 
   return (
     <div className={styles.search}>
-      <SearchBarDropdown />
+      <SearchBarDropdown {...{ notAddedFields, selected, onChangeSelected }} />
 
-      <SearchBarForm />
+      <SearchBarForm {...{ selected, searched, onChangeSearched }} />
 
       <Button
         type="button"

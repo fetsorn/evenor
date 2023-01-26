@@ -49,14 +49,14 @@ export async function fetchDataMetadir(repoRoute: string, path: string) {
 
   try {
     switch (__BUILD_MODE__) {
-      case "server":
-        return (await fetch("/api/" + path)).text();
+    case "server":
+      return (await fetch("/api/" + path)).text();
 
-      case "electron":
-        return await window.electron.fetchDataMetadir(repoPath, path);
+    case "electron":
+      return await window.electron.fetchDataMetadir(repoPath, path);
 
-      default:
-        return await fetchDataMetadirBrowser(repoPath, path);
+    default:
+      return await fetchDataMetadirBrowser(repoPath, path);
     }
   } catch (e) {
     throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
@@ -113,30 +113,30 @@ function queryWorkerInit(dir: string) {
   const queryMetadir =
     __BUILD_MODE__ === "server"
       ? async (searchParams: URLSearchParams) => {
-          const response = await fetch("/query?" + searchParams.toString());
+        const response = await fetch("/query?" + searchParams.toString());
 
-          return response.json();
-        }
+        return response.json();
+      }
       : (searchParams: URLSearchParams) =>
-          new Promise((res, rej) => {
-            const channel = new MessageChannel();
+        new Promise((res, rej) => {
+          const channel = new MessageChannel();
 
-            channel.port1.onmessage = ({ data }) => {
-              channel.port1.close();
+          channel.port1.onmessage = ({ data }) => {
+            channel.port1.close();
 
-              if (data.error) {
-                rej(data.error);
-              } else {
-                res(data.result);
-              }
-            };
+            if (data.error) {
+              rej(data.error);
+            } else {
+              res(data.result);
+            }
+          };
 
-            worker.postMessage(
-              { action: "query", searchParams: searchParams.toString() },
+          worker.postMessage(
+            { action: "query", searchParams: searchParams.toString() },
 
-              [channel.port2]
-            );
-          });
+            [channel.port2]
+          );
+        });
 
   return { queryMetadir };
 }
@@ -193,16 +193,16 @@ export async function writeDataMetadir(
 
   try {
     switch (__BUILD_MODE__) {
-      case "server":
-        await axios.post("/api/" + path, {
-          content,
-        });
+    case "server":
+      await axios.post("/api/" + path, {
+        content,
+      });
 
-      case "electron":
-        await window.electron.writeDataMetadir(repoPath, path, content);
+    case "electron":
+      await window.electron.writeDataMetadir(repoPath, path, content);
 
-      default:
-        await writeDataMetadirBrowser(repoPath, path, content);
+    default:
+      await writeDataMetadirBrowser(repoPath, path, content);
     }
   } catch {
     throw Error(`Cannot write file ${path}.`);

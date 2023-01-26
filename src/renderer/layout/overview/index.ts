@@ -1,1 +1,1 @@
-export { default, OverviewType } from "./overview";
+export { default } from "./overview";

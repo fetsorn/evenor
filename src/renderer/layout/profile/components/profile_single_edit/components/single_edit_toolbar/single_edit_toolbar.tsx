@@ -2,17 +2,14 @@ import React from "react";
 import { Button } from "../../../../../../components";
 import styles from "./single_edit_toolbar.module.css";
 import { useTranslation } from "react-i18next";
+import { useStore } from "../../../../../../store";
 
-interface ISingleEditToolbarProps {
-  onRevert: any;
-  onSave: any;
-}
-
-export default function SingleEditToolbar({
-  onRevert,
-  onSave,
-}: ISingleEditToolbarProps) {
+export default function SingleEditToolbar() {
   const { t } = useTranslation();
+
+  const onRevert = useStore((state) => state.onRevert)
+
+  const onSave = useStore((state) => state.onSave)
 
   return (
     <div className={styles.buttonbar}>

@@ -1,6 +1,7 @@
 import React from "react";
 import styles from "./single_view_title.module.css";
 import { Title } from "../../../../../../components";
+import { useStore } from "../../../../../../store";
 
 // TODO: replace with Day.js
 function isDate(title: string): boolean {
@@ -12,15 +13,11 @@ function formatDate(title: string): string {
   return title;
 }
 
-interface ISingleViewTitleProps {
-  group: any;
-  index: any;
-}
+export default function SingleViewTitle() {
+  const group = useStore((state) => state.group)
 
-export default function SingleViewTitle({
-  group,
-  index,
-}: ISingleViewTitleProps) {
+  const index = useStore((state) => state.index)
+
   return (
     <Title>
       {isDate(group) ? formatDate(group) : group} {index}

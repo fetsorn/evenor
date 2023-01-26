@@ -1,18 +1,14 @@
 import React, { useMemo } from "react";
 import { FormOutput } from "..";
 import { useParams } from "react-router-dom";
-import { dispenserUpdate } from "../../../../../../store";
+import { dispenserUpdate , useStore } from "../../../../../../store";
 
-interface ISingleViewFormProps {
-  schema: any;
-  entry: any;
-}
-
-export default function SingleViewForm({
-  schema,
-  entry,
-}: ISingleViewFormProps) {
+export default function SingleViewForm() {
   const { repoRoute } = useParams();
+
+  const entry = useStore((state) => state.entry)
+
+  const schema = useStore((state) => state.schema)
 
   const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { useParams , useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SearchBarDropdown, SearchBarForm } from "..";
 import { Button } from "../../../../../../components";
@@ -16,6 +16,8 @@ export default function FilterSearchBar({ notAddedFields }: IFilterSearchBarProp
 
   const { repoRoute } = useParams();
 
+  const navigate = useNavigate();
+
   const onChangeQuery = useStore((state) => state.onChangeQuery)
 
   const onQueryAdd = useFilterStore((state) => state.onQueryAdd)
@@ -29,7 +31,7 @@ export default function FilterSearchBar({ notAddedFields }: IFilterSearchBarProp
       <Button
         type="button"
         title={t("header.button.search")}
-        onClick={() => onQueryAdd(repoRoute, onChangeQuery)}
+        onClick={() => onQueryAdd(navigate, repoRoute, onChangeQuery)}
       >
         🔎
       </Button>

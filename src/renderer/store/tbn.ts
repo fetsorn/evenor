@@ -197,9 +197,11 @@ export async function writeDataMetadir(
       await axios.post("/api/" + path, {
         content,
       });
+      break;
 
     case "electron":
       await window.electron.writeDataMetadir(repoPath, path, content);
+      break;
 
     default:
       await writeDataMetadirBrowser(repoPath, path, content);

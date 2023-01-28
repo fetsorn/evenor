@@ -44,10 +44,6 @@ async function grepCallback(contentFile, patternFile) {
   await fs.promises.writeFile(contentFilePath, contentFile);
   await fs.promises.writeFile(patternFilePath, patternFile);
 
-  // const { stdout, stderr } = await promisify(exec)(
-  //   'export PATH=$PATH:~/.nix-profile/bin/; ' +
-  //     `rg -f ${patternFilePath} ${contentFilePath}`);
-
   let output = '';
   try {
     // console.log(`grep ${contentFile} for ${patternFile}`)
@@ -64,8 +60,8 @@ async function grepCallback(contentFile, patternFile) {
     console.log('grep cli returned empty');
   }
 
-  await fs.promises.unlink(contentFilePath);
-  await fs.promises.unlink(patternFilePath);
+  // await fs.promises.unlink(contentFilePath);
+  // await fs.promises.unlink(patternFilePath);
 
   return output;
 }
@@ -73,12 +69,12 @@ async function grepCallback(contentFile, patternFile) {
 // on POST `/grep` return results of a search
 router.get('/query*', async (req, res) => {
   console.log("post query", req.path, req.query)
-  const data = await queryMetadir(
-    req.query,
-    {
+  const data = await queryMetadir({
+    searchParams: req.query,
+    callback: {
       fetch: fetchCallback,
       grep: grepCallback
-    })
+    }})
   res.send(data)
 })
 

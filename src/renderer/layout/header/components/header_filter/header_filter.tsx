@@ -42,12 +42,12 @@ export default function HeaderFilter() {
   }, [schema, queries]);
 
   useEffect(() => {
-    onLocation();
+    onLocation(location.search);
   }, [location]);
 
   return (
     <div className={styles.panel}>
-      <FilterSearchBar {...{notAddedFields}} />
+      <FilterSearchBar {...{ notAddedFields }} />
 
       <FilterQueryList />
     </div>

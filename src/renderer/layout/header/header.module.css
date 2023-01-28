@@ -31,3 +31,8 @@
 .reponame {
   flex: 1;
 }
+
+.dropdowns {
+  display: flex;
+  flex-direction: column;
+}

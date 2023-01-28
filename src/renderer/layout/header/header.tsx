@@ -25,11 +25,17 @@ export default function Header() {
         &lt;=
       </Button>
 
-      <HeaderOverviewTypeDropdown />
+      <div className={styles.dropdowns}>
+        <HeaderOverviewTypeDropdown />
+
+        <HeaderGroupByDropdown />
+      </div>
 
       <HeaderFilter />
 
-      <HeaderGroupByDropdown />
+      <div></div>
+
+      <div></div>
 
       <div></div>
     </header>

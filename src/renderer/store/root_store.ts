@@ -45,7 +45,7 @@ interface State {
   onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => void
   onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => void
   onChangeQuery: (repoRoute: any, searchString: string) => Promise<void>
-  onLocation: (search: any) => void
+  onLocationChange: (search: any) => void
   onFirstRender: (repoRoute: any, search: any) => Promise<void>
 }
 
@@ -69,6 +69,38 @@ export const useStore = create<State>((set, get) => ({
   overviewType: OverviewType.itinerary,
 
   isLoaded: false,
+
+  onFirstRender: async (repoRoute: any, search: any) => {
+    if (repoRoute === undefined && __BUILD_MODE__ !== "server") {
+      await ensureRoot();
+    }
+
+    const schema = await fetchSchema(repoRoute);
+
+    const overview = await searchRepo(repoRoute, search);
+
+    const groupBy = getDefaultGroupBy(
+      schema,
+      overview,
+      search
+    );
+
+    set({schema, overview, groupBy, isLoaded: true})
+  },
+
+  onLocationChange: (search: any) => set((state) => {
+    const searchParams = new URLSearchParams(search);
+
+    const overviewTypeParam = searchParams.get(
+      "overviewType"
+    ) as keyof typeof OverviewType;
+
+    const overviewType = overviewTypeParam ? OverviewType[overviewTypeParam] : state.overviewType;
+
+    const groupBy = state.isLoaded ? getDefaultGroupBy(state.schema, state.overview, search) : state.groupBy;
+
+    return { overviewType, groupBy }
+  }),
 
   onBatchSelect: () => set({ isBatch: true }),
 
@@ -180,37 +212,5 @@ export const useStore = create<State>((set, get) => ({
     const overview = await searchRepo(repoRoute, searchString);
 
     set({ overview })
-  },
-
-  onLocation: (search: any) => set((state) => {
-    const searchParams = new URLSearchParams(search);
-
-    const overviewTypeParam = searchParams.get(
-      "overviewType"
-    ) as keyof typeof OverviewType;
-
-    const overviewType = overviewTypeParam ? OverviewType[overviewTypeParam] : state.overviewType;
-
-    const groupBy = state.isLoaded ? getDefaultGroupBy(state.schema, state.overview, search) : state.groupBy;
-
-    return { overviewType, groupBy }
-  }),
-
-  onFirstRender: async (repoRoute: any, search: any) => {
-    if (repoRoute === undefined) {
-      await ensureRoot();
-    }
-
-    const schema = await fetchSchema(repoRoute);
-
-    const overview = await searchRepo(repoRoute, search);
-
-    const groupBy = getDefaultGroupBy(
-      schema,
-      overview,
-      search
-    );
-
-    set({schema, overview, groupBy, isLoaded: true})
   }
 }))

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
+import React from "react";
+import { useParams , useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { QueryListLabel } from "..";
 import styles from "./filter_query_list.module.css";
@@ -10,6 +10,8 @@ export default function FilterQueryList() {
   const { t } = useTranslation();
 
   const { repoRoute } = useParams();
+
+  const navigate = useNavigate();
 
   const onChangeQuery = useStore((state) => state.onChangeQuery)
 
@@ -25,7 +27,7 @@ export default function FilterQueryList() {
 
           <a
             title={t("header.button.remove", { field: prop })}
-            onClick={() => onQueryRemove(repoRoute, onChangeQuery, prop)}
+            onClick={() => onQueryRemove(navigate, repoRoute, onChangeQuery, prop)}
             style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
           >
             X

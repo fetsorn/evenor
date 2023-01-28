@@ -17,15 +17,15 @@ function queriesToParams(params: any) {
   return searchParams;
 }
 
-function setQueriesLocation(queriesNew: any) {
+function setQueriesLocation(queriesNew: any, navigate: any) {
   const searchParams = queriesToParams(queriesNew);
 
   const search = "?" + searchParams.toString();
 
-  /* navigate({
-     *   pathname: location.pathname,
-     *   search,
-     * }); */
+  navigate({
+    pathname: location.pathname,
+    search,
+  });
 
   return search;
 }
@@ -34,11 +34,11 @@ interface State {
   queries: any
   selected: any
   searched: any
-  onQueryAdd: (repoRoute: any, onChangeQuery: any) => Promise<void>
-  onQueryRemove: (repoRoute: any, onChangeQuery: any, removed: string) => Promise<void>
+  onQueryAdd: (navigate: any, repoRoute: any, onChangeQuery: any) => Promise<void>
+  onQueryRemove: (navigate: any, repoRoute: any, onChangeQuery: any, removed: string) => Promise<void>
   onChangeSelected: (selected: string) => void
   onChangeSearched: (searched: string) => void
-  onLocation: () => void
+  onLocation: (search: any) => void
 }
 
 export const useFilterStore = create<State>((set, get) => ({
@@ -48,11 +48,11 @@ export const useFilterStore = create<State>((set, get) => ({
 
   searched: "",
 
-  onQueryAdd: async (repoRoute: any, onChangeQuery: any) => {
+  onQueryAdd: async (navigate: any, repoRoute: any, onChangeQuery: any) => {
     if (get().searched) {
       const queriesNew = { ...get().queries, [get().selected]: get().searched };
 
-      const searchString = setQueriesLocation(queriesNew);
+      const searchString = setQueriesLocation(queriesNew, navigate);
 
       await onChangeQuery(repoRoute, searchString);
 
@@ -60,12 +60,12 @@ export const useFilterStore = create<State>((set, get) => ({
     }
   },
 
-  onQueryRemove: async (repoRoute: any, onChangeQuery: any, removed: string) => {
+  onQueryRemove: async (navigate: any, repoRoute: any, onChangeQuery: any, removed: string) => {
     const queriesNew: any = { ...get().queries };
 
     delete queriesNew[removed];
 
-    const searchString = setQueriesLocation(queriesNew);
+    const searchString = setQueriesLocation(queriesNew, navigate);
 
     await onChangeQuery(repoRoute, searchString);
 
@@ -76,8 +76,8 @@ export const useFilterStore = create<State>((set, get) => ({
 
   onChangeSearched: (searched: string) => set({searched}),
 
-  onLocation: () => {
-    const searchParams = new URLSearchParams(location.search);
+  onLocation: (search: any) => {
+    const searchParams = new URLSearchParams(search);
 
     const queriesNew = paramsToQueries(searchParams);
 

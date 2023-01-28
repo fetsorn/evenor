@@ -29,6 +29,9 @@ interface State {
   isBatch: boolean
   overviewType: OverviewType
   isLoaded: boolean
+  queries: any
+  selected: string
+  searched: string
   onBatchSelect: () => void
   onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => void
   onEntryCreate: any
@@ -47,6 +50,11 @@ interface State {
   onChangeQuery: (repoRoute: any, searchString: string) => Promise<void>
   onLocationChange: (search: any) => void
   onFirstRender: (repoRoute: any, search: any) => Promise<void>
+  onQueryAdd: (navigate: any, repoRoute: any, onChangeQuery: any) => Promise<void>
+  onQueryRemove: (navigate: any, repoRoute: any, onChangeQuery: any, removed: string) => Promise<void>
+  onChangeSelected: (selected: string) => void,
+  onChangeSearched: (searched: string) => void,
+  onLocationFilter: (search: any) => void
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -69,6 +77,12 @@ export const useStore = create<State>((set, get) => ({
   overviewType: OverviewType.itinerary,
 
   isLoaded: false,
+
+  queries: {},
+
+  selected: "",
+
+  searched: "",
 
   onFirstRender: async (repoRoute: any, search: any) => {
     if (repoRoute === undefined && __BUILD_MODE__ !== "server") {
@@ -212,5 +226,77 @@ export const useStore = create<State>((set, get) => ({
     const overview = await searchRepo(repoRoute, searchString);
 
     set({ overview })
-  }
+  },
+
+  onQueryAdd: async (navigate: any, repoRoute: any, onChangeQuery: any) => {
+    if (get().searched) {
+      const queriesNew = { ...get().queries, [get().selected]: get().searched };
+
+      const searchString = setQueriesLocation(queriesNew, navigate);
+
+      await onChangeQuery(repoRoute, searchString);
+
+      set({searched: ""})
+    }
+  },
+
+  onQueryRemove: async (navigate: any, repoRoute: any, onChangeQuery: any, removed: string) => {
+    const queriesNew: any = { ...get().queries };
+
+    delete queriesNew[removed];
+
+    const searchString = setQueriesLocation(queriesNew, navigate);
+
+    await onChangeQuery(repoRoute, searchString);
+
+    set({searched: ""})
+  },
+
+  onChangeSelected: (selected: string) => set({selected}),
+
+  onChangeSearched: (searched: string) => set({searched}),
+
+  onLocationFilter: (search: any) => {
+    const searchParams = new URLSearchParams(search);
+
+    const queriesNew = paramsToQueries(searchParams);
+
+    const queries = Object.fromEntries(
+      Object.entries(queriesNew).filter(
+        ([key]) => key !== "groupBy" && key !== "overviewType"
+      )
+    );
+
+    set({ queries })
+  },
 }))
+
+function paramsToQueries(searchParams: URLSearchParams) {
+  return Array.from(searchParams).reduce(
+    (acc, [key, value]) => ({ ...acc, [key]: value }),
+    {}
+  );
+}
+
+function queriesToParams(params: any) {
+  const searchParams = new URLSearchParams();
+
+  Object.keys(params).map((key) =>
+    params[key] !== "" ? searchParams.set(key, params[key]) : null
+  );
+
+  return searchParams;
+}
+
+function setQueriesLocation(queriesNew: any, navigate: any) {
+  const searchParams = queriesToParams(queriesNew);
+
+  const search = "?" + searchParams.toString();
+
+  navigate({
+    pathname: location.pathname,
+    search,
+  });
+
+  return search;
+}

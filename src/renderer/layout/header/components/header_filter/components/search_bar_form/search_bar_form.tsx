@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { queryOptions , useStore } from "../../../../../../store";
-import { useFilterStore } from "../../header_filter_store";
 import styles from "./search_bar_form.module.css";
 
 export default function SearchBarForm() {
@@ -9,11 +8,11 @@ export default function SearchBarForm() {
 
   const isLoaded = useStore((state) => state.isLoaded)
 
-  const searched = useFilterStore((state) => state.searched)
+  const searched = useStore((state) => state.searched)
 
-  const selected = useFilterStore((state) => state.selected)
+  const selected = useStore((state) => state.selected)
 
-  const onChangeSearched = useFilterStore((state) => state.onChangeSearched)
+  const onChangeSearched = useStore((state) => state.onChangeSearched)
 
   const [options, setOptions]: any[] = useState([]);
 

@@ -12,8 +12,6 @@ export default function FilterQueryList() {
 
   const navigate = useNavigate();
 
-  const onChangeQuery = useStore((state) => state.onChangeQuery)
-
   const queries = useStore((state) => state.queries)
 
   const onQueryRemove = useStore((state) => state.onQueryRemove)
@@ -26,7 +24,7 @@ export default function FilterQueryList() {
 
           <a
             title={t("header.button.remove", { field: prop })}
-            onClick={() => onQueryRemove(navigate, repoRoute, onChangeQuery, prop)}
+            onClick={() => onQueryRemove(navigate, repoRoute, prop)}
             style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
           >
             X

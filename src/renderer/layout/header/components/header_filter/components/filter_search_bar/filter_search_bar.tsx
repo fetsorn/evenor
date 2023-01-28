@@ -17,8 +17,6 @@ export default function FilterSearchBar({ notAddedFields }: IFilterSearchBarProp
 
   const navigate = useNavigate();
 
-  const onChangeQuery = useStore((state) => state.onChangeQuery)
-
   const onQueryAdd = useStore((state) => state.onQueryAdd)
 
   return (
@@ -30,7 +28,7 @@ export default function FilterSearchBar({ notAddedFields }: IFilterSearchBarProp
       <Button
         type="button"
         title={t("header.button.search")}
-        onClick={() => onQueryAdd(navigate, repoRoute, onChangeQuery)}
+        onClick={() => onQueryAdd(navigate, repoRoute)}
       >
         🔎
       </Button>

@@ -1,6 +1,6 @@
 import { graphviz } from "@hpcc-js/wasm";
 import { ged2dot, ged2dot_ } from "@fetsorn/ged2dot";
-import { fetchDataMetadir } from "../../../../store";
+import { fetchDataMetadir } from "../../../../api";
 
 declare global {
   interface Window {

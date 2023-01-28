@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { queryOptions , useStore } from "../../../../../../store";
+import { queryOptions } from "../../../../../../api";
+import { useStore } from "../../../../../../store";
 import styles from "./search_bar_form.module.css";
 
 export default function SearchBarForm() {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
-import { ensureRoot } from "../dispensers";
 import {
+  ensureRoot,
   searchRepo,
   fetchSchema,
   uploadFile,
@@ -11,7 +11,7 @@ import {
   addProp,
   deepClone,
   getDefaultGroupBy,
-} from ".";
+} from "../api";
 
 export enum OverviewType {
     itinerary = "itinerary",
@@ -47,11 +47,10 @@ interface State {
   onInputUploadElectron: (repoRoute: string, label: string) => void
   onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => void
   onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => void
-  onChangeQuery: (repoRoute: any, searchString: string) => Promise<void>
   onLocationChange: (search: any) => void
   onFirstRender: (repoRoute: any, search: any) => Promise<void>
-  onQueryAdd: (navigate: any, repoRoute: any, onChangeQuery: any) => Promise<void>
-  onQueryRemove: (navigate: any, repoRoute: any, onChangeQuery: any, removed: string) => Promise<void>
+  onQueryAdd: (navigate: any, repoRoute: any) => Promise<void>
+  onQueryRemove: (navigate: any, repoRoute: any, removed: string) => Promise<void>
   onChangeSelected: (selected: string) => void,
   onChangeSearched: (searched: string) => void,
   onLocationFilter: (search: any) => void
@@ -222,34 +221,28 @@ export const useStore = create<State>((set, get) => ({
     });
   },
 
-  onChangeQuery: async (repoRoute: any, searchString: string) => {
-    const overview = await searchRepo(repoRoute, searchString);
-
-    set({ overview })
-  },
-
-  onQueryAdd: async (navigate: any, repoRoute: any, onChangeQuery: any) => {
+  onQueryAdd: async (navigate: any, repoRoute: any) => {
     if (get().searched) {
       const queriesNew = { ...get().queries, [get().selected]: get().searched };
 
       const searchString = setQueriesLocation(queriesNew, navigate);
 
-      await onChangeQuery(repoRoute, searchString);
+      const overview = await searchRepo(repoRoute, searchString);
 
-      set({searched: ""})
+      set({searched: "", overview})
     }
   },
 
-  onQueryRemove: async (navigate: any, repoRoute: any, onChangeQuery: any, removed: string) => {
+  onQueryRemove: async (navigate: any, repoRoute: any, removed: string) => {
     const queriesNew: any = { ...get().queries };
 
     delete queriesNew[removed];
 
     const searchString = setQueriesLocation(queriesNew, navigate);
 
-    await onChangeQuery(repoRoute, searchString);
+    const overview = await searchRepo(repoRoute, searchString);
 
-    set({searched: ""})
+    set({searched: "", overview})
   },
 
   onChangeSelected: (selected: string) => set({selected}),

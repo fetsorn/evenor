@@ -12,7 +12,7 @@ import {
 } from "./components";
 import { useStore } from "../../../../store";
 import { useParams } from "react-router-dom";
-import { dispenserUpdate } from "../../../../dispensers";
+import { dispenserUpdate } from "../../../../api";
 
 // TODO: replace with Day.js
 function isDate(title: string): boolean {

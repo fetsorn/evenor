@@ -1,4 +1,4 @@
-import { FormInput } from "..";
+import { EditInput } from "..";
 import { useTranslation } from "react-i18next";
 
 interface IInputArrayProps {
@@ -58,7 +58,7 @@ export default function InputArray({
 
         return (
           <div key={index}>
-            <FormInput
+            <EditInput
               {...{
                 schema,
                 onInputChange: onInputChangeArrayItem,

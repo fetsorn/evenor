@@ -1,14 +1,14 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Paragraph } from "../../../../../../components";
+import { FieldText } from "..";
 
-interface IFormOutputProps {
+interface IViewFieldProps {
   schema: any;
   label: any;
   value: any;
 }
 
-export default function FormOutput({ schema, label, value }: IFormOutputProps) {
+export default function ViewField({ schema, label, value }: IViewFieldProps) {
   const { i18n } = useTranslation();
 
   const propType = useMemo(() => {
@@ -39,7 +39,7 @@ export default function FormOutput({ schema, label, value }: IFormOutputProps) {
           {/* <div>array {propDescription} </div> */}
           {value.items.map((item: any, index: any) => (
             <div key={index}>
-              <FormOutput {...{ schema }} label={item.ITEM_NAME} value={item} />
+              <FieldText {...{ schema }} label={item.ITEM_NAME} value={item} />
             </div>
           ))}
         </div>
@@ -48,16 +48,12 @@ export default function FormOutput({ schema, label, value }: IFormOutputProps) {
           <div>object {propDescription}</div>
           {Object.keys(value).map((field: any, index: any) => (
             <div key={index}>
-              <FormOutput {...{ schema }} label={field} value={value[field]} />
+              <FieldText {...{ schema }} label={field} value={value[field]} />
             </div>
           ))}
         </div>
       ) : (
-        <div>
-          <div>{propDescription}</div>
-
-          <Paragraph>{value}</Paragraph>
-        </div>
+        <FieldText {...{ schema, label, value }} />
       )}
     </div>
   );

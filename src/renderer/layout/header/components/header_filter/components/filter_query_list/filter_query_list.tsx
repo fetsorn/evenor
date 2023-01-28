@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { QueryListLabel } from "..";
 import styles from "./filter_query_list.module.css";
 import { useStore } from "../../../../../../store";
-import { useFilterStore } from "../../header_filter_store";
 
 export default function FilterQueryList() {
   const { t } = useTranslation();
@@ -15,9 +14,9 @@ export default function FilterQueryList() {
 
   const onChangeQuery = useStore((state) => state.onChangeQuery)
 
-  const queries = useFilterStore((state) => state.queries)
+  const queries = useStore((state) => state.queries)
 
-  const onQueryRemove = useFilterStore((state) => state.onQueryRemove)
+  const onQueryRemove = useStore((state) => state.onQueryRemove)
 
   return (
     <div className={styles.query}>

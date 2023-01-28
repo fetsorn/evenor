@@ -5,7 +5,6 @@ import { SearchBarDropdown, SearchBarForm } from "..";
 import { Button } from "../../../../../../components";
 import styles from "./filter_search_bar.module.css";
 import { useStore } from "../../../../../../store";
-import { useFilterStore } from "../../header_filter_store";
 
 interface IFilterSearchBarProps {
   notAddedFields: any;
@@ -20,7 +19,7 @@ export default function FilterSearchBar({ notAddedFields }: IFilterSearchBarProp
 
   const onChangeQuery = useStore((state) => state.onChangeQuery)
 
-  const onQueryAdd = useFilterStore((state) => state.onQueryAdd)
+  const onQueryAdd = useStore((state) => state.onQueryAdd)
 
   return (
     <div className={styles.search}>

@@ -3,18 +3,17 @@ import { useLocation } from "react-router-dom";
 import { FilterSearchBar, FilterQueryList } from "./components";
 import styles from "./header_filter.module.css";
 import { useStore } from "../../../../store";
-import { useFilterStore } from "./header_filter_store";
 
 export default function HeaderFilter() {
   const location = useLocation();
 
   const rawSchema = useStore((state) => state.schema)
 
-  const onLocation = useFilterStore((state) => state.onLocation)
+  const onLocation = useStore((state) => state.onLocationFilter)
 
-  const queries = useFilterStore((state) => state.queries)
+  const queries = useStore((state) => state.queries)
 
-  const onChangeSelected = useFilterStore((state) => state.onChangeSelected)
+  const onChangeSelected = useStore((state) => state.onChangeSelected)
 
   const schema = useMemo(
     () =>

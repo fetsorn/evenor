@@ -1,6 +1,5 @@
 import { graphviz } from "@hpcc-js/wasm";
-import { useNavigate } from "react-router-dom";
-import { ged2dot } from "@fetsorn/ged2dot";
+import { ged2dot, ged2dot_ } from "@fetsorn/ged2dot";
 import { fetchDataMetadir } from "../../../../store";
 
 declare global {
@@ -11,19 +10,17 @@ declare global {
   }
 }
 
-export function setupVars(setFamily: any): void {
-  const navigate = useNavigate();
-
+export function setupVars(navigate: any, setFamily: any): void {
   window.ged2dot_setFamilyID = (id: string) => {
     setFamily(id);
   };
 
   window.ged2dot_setPersonREFN = (refn: string) => {
-    navigate(`q?hostname=${refn}`);
+    navigate(`?hostname=${refn}&overviewType=itinerary`);
   };
 
   window.ged2dot_setPersonUUID = (uuid: string) => {
-    navigate(`q?hostname=${uuid}`);
+    navigate(`?hostname=${uuid}&overviewType=itinerary`);
   };
 }
 
@@ -38,9 +35,6 @@ export async function load(
     return html;
   } catch (e3) {
     console.log(e3);
-
-    // redirect to empty query to open Line
-    await redirect();
   }
 }
 
@@ -79,7 +73,13 @@ async function renderGed(
 
   // TODO: ged2dot needs to be able to figure out familyID
   // when passed familyID is undefined or non-existing
-  const dot = ged2dot(index, depth, familyID);
+  let dot
+
+  if (familyID) {
+    dot = ged2dot(index, depth, familyID);
+  } else {
+    dot = ged2dot_(index);
+  }
 
   // render dot notation with graphviz
   const svg = await graphviz.layout(dot, "svg", "dot");
@@ -91,12 +91,4 @@ async function renderIndex(dir: string): Promise<string> {
   const index = await fetchDataMetadir(dir, "index.html");
 
   return index;
-}
-
-function redirect(): void {
-  console.log("redirect to query");
-
-  const navigate = useNavigate();
-
-  navigate(`q`, { replace: true });
 }

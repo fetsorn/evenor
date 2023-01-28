@@ -11,8 +11,8 @@ export default function Overview() {
       <OverviewItinerary />
     );
 
-    /* case OverviewType.graph:
-     *   return <OverviewGraph />; */
+  case OverviewType.graph:
+    return <OverviewGraph />;
 
     /* case OverviewType.book:
      *   return <OverviewBook />; */

@@ -23,16 +23,10 @@ function Page() {
 
   const location = useLocation();
 
-  const onLocationChange = useStore((state) => state.onLocationChange)
-
-  const onFirstRender = useStore((state) => state.onFirstRender)
+  const initialize = useStore((state) => state.initialize)
 
   useEffect(() => {
-    onLocationChange(location.search);
-  }, [location]);
-
-  useEffect(() => {
-    onFirstRender(repoRoute, location.search);
+    initialize(repoRoute, location.search);
   }, []);
 
   return (

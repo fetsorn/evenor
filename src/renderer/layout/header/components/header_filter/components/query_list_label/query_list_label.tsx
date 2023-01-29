@@ -1,14 +1,14 @@
 import React from "react";
 
 interface IQueryListLabelProps {
-  prop: any;
+  field: any;
   value: any;
 }
 
-export default function QueryListLabel({ prop, value }: IQueryListLabelProps) {
+export default function QueryListLabel({ field, value }: IQueryListLabelProps) {
   return (
     <div>
-      {prop} {value}
+      {field} {value}
     </div>
   );
 }

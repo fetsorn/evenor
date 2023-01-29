@@ -28,27 +28,31 @@ export default function ProfileSingleEdit() {
 
   const { repoRoute } = useParams();
 
-  const entry = useStore((state) => state.entry)
-
-  const schema = useStore((state) => state.schema)
-
-  const group = useStore((state) => state.group)
-
-  const index = useStore((state) => state.index)
-
-  const onEntryRevert = useStore((state) => state.onEntryRevert)
-
-  const onEntrySave = useStore((state) => state.onEntrySave)
-
-  const onFieldAdd = useStore((state) => state.onFieldAdd)
-
-  const onFieldUpload = useStore((state) => state.onFieldUpload)
-
-  const onFieldUploadElectron = useStore((state) => state.onFieldUploadElectron)
-
-  const onFieldRemove = useStore((state) => state.onFieldRemove)
-
-  const onFieldChange = useStore((state) => state.onFieldChange)
+  const [
+    entry,
+    schema,
+    group,
+    index,
+    onEntryRevert,
+    onEntrySave,
+    onFieldAdd,
+    onFieldRemove,
+    onFieldChange,
+    onFieldUpload,
+    onFieldUploadElectron,
+  ] = useStore((state) => [
+    state.entry,
+    state.schema,
+    state.group,
+    state.index,
+    state.onEntryRevert,
+    state.onEntrySave,
+    state.onFieldAdd,
+    state.onFieldRemove,
+    state.onFieldChange,
+    state.onFieldUpload,
+    state.onFieldUploadElectron,
+  ])
 
   const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
 

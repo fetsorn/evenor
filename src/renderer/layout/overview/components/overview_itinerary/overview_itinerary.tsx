@@ -17,20 +17,28 @@ export default function OverviewItinerary() {
 
   const { t } = useTranslation();
 
-  const entry = useStore((state) => state.entry)
-
-  const onEntrySelect = useStore((state) => state.onEntrySelect)
-
-  const onEntryCreate = useStore((state) => state.onEntryCreate)
-
-  const onBatchSelect = useStore((state) => state.onBatchSelect)
-
-  const overview = useStore((state) => state.overview)
-
-  const groupBy = useStore((state) => state.groupBy)
+  const [
+    entry,
+    schema,
+    overview,
+    groupBy,
+    onEntrySelect,
+    onEntryCreate,
+    onBatchSelect
+  ]  = useStore((state) => [
+    state.entry,
+    state.schema,
+    state.overview,
+    state.groupBy,
+    state.onEntrySelect,
+    state.onEntryCreate,
+    state.onBatchSelect
+  ])
 
   async function onUseEffect() {
-    const itineraryNew = await buildItinerary(overview, groupBy);
+    const groupByLabel = schema[groupBy]?.label;
+    
+    const itineraryNew = await buildItinerary(overview, groupByLabel);
 
     setItinerary(itineraryNew);
 

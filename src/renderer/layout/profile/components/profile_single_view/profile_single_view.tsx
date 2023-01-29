@@ -29,19 +29,23 @@ export default function ProfileSingleView() {
 
   const { repoRoute } = useParams();
 
-  const entry = useStore((state) => state.entry)
-
-  const schema = useStore((state) => state.schema)
-
-  const group = useStore((state) => state.group)
-
-  const index = useStore((state) => state.index)
-
-  const onEntryEdit = useStore((state) => state.onEntryEdit)
-
-  const onEntryClose = useStore((state) => state.onEntryClose)
-
-  const onEntryDelete = useStore((state) => state.onEntryDelete)
+  const [
+    entry,
+    schema,
+    group,
+    index,
+    onEntryEdit,
+    onEntryClose,
+    onEntryDelete
+  ] = useStore((state) => [
+    state.entry,
+    state.schema,
+    state.group,
+    state.index,
+    state.onEntryEdit,
+    state.onEntryClose,
+    state.onEntryDelete
+  ])
 
   const title = formatDate(group);
 

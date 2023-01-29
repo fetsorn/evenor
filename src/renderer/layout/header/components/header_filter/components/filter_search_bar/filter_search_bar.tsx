@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams , useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "../../../../../../components";
 import { queryOptions } from "../../../../../../api";
@@ -11,21 +11,23 @@ export default function FilterSearchBar() {
 
   const { repoRoute } = useParams();
 
-  const navigate = useNavigate();
+  const [queryField, setQueryField] = useState("")
 
-  const [selected, setSelected] = useState("")
-
-  const [searched, setSearched] = useState("")
+  const [queryValue, setQueryValue] = useState("")
 
   const [options, setOptions]: any[] = useState([]);
 
-  const queries = useStore((state) => state.queries)
-
-  const rawSchema = useStore((state) => state.schema)
-
-  const onQueryAdd = useStore((state) => state.onQueryAdd)
-
-  const isLoaded = useStore((state) => state.isLoaded)
+  const [
+    queries,
+    rawSchema,
+    onQueryAdd,
+    isInitialized
+  ] = useStore((state) => [
+    state.queries,
+    state.schema,
+    state.onQueryAdd,
+    state.isInitialized
+  ]);
 
   const schema = useMemo(
     () =>
@@ -48,31 +50,31 @@ export default function FilterSearchBar() {
     [schema, queries]
   );
 
-  async function onSelectedChange() {
-    if (isLoaded) {
-      const options = await queryOptions(repoRoute, selected);
+  async function onQueryFieldChange() {
+    if (isInitialized) {
+      const options = await queryOptions(repoRoute, queryField);
 
       setOptions(options);
     }
   }
 
   useEffect(() => {
-    setSelected(notAddedFields?.[0]?.name);
+    setQueryField(notAddedFields?.[0]?.name);
 
-    setSearched("")
+    setQueryValue("")
   }, [schema, queries]);
 
   useEffect(() => {
-    onSelectedChange();
-  }, [selected]);
+    onQueryFieldChange();
+  }, [queryField]);
 
   return (
     <div className={styles.search}>
       <select
         name="searchBarDropdown"
-        value={selected}
-        title={t("header.dropdown.search", { field: selected })}
-        onChange={({ target: { value } }) => setSelected(value)}
+        value={queryField}
+        title={t("header.dropdown.search", { field: queryField })}
+        onChange={({ target: { value } }) => setQueryField(value)}
       >
         {notAddedFields.map((field: any, idx: any) => (
           <option key={idx} value={field.name}>
@@ -86,9 +88,9 @@ export default function FilterSearchBar() {
           className={styles.input}
           type="text"
           list={`panel_list`}
-          value={searched}
+          value={queryValue}
           onChange={({ target: { value } }) => {
-            setSearched(value);
+            setQueryValue(value);
           }}
         />
 
@@ -102,7 +104,7 @@ export default function FilterSearchBar() {
       <Button
         type="button"
         title={t("header.button.search")}
-        onClick={() => onQueryAdd(navigate, repoRoute, selected, searched)}
+        onClick={() => onQueryAdd(queryField, queryValue)}
       >
         🔎
       </Button>

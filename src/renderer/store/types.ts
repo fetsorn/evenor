@@ -50,20 +50,19 @@ interface IEntrySlice {
 interface IOverviewSlice {
   schema: any
   overview: any
-  isLoaded: boolean
-  onFirstRender: (repoRoute: any, search: any) => Promise<void>
-  onLocationChange: (search: any) => void
+  isInitialized: boolean
+  initialize: (repoRoute: any, search: any) => Promise<void>
+  onQueries: (repoRoute: any) => Promise<void>
 }
 
 interface IFilterSlice {
   queries: any
   groupBy: any
   overviewType: OverviewType
-  onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => void
-  onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => void
-  onQueryAdd: (navigate: any, repoRoute: any, selected: string, searched: string) => Promise<void>
-  onQueryRemove: (navigate: any, repoRoute: any, removed: string) => Promise<void>
-  onLocationFilter: (search: any) => void
+  onChangeGroupBy: (groupByNew: string) => void
+  onChangeOverviewType: (overviewTypeNew: string) => void
+  onQueryAdd: (queryField: string, queryValue: string) => Promise<void>
+  onQueryRemove: (queryField: string) => Promise<void>
 }
 
 export type IStore = IEntrySlice & IOverviewSlice & IFilterSlice

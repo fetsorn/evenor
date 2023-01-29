@@ -59,14 +59,10 @@ interface IFilterSlice {
   queries: any
   groupBy: any
   overviewType: OverviewType
-  selected: string
-  searched: string
   onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => void
   onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => void
-  onQueryAdd: (navigate: any, repoRoute: any) => Promise<void>
+  onQueryAdd: (navigate: any, repoRoute: any, selected: string, searched: string) => Promise<void>
   onQueryRemove: (navigate: any, repoRoute: any, removed: string) => Promise<void>
-  onChangeSelected: (selected: string) => void,
-  onChangeSearched: (searched: string) => void,
   onLocationFilter: (search: any) => void
 }
 

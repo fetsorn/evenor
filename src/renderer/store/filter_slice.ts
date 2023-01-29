@@ -40,10 +40,6 @@ export const createFilterSlice: FilterSlice = (set, get) => ({
 
   overviewType: OverviewType.itinerary,
 
-  selected: "",
-
-  searched: "",
-
   onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => set((state) => {
     const groupByProp =
         Object.keys(state.schema).find((p) => state.schema[p].label === groupByNew) ??
@@ -72,15 +68,15 @@ export const createFilterSlice: FilterSlice = (set, get) => ({
     });
   },
 
-  onQueryAdd: async (navigate: any, repoRoute: any) => {
-    if (get().searched) {
-      const queriesNew = { ...get().queries, [get().selected]: get().searched };
+  onQueryAdd: async (navigate: any, repoRoute: any, selected: string, searched: string) => {
+    if (searched) {
+      const queriesNew = { ...get().queries, [selected]: searched };
 
       const searchString = setQueriesLocation(queriesNew, navigate);
 
       const overview = await searchRepo(repoRoute, searchString);
 
-      set({searched: "", overview})
+      set({ overview })
     }
   },
 
@@ -93,12 +89,8 @@ export const createFilterSlice: FilterSlice = (set, get) => ({
 
     const overview = await searchRepo(repoRoute, searchString);
 
-    set({searched: "", overview})
+    set({ overview })
   },
-
-  onChangeSelected: (selected: string) => set({selected}),
-
-  onChangeSearched: (searched: string) => set({searched}),
 
   onLocationFilter: (search: any) => {
     const searchParams = new URLSearchParams(search);

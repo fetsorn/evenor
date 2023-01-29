@@ -6,8 +6,8 @@ interface IInputArrayProps {
   description: any;
   value: any;
   schema: any;
-  onInputChange: any;
-  onInputRemove: any;
+  onFieldChange: any;
+  onFieldRemove: any;
 }
 
 export default function InputArray({
@@ -15,8 +15,8 @@ export default function InputArray({
   description,
   value,
   schema,
-  onInputChange,
-  onInputRemove,
+  onFieldChange,
+  onFieldRemove,
 }: IInputArrayProps) {
   const { t } = useTranslation();
 
@@ -26,7 +26,7 @@ export default function InputArray({
         array {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={() => onInputRemove(label)}
+          onClick={() => onFieldRemove(label)}
         >
           X
         </button>
@@ -35,7 +35,7 @@ export default function InputArray({
       <div>{value.UUID}</div>
 
       {value.items.map((item: any, index: any) => {
-        function onInputChangeArrayItem(itemLabel: string, itemValue: any) {
+        function onFieldChangeArrayItem(itemLabel: string, itemValue: any) {
           const itemsNew = value.items.filter((i: any) => i.UUID !== item.UUID);
 
           itemsNew.push(itemValue);
@@ -45,15 +45,15 @@ export default function InputArray({
 
           const arrayNew = { UUID: value.UUID, items: itemsNew };
 
-          onInputChange(label, arrayNew);
+          onFieldChange(label, arrayNew);
         }
 
-        function onInputRemoveArrayItem() {
+        function onFieldRemoveArrayItem() {
           const itemsNew = value.items.filter((i: any) => i.UUID !== item.UUID);
 
           const arrayNew = { UUID: value.UUID, items: itemsNew };
 
-          onInputChange(label, arrayNew);
+          onFieldChange(label, arrayNew);
         }
 
         return (
@@ -61,8 +61,8 @@ export default function InputArray({
             <EditInput
               {...{
                 schema,
-                onInputChange: onInputChangeArrayItem,
-                onInputRemove: onInputRemoveArrayItem,
+                onFieldChange: onFieldChangeArrayItem,
+                onFieldRemove: onFieldRemoveArrayItem,
               }}
               label={item.ITEM_NAME}
               value={item}

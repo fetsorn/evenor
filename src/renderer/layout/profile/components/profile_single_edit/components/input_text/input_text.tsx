@@ -6,8 +6,8 @@ interface IInputTextProps {
   description?: any;
   value?: any;
   list?: any;
-  onInputChange?: any;
-  onInputRemove?: any;
+  onFieldChange?: any;
+  onFieldRemove?: any;
 }
 
 export default function InputText({
@@ -15,8 +15,8 @@ export default function InputText({
   description,
   value,
   list,
-  onInputChange,
-  onInputRemove,
+  onFieldChange,
+  onFieldRemove,
 }: IInputTextProps) {
   const { t } = useTranslation();
 
@@ -26,7 +26,7 @@ export default function InputText({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={() => onInputRemove(label)}
+          onClick={() => onFieldRemove(label)}
         >
           X
         </button>
@@ -36,7 +36,7 @@ export default function InputText({
           type="text"
           list={list}
           value={value}
-          onChange={(e) => onInputChange(label, e.target.value)}
+          onChange={(e) => onFieldChange(label, e.target.value)}
         />
       </label>
     </div>

@@ -1,9 +1,8 @@
 import {
   ensureRoot,
-  searchRepo,
   fetchSchema,
-  createEntry,
   getDefaultGroupBy,
+  searchRepo,
 } from "../api";
 import { OverviewSlice, OverviewType } from "./types";
 
@@ -46,13 +45,4 @@ export const createOverviewSlice: OverviewSlice = (set) => ({
 
     return { overviewType, groupBy }
   }),
-
-  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => set({ entry: entryNew, index: indexNew, group: groupNew }),
-
-  onEntryCreate: async (index: string) => {
-    const entry = await createEntry();
-
-    set({ index, isEdit: true, entry })
-  },
-
 })

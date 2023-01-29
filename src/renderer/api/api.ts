@@ -314,7 +314,7 @@ export async function uploadFile(dir: string, file: File) {
   }
 }
 
-export async function addProp(schema: any, entry: any, label: string) {
+export async function addField(schema: any, entry: any, label: string) {
   const prop =
     Object.keys(schema).find((p: any) => schema[p].label === label) ?? label;
 

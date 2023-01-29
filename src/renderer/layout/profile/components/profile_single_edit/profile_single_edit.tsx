@@ -36,19 +36,19 @@ export default function ProfileSingleEdit() {
 
   const index = useStore((state) => state.index)
 
-  const onRevert = useStore((state) => state.onRevert)
+  const onEntryRevert = useStore((state) => state.onEntryRevert)
 
-  const onSave = useStore((state) => state.onSave)
+  const onEntrySave = useStore((state) => state.onEntrySave)
 
-  const onAddProp = useStore((state) => state.onAddProp)
+  const onFieldAdd = useStore((state) => state.onFieldAdd)
 
-  const onInputUpload = useStore((state) => state.onInputUpload)
+  const onFieldUpload = useStore((state) => state.onFieldUpload)
 
-  const onInputUploadElectron = useStore((state) => state.onInputUploadElectron)
+  const onFieldUploadElectron = useStore((state) => state.onFieldUploadElectron)
 
-  const onInputRemove = useStore((state) => state.onInputRemove)
+  const onFieldRemove = useStore((state) => state.onFieldRemove)
 
-  const onInputChange = useStore((state) => state.onInputChange)
+  const onFieldChange = useStore((state) => state.onFieldChange)
 
   const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
 
@@ -85,11 +85,11 @@ export default function ProfileSingleEdit() {
             </Title>
 
             <div className={styles.buttonbar}>
-              <Button type="button" title={t("line.button.save")} onClick={() => onSave(repoRoute)}>
+              <Button type="button" title={t("line.button.save")} onClick={() => onEntrySave(repoRoute)}>
                 💾
               </Button>
 
-              <Button type="button" title={t("line.button.revert")} onClick={onRevert}>
+              <Button type="button" title={t("line.button.revert")} onClick={onEntryRevert}>
                 ↩
               </Button>
             </div>
@@ -101,11 +101,11 @@ export default function ProfileSingleEdit() {
                     {...{
                       schema,
                       label,
-                      onInputChange,
-                      onInputRemove,
-                      onInputUpload,
-                      onInputUploadElectron,
-                      onAddProp,
+                      onFieldChange,
+                      onFieldRemove,
+                      onFieldUpload,
+                      onFieldUploadElectron,
+                      onFieldAdd,
                       notAddedFields,
                     }}
                     value={entry[label]}

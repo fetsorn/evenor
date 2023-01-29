@@ -5,16 +5,16 @@ interface IInputDateProps {
   description?: any;
   label?: any;
   value?: any;
-  onInputChange?: any;
-  onInputRemove?: any;
+  onFieldChange?: any;
+  onFieldRemove?: any;
 }
 
 export default function InputDate({
   description,
   label,
   value,
-  onInputChange,
-  onInputRemove,
+  onFieldChange,
+  onFieldRemove,
 }: IInputDateProps) {
   const { t } = useTranslation();
   return (
@@ -23,7 +23,7 @@ export default function InputDate({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={() => onInputRemove(label)}
+          onClick={() => onFieldRemove(label)}
         >
           X
         </button>
@@ -32,7 +32,7 @@ export default function InputDate({
           className={styles.input}
           type="date"
           value={value}
-          onChange={(e) => onInputChange(label, e.target.value)}
+          onChange={(e) => onFieldChange(label, e.target.value)}
         />
       </label>
     </div>

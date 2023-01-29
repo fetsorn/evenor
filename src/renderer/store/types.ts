@@ -33,16 +33,18 @@ interface IEntrySlice {
   isEdit: boolean
   isBatch: boolean
   onBatchSelect: () => void
-  onSave: (repoRoute: any) => Promise<void>
-  onEdit: () => void
-  onRevert: () => void
-  onDelete: any
-  onClose: () => void
-  onAddProp: (label: string) => Promise<void>
-  onInputChange: (label: string, value: string) => void
-  onInputUpload: (repoRoute: any, label: string, file: any) => void
-  onInputRemove: (label: string) => void
-  onInputUploadElectron: (repoRoute: string, label: string) => void
+  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => void
+  onEntryCreate: any
+  onEntrySave: (repoRoute: any) => Promise<void>
+  onEntryEdit: () => void
+  onEntryRevert: () => void
+  onEntryDelete: any
+  onEntryClose: () => void
+  onFieldAdd: (label: string) => Promise<void>
+  onFieldChange: (label: string, value: string) => void
+  onFieldUpload: (repoRoute: any, label: string, file: any) => void
+  onFieldRemove: (label: string) => void
+  onFieldUploadElectron: (repoRoute: string, label: string) => void
 }
 
 interface IOverviewSlice {
@@ -51,8 +53,6 @@ interface IOverviewSlice {
   isLoaded: boolean
   onFirstRender: (repoRoute: any, search: any) => Promise<void>
   onLocationChange: (search: any) => void
-  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => void
-  onEntryCreate: any
 }
 
 interface IFilterSlice {

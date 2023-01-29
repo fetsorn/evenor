@@ -1,6 +1,6 @@
 export {
   useStore,
-} from "./root_store";
+} from "./store";
 export {
   OverviewType,
 } from "./types";

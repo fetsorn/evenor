@@ -5,7 +5,7 @@ import { default as Header } from "./header";
 import { default as Overview } from "./overview";
 import { default as Profile } from "./profile";
 import { default as Footer } from "./footer";
-import { useStore } from "../store";
+import { useStore } from "@/store";
 
 export default function Root() {
   return (

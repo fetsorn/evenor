@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { OverviewType, useStore } from "../../../../store";
+import { OverviewType, useStore } from "@/store";
 
 export default function HeaderOverviewTypeDropdown() {
   const { t } = useTranslation();

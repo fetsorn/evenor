@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Paragraph } from "../../../../../../components";
+import { Paragraph } from "@/components";
 
 interface IBodyFieldTextProps {
   schema: any;

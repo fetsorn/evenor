@@ -1,18 +1,18 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
 import cn from "classnames";
-import styles from "./profile_single_view.module.css";
 import {
   AssetView,
   Button,
   Title,
-} from "../../../../components";
+} from "@/components";
+import { dispenserUpdate } from "@/api";
+import { useStore } from "@/store";
 import {
   ViewField,
 } from "./components";
-import { useStore } from "../../../../store";
-import { useParams } from "react-router-dom";
-import { dispenserUpdate } from "../../../../api";
+import styles from "./profile_single_view.module.css";
 
 // TODO: replace with Day.js
 function isDate(title: string): boolean {

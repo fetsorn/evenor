@@ -1,5 +1,5 @@
 import React from "react";
-import { OverviewType, useStore } from "../../store"
+import { OverviewType, useStore } from "@/store"
 import { OverviewItinerary, OverviewGraph, OverviewBook, OverviewGallery, OverviewListing } from "./components";
 
 export default function Overview() {

@@ -1,9 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../../../../components";
-import { queryOptions } from "../../../../../../api";
-import { useStore } from "../../../../../../store";
+import { Button } from "@/components";
+import { queryOptions } from "@/api";
+import { useStore } from "@/store";
 import styles from "./filter_search_bar.module.css";
 
 export default function FilterSearchBar() {

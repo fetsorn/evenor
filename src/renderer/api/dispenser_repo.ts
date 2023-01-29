@@ -1,7 +1,7 @@
 import git from "isomorphic-git";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
-import { manifestRoot } from "../../lib/git_template";
+import { manifestRoot } from "@/../lib/git_template";
 
 export async function gitcommit(repoPath: string) {
   // console.log("commit");

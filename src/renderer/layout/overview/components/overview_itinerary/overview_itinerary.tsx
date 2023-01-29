@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./overview_itinerary.module.css";
-import {
-  VirtualScroll,
-} from "../../../../components";
-import {
-  ItineraryWaypoint,
-} from "./components";
-import {
-  buildItinerary,
-} from "./overview_itinerary_controller";
-import { useStore } from "../../../../store";
+import { VirtualScroll } from "@/components";
+import { useStore } from "@/store";
+import { ItineraryWaypoint } from "./components";
+import { buildItinerary } from "./overview_itinerary_controller";
 
 export default function OverviewItinerary() {
   const [itinerary, setItinerary] = useState<any>([]);

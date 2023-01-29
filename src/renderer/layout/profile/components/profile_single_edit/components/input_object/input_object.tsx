@@ -9,8 +9,8 @@ interface IInputObjectProps {
   description: any;
   value: any;
   schema: any;
-  onInputChange: any;
-  onInputRemove: any;
+  onFieldChange: any;
+  onFieldRemove: any;
 }
 
 export default function InputObject({
@@ -18,8 +18,8 @@ export default function InputObject({
   description,
   value,
   schema,
-  onInputChange,
-  onInputRemove,
+  onFieldChange,
+  onFieldRemove,
 }: IInputObjectProps) {
   const { t } = useTranslation();
 
@@ -51,7 +51,7 @@ export default function InputObject({
 
     objectNew[fieldLabel] = "";
 
-    onInputChange(label, objectNew);
+    onFieldChange(label, objectNew);
   }
 
   async function onUseEffect() {
@@ -70,7 +70,7 @@ export default function InputObject({
         object {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={() => onInputRemove(label)}
+          onClick={() => onFieldRemove(label)}
         >
           X
         </button>
@@ -83,7 +83,7 @@ export default function InputObject({
         <select
           value="default"
           onChange={({ target: { value } }) => {
-            onInputChange(label, JSON.parse(value))
+            onFieldChange(label, JSON.parse(value))
           }}
         >
           <option hidden disabled value="default">
@@ -98,13 +98,13 @@ export default function InputObject({
       )}
 
       <InputPropsDropdown
-        {...{ schema, notAddedFields, onAddProp: onAddObjectField }}
+        {...{ schema, notAddedFields, onFieldAdd: onAddObjectField }}
       />
 
       {Object.keys(value)
         .filter((l) => l !== "UUID" && l !== "ITEM_NAME")
         .map((field: any, index: any) => {
-          function onInputChangeObjectField(
+          function onFieldChangeObjectField(
             fieldLabel: string,
             fieldValue: string
           ) {
@@ -112,15 +112,15 @@ export default function InputObject({
 
             objectNew[fieldLabel] = fieldValue;
 
-            onInputChange(label, objectNew);
+            onFieldChange(label, objectNew);
           }
 
-          function onInputRemoveObjectField(fieldLabel: string) {
+          function onFieldRemoveObjectField(fieldLabel: string) {
             const objectNew = { ...value };
 
             delete objectNew[fieldLabel];
 
-            onInputChange(label, objectNew);
+            onFieldChange(label, objectNew);
           }
 
           return (
@@ -128,8 +128,8 @@ export default function InputObject({
               <EditInput
                 {...{
                   schema,
-                  onInputChange: onInputChangeObjectField,
-                  onInputRemove: onInputRemoveObjectField,
+                  onFieldChange: onFieldChangeObjectField,
+                  onFieldRemove: onFieldRemoveObjectField,
                 }}
                 label={field}
                 value={value[field]}

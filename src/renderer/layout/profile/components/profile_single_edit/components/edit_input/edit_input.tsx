@@ -14,11 +14,11 @@ interface IEditInputProps {
   schema: any;
   label: string;
   value: any;
-  onInputChange?: any;
-  onInputRemove?: any;
-  onInputUpload?: any;
-  onInputUploadElectron?: any;
-  onAddProp?: any;
+  onFieldChange?: any;
+  onFieldRemove?: any;
+  onFieldUpload?: any;
+  onFieldUploadElectron?: any;
+  onFieldAdd?: any;
   notAddedFields?: any;
 }
 
@@ -26,11 +26,11 @@ export default function EditInput({
   schema,
   label,
   value,
-  onInputChange,
-  onInputRemove,
-  onInputUpload,
-  onInputUploadElectron,
-  onAddProp,
+  onFieldChange,
+  onFieldRemove,
+  onFieldUpload,
+  onFieldUploadElectron,
+  onFieldAdd,
   notAddedFields,
 }: IEditInputProps) {
   const { i18n } = useTranslation();
@@ -65,8 +65,8 @@ export default function EditInput({
           label,
           value,
           description,
-          onInputChange,
-          onInputRemove,
+          onFieldChange,
+          onFieldRemove,
         }}
       />
     );
@@ -79,8 +79,8 @@ export default function EditInput({
           value,
           description,
           schema,
-          onInputChange,
-          onInputRemove,
+          onFieldChange,
+          onFieldRemove,
         }}
       />
     );
@@ -93,8 +93,8 @@ export default function EditInput({
           label,
           value,
           description,
-          onInputChange,
-          onInputRemove,
+          onFieldChange,
+          onFieldRemove,
         }}
       />
     );
@@ -106,8 +106,8 @@ export default function EditInput({
           label,
           value,
           description,
-          onInputChange,
-          onInputRemove,
+          onFieldChange,
+          onFieldRemove,
         }}
       />
     );
@@ -118,8 +118,8 @@ export default function EditInput({
         {...{
           label,
           description,
-          onInputUpload,
-          onInputUploadElectron,
+          onFieldUpload,
+          onFieldUploadElectron,
         }}
       />
     );
@@ -132,7 +132,7 @@ export default function EditInput({
 
           <div>{value}</div>
 
-          <InputPropsDropdown {...{ schema, notAddedFields, onAddProp }} />
+          <InputPropsDropdown {...{ schema, notAddedFields, onFieldAdd }} />
         </div>
       );
     } else {
@@ -142,8 +142,8 @@ export default function EditInput({
             label,
             value,
             description,
-            onInputChange,
-            onInputRemove,
+            onFieldChange,
+            onFieldRemove,
           }}
         />
       );

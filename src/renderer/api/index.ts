@@ -7,7 +7,7 @@ export {
   createEntry,
   editEntry,
   deleteEntry,
-  addProp,
+  addField,
   getDefaultGroupBy,
 } from "./api";
 export { deepClone } from "./curse_controller";

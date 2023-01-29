@@ -5,16 +5,16 @@ interface IInputUploadProps {
   key?: any;
   description?: any;
   label?: any;
-  onInputUpload?: any;
-  onInputUploadElectron?: any;
+  onFieldUpload?: any;
+  onFieldUploadElectron?: any;
 }
 
 export default function InputUpload({
   key,
   label,
   description,
-  onInputUpload,
-  onInputUploadElectron,
+  onFieldUpload,
+  onFieldUploadElectron,
 }: IInputUploadProps) {
   const { t } = useTranslation();
 
@@ -22,13 +22,13 @@ export default function InputUpload({
     <div {...{ key }}>
       {description}
       {__BUILD_MODE__ === "electron" ? (
-        <Button type="button" onClick={() => onInputUploadElectron(label)}>
+        <Button type="button" onClick={() => onFieldUploadElectron(label)}>
           {t("line.button.upload")}
         </Button>
       ) : (
         <input
           type="file"
-          onChange={(e) => onInputUpload(label, e.target.files[0])}
+          onChange={(e) => onFieldUpload(label, e.target.files[0])}
         />
       )}
     </div>

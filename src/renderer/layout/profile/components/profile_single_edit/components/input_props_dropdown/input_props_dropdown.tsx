@@ -4,13 +4,13 @@ import { useTranslation } from "react-i18next";
 interface IInputPropsDropdownProps {
   schema: any;
   notAddedFields: any;
-  onAddProp: any;
+  onFieldAdd: any;
 }
 
 export default function InputPropsDropdown({
   schema,
   notAddedFields,
-  onAddProp,
+  onFieldAdd,
 }: IInputPropsDropdownProps) {
   const { i18n, t } = useTranslation();
 
@@ -39,7 +39,7 @@ export default function InputPropsDropdown({
       {menuItems.length > 0 && (
         <select
           value="default"
-          onChange={({ target: { value } }) => onAddProp(value)}
+          onChange={({ target: { value } }) => onFieldAdd(value)}
         >
           <option hidden disabled value="default">
             {t("line.dropdown.input")}

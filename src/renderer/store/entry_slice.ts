@@ -1,18 +1,22 @@
 import {
-  uploadFile,
-  updateOverview,
-  editEntry,
-  deleteEntry,
-  addProp,
+  addField,
+  createEntry,
   deepClone,
+  deleteEntry,
+  editEntry,
+  updateOverview,
+  uploadFile,
 } from "../api";
 import { EntrySlice } from "./types";
 
 export const createEntrySlice: EntrySlice = (set, get) => ({
+  // entry selected from overview for viewing/editing
   entry: undefined,
 
+  // index of selected entry in a group
   index: undefined,
 
+  // title of the group of selected entry
   group: undefined,
 
   isEdit: false,
@@ -21,71 +25,73 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
   onBatchSelect: () => set({ isBatch: true }),
 
-  onSave: async (repoRoute: any) => {
+  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => set({ entry: entryNew, index: indexNew, group: groupNew }),
+
+  onEntryCreate: async (index: string) => {
+    const entry = await createEntry();
+
+    set({ index, isEdit: true, entry })
+  },
+
+  onEntryEdit: () => set({ isEdit: true }),
+
+  onEntryRevert: () => set({ isEdit: false }),
+
+  onEntrySave: async (repoRoute: any) => {
     await editEntry(repoRoute, deepClone(get().entry));
 
     const overview = updateOverview(get().overview, deepClone(get().entry));
 
     set({ overview, isEdit: false })
-
-    document.getElementById(get().entry.UUID).scrollIntoView();
   },
 
-  onEdit: () => set({ isEdit: true }),
-
-  onRevert: () => set({ isEdit: false }),
-
-  onDelete: async (repoRoute: any) => {
+  onEntryDelete: async (repoRoute: any) => {
     const overview = await deleteEntry(repoRoute, get().overview, get().entry);
 
     set({ overview, entry: undefined });
   },
 
-  onClose: () => set({ entry: undefined }),
+  onEntryClose: () => set({ entry: undefined }),
 
-  onAddProp: async (label: string) => {
-    const entry = await addProp(get().schema, deepClone(get().entry), label);
+  onFieldAdd: async (label: string) => {
+    const entry = await addField(get().schema, deepClone(get().entry), label);
 
     set({ entry })
   },
 
-  onInputChange: (label: string, value: string) => set((state) => {
-    const entry = deepClone(state.entry);
+  onFieldChange: (label: string, value: string) => {
+    const entry = deepClone(get().entry);
 
     entry[label] = value;
 
-    return ({ entry })
-  }),
-
-  onInputUpload: async (repoRoute: any, label: string, file: any) => {
-    await uploadFile(repoRoute, file);
-
-    set((state) => {
-      const entry = deepClone(state.entry);
-
-      entry[label] = file.name;
-
-      return { entry }
-    })
+    set({ entry })
   },
 
-  onInputRemove: (label: string) => set((state) => {
-    const entry = deepClone(state.entry);
+  onFieldUpload: async (repoRoute: any, label: string, file: any) => {
+    await uploadFile(repoRoute, file);
+
+    const entry = deepClone(get().entry);
+
+    entry[label] = file.name;
+
+    set({ entry });
+  },
+
+  onFieldRemove: (label: string) => {
+    const entry = deepClone(get().entry);
 
     delete entry[label];
 
-    return { entry }
-  }),
+    set({ entry })
+  },
 
-  onInputUploadElectron: async (repoRoute: string, label: string) => {
+  onFieldUploadElectron: async (repoRoute: string, label: string) => {
     const filepath = await window.electron.uploadFile(repoRoute);
 
-    set((state) => {
-      const entry = deepClone(state.entry);
+    const entry = deepClone(get().entry);
 
-      entry[label] = filepath;
+    entry[label] = filepath;
 
-      return { entry }
-    })
+    set({ entry })
   }
 })

@@ -17,6 +17,8 @@ export default function OverviewItinerary() {
 
   const { t } = useTranslation();
 
+  const entry = useStore((state) => state.entry)
+
   const onEntrySelect = useStore((state) => state.onEntrySelect)
 
   const onEntryCreate = useStore((state) => state.onEntryCreate)
@@ -31,6 +33,10 @@ export default function OverviewItinerary() {
     const itineraryNew = await buildItinerary(overview, groupBy);
 
     setItinerary(itineraryNew);
+
+    if (entry?.UUID) {
+      document.getElementById(entry.UUID).scrollIntoView();
+    }
   }
 
   useEffect(() => {

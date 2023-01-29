@@ -5,16 +5,16 @@ interface IInputTextareaProps {
   description?: any;
   label?: any;
   value: any;
-  onInputChange: any;
-  onInputRemove: any;
+  onFieldChange: any;
+  onFieldRemove: any;
 }
 
 export default function InputTextarea({
   description,
   label,
   value,
-  onInputChange,
-  onInputRemove,
+  onFieldChange,
+  onFieldRemove,
 }: IInputTextareaProps) {
   const { t } = useTranslation();
   return (
@@ -23,7 +23,7 @@ export default function InputTextarea({
         {description}
         <button
           title={t("line.button.remove", { field: label })}
-          onClick={() => onInputRemove(label)}
+          onClick={() => onFieldRemove(label)}
         >
           X
         </button>
@@ -31,7 +31,7 @@ export default function InputTextarea({
         <textarea
           className={styles.inputtext}
           value={value}
-          onChange={(e) => onInputChange(label, e.target.value)}
+          onChange={(e) => onFieldChange(label, e.target.value)}
         />
       </label>
     </div>

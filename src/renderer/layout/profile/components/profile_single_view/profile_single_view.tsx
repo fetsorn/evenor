@@ -37,11 +37,11 @@ export default function ProfileSingleView() {
 
   const index = useStore((state) => state.index)
 
-  const onEdit = useStore((state) => state.onEdit)
+  const onEntryEdit = useStore((state) => state.onEntryEdit)
 
-  const onClose = useStore((state) => state.onClose)
+  const onEntryClose = useStore((state) => state.onEntryClose)
 
-  const onDelete = useStore((state) => state.onDelete)
+  const onEntryDelete = useStore((state) => state.onEntryDelete)
 
   const title = formatDate(group);
 
@@ -57,15 +57,15 @@ export default function ProfileSingleView() {
             </Title>
 
             <div className={styles.buttonbar}>
-              <Button type="button" title={t("line.button.edit")} onClick={onEdit}>
+              <Button type="button" title={t("line.button.edit")} onClick={onEntryEdit}>
                 ✏️
               </Button>
 
-              <Button type="button" title={t("line.button.delete")} onClick={onDelete}>
+              <Button type="button" title={t("line.button.delete")} onClick={onEntryDelete}>
                 🗑️
               </Button>
 
-              <Button type="button" title={t("line.button.close")} onClick={onClose}>
+              <Button type="button" title={t("line.button.close")} onClick={onEntryClose}>
                 X
               </Button>
             </div>

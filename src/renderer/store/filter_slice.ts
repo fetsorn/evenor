@@ -40,9 +40,9 @@ export const createFilterSlice: FilterSlice = (set, get) => ({
 
   overviewType: OverviewType.itinerary,
 
-  onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => set((state) => {
+  onChangeGroupBy: (navigate: any, search: any, groupByNew: string) => {
     const groupByProp =
-        Object.keys(state.schema).find((p) => state.schema[p].label === groupByNew) ??
+        Object.keys(get().schema).find((p) => get().schema[p].label === groupByNew) ??
         groupByNew;
 
     const searchParams = new URLSearchParams(location.search);
@@ -53,9 +53,7 @@ export const createFilterSlice: FilterSlice = (set, get) => ({
       pathname: location.pathname,
       search: "?" + searchParams.toString(),
     });
-
-    return {}
-  }),
+  },
 
   onChangeOverviewType: (navigate: any, search: any, overviewTypeNew: string) => {
     const searchParams = new URLSearchParams(search);

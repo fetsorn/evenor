@@ -386,9 +386,7 @@ export function getDefaultGroupBy(schema: any, data: any, search: any) {
   if (searchParams.has("groupBy")) {
     const groupByProp = searchParams.get("groupBy");
 
-    const groupByLabel = schema[groupByProp].label;
-
-    return groupByLabel;
+    return groupByProp;
   }
 
   let groupByProp;
@@ -432,7 +430,5 @@ export function getDefaultGroupBy(schema: any, data: any, search: any) {
     groupByProp = "";
   }
 
-  const groupByLabel = schema[groupByProp].label;
-
-  return groupByLabel;
+  return groupByProp;
 }

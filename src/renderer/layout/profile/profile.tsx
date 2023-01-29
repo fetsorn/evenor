@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   ProfileBatchEdit,
   ProfileBatchView,
@@ -8,9 +8,7 @@ import {
 import { useStore } from "../../store";
 
 export default function Profile() {
-  const isBatch = useStore((state) => state.isBatch)
-
-  const isEdit = useStore((state) => state.isEdit)
+  const [isBatch, isEdit] = useStore((state) => [state.isBatch, state.isEdit])
 
   return (
     <>

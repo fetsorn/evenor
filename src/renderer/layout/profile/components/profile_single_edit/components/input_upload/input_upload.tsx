@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { Button } from "../../../../../../components";
+import { Button } from "@/components";
 
 interface IInputUploadProps {
   key?: any;

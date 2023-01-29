@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { EditInput, InputPropsDropdown } from "..";
 import { useTranslation } from "react-i18next";
-import { queryOptions } from "../../../../../../api";
+import { EditInput, InputPropsDropdown } from "..";
+import { queryOptions } from "@/api";
 
 interface IInputObjectProps {
   label: any;

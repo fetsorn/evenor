@@ -75,6 +75,9 @@ module.exports = (env) => {
       }),
     ],
     resolve: {
+      alias: {
+        "@": path.resolve(__dirname, './src/renderer'),
+      },
       fallback: {
         // For WASM
         stream: require.resolve("stream-browserify"),

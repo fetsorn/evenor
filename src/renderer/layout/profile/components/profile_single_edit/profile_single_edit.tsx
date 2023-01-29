@@ -1,17 +1,17 @@
 import React, { useMemo } from "react";
 import cn from "classnames";
 import { useParams } from "react-router-dom";
-import styles from "./profile_single_edit.module.css";
+import { useTranslation } from "react-i18next";
 import {
   AssetView,
   Button,
   Title,
-} from "../../../../components";
+} from "@/components";
+import { useStore } from "@/store";
 import {
   EditInput,
 } from "./components";
-import { useTranslation } from "react-i18next";
-import { useStore } from "../../../../store";
+import styles from "./profile_single_edit.module.css";
 
 // TODO: replace with Day.js
 function isDate(title: string): boolean {

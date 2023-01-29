@@ -2,10 +2,10 @@ import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import styles from "./header.module.css";
-import { useStore, queriesToParams } from "../../store";
+import { useStore, queriesToParams } from "@/store";
 import {
   Button
-} from "../../components";
+} from "@/components";
 import {
   HeaderFilter,
   HeaderGroupByDropdown,

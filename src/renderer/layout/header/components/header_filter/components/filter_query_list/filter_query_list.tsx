@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { QueryListLabel } from "..";
 import styles from "./filter_query_list.module.css";
-import { useStore } from "../../../../../../store";
+import { useStore } from "@/store";
 
 export default function FilterQueryList() {
   const { t } = useTranslation();

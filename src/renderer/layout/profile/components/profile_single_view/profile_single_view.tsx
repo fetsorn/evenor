@@ -6,7 +6,6 @@ import {
   Button,
   Title,
 } from "@/components";
-import { dispenserUpdate } from "@/api";
 import { useStore } from "@/store";
 import {
   ViewField,
@@ -34,7 +33,6 @@ export default function ProfileSingleView() {
     onEntryEdit,
     onEntryClose,
     onEntryDelete,
-    repoRoute
   ] = useStore((state) => [
     state.entry,
     state.schema,
@@ -43,7 +41,6 @@ export default function ProfileSingleView() {
     state.onEntryEdit,
     state.onEntryClose,
     state.onEntryDelete,
-    state.repoRoute
   ])
 
   const title = formatDate(group);
@@ -74,13 +71,9 @@ export default function ProfileSingleView() {
             </div>
 
             <div>
-              {true && (
-                <a onClick={() => dispenserUpdate(repoRoute, schema, "export_root", entry)}>🔄</a>
-              ) }
-
               {addedFields.map((label: string, index: any) => (
                 <div key={index}>
-                  <ViewField {...{ schema, label }} value={entry[label]} />
+                  <ViewField {...{ label }} value={entry[label]} />
                 </div>
               ))}
             </div>

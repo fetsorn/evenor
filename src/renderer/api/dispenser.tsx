@@ -24,3 +24,21 @@ export async function dispenserUpdate(
   }
 }
 
+interface IDispenserProps {
+  repoRoute: string;
+  schema: any;
+  field: string;
+  entry: any;
+}
+
+export function Dispenser({repoRoute, schema, field, entry}: IDispenserProps) {
+  switch (field) {
+  case "export_root":
+    return (<a onClick={() => dispenserUpdate(repoRoute, schema, "export_root", entry)}>🔄</a>)
+
+  default:
+    return (
+      <></>
+    )
+  }
+}

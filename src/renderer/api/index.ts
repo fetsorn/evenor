@@ -15,6 +15,7 @@ export { queryOptions } from "./options";
 export {
   dispenserDelete,
   dispenserUpdate,
+  Dispenser,
 } from "./dispenser";
 export {
   ensureRoot,

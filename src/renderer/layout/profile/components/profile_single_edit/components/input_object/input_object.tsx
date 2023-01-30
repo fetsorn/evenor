@@ -78,8 +78,8 @@ export default function InputObject({
 
       <br />
 
-      <div>{value.UUID}</div>
-      { options && (
+      <div>{ value.UUID }</div>
+      { options.length > 0 && (
         <select
           value="default"
           onChange={({ target: { value } }) => {
@@ -97,11 +97,11 @@ export default function InputObject({
         </select>
       )}
 
-      <InputPropsDropdown
-        {...{ schema, notAddedFields, onFieldAdd: onAddObjectField }}
-      />
+      { notAddedFields.length > 0 && (
+        <InputPropsDropdown {...{ schema, notAddedFields, onFieldAdd: onAddObjectField }} />
+      ) }
 
-      {Object.keys(value)
+      { Object.keys(value)
         .filter((l) => l !== "UUID" && l !== "ITEM_NAME")
         .map((field: any, index: any) => {
           function onFieldChangeObjectField(
@@ -136,7 +136,8 @@ export default function InputObject({
               />
             </div>
           );
-        })}
+        })
+      }
     </div>
   );
 }

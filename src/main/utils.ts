@@ -1,6 +1,5 @@
 import { exportPDF, generateLatex } from "./latex";
 import { app, BrowserWindow, dialog } from "electron";
-import { manifest } from "../lib/git_template";
 import fs from "fs";
 import path from "path";
 import git from "isomorphic-git";
@@ -36,7 +35,7 @@ export async function uploadFile(_event: any, repo: string) {
 
     const homePath = app.getPath("home");
 
-    const rootPath = path.join(homePath, "qualia");
+    const rootPath = path.join(homePath, ".qualia");
 
     const localDir = "local";
 
@@ -70,16 +69,14 @@ export async function uploadFile(_event: any, repo: string) {
 
 export async function fetchDataMetadir(
   _event: any,
-
   repo: string,
-
   filepath: string
 ) {
   // console.log("electron fetchDataMetadir");
 
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
   const file = path.join(root, repo, filepath);
 
@@ -90,20 +87,46 @@ export async function fetchDataMetadir(
 
 export async function writeDataMetadir(
   _event: any,
-
-  repo: string,
-
+  dir: string,
   filepath: string,
-
   content: string
 ) {
-  // console.log("electron writeDataMetadir", repo, filepath, content);
+  // console.log("electron writeDataMetadir", dir, path, content);
 
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const appdata = path.join(home, ".qualia");
 
-  const file = path.join(root, repo, filepath);
+  const file = path.join(appdata, dir, filepath);
+
+  // if path doesn't exist, create it
+  // split path into array of directory names
+  const path_elements = dir.split("/").concat(filepath.split("/"));
+
+  // remove file name
+  path_elements.pop();
+
+  let root = "";
+
+  for (let i = 0; i < path_elements.length; i++) {
+    const path_element = path_elements[i];
+
+    root += "/";
+
+    const files = await fs.promises.readdir(path.join(appdata, root));
+
+    // console.log(files)
+
+    if (!files.includes(path_element)) {
+      // console.log(`creating directory ${path_element} in ${root}`)
+
+      await fs.promises.mkdir(path.join(appdata, root, path_element));
+    } else {
+      // console.log(`${root} has ${path_element}`)
+    }
+
+    root += path_element;
+  }
 
   await fs.promises.writeFile(file, content);
 }
@@ -119,9 +142,9 @@ export async function fetchAsset(
 
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
-  const file = path.join(root, repo, filepath);
+  const file = path.join(root, "repos", repo, filepath);
 
   const b: Buffer = fs.readFileSync(file);
 
@@ -147,7 +170,7 @@ export async function clone(
 
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
   const dirPath = path.join(root, dir);
 
@@ -191,7 +214,7 @@ export async function gitListRepos(): Promise<string[]> {
 
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
   if (!fs.existsSync(root)) {
     fs.mkdirSync(root);
@@ -211,7 +234,7 @@ export async function gitListRepos(): Promise<string[]> {
 export async function getRemote(_event: any, repo: string) {
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
   const dir = path.join(root, repo);
 
@@ -229,7 +252,7 @@ export async function rimraf(_event: any, filepath: string) {
 
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
   const file = path.join(root, filepath);
 
@@ -246,47 +269,35 @@ export async function rimraf(_event: any, filepath: string) {
   }
 }
 
-export async function gitcommit(repo: string) {
-  // console.log("commit");
-
-  const home = app.getPath("home");
-
-  const root = path.join(home, "qualia");
-
-  const repoDir = path.join(root, repo);
+export async function gitcommit(dir: string) {
+  console.log("commit", dir);
 
   const message = [];
 
   const statusMatrix: any = await git.statusMatrix({
     fs,
-
-    dir: repoDir,
+    dir,
   });
+
+  console.log("1");
 
   for (let [
     filePath,
-
     HEADStatus,
-
     workingDirStatus,
-
     stageStatus,
   ] of statusMatrix) {
     if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
       await git.resetIndex({
         fs,
-
-        dir: repoDir,
-
+        dir,
         filepath: filePath,
       });
 
       [filePath, HEADStatus, workingDirStatus, stageStatus] =
         await git.statusMatrix({
           fs,
-
-          dir: repoDir,
-
+          dir,
           filepaths: [filePath],
         });
 
@@ -303,17 +314,13 @@ export async function gitcommit(repo: string) {
 
         await git.remove({
           fs,
-
-          dir: repoDir,
-
+          dir,
           filepath: filePath,
         });
       } else {
         await git.add({
           fs,
-
-          dir: repoDir,
-
+          dir,
           filepath: filePath,
         });
 
@@ -327,190 +334,62 @@ export async function gitcommit(repo: string) {
       message.push(`${filePath} ${status}`);
     }
   }
+  console.log("2");
 
   if (message.length !== 0) {
-    // console.log("commit:", message.toString());
+    console.log("commit:", message.toString());
 
     await git.commit({
       fs,
-
-      dir: repoDir,
-
+      dir,
       author: {
         name: "name",
-
         email: "name@mail.com",
       },
-
       message: message.toString(),
     });
   }
 }
 
-export async function gitCreate(_event: any, repo: string) {
-  // console.log("electron gitCreate");
-
+export async function ensureRepo(_event: any, repo: string, schema: string) {
   const home = app.getPath("home");
 
-  const root = path.join(home, "qualia");
+  const root = path.join(home, ".qualia");
 
-  const repoDir = root + "/" + repo;
+  console.log(root)
 
-  // console.log("gitCreate");
-
-  if ((await fs.promises.readdir(root)).includes(repo)) {
-    console.log("repo exists");
-  } else {
-    await fs.promises.mkdir(repoDir);
-
-    await git.init({ fs, dir: repoDir });
-
-    await fs.promises.mkdir(repoDir + "/metadir");
-
-    await fs.promises.writeFile(repoDir + "/metadir.json", manifest, "utf8");
-
-    await fs.promises.mkdir(repoDir + "/metadir/props");
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/datum");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/datum/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/date");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/date/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/name");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/name/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/tag");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/tag/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/filepath");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/filepath/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/filetype");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/filetype/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/filesize");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/filesize/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/privacy");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/privacy/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/props/pathrule");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/props/pathrule/index.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.mkdir(repoDir + "/metadir/pairs");
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-hostdate.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-guestdate.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-privacy.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-hostname.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-guestname.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-filepath.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/datum-tag.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/filepath-moddate.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/filepath-filetype.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/filepath-filesize.csv",
-      "",
-      "utf8"
-    );
-
-    await fs.promises.writeFile(
-      repoDir + "/metadir/pairs/filepath-filehash.csv",
-      "",
-      "utf8"
-    );
-
-    await gitcommit(repo);
+  if (!(await fs.promises.readdir(home)).includes(".qualia")) {
+    await fs.promises.mkdir(root);
   }
+
+  const store = path.join(root, "store");
+
+  console.log(store)
+
+  if (!(await fs.promises.readdir(root)).includes("store")) {
+    await fs.promises.mkdir(store);
+  }
+
+  const repoDir = path.join(store, repo);
+
+  console.log(repoDir)
+
+  // if (!(await fs.promises.readdir(store)).includes(repo)) {
+  //   await fs.promises.mkdir(repoDir);
+
+  //   await git.init({ fs, dir: repoDir });
+  // }
+
+  await fs.promises.writeFile(repoDir + "/metadir.json", schema, "utf8");
+
+  await gitcommit(repoDir);
+}
+
+export async function linkRepo(_event: any, repodir: string, reponame: string) {
+
+  if (!(await fs.promises.readdir("/")).includes("repos")) {
+    await fs.promises.mkdir("/repos");
+  }
+
+  await fs.promises.symlink(`/store/${repodir}`, `/repos/${reponame}`);
 }

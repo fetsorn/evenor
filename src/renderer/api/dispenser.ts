@@ -20,13 +20,7 @@ export async function dispenserUpdate(
 ) {
   // if route is root, create or edit repo
   if (repoRoute === undefined) {
-    switch (__BUILD_MODE__) {
-    case "electron":
-      await window.electron.gitCreate(entry);
-
-    default:
-      await updateRepo(entry);
-    }
+    await updateRepo(entry);
   }
 }
 

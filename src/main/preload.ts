@@ -8,7 +8,6 @@ contextBridge.exposeInMainWorld("electron", {
   clone: (url: string, token: string, dir: string) =>
     ipcRenderer.invoke("clone", url, token, dir),
   gitListRepos: () => ipcRenderer.invoke("gitListRepos"),
-  gitCreate: (repo: string) => ipcRenderer.invoke("gitCreate", repo),
   getRemote: (repo: string) => ipcRenderer.invoke("getRemote", repo),
   rimraf: (path: string) => ipcRenderer.invoke("rimraf", path),
   latex: () => ipcRenderer.invoke("latex"),
@@ -16,4 +15,8 @@ contextBridge.exposeInMainWorld("electron", {
   uploadFile: (repo: string) => ipcRenderer.invoke("uploadFile", repo),
   fetchAsset: (repo: string, path: string) =>
     ipcRenderer.invoke("fetchAsset", repo, path),
+  ensureRepo: (repo: string, schema: string) =>
+    ipcRenderer.invoke("ensureRepo", repo, schema),
+  linkRepo: (repodir: string, reponame: string) =>
+    ipcRenderer.invoke("linkRepo", repodir, reponame),
 });

@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
 import cn from "classnames";
 import {
   AssetView,
@@ -27,8 +26,6 @@ function formatDate(title: string): string {
 export default function ProfileSingleView() {
   const { t } = useTranslation();
 
-  const { repoRoute } = useParams();
-
   const [
     entry,
     schema,
@@ -36,7 +33,8 @@ export default function ProfileSingleView() {
     index,
     onEntryEdit,
     onEntryClose,
-    onEntryDelete
+    onEntryDelete,
+    repoRoute
   ] = useStore((state) => [
     state.entry,
     state.schema,
@@ -44,7 +42,8 @@ export default function ProfileSingleView() {
     state.index,
     state.onEntryEdit,
     state.onEntryClose,
-    state.onEntryDelete
+    state.onEntryDelete,
+    state.repoRoute
   ])
 
   const title = formatDate(group);

@@ -38,6 +38,8 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
   isInitialized: false,
 
+  repoRoute: undefined,
+
   initialize: async (repoRoute: any, search: any) => {
     if (repoRoute === undefined && __BUILD_MODE__ !== "server") {
       await ensureRoot();
@@ -61,14 +63,14 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
     const schema = await fetchSchema(repoRoute);
 
-    set({ schema, queries, overviewType, groupBy, isInitialized: true })
+    set({ schema, queries, overviewType, groupBy, isInitialized: true, repoRoute })
   },
 
-  onQueries: async (repoRoute: any) => {
+  onQueries: async () => {
     if (get().isInitialized) {
       const search = queriesToParams(get().queries).toString();
 
-      const overview = await searchRepo(repoRoute, search);
+      const overview = await searchRepo(get().repoRoute, search);
 
       const groupBy = get().groupBy === ""
         ? getDefaultGroupBy(get().schema, overview, search)

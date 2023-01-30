@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "./header.module.css";
 import { useStore, queriesToParams } from "@/store";
 import {
@@ -14,8 +14,6 @@ import {
 
 export default function Header() {
   const { t } = useTranslation();
-
-  const { repoRoute } = useParams();
 
   const navigate = useNavigate();
 
@@ -51,7 +49,7 @@ export default function Header() {
   }, [queries, groupBy, overviewType])
 
   useEffect(() => {
-    onQueries(repoRoute);
+    onQueries();
   }, [queries])
 
   return (

@@ -1,8 +1,8 @@
 import React, { useMemo, useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { EditInput, InputPropsDropdown } from "..";
 import { queryOptions } from "@/api";
+import { useStore } from "@/store";
 
 interface IInputObjectProps {
   label: any;
@@ -23,9 +23,9 @@ export default function InputObject({
 }: IInputObjectProps) {
   const { t } = useTranslation();
 
-  const { repoRoute } = useParams();
-
   const [options, setOptions]: any[] = useState([]);
+
+  const repoRoute = useStore((state) => state.repoRoute);
 
   const notAddedFields = useMemo(
     () =>

@@ -35,24 +35,25 @@ interface IEntrySlice {
   onBatchSelect: () => void
   onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => void
   onEntryCreate: any
-  onEntrySave: (repoRoute: any) => Promise<void>
+  onEntrySave: () => Promise<void>
   onEntryEdit: () => void
   onEntryRevert: () => void
   onEntryDelete: any
   onEntryClose: () => void
   onFieldAdd: (label: string) => Promise<void>
   onFieldChange: (label: string, value: string) => void
-  onFieldUpload: (repoRoute: any, label: string, file: any) => void
+  onFieldUpload: (label: string, file: any) => void
   onFieldRemove: (label: string) => void
-  onFieldUploadElectron: (repoRoute: string, label: string) => void
+  onFieldUploadElectron: (label: string) => void
 }
 
 interface IOverviewSlice {
   schema: any
   overview: any
+  repoRoute: string
   isInitialized: boolean
   initialize: (repoRoute: any, search: any) => Promise<void>
-  onQueries: (repoRoute: any) => Promise<void>
+  onQueries: () => Promise<void>
 }
 
 interface IFilterSlice {

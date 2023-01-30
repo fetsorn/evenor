@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { useParams , useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useStore } from "@/store";
 import { setupVars, load } from "./overview_graph_controller";
 import { GraphSvg, GraphTextInput, GraphRangeInput } from "./components";
 import styles from "./overview_graph.module.css";
@@ -13,7 +14,11 @@ export default function OverviewGraph() {
 
   const [html, setHTML] = useState(undefined);
 
-  const { repoRoute } = useParams();
+  const [
+    repoRoute
+  ] = useStore((state) => [
+    state.repoRoute
+  ]);
 
   async function onSetDepth(_depth: any) {
     setDepth(_depth);

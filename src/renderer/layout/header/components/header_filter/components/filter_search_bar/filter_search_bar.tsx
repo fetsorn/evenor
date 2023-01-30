@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
 import { queryOptions } from "@/api";
@@ -8,8 +7,6 @@ import styles from "./filter_search_bar.module.css";
 
 export default function FilterSearchBar() {
   const { t } = useTranslation();
-
-  const { repoRoute } = useParams();
 
   const [queryField, setQueryField] = useState("")
 
@@ -21,12 +18,14 @@ export default function FilterSearchBar() {
     queries,
     rawSchema,
     onQueryAdd,
-    isInitialized
+    isInitialized,
+    repoRoute
   ] = useStore((state) => [
     state.queries,
     state.schema,
     state.onQueryAdd,
-    state.isInitialized
+    state.isInitialized,
+    state.repoRoute
   ]);
 
   const schema = useMemo(

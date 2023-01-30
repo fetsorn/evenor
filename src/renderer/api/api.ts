@@ -45,18 +45,16 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
 }
 
 export async function fetchDataMetadir(repoRoute: string, path: string) {
-  const repoPath = repoRoute === undefined ? "store/root" : `repos/${repoRoute}`;
-
   try {
     switch (__BUILD_MODE__) {
     case "server":
       return (await fetch("/api/" + path)).text();
 
     case "electron":
-      return await window.electron.fetchDataMetadir(repoPath, path);
+      return await window.electron.fetchDataMetadir(repoRoute, path);
 
     default:
-      return await fetchDataMetadirBrowser(repoPath, path);
+      return await fetchDataMetadirBrowser(repoRoute, path);
     }
   } catch (e) {
     throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
@@ -189,8 +187,6 @@ export async function writeDataMetadir(
   path: string,
   content: string
 ) {
-  const repoPath = repoRoute === undefined ? "store/root" : `repos/${repoRoute}`;
-
   try {
     switch (__BUILD_MODE__) {
     case "server":
@@ -200,11 +196,11 @@ export async function writeDataMetadir(
       break;
 
     case "electron":
-      await window.electron.writeDataMetadir(repoPath, path, content);
+      await window.electron.writeDataMetadir(repoRoute, path, content);
       break;
 
     default:
-      await writeDataMetadirBrowser(repoPath, path, content);
+      await writeDataMetadirBrowser(repoRoute, path, content);
     }
   } catch {
     throw Error(`Cannot write file ${path}.`);

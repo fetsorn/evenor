@@ -37,16 +37,16 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
   onEntryRevert: () => set({ isEdit: false }),
 
-  onEntrySave: async (repoRoute: any) => {
-    await editEntry(repoRoute, deepClone(get().entry));
+  onEntrySave: async () => {
+    await editEntry(get().repoRoute, deepClone(get().entry));
 
     const overview = updateOverview(get().overview, deepClone(get().entry));
 
     set({ overview, isEdit: false })
   },
 
-  onEntryDelete: async (repoRoute: any) => {
-    const overview = await deleteEntry(repoRoute, get().overview, get().entry);
+  onEntryDelete: async () => {
+    const overview = await deleteEntry(get().repoRoute, get().overview, get().entry);
 
     set({ overview, entry: undefined });
   },
@@ -67,8 +67,8 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     set({ entry })
   },
 
-  onFieldUpload: async (repoRoute: any, label: string, file: any) => {
-    await uploadFile(repoRoute, file);
+  onFieldUpload: async (label: string, file: any) => {
+    await uploadFile(get().repoRoute, file);
 
     const entry = deepClone(get().entry);
 
@@ -85,8 +85,8 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     set({ entry })
   },
 
-  onFieldUploadElectron: async (repoRoute: string, label: string) => {
-    const filepath = await window.electron.uploadFile(repoRoute);
+  onFieldUploadElectron: async (label: string) => {
+    const filepath = await window.electron.uploadFile(get().repoRoute);
 
     const entry = deepClone(get().entry);
 

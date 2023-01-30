@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import cn from "classnames";
-import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   AssetView,
@@ -26,8 +25,6 @@ function formatDate(title: string): string {
 export default function ProfileSingleEdit() {
   const { t } = useTranslation();
 
-  const { repoRoute } = useParams();
-
   const [
     entry,
     schema,
@@ -39,7 +36,7 @@ export default function ProfileSingleEdit() {
     onFieldRemove,
     onFieldChange,
     onFieldUpload,
-    onFieldUploadElectron,
+    onFieldUploadElectron
   ] = useStore((state) => [
     state.entry,
     state.schema,
@@ -51,7 +48,7 @@ export default function ProfileSingleEdit() {
     state.onFieldRemove,
     state.onFieldChange,
     state.onFieldUpload,
-    state.onFieldUploadElectron,
+    state.onFieldUploadElectron
   ])
 
   const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
@@ -89,7 +86,7 @@ export default function ProfileSingleEdit() {
             </Title>
 
             <div className={styles.buttonbar}>
-              <Button type="button" title={t("line.button.save")} onClick={() => onEntrySave(repoRoute)}>
+              <Button type="button" title={t("line.button.save")} onClick={() => onEntrySave()}>
                 💾
               </Button>
 

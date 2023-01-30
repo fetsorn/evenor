@@ -1,4 +1,5 @@
 import git from "isomorphic-git";
+import http from "isomorphic-git/http/web";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
 import { manifestRoot } from "@/../lib/git_template";
@@ -237,4 +238,66 @@ export async function deleteRepo(entry: any) {
   await rimraf(`/store/${entry.UUID}`);
 
   // TODO: unlink symlink
+}
+
+function lastUrlDir(url: string) {
+  return url.substring(url.lastIndexOf("/") + 1).replace(/\.[^/.]+$/, "");
+}
+
+async function dirNew(dir: string) {
+  const files = await window.pfs.readdir("/");
+  const [name, suffix] = dir.split("#");
+  let suffixNum = Number.isNaN(suffix) ? parseInt(suffix) : 0;
+  while (files.includes(dir)) {
+    suffixNum++;
+    dir = `${name}#${suffixNum}`;
+  }
+  return dir;
+}
+
+export async function clone(
+  url: string,
+  token: string,
+  dir: string = lastUrlDir(url)
+) {
+  console.log("clone", url, token, dir);
+
+  if (__BUILD_MODE__ === "electron") {
+    try {
+      await window.electron.clone(url, token, dir);
+    } catch (e) {
+      throw e;
+    }
+  } else {
+    dir = await dirNew(dir);
+    try {
+      // attempt to clone a public repo if no token is provided
+      if (token === "") {
+        await git.clone({
+          fs: window.fs,
+          http,
+          dir: "/" + dir,
+          url,
+          singleBranch: true,
+          depth: 1,
+        });
+      } else {
+        await git.clone({
+          fs: window.fs,
+          http,
+          dir: "/" + dir,
+          url,
+          singleBranch: true,
+          depth: 1,
+          onAuth: () => ({
+            username: token,
+          }),
+        });
+      }
+      // console.log("repo cloned")
+    } catch (e) {
+      rimraf("/" + dir);
+      throw e;
+    }
+  }
 }

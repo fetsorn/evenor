@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./Link.module.css";
+import styles from "./link.module.css";
 
 interface ILinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   children?: React.ReactNode;

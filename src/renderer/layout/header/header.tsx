@@ -34,7 +34,7 @@ export default function Header() {
   ])
 
   useEffect(() => {
-    if (isInitialized) {
+    if (isInitialized && __BUILD_MODE__ !== "electron") {
       const searchParams = queriesToParams(queries);
 
       if (groupBy !== "") {

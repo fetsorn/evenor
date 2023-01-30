@@ -1,3 +1,4 @@
+const path = require("path");
 const webpack = require("webpack");
 const CopyPlugin = require("copy-webpack-plugin");
 const ForkTsCheckerWebpackPlugin = require("fork-ts-checker-webpack-plugin");
@@ -88,6 +89,9 @@ module.exports = {
     }),
   ],
   resolve: {
+    alias: {
+      "@": path.resolve(__dirname, './src/renderer'),
+    },
     fallback: {
       // For WASM
       stream: require.resolve("stream-browserify"),

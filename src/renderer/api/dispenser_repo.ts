@@ -3,7 +3,7 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
 import { manifestRoot } from "@/../lib/git_template";
 
-export async function gitcommit(repoPath: string) {
+export async function gitcommit(dir: string) {
   // console.log("commit");
 
   const fs = new LightningFS("fs");
@@ -20,7 +20,7 @@ export async function gitcommit(repoPath: string) {
 
   const statusMatrix: any = await git.statusMatrix({
     fs,
-    dir: repoPath,
+    dir,
   });
 
   for (let [
@@ -32,14 +32,14 @@ export async function gitcommit(repoPath: string) {
     if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
       await git.resetIndex({
         fs,
-        dir: repoPath,
+        dir,
         filepath: filePath,
       });
 
       [filePath, HEADStatus, workingDirStatus, stageStatus] =
         await git.statusMatrix({
           fs,
-          dir: repoPath,
+          dir,
           filepaths: [filePath],
         });
 
@@ -56,13 +56,13 @@ export async function gitcommit(repoPath: string) {
 
         await git.remove({
           fs,
-          dir: repoPath,
+          dir,
           filepath: filePath,
         });
       } else {
         await git.add({
           fs,
-          dir: repoPath,
+          dir,
           filepath: filePath,
         });
 
@@ -82,7 +82,7 @@ export async function gitcommit(repoPath: string) {
 
     await git.commit({
       fs: fs,
-      dir: repoPath,
+      dir,
       author: {
         name: "name",
         email: "name@mail.com",
@@ -157,7 +157,7 @@ export async function rimraf(path: string) {
     await pfs.rmdir(path);
   }
 }
-async function ensureRepo(repo: string, schema: string) {
+async function ensureRepoBrowser(repo: string, schema: string) {
   const fs = new LightningFS("fs");
 
   const pfs = fs.promises;
@@ -179,14 +179,42 @@ async function ensureRepo(repo: string, schema: string) {
   await gitcommit(repoDir);
 }
 
-async function linkRepo(repo: string, reponame: string) {
+async function ensureRepo(repo: string, schema: string) {
+  try {
+    switch (__BUILD_MODE__) {
+    case "electron":
+      return await window.electron.ensureRepo(repo, schema);
+
+    default:
+      return await ensureRepoBrowser(repo, schema);
+    }
+  } catch (e) {
+    throw Error(`${e}`);
+  }
+}
+
+async function linkRepoBrowser(repodir: string, reponame: string) {
   const pfs = new LightningFS("fs").promises;
 
   if (!(await pfs.readdir("/")).includes("repos")) {
     await pfs.mkdir("/repos");
   }
 
-  await pfs.symlink(`/store/${repo}`, `/repos/${reponame}`);
+  await pfs.symlink(`/store/${repodir}`, `/repos/${reponame}`);
+}
+
+async function linkRepo(repodir: string, reponame: string) {
+  try {
+    switch (__BUILD_MODE__) {
+    case "electron":
+      return await window.electron.linkRepo(repodir, reponame);
+
+    default:
+      return await linkRepoBrowser(repodir, reponame);
+    }
+  } catch (e) {
+    throw Error(`${e}`);
+  }
 }
 
 export async function updateRepo(entry: any) {

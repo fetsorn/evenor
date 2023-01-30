@@ -32,7 +32,6 @@ function paramsToQueries(searchParams: URLSearchParams) {
 }
 
 export const createOverviewSlice: OverviewSlice = (set, get) => ({
-
   schema: {},
 
   overview: [],

@@ -20,13 +20,14 @@ declare global {
       writeDataMetadir(repo: string, path: string, content: string): any;
       clone(url: string, token: string, dir: string): any;
       gitListRepos(): Promise<string[]>;
-      gitCreate(repo: string): any;
       getRemote(repo: string): any;
       rimraf(path: string): any;
       latex(): any;
       openPDF(url: string): any;
       uploadFile(repo: string): any;
       fetchAsset(repo: string, path: string): Promise<ArrayBuffer>;
+      linkRepo(repodir: string, reponame: string): any;
+      ensureRepo(repo: string, schema: string): any;
     };
   }
 }

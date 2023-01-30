@@ -23,7 +23,7 @@
     "forge": "./forge.config.js"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.65",
+    "@electron-forge/cli": "^6.0.4",
     "electron": "20.0.0"
   },
   "dependencies": {

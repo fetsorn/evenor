@@ -18,4 +18,5 @@ export {
 } from "./dispenser";
 export {
   ensureRoot,
+  cloneRepo
 } from "./dispenser_repo";

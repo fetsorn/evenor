@@ -3,6 +3,7 @@ import {
   fetchSchema,
   getDefaultGroupBy,
   searchRepo,
+  cloneRepo,
 } from "../api";
 import { OverviewSlice, OverviewType } from "./types";
 
@@ -40,12 +41,32 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
   repoRoute: undefined,
 
-  initialize: async (repoRoute: any, search: any) => {
-    if (repoRoute === undefined && __BUILD_MODE__ !== "server") {
-      await ensureRoot();
-    }
-
+  initialize: async (repoRouteOriginal: any, search: any) => {
     const searchParams = new URLSearchParams(search);
+
+    let repoRoute;
+
+    if (searchParams.has("url")) {
+      repoRoute = "store/view";
+
+      const url = searchParams.get("url");
+
+      const token = searchParams.get("token") ?? "";
+
+      searchParams.delete("url")
+
+      searchParams.delete("token")
+
+      await cloneRepo(url, token);
+    } else if (repoRoute === undefined) {
+      repoRoute = "store/root";
+
+      if (__BUILD_MODE__ !== "server") {
+        await ensureRoot();
+      }
+    } else {
+      repoRoute = `repos/${repoRouteOriginal}`;
+    }
 
     const queries = paramsToQueries(searchParams);
 

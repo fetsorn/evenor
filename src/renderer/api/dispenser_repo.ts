@@ -158,6 +158,7 @@ export async function rimraf(path: string) {
     await pfs.rmdir(path);
   }
 }
+
 async function ensureRepoBrowser(repo: string, schema: string) {
   const fs = new LightningFS("fs");
 
@@ -244,60 +245,71 @@ function lastUrlDir(url: string) {
   return url.substring(url.lastIndexOf("/") + 1).replace(/\.[^/.]+$/, "");
 }
 
-async function dirNew(dir: string) {
-  const files = await window.pfs.readdir("/");
-  const [name, suffix] = dir.split("#");
-  let suffixNum = Number.isNaN(suffix) ? parseInt(suffix) : 0;
-  while (files.includes(dir)) {
-    suffixNum++;
-    dir = `${name}#${suffixNum}`;
-  }
-  return dir;
-}
-
 export async function clone(
   url: string,
   token: string,
-  dir: string = lastUrlDir(url)
+  dir: string
 ) {
-  console.log("clone", url, token, dir);
+  const fs = new LightningFS("fs");
 
-  if (__BUILD_MODE__ === "electron") {
-    try {
-      await window.electron.clone(url, token, dir);
-    } catch (e) {
-      throw e;
-    }
+  console.log("AAAA", url, token, dir);
+
+  // attempt to clone a public repo if no token is provided
+  if (token === "") {
+    console.log("1", url, token, dir);
+    await git.clone({
+      fs,
+      http,
+      dir,
+      url,
+      singleBranch: true,
+      depth: 1,
+    });
   } else {
-    dir = await dirNew(dir);
-    try {
-      // attempt to clone a public repo if no token is provided
-      if (token === "") {
-        await git.clone({
-          fs: window.fs,
-          http,
-          dir: "/" + dir,
-          url,
-          singleBranch: true,
-          depth: 1,
-        });
-      } else {
-        await git.clone({
-          fs: window.fs,
-          http,
-          dir: "/" + dir,
-          url,
-          singleBranch: true,
-          depth: 1,
-          onAuth: () => ({
-            username: token,
-          }),
-        });
-      }
-      // console.log("repo cloned")
-    } catch (e) {
-      rimraf("/" + dir);
-      throw e;
+    console.log("2", url, token, dir);
+    await git.clone({
+      fs,
+      http,
+      dir,
+      url,
+      singleBranch: true,
+      depth: 1,
+      onAuth: () => ({
+        username: token,
+      }),
+    });
+  }
+}
+
+export async function cloneRepoBrowser(
+  url: string,
+  token: string,
+) {
+  const pfs = new LightningFS("fs").promises;
+
+  if (!(await pfs.readdir("/")).includes("store")) {
+    await pfs.mkdir("/store");
+  }
+
+  try {
+    await rimraf("/store/view");
+  } catch {
+    //
+  }
+
+  await clone(url, token, "/store/view");
+}
+
+export async function cloneRepo(url: string, token: string) {
+  try {
+    switch (__BUILD_MODE__) {
+    case "electron":
+      return await window.electron.clone(url, token, "store/view");
+
+    default:
+      return await cloneRepoBrowser(url, token);
     }
+  } catch (e) {
+    throw Error(`${e}`);
   }
 }

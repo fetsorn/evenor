@@ -159,11 +159,8 @@ export async function fetchAsset(
 
 export async function clone(
   _event: any,
-
   url: string,
-
   token: string,
-
   dir: string
 ) {
   // console.log("electron clone");

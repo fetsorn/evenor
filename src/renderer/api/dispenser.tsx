@@ -1,28 +1,5 @@
 import { updateRepo, deleteRepo } from "./dispenser_repo";
-
-export async function dispenserDelete(
-  repoRoute: string,
-  schema: any,
-  tag: any,
-  entry: any
-) {
-  // if route is root, create or edit repo
-  if (repoRoute === undefined) {
-    await deleteRepo(entry);
-  }
-}
-
-export async function dispenserUpdate(
-  repoRoute: string,
-  schema: any,
-  tag: any,
-  entry: any
-) {
-  // if route is root, create or edit repo
-  if (repoRoute === undefined) {
-    await updateRepo(entry);
-  }
-}
+import { useStore } from "@/store";
 
 interface IDispenserProps {
   repoRoute: string;
@@ -32,9 +9,18 @@ interface IDispenserProps {
 }
 
 export function Dispenser({repoRoute, schema, field, entry}: IDispenserProps) {
+
+  const setRepoRoute = useStore((state) => state.setRepoRoute)
+
   switch (field) {
   case "export_root":
-    return (<a onClick={() => dispenserUpdate(repoRoute, schema, "export_root", entry)}>🔄</a>)
+    return (
+      <div>
+        <a onClick={() => setRepoRoute(`repos/${entry.REPO_NAME}`)}>{entry.REPO_NAME}</a>
+        <br/>
+        <a onClick={() => updateRepo(entry)}>🔄</a>
+      </div>
+    )
 
   default:
     return (

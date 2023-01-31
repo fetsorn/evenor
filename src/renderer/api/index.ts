@@ -13,8 +13,6 @@ export {
 export { deepClone } from "./curse_controller";
 export { queryOptions } from "./options";
 export {
-  dispenserDelete,
-  dispenserUpdate,
   Dispenser,
 } from "./dispenser";
 export {

@@ -58,7 +58,7 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
       searchParams.delete("token")
 
       await cloneRepo(url, token);
-    } else if (repoRoute === undefined) {
+    } else if (repoRouteOriginal === undefined) {
       repoRoute = "store/root";
 
       if (__BUILD_MODE__ !== "server") {
@@ -89,6 +89,8 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
   onQueries: async () => {
     if (get().isInitialized) {
+      const schema = await fetchSchema(get().repoRoute);
+
       const search = queriesToParams(get().queries).toString();
 
       const overview = await searchRepo(get().repoRoute, search);
@@ -97,7 +99,9 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
         ? getDefaultGroupBy(get().schema, overview, search)
         : get().groupBy;
 
-      set({ overview, groupBy })
+      set({ overview, schema, groupBy })
     }
-  }
+  },
+
+  setRepoRoute: (repoRoute: string) => set({ repoRoute, queries: {}, entry: undefined })
 })

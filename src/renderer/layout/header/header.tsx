@@ -22,13 +22,15 @@ export default function Header() {
     groupBy,
     overviewType,
     onQueries,
-    isInitialized
+    isInitialized,
+    repoRoute,
   ] = useStore((state) => [
     state.queries,
     state.groupBy,
     state.overviewType,
     state.onQueries,
-    state.isInitialized
+    state.isInitialized,
+    state.repoRoute,
   ])
 
   useEffect(() => {
@@ -41,23 +43,31 @@ export default function Header() {
 
       searchParams.set("overviewType", overviewType);
 
+      let pathname = repoRoute;
+
+      if (repoRoute === "store/root" || repoRoute === "store/view") {
+        pathname = "/";
+      } else {
+        pathname = "/" + repoRoute.replace(/^repos\//, '')
+      }
+
       navigate({
-        pathname: location.pathname,
+        pathname,
         search: "?" + searchParams.toString(),
       });
     }
-  }, [queries, groupBy, overviewType])
+  }, [queries, groupBy, overviewType, repoRoute])
 
   useEffect(() => {
     onQueries();
-  }, [queries])
+  }, [queries, repoRoute])
 
   return (
     <header className={styles.header}>
       <Button
         type="button"
         title={t("header.button.back")}
-        onClick={() => navigate(-1)}
+        onClick={() => console.log("not implemented")}
       >
         &lt;=
       </Button>

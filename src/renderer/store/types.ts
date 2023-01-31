@@ -54,6 +54,7 @@ interface IOverviewSlice {
   isInitialized: boolean
   initialize: (repoRoute: any, search: any) => Promise<void>
   onQueries: () => Promise<void>
+  setRepoRoute: (repoRoute: string) => void
 }
 
 interface IFilterSlice {

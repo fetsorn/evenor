@@ -64,13 +64,15 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      <Button
-        type="button"
-        title={t("header.button.back")}
-        onClick={() => console.log("not implemented")}
-      >
-        &lt;=
-      </Button>
+      { __BUILD_MODE__ === "electron" ? (
+          <Button
+            type="button"
+            title={t("header.button.back")}
+            onClick={() => console.log("not implemented")}
+          >
+          &lt;=
+          </Button>) : <div/>
+      }
 
       <div className={styles.dropdowns}>
         <HeaderOverviewTypeDropdown />
@@ -80,11 +82,9 @@ export default function Header() {
 
       <HeaderFilter />
 
-      <div></div>
+      <div/>
 
-      <div></div>
-
-      <div></div>
+      <div/>
     </header>
   );
 }

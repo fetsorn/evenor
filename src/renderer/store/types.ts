@@ -32,6 +32,7 @@ interface IEntrySlice {
   group: any
   isEdit: boolean
   isBatch: boolean
+  isSettings: boolean
   onBatchSelect: () => void
   onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => void
   onEntryCreate: any
@@ -45,6 +46,7 @@ interface IEntrySlice {
   onFieldUpload: (label: string, file: any) => void
   onFieldRemove: (label: string) => void
   onFieldUploadElectron: (label: string) => void
+  onSettingsOpen: () => Promise<void>
 }
 
 interface IOverviewSlice {

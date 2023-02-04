@@ -24,6 +24,7 @@ export default function Header() {
     onQueries,
     isInitialized,
     repoRoute,
+    onSettingsOpen,
   ] = useStore((state) => [
     state.queries,
     state.groupBy,
@@ -31,6 +32,7 @@ export default function Header() {
     state.onQueries,
     state.isInitialized,
     state.repoRoute,
+    state.onSettingsOpen
   ])
 
   useEffect(() => {
@@ -84,7 +86,14 @@ export default function Header() {
 
       <div/>
 
-      <div/>
+      <Button
+        type="button"
+        title={t("header.button.back")}
+        onClick={onSettingsOpen}
+      >
+        ⚙️
+      </Button>
+
     </header>
   );
 }

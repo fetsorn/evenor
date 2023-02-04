@@ -6,8 +6,10 @@ import {
   editEntry,
   updateOverview,
   uploadFile,
+  getRepoSettings,
 } from "../api";
 import { EntrySlice } from "./types";
+import { manifestRoot } from "../../lib/git_template";
 
 export const createEntrySlice: EntrySlice = (set, get) => ({
   // entry selected from overview for viewing/editing
@@ -23,9 +25,48 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
   isBatch: false,
 
+  isSettings: false,
+
   onBatchSelect: () => set({ isBatch: true }),
 
-  onEntrySelect: (entryNew: any, indexNew: any, groupNew: any) => set({ entry: entryNew, index: indexNew, group: groupNew }),
+  onEntrySelect: (entry: any, index: any, group: any) => set({ entry, index, group }),
+
+  onSettingsOpen: async () => {
+    // get current repo settings from root db
+    const entry = await getRepoSettings(get().repoRoute)
+
+    console.log(entry)
+
+    const repoRouteRoot = "store/root";
+
+    const { onEntrySave, onEntryDelete, onFieldAdd } = get();
+
+    const onSettingsClose = () => set({ entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
+
+    const onSettingsSave = async () => {
+      await editEntry(repoRouteRoot, deepClone(get().entry));
+
+      set({ isEdit: false })
+    }
+
+    const onSettingsDelete = () => {
+      console.log("not implemented")
+
+      set({ entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
+    }
+
+    const onSettingsAdd = async (label: string) => {
+      const rootSchema = JSON.parse(manifestRoot);
+
+      const entry = await addField(rootSchema, deepClone(get().entry), label);
+
+      set({ entry })
+    }
+
+    // ignore fieldUpload
+
+    set({ entry, index: 0, group: "", onEntryClose: onSettingsClose, onEntrySave: onSettingsSave, onEntryDelete: onSettingsDelete, onFieldAdd: onSettingsAdd, isSettings: true })
+  },
 
   onEntryCreate: async (index: string) => {
     const entry = await createEntry();
@@ -67,6 +108,14 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     set({ entry })
   },
 
+  onFieldRemove: (label: string) => {
+    const entry = deepClone(get().entry);
+
+    delete entry[label];
+
+    set({ entry })
+  },
+
   onFieldUpload: async (label: string, file: any) => {
     await uploadFile(get().repoRoute, file);
 
@@ -75,14 +124,6 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     entry[label] = file.name;
 
     set({ entry });
-  },
-
-  onFieldRemove: (label: string) => {
-    const entry = deepClone(get().entry);
-
-    delete entry[label];
-
-    set({ entry })
   },
 
   onFieldUploadElectron: async (label: string) => {

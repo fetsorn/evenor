@@ -7,6 +7,7 @@ import {
   Title,
 } from "@/components";
 import { useStore } from "@/store";
+import { manifestRoot } from "@/../lib/git_template";
 import {
   EditInput,
 } from "./components";
@@ -27,9 +28,9 @@ export default function ProfileSingleEdit() {
 
   const [
     entry,
-    schema,
     group,
     index,
+    isSettings,
     onEntryRevert,
     onEntrySave,
     onFieldAdd,
@@ -39,9 +40,9 @@ export default function ProfileSingleEdit() {
     onFieldUploadElectron
   ] = useStore((state) => [
     state.entry,
-    state.schema,
     state.group,
     state.index,
+    state.isSettings,
     state.onEntryRevert,
     state.onEntrySave,
     state.onFieldAdd,
@@ -50,6 +51,8 @@ export default function ProfileSingleEdit() {
     state.onFieldUpload,
     state.onFieldUploadElectron
   ])
+
+  const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
 
   const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
 

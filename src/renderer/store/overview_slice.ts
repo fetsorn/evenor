@@ -91,12 +91,12 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
     if (get().isInitialized) {
       const schema = await fetchSchema(get().repoRoute);
 
-      const search = queriesToParams(get().queries).toString();
+      const searchParams = queriesToParams(get().queries);
 
-      const overview = await searchRepo(get().repoRoute, search);
+      const overview = await searchRepo(get().repoRoute, searchParams);
 
       const groupBy = get().groupBy === ""
-        ? getDefaultGroupBy(get().schema, overview, search)
+        ? getDefaultGroupBy(get().schema, overview, searchParams)
         : get().groupBy;
 
       set({ overview, schema, groupBy })

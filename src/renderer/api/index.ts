@@ -9,6 +9,7 @@ export {
   deleteEntry,
   addField,
   getDefaultGroupBy,
+  getRepoSettings,
 } from "./api";
 export { deepClone } from "./curse_controller";
 export { queryOptions } from "./options";

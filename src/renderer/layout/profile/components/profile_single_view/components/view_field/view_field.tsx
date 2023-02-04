@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { Dispenser } from "@/api";
+import { manifestRoot } from "@/../lib/git_template"
 import { FieldText } from "..";
 
 interface IViewFieldProps {
@@ -14,13 +15,15 @@ export default function ViewField({ label, value }: IViewFieldProps) {
 
   const [
     entry,
-    schema,
     repoRoute,
+    isSettings,
   ] = useStore((state) => [
     state.entry,
-    state.schema,
     state.repoRoute,
+    state.isSettings,
   ])
+
+  const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
 
   const prop = useMemo(() => {
     return Object.keys(schema).find((p) => schema[p].label === label) ?? label;

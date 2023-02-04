@@ -207,9 +207,7 @@ export async function writeDataMetadir(
   }
 }
 
-export async function searchRepo(dir: string, search: any): Promise<any> {
-  const searchParams = new URLSearchParams(search);
-
+export async function searchRepo(dir: string, searchParams: URLSearchParams): Promise<any> {
   const queryWorker = queryWorkerInit(dir);
 
   const overview = await queryWorker.queryMetadir(searchParams);
@@ -375,10 +373,8 @@ export async function createEntry() {
 }
 
 // pick a param to group data by
-export function getDefaultGroupBy(schema: any, data: any, search: any) {
+export function getDefaultGroupBy(schema: any, data: any, searchParams: URLSearchParams) {
   // fallback to groupBy param from the search query
-  const searchParams = new URLSearchParams(search);
-
   if (searchParams.has("groupBy")) {
     const groupByProp = searchParams.get("groupBy");
 
@@ -427,4 +423,21 @@ export function getDefaultGroupBy(schema: any, data: any, search: any) {
   }
 
   return groupByProp;
+}
+
+export async function getRepoSettings(repoRoute: string) {
+  const repoRouteRoot = "store/root";
+
+  const searchParams = new URLSearchParams();
+
+  const pathname = repoRoute.replace(/^repos\//, '')
+
+  searchParams.set("reponame", pathname);
+
+  // query root db to get entry with repo settings
+  const overview = await searchRepo(repoRouteRoot, searchParams);
+
+  const entry = overview[0];
+
+  return entry
 }

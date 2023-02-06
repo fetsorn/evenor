@@ -176,25 +176,52 @@ export const manifestRoot = `{
   },
   "schema": {
     "trunk": "reponame",
-    "type": "schema",
+    "type": "string",
     "label": "SCHEMA",
     "description": {
       "en": "Schema of the repo",
       "ru": "Структура проекта"
     }
   },
-  "export_tags": {
+  "tags": {
     "trunk": "reponame",
     "type": "array",
     "label": "TAGS"
   },
-  "export_root": {
+  "local_tag": {
     "type": "object",
-    "trunk": "export_tags",
-    "label": "EXPORT_ROOT",
+    "trunk": "tags",
+    "label": "LOCAL_TAG",
     "description": {
-      "en": "Export tag for root repo",
-      "ru": "Экспорт тег коренного проекта"
+      "en": "Local database tag",
+      "ru": "Тег локальной базы данных"
+    }
+  },
+  "sync_tag": {
+    "type": "object",
+    "trunk": "tags",
+    "label": "SYNC_TAG",
+    "description": {
+      "en": "Synchronization tag",
+      "ru": "Тег синхронизации баз данных"
+    }
+  },
+  "sync_tag_search": {
+    "trunk": "sync_tag",
+    "type": "string",
+    "label": "SYNC_TAG_SEARCH",
+    "description": {
+      "en": "Search query",
+      "ru": "Поисковый запрос"
+    }
+  },
+  "sync_tag_target": {
+    "trunk": "sync_tag",
+    "type": "string",
+    "label": "SYNC_TAG_TARGET",
+    "description": {
+      "en": "Name of database to sync",
+      "ru": "Название базы данных для синхронизации"
     }
   }
 }`;

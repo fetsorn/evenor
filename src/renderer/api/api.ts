@@ -238,6 +238,7 @@ export function updateOverview(overview: any, entryNew: any) {
 }
 
 export async function editEntry(repoRoute: string, entry: any) {
+  console.log(repoRoute, entry)
   await csvs.editEntry(entry, {
     fetch: (path: string) => fetchDataMetadir(repoRoute, path),
     write: (path: string, content: string) =>

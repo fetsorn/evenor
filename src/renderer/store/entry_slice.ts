@@ -15,6 +15,9 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
   // entry selected from overview for viewing/editing
   entry: undefined,
 
+  // entry backup before editing
+  entryOriginal: undefined,
+
   // index of selected entry in a group
   index: undefined,
 
@@ -65,7 +68,7 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
     // ignore fieldUpload
 
-    set({ entry, index: 0, group: "", onEntryClose: onSettingsClose, onEntrySave: onSettingsSave, onEntryDelete: onSettingsDelete, onFieldAdd: onSettingsAdd, isSettings: true })
+    set({ entry, index: "", group: `${get().repoRoute} settings`, onEntryClose: onSettingsClose, onEntrySave: onSettingsSave, onEntryDelete: onSettingsDelete, onFieldAdd: onSettingsAdd, isSettings: true })
   },
 
   onEntryCreate: async (index: string) => {
@@ -74,9 +77,9 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     set({ index, isEdit: true, entry })
   },
 
-  onEntryEdit: () => set({ isEdit: true }),
+  onEntryEdit: () => set({ isEdit: true, entryOriginal: get().entry }),
 
-  onEntryRevert: () => set({ isEdit: false }),
+  onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
 
   onEntrySave: async () => {
     await editEntry(get().repoRoute, deepClone(get().entry));

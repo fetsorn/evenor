@@ -15,3 +15,6 @@ https://blog.logrocket.com/render-large-lists-react-5-methods-examples/
 * boolean trap
 tl;dr: never pass booleans like isEdit to function parameters, and use Higher Encapsulation for component variants
 https://spicefactory.co/blog/2019/03/26/how-to-avoid-the-boolean-trap-when-designing-react-components/
+
+* bulk indexeddb operations with dexie lightningfs backend
+https://github.com/isomorphic-git/lightning-fs/pull/85

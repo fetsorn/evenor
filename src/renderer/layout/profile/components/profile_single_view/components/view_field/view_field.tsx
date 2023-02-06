@@ -58,8 +58,8 @@ export default function ViewField({ label, value }: IViewFieldProps) {
             </div>
           )) }
         </div>
-      ) : propTrunk === "export_tags" ? (
-        <Dispenser {...{ repoRoute, schema, field: prop, entry }}/>
+      ) : propTrunk === "tags" ? (
+        <Dispenser {...{ repoRoute, schema, entry, field: prop, value }}/>
       ) : propType === "object" ? (
         <div>
           <div>object {propDescription}</div>

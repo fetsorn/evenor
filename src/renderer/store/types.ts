@@ -28,6 +28,7 @@ export type FilterSlice = StateCreator<
 
 interface IEntrySlice {
   entry: any
+  entryOriginal: any
   index: any
   group: any
   isEdit: boolean

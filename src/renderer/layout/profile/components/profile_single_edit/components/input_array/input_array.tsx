@@ -22,7 +22,7 @@ export default function InputArray({
 
   return (
     <div>
-      <label>
+      <div>
         array {description}
         <button
           title={t("line.button.remove", { field: label })}
@@ -30,7 +30,7 @@ export default function InputArray({
         >
           X
         </button>
-      </label>
+      </div>
 
       <div>{value.UUID}</div>
 

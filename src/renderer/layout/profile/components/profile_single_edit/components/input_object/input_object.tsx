@@ -66,7 +66,7 @@ export default function InputObject({
 
   return (
     <div>
-      <label>
+      <div>
         object {description}
         <button
           title={t("line.button.remove", { field: label })}
@@ -74,7 +74,7 @@ export default function InputObject({
         >
           X
         </button>
-      </label>
+      </div>
 
       <br />
 

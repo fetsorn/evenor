@@ -24,6 +24,7 @@ export default function Header() {
     onQueries,
     isInitialized,
     repoRoute,
+    setRepoRoute,
     onSettingsOpen,
   ] = useStore((state) => [
     state.queries,
@@ -32,6 +33,7 @@ export default function Header() {
     state.onQueries,
     state.isInitialized,
     state.repoRoute,
+    state.setRepoRoute,
     state.onSettingsOpen
   ])
 
@@ -67,13 +69,13 @@ export default function Header() {
   return (
     <header className={styles.header}>
       { __BUILD_MODE__ === "electron" ? (
-          <Button
-            type="button"
-            title={t("header.button.back")}
-            onClick={() => console.log("not implemented")}
-          >
+        <Button
+          type="button"
+          title={t("header.button.back")}
+          onClick={() => setRepoRoute("store/root")}
+        >
           &lt;=
-          </Button>) : <div/>
+        </Button>) : <div/>
       }
 
       <div className={styles.dropdowns}>

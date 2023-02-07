@@ -276,8 +276,6 @@ export async function gitcommit(dir: string) {
     dir,
   });
 
-  console.log("1");
-
   for (let [
     filePath,
     HEADStatus,
@@ -331,7 +329,6 @@ export async function gitcommit(dir: string) {
       message.push(`${filePath} ${status}`);
     }
   }
-  console.log("2");
 
   if (message.length !== 0) {
     console.log("commit:", message.toString());
@@ -371,11 +368,12 @@ export async function ensureRepo(_event: any, repo: string, schema: string) {
 
   console.log(repoDir)
 
-  // if (!(await fs.promises.readdir(store)).includes(repo)) {
-  //   await fs.promises.mkdir(repoDir);
+  console.log("try to mkdir repo", store, repo)
+  if (!(await fs.promises.readdir(store)).includes(repo)) {
+    await fs.promises.mkdir(repoDir);
 
-  //   await git.init({ fs, dir: repoDir });
-  // }
+    await git.init({ fs, dir: repoDir });
+  }
 
   await fs.promises.writeFile(repoDir + "/metadir.json", schema, "utf8");
 
@@ -383,10 +381,19 @@ export async function ensureRepo(_event: any, repo: string, schema: string) {
 }
 
 export async function linkRepo(_event: any, repodir: string, reponame: string) {
+  const home = app.getPath("home");
 
-  if (!(await fs.promises.readdir("/")).includes("repos")) {
-    await fs.promises.mkdir("/repos");
+  const root = path.join(home, ".qualia");
+
+  const repos = path.join(root, "repos");
+
+  if (!(await fs.promises.readdir(root)).includes("repos")) {
+    await fs.promises.mkdir(repos);
   }
 
-  await fs.promises.symlink(`/store/${repodir}`, `/repos/${reponame}`);
+  const store = path.join(root, "store");
+
+  await fs.promises.unlink(`${repos}/${reponame}`);
+
+  await fs.promises.symlink(`${store}/${repodir}`, `${repos}/${reponame}`);
 }

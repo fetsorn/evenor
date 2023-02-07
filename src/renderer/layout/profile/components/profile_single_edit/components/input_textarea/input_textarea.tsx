@@ -19,21 +19,19 @@ export default function InputTextarea({
   const { t } = useTranslation();
   return (
     <div>
-      <label>
-        {description}
-        <button
-          title={t("line.button.remove", { field: label })}
-          onClick={() => onFieldRemove(label)}
-        >
+      {description}
+      <button
+        title={t("line.button.remove", { field: label })}
+        onClick={() => onFieldRemove(label)}
+      >
           X
-        </button>
-        <br />
-        <textarea
-          className={styles.inputtext}
-          value={value}
-          onChange={(e) => onFieldChange(label, e.target.value)}
-        />
-      </label>
+      </button>
+      <br />
+      <textarea
+        className={styles.inputtext}
+        value={value}
+        onChange={(e) => onFieldChange(label, e.target.value)}
+      />
     </div>
   );
 }

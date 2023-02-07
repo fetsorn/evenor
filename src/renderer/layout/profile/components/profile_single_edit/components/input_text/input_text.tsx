@@ -22,23 +22,21 @@ export default function InputText({
 
   return (
     <div>
-      <label>
-        {description}
-        <button
-          title={t("line.button.remove", { field: label })}
-          onClick={() => onFieldRemove(label)}
-        >
+      {description}
+      <button
+        title={t("line.button.remove", { field: label })}
+        onClick={() => onFieldRemove(label)}
+      >
           X
-        </button>
-        <br />
-        <input
-          className={styles.input}
-          type="text"
-          list={list}
-          value={value}
-          onChange={(e) => onFieldChange(label, e.target.value)}
-        />
-      </label>
+      </button>
+      <br />
+      <input
+        className={styles.input}
+        type="text"
+        list={list}
+        value={value}
+        onChange={(e) => onFieldChange(label, e.target.value)}
+      />
     </div>
   );
 }

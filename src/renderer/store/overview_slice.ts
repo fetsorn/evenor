@@ -95,9 +95,9 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
       const overview = await searchRepo(get().repoRoute, searchParams);
 
-      const groupBy = get().groupBy === ""
-        ? getDefaultGroupBy(get().schema, overview, searchParams)
-        : get().groupBy;
+      const groupBy = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
+        ? get().groupBy
+        : getDefaultGroupBy(schema, overview, searchParams);
 
       set({ overview, schema, groupBy })
     }

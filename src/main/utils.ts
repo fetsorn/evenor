@@ -58,7 +58,7 @@ export async function uploadFile(_event: any, repo: string) {
 
       // console.log(`Directory ${root} is created.`);
     } else {
-      throw `file ${destinationPath} already exists`;
+      // throw `file ${destinationPath} already exists`;
     }
 
     // return the path to local/filename
@@ -133,9 +133,7 @@ export async function writeDataMetadir(
 
 export async function fetchAsset(
   _event: any,
-
   repo: string,
-
   filepath: string
 ): Promise<ArrayBuffer> {
   // console.log("electron fetchDataMetadir");
@@ -144,13 +142,14 @@ export async function fetchAsset(
 
   const root = path.join(home, ".qualia");
 
-  const file = path.join(root, "repos", repo, filepath);
+  const file = path.join(root, repo, filepath);
+
+  console.log("AAAA", file)
 
   const b: Buffer = fs.readFileSync(file);
 
   const content: ArrayBuffer = b.buffer.slice(
     b.byteOffset,
-
     b.byteOffset + b.byteLength
   );
 

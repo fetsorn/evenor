@@ -1,13 +1,13 @@
-import styles from "./input_text.module.css";
 import { useTranslation } from "react-i18next";
+import styles from "./input_text.module.css";
 
 interface IInputTextProps {
-  label?: any;
-  description?: any;
-  value?: any;
+  label: any;
+  description: any;
+  value: any;
   list?: any;
-  onFieldChange?: any;
-  onFieldRemove?: any;
+  onFieldChange: any;
+  onFieldRemove: any;
 }
 
 export default function InputText({

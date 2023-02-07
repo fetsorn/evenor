@@ -21,7 +21,7 @@ declare global {
 }
 
 // fetch asset blob url
-export async function fetchBlob(filepath: string): Promise<string> {
+export async function fetchBlob(repoRoute: string, filepath: string): Promise<string> {
   // fetch FILEPATH as Blob
 
   let blob: Blob;
@@ -29,14 +29,14 @@ export async function fetchBlob(filepath: string): Promise<string> {
   try {
     const lfsPath = "lfs/" + filepath;
 
-    blob = await fetchAsset(lfsPath);
+    blob = await fetchAsset(repoRoute, lfsPath);
   } catch (e1) {
     /* console.log("fetch lfs/ failed", e1); */
 
     try {
       const localPath = "local/" + filepath;
 
-      blob = await fetchAsset(localPath);
+      blob = await fetchAsset(repoRoute, localPath);
     } catch (e2) {
       /* console.log("fetch local/ failed", e2); */
     }
@@ -48,7 +48,7 @@ export async function fetchBlob(filepath: string): Promise<string> {
     try {
       const content = await blob.text();
 
-      const remote = await getRemote(window.dir);
+      const remote = await getRemote(repoRoute);
 
       const token = "";
 
@@ -162,10 +162,10 @@ export async function toHtml(path: string, buf: ArrayBuffer): Promise<string> {
   throw Error("unknown extension");
 }
 
-export async function convert(filepath: string): Promise<string> {
+export async function convert(repoRoute: string, filepath: string): Promise<string> {
   const localPath = "local/" + filepath;
 
-  const blob = await fetchAsset(localPath);
+  const blob = await fetchAsset(repoRoute, localPath);
 
   const abuf = await blob.arrayBuffer();
 
@@ -357,12 +357,7 @@ export function isIFrameable(path: string): boolean {
 //   return blobURL;
 // }
 
-export async function fetchAsset(path: string): Promise<Blob> {
-  // console.log(
-  //   `fetchDataMetadir: window.dir ${
-  //     window.dir
-  //   }, path ${path}, path_elements ${path.split("/")}`
-  // );
+export async function fetchAsset(repoRoute: string, path: string): Promise<Blob> {
   if (__BUILD_MODE__ === "server") {
     const localpath = "/api/" + path;
 
@@ -379,7 +374,7 @@ export async function fetchAsset(path: string): Promise<Blob> {
     }
   } else if (__BUILD_MODE__ === "electron") {
     try {
-      const result = await window.electron.fetchAsset(window.dir, path);
+      const result = await window.electron.fetchAsset(repoRoute, path);
 
       const mimetype = mime.getType(path);
 
@@ -391,7 +386,7 @@ export async function fetchAsset(path: string): Promise<Blob> {
     }
   } else {
     // check if path exists in the repo
-    const path_elements = [window.dir].concat(path.split("/"));
+    const path_elements = [repoRoute].concat(path.split("/"));
 
     // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
 
@@ -417,7 +412,7 @@ export async function fetchAsset(path: string): Promise<Blob> {
       }
     }
 
-    const restext = await window.pfs.readFile("/" + window.dir + "/" + path);
+    const restext = await window.pfs.readFile("/" + repoRoute + "/" + path);
 
     const mimetype = mime.getType(path);
 

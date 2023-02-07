@@ -86,6 +86,9 @@ export default function EditInput({
         {...{
           label,
           description,
+          value,
+          onFieldRemove,
+          onFieldChange,
           onFieldUpload,
           onFieldUploadElectron,
         }}

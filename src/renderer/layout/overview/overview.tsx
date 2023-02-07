@@ -14,8 +14,8 @@ export default function Overview() {
   case OverviewType.graph:
     return <OverviewGraph />;
 
-    /* case OverviewType.book:
-     *   return <OverviewBook />; */
+  case OverviewType.book:
+    return <OverviewBook />;
 
     /* case OverviewType.gallery:
      *   return <OverviewGallery />; */

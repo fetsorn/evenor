@@ -3,6 +3,7 @@ import { StateCreator } from 'zustand'
 export enum OverviewType {
     itinerary = "itinerary",
     graph = "graph",
+    book = "book",
 }
 
 export type EntrySlice = StateCreator<

@@ -44,6 +44,15 @@ export default function EditInput({
     return propType;
   }, [schema, label]);
 
+  const propTask = useMemo(() => {
+    const prop =
+      Object.keys(schema).find((p) => schema[p].label === label) ?? label;
+
+    const propTask = schema[prop]?.task;
+
+    return propTask;
+  }, [schema, label]);
+
   const description = useMemo(() => {
     const prop = Object.keys(schema).find(
       (prop: any) => schema[prop]["label"] === label
@@ -56,52 +65,11 @@ export default function EditInput({
     return description;
   }, [schema, label]);
 
-  switch (propType) {
-  case "array":
-    return (
-      <InputArray
-        {...{
-          schema,
-          label,
-          value,
-          description,
-          onFieldChange,
-          onFieldRemove,
-        }}
-      />
-    );
-
-  case "object":
-    return (
-      <InputObject
-        {...{
-          label,
-          value,
-          description,
-          schema,
-          onFieldChange,
-          onFieldRemove,
-        }}
-      />
-    );
-
+  switch (propTask) {
   case "text":
   case "schema":
     return (
       <InputTextarea
-        {...{
-          label,
-          value,
-          description,
-          onFieldChange,
-          onFieldRemove,
-        }}
-      />
-    );
-
-  case "date":
-    return (
-      <InputDate
         {...{
           label,
           value,
@@ -125,19 +93,38 @@ export default function EditInput({
     );
 
   default:
-    if (label === "UUID") {
+    switch (propType) {
+    case "array":
       return (
-        <div>
-          <div>{description}</div>
-
-          <div>{value}</div>
-
-          <InputPropsDropdown {...{ schema, notAddedFields, onFieldAdd }} />
-        </div>
+        <InputArray
+          {...{
+            schema,
+            label,
+            value,
+            description,
+            onFieldChange,
+            onFieldRemove,
+          }}
+        />
       );
-    } else {
+
+    case "object":
       return (
-        <InputText
+        <InputObject
+          {...{
+            label,
+            value,
+            description,
+            schema,
+            onFieldChange,
+            onFieldRemove,
+          }}
+        />
+      );
+
+    case "date":
+      return (
+        <InputDate
           {...{
             label,
             value,
@@ -147,6 +134,31 @@ export default function EditInput({
           }}
         />
       );
+
+    default:
+      if (label === "UUID") {
+        return (
+          <div>
+            <div>{description}</div>
+
+            <div>{value}</div>
+
+            <InputPropsDropdown {...{ schema, notAddedFields, onFieldAdd }} />
+          </div>
+        );
+      } else {
+        return (
+          <InputText
+            {...{
+              label,
+              value,
+              description,
+              onFieldChange,
+              onFieldRemove,
+            }}
+          />
+        );
+      }
     }
   }
 }

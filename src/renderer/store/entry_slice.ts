@@ -52,10 +52,10 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
       set({ isEdit: false })
     }
 
-    const onSettingsDelete = () => {
-      console.log("not implemented")
+    const onSettingsDelete = async () => {
+      await deleteEntry(repoRouteRoot, [], deepClone(get().entry));
 
-      set({ entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
+      set({ repoRoute: repoRouteRoot, entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
     }
 
     const onSettingsAdd = async (label: string) => {

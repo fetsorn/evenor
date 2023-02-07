@@ -177,6 +177,7 @@ export const manifestRoot = `{
   "schema": {
     "trunk": "reponame",
     "type": "string",
+    "task": "schema",
     "label": "SCHEMA",
     "description": {
       "en": "Schema of the repo",

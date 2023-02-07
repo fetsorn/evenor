@@ -238,7 +238,6 @@ export function updateOverview(overview: any, entryNew: any) {
 }
 
 export async function editEntry(repoRoute: string, entry: any) {
-  console.log(repoRoute, entry)
   await csvs.editEntry(entry, {
     fetch: (path: string) => fetchDataMetadir(repoRoute, path),
     write: (path: string, content: string) =>
@@ -252,17 +251,13 @@ export async function deleteEntry(
   overview: any,
   entry: any
 ) {
-  if (overview.find((e: any) => e.UUID === entry.UUID)) {
-    await csvs.deleteEntry(entry.UUID, {
-      fetch: (path: string) => fetchDataMetadir(repoRoute, path),
-      write: (path: string, content: string) =>
-        writeDataMetadir(repoRoute, path, content),
-    });
+  await csvs.deleteEntry(entry.UUID, {
+    fetch: (path: string) => fetchDataMetadir(repoRoute, path),
+    write: (path: string, content: string) =>
+      writeDataMetadir(repoRoute, path, content),
+  });
 
-    return overview.filter((e: any) => e.UUID !== entry.UUID);
-  } else {
-    return overview;
-  }
+  return overview.filter((e: any) => e.UUID !== entry.UUID);
 }
 
 export async function uploadFile(dir: string, file: File) {

@@ -1,14 +1,13 @@
-import * as csvs from "@fetsorn/csvs-js";
+function _buildLine(data: any, branch: any) {
+  // [event1, event, event3]
 
-function _buildLine(data: any, prop_label: any) {
   // { "YYYY-MM-DD": [event1, event2, event3] }
+  const object_of_arrays = data.reduce((acc: any, entry: any) => {
+    const value = entry[branch];
 
-  const object_of_arrays = data.reduce((acc: any, item: any) => {
-    const prop_value = item[prop_label];
+    acc[value] = acc[value] || [];
 
-    acc[prop_value] = acc[prop_value] || [];
-
-    acc[prop_value].push(item);
+    acc[value].push(entry);
 
     return acc;
   }, {});
@@ -16,11 +15,8 @@ function _buildLine(data: any, prop_label: any) {
   // console.log(object_of_arrays);
 
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
-
   const array_of_objects = Object.keys(object_of_arrays)
-
     .sort()
-
     .map((key) => {
       return { date: key, events: object_of_arrays[key] };
     });
@@ -32,12 +28,12 @@ function _buildLine(data: any, prop_label: any) {
 
 async function buildLine(message: any) {
   try {
-    // console.log("query worker tries to build line", message.data.prop_label);
+    // console.log("query worker tries to build line", message.data.branch);
 
     let result: any;
 
     try {
-      result = _buildLine(message.data.data, message.data.prop_label);
+      result = _buildLine(message.data.data, message.data.branch);
     } catch (e) {
       console.log("buildLine fails", e);
 

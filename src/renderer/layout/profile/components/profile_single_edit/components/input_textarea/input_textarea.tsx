@@ -2,17 +2,17 @@ import styles from "./input_textarea.module.css";
 import { useTranslation } from "react-i18next";
 
 interface IInputTextareaProps {
-  description?: any;
-  label?: any;
+  branch: any;
   value: any;
+  description: any;
   onFieldChange: any;
   onFieldRemove: any;
 }
 
 export default function InputTextarea({
-  description,
-  label,
+  branch,
   value,
+  description,
   onFieldChange,
   onFieldRemove,
 }: IInputTextareaProps) {
@@ -21,8 +21,8 @@ export default function InputTextarea({
     <div>
       {description}
       <button
-        title={t("line.button.remove", { field: label })}
-        onClick={() => onFieldRemove(label)}
+        title={t("line.button.remove", { field: branch })}
+        onClick={() => onFieldRemove(branch)}
       >
           X
       </button>
@@ -30,7 +30,7 @@ export default function InputTextarea({
       <textarea
         className={styles.inputtext}
         value={value}
-        onChange={(e) => onFieldChange(label, e.target.value)}
+        onChange={(e) => onFieldChange(branch, e.target.value)}
       />
     </div>
   );

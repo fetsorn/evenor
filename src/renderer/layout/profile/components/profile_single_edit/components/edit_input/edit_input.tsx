@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React from "react";
 import {
   InputTextarea,
   InputText,
   InputUpload,
   InputDate,
-  InputPropsDropdown,
+  InputDropdown,
   InputArray,
   InputObject,
 } from "..";
@@ -12,8 +12,7 @@ import { useTranslation } from "react-i18next";
 
 interface IEditInputProps {
   schema: any;
-  label: string;
-  value: any;
+  entry: any;
   onFieldChange?: any;
   onFieldRemove?: any;
   onFieldUpload?: any;
@@ -24,8 +23,7 @@ interface IEditInputProps {
 
 export default function EditInput({
   schema,
-  label,
-  value,
+  entry,
   onFieldChange,
   onFieldRemove,
   onFieldUpload,
@@ -35,43 +33,25 @@ export default function EditInput({
 }: IEditInputProps) {
   const { i18n } = useTranslation();
 
-  const propType = useMemo(() => {
-    const prop =
-      Object.keys(schema).find((p) => schema[p].label === label) ?? label;
+  const branch = entry['|'];
 
-    const propType = schema[prop]?.type;
+  const value = entry[branch];
 
-    return propType;
-  }, [schema, label]);
+  const branchType = schema[branch]?.type;
 
-  const propTask = useMemo(() => {
-    const prop =
-      Object.keys(schema).find((p) => schema[p].label === label) ?? label;
+  const branchTask = schema[branch]?.task;
 
-    const propTask = schema[prop]?.task;
+  const lang = i18n.resolvedLanguage;
 
-    return propTask;
-  }, [schema, label]);
+  const description = schema?.[branch]?.description?.[lang] ?? branch;
 
-  const description = useMemo(() => {
-    const prop = Object.keys(schema).find(
-      (prop: any) => schema[prop]["label"] === label
-    );
-
-    const lang = i18n.resolvedLanguage;
-
-    const description = schema?.[prop]?.description?.[lang] ?? label;
-
-    return description;
-  }, [schema, label]);
-
-  switch (propTask) {
+  switch (branchTask) {
   case "text":
   case "schema":
     return (
       <InputTextarea
         {...{
-          label,
+          branch,
           value,
           description,
           onFieldChange,
@@ -84,9 +64,9 @@ export default function EditInput({
     return (
       <InputUpload
         {...{
-          label,
-          description,
+          branch,
           value,
+          description,
           onFieldRemove,
           onFieldChange,
           onFieldUpload,
@@ -96,14 +76,13 @@ export default function EditInput({
     );
 
   default:
-    switch (propType) {
+    switch (branchType) {
     case "array":
       return (
         <InputArray
           {...{
             schema,
-            label,
-            value,
+            entry,
             description,
             onFieldChange,
             onFieldRemove,
@@ -115,10 +94,9 @@ export default function EditInput({
       return (
         <InputObject
           {...{
-            label,
-            value,
-            description,
             schema,
+            entry,
+            description,
             onFieldChange,
             onFieldRemove,
           }}
@@ -129,7 +107,7 @@ export default function EditInput({
       return (
         <InputDate
           {...{
-            label,
+            branch,
             value,
             description,
             onFieldChange,
@@ -139,21 +117,21 @@ export default function EditInput({
       );
 
     default:
-      if (label === "UUID") {
+      if (branch === "UUID") {
         return (
           <div>
             <div>{description}</div>
 
             <div>{value}</div>
 
-            <InputPropsDropdown {...{ schema, notAddedFields, onFieldAdd }} />
+            <InputDropdown {...{ schema, fields: notAddedFields, onFieldAdd }} />
           </div>
         );
       } else {
         return (
           <InputText
             {...{
-              label,
+              branch,
               value,
               description,
               onFieldChange,

@@ -2,58 +2,60 @@ import { EditInput } from "..";
 import { useTranslation } from "react-i18next";
 
 interface IInputArrayProps {
-  label: any;
-  description: any;
-  value: any;
   schema: any;
+  entry: any;
+  description?: string;
   onFieldChange: any;
   onFieldRemove: any;
 }
 
 export default function InputArray({
-  label,
-  description,
-  value,
   schema,
+  entry,
+  description,
   onFieldChange,
   onFieldRemove,
 }: IInputArrayProps) {
   const { t } = useTranslation();
+
+  const branch = entry['|'];
 
   return (
     <div>
       <div>
         array {description}
         <button
-          title={t("line.button.remove", { field: label })}
-          onClick={() => onFieldRemove(label)}
+          title={t("line.button.remove", { field: branch })}
+          onClick={() => onFieldRemove(branch)}
         >
           X
         </button>
       </div>
 
-      <div>{value.UUID}</div>
+      <div>{entry.UUID}</div>
 
-      {value.items.map((item: any, index: any) => {
-        function onFieldChangeArrayItem(itemLabel: string, itemValue: any) {
-          const itemsNew = value.items.filter((i: any) => i.UUID !== item.UUID);
+      {entry.items.map((item: any, index: any) => {
+        function onFieldChangeArrayItem(itemBranch: string, itemValue: any) {
+          console.log("onFieldChangeArrayItem", itemBranch, itemValue)
+          const itemsNew = entry.items.filter((i: any) => i.UUID !== item.UUID);
 
           itemsNew.push(itemValue);
 
           // sort so that the order of objects remains the same after push
           itemsNew.sort((a: any, b: any) => a.UUID.localeCompare(b.UUID));
 
-          const arrayNew = { UUID: value.UUID, items: itemsNew };
+          const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };
 
-          onFieldChange(label, arrayNew);
+          onFieldChange(branch, arrayNew);
         }
 
         function onFieldRemoveArrayItem() {
-          const itemsNew = value.items.filter((i: any) => i.UUID !== item.UUID);
+          console.log("onFieldRemoveArrayItem")
+          const itemsNew = entry.items.filter((i: any) => i.UUID !== item.UUID);
 
-          const arrayNew = { UUID: value.UUID, items: itemsNew };
+          const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };
 
-          onFieldChange(label, arrayNew);
+          onFieldChange(branch, arrayNew);
         }
 
         return (
@@ -61,11 +63,10 @@ export default function InputArray({
             <EditInput
               {...{
                 schema,
+                entry: item,
                 onFieldChange: onFieldChangeArrayItem,
                 onFieldRemove: onFieldRemoveArrayItem,
               }}
-              label={item.ITEM_NAME}
-              value={item}
             />
           </div>
         );

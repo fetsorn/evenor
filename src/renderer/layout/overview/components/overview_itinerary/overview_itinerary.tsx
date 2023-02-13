@@ -30,9 +30,7 @@ export default function OverviewItinerary() {
   ])
 
   async function onUseEffect() {
-    const groupByLabel = schema[groupBy]?.label;
-    
-    const itineraryNew = await buildItinerary(overview, groupByLabel);
+    const itineraryNew = await buildItinerary(overview, groupBy);
 
     setItinerary(itineraryNew);
 

@@ -44,7 +44,8 @@ function queryWorkerInit(dir: string) {
 
         const contents = await wasm.grep(
           message.data.contentFile,
-          message.data.patternFile
+          message.data.patternFile,
+          message.data.isInverted ?? false
         );
 
         // console.log("main thread returns fetch")

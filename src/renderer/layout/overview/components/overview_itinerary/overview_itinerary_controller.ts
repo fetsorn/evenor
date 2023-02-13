@@ -1,21 +1,15 @@
-export async function buildItinerary(overview: any, groupByLabel: any) {
+export async function buildItinerary(overview: any, groupBy: any) {
   const queryWorker = queryWorkerInit();
 
-  const itinerary = await queryWorker.buildLine(overview, groupByLabel);
+  const itinerary = await queryWorker.buildLine(overview, groupBy);
 
   return itinerary;
-}
-
-export function getGroupByLabel(schema: any, groupBy: any) {
-  const groupByLabel = schema[groupBy]["label"] ?? groupBy;
-
-  return groupByLabel;
 }
 
 function queryWorkerInit() {
   const worker = new Worker(new URL("./worker", import.meta.url));
 
-  const buildLine = (data: any, prop_label: any) =>
+  const buildLine = (data: any, branch: any) =>
     new Promise((res, rej) => {
       const channel = new MessageChannel();
 
@@ -29,7 +23,7 @@ function queryWorkerInit() {
         }
       };
 
-      worker.postMessage({ action: "build", data, prop_label }, [
+      worker.postMessage({ action: "build", data, branch }, [
         channel.port2,
       ]);
     });

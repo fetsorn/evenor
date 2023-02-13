@@ -25,7 +25,7 @@ const fetchDataMetadir = (path: any) =>
     postMessage({ action: "fetch", path }, [channel.port2] as any);
   });
 
-const grep = (contentFile: string, patternFile: string) =>
+const grep = (contentFile: string, patternFile: string, isInverted: boolean) =>
   new Promise((res: any, rej: any) => {
     // console.log("csvs invokes callback")
 
@@ -47,7 +47,7 @@ const grep = (contentFile: string, patternFile: string) =>
 
     // console.log("query worker asks main thread to fetch")
 
-    postMessage({ action: "grep", contentFile, patternFile }, [
+    postMessage({ action: "grep", contentFile, patternFile, isInverted }, [
       channel.port2,
     ] as any);
   });
@@ -66,14 +66,11 @@ async function queryMetadir(message: any) {
 
       const searchParams = new URLSearchParams(message.data.searchParams);
 
-      result = await csvs.queryMetadir({searchParams, callback: {
-        fetch: fetchDataMetadir,
-        grep,
-      }});
+      result = await (new csvs.Query({ searchParams, readFile: fetchDataMetadir, grep })).select();
 
       // console.log("csvs completes")
     } catch (e) {
-      console.log("csvs.queryMetadir fails", e, message.data.searchParams);
+      console.log("Query.select() fails", message.data.searchParams, e);
 
       result = [];
     }
@@ -97,14 +94,15 @@ async function queryOptions(message: any) {
     try {
       // console.log("query worker calls to csvs")
 
-      result = await csvs.queryOptions(message.data.param, {
-        fetch: fetchDataMetadir,
+      result = await (new csvs.Query({
+        '|': message.data.param,
+        readFile: fetchDataMetadir,
         grep,
-      });
+      })).select();
 
       // console.log("csvs completes")
     } catch (e) {
-      console.log("csvs.queryOptions fails", e);
+      console.log(`Query.select() options fails`, message.data.param, e);
 
       result = [];
     }

@@ -88,13 +88,15 @@ export default function Header() {
 
       <div/>
 
-      <Button
-        type="button"
-        title={t("header.button.back")}
-        onClick={onSettingsOpen}
-      >
+      { repoRoute !== "store/root" && repoRoute !== "store/view" && (
+        <Button
+          type="button"
+          title={t("header.button.back")}
+          onClick={onSettingsOpen}
+        >
         ⚙️
-      </Button>
+        </Button>
+      )}
 
     </header>
   );

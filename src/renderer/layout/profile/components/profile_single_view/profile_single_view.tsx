@@ -45,7 +45,7 @@ export default function ProfileSingleView() {
 
   const title = formatDate(group);
 
-  const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
+  const addedBranches = entry ? Object.keys(entry).filter((b) => b !== '|') : [];
 
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
@@ -71,9 +71,13 @@ export default function ProfileSingleView() {
             </div>
 
             <div>
-              {addedFields.map((label: string, index: any) => (
+              {addedBranches.map((branch: string, index: any) => (
                 <div key={index}>
-                  <ViewField {...{ label }} value={entry[label]} />
+                  <ViewField entry={
+                    schema[branch]?.type === 'array' || schema[branch]?.type === 'object'
+                      ? entry[branch]
+                      : {'|': branch, [branch]: entry[branch]}
+                  }/>
                 </div>
               ))}
             </div>

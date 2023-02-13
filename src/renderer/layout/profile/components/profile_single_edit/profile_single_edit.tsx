@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
 import {
@@ -54,28 +54,30 @@ export default function ProfileSingleEdit() {
 
   const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
 
-  const addedFields = useMemo(() => (entry ? Object.keys(entry) : []), [entry]);
+  const addedBranches = entry ? Object.keys(entry).filter((b) => b !== '|') : [];
 
-  // always list array items
-  // list schema props that are not in the entry
-  // never list arrays or object fields
-  const notAddedFields = useMemo(
-    () =>
-      entry
-        ? Object.keys(schema).filter((prop: any) => {
-          return (
-            schema[schema[prop].trunk]?.type === "array" ||
-              (!Object.prototype.hasOwnProperty.call(
-                entry,
-                schema[prop].label
-              ) &&
-                schema[prop].type !== "array" &&
-                schema[schema[prop].trunk]?.type !== "object")
-          );
-        })
-        : [],
-    [entry]
-  );
+  // list all missing entry fields
+  // in case the field is array, list all its items
+  const notAddedBranches = entry
+    ? Object.keys(schema).filter((branch: any) => {
+      const { trunk } = schema[branch];
+
+      const isEntryLeaf = trunk === entry['|'] || branch === entry['|'];
+
+      const isEntryField = Object.prototype.hasOwnProperty.call(
+        entry,
+        branch
+      );
+
+      const isArray = schema[branch]?.type === "array";
+
+      const trunkIsLeaf = schema[trunk]?.trunk === entry['|'];
+
+      const isArrayItem = schema[trunk]?.type === "array";
+
+      return (isEntryLeaf && !isEntryField && !isArray) || (trunkIsLeaf && isArrayItem);
+    })
+    : [];
 
   const title = formatDate(group);
 
@@ -99,20 +101,23 @@ export default function ProfileSingleEdit() {
             </div>
 
             <div>
-              {addedFields.map((label: any, index: any) => (
+              {addedBranches.map((branch: any, index: any) => (
                 <div key={index}>
                   <EditInput
                     {...{
                       schema,
-                      label,
                       onFieldChange,
                       onFieldRemove,
                       onFieldUpload,
                       onFieldUploadElectron,
                       onFieldAdd,
-                      notAddedFields,
+                      notAddedFields: notAddedBranches,
                     }}
-                    value={entry[label]}
+                    entry={
+                      schema[branch]?.type === 'array' || schema[branch]?.type === 'object'
+                        ? entry[branch]
+                        : {'|': branch, [branch]: entry[branch]}
+                    }
                   />
                 </div>
               ))}

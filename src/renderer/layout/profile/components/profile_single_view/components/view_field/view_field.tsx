@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { Dispenser } from "@/api";
@@ -6,71 +6,54 @@ import { manifestRoot } from "@/../lib/git_template"
 import { FieldText } from "..";
 
 interface IViewFieldProps {
-  label: any;
-  value: any;
+  entry: any;
 }
 
-export default function ViewField({ label, value }: IViewFieldProps) {
+export default function ViewField({ entry }: IViewFieldProps) {
   const { i18n } = useTranslation();
 
   const [
-    entry,
-    repoRoute,
+    baseEntry,
     isSettings,
   ] = useStore((state) => [
     state.entry,
-    state.repoRoute,
     state.isSettings,
   ])
 
   const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
 
-  const prop = useMemo(() => {
-    return Object.keys(schema).find((p) => schema[p].label === label) ?? label;
-  }, [schema, label]);
+  const branch = entry['|'];
 
-  const propType = useMemo(() => {
-    const propType = schema[prop]?.type;
+  const branchType = schema[branch]?.type;
 
-    return propType;
-  }, [schema, label]);
+  const branchDescription = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
-  const propDescription = useMemo(() => {
-    const lang = i18n.resolvedLanguage;
-
-    const description = schema?.[prop]?.description?.[lang] ?? label;
-
-    return description;
-  }, [schema, label]);
-
-  const propTrunk = useMemo(() => {
-    return schema[prop]?.trunk;
-  }, [schema, label]);
+  const trunk = schema[branch]?.trunk;
 
   return (
     <div>
-      {propType === "array" ? (
+      {branchType === "array" ? (
         <div>
-          <div>array {propDescription} </div>
-          { value.items.map((item: any, index: any) => (
+          <div>array {branchDescription} </div>
+          { entry.items.map((item: any, index: any) => (
             <div key={index}>
-              <ViewField label={item.ITEM_NAME} value={item} />
+              <ViewField entry={item}/>
             </div>
           )) }
         </div>
-      ) : propTrunk === "tags" ? (
-        <Dispenser {...{ repoRoute, schema, entry, field: prop, value }}/>
-      ) : propType === "object" ? (
+      ) : trunk === "tags" ? (
+        <Dispenser {...{ baseEntry, branchEntry: entry }}/>
+      ) : branchType === "object" ? (
         <div>
-          <div>object {propDescription}</div>
-          { Object.keys(value).map((field: any, index: any) => (
+          <div>object {branchDescription}</div>
+          { Object.keys(entry).map((field: any, index: any) => (
             <div key={index}>
-              <FieldText {...{ schema }} label={field} value={value[field]} />
+              <FieldText label={branch} value={entry[branch]} />
             </div>
           )) }
         </div>
       ) : (
-        <FieldText {...{ schema, label, value }} />
+        <FieldText label={branch} value={entry[branch]} />
       )}
     </div>
   );

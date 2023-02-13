@@ -38,8 +38,6 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     // get current repo settings from root db
     const entry = await getRepoSettings(get().repoRoute)
 
-    console.log(entry)
-
     const repoRouteRoot = "store/root";
 
     const { onEntrySave, onEntryDelete, onFieldAdd } = get();
@@ -58,10 +56,10 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
       set({ repoRoute: repoRouteRoot, entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
     }
 
-    const onSettingsAdd = async (label: string) => {
+    const onSettingsAdd = async (branch: string) => {
       const rootSchema = JSON.parse(manifestRoot);
 
-      const entry = await addField(rootSchema, deepClone(get().entry), label);
+      const entry = await addField(rootSchema, deepClone(get().entry), branch);
 
       set({ entry })
     }
@@ -97,44 +95,46 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
   onEntryClose: () => set({ entry: undefined }),
 
-  onFieldAdd: async (label: string) => {
-    const entry = await addField(get().schema, deepClone(get().entry), label);
+  onFieldAdd: async (branch: string) => {
+    const entry = await addField(get().schema, deepClone(get().entry), branch);
 
     set({ entry })
   },
 
-  onFieldChange: (label: string, value: string) => {
+  onFieldChange: (branch: string, value: string) => {
+    console.log("onFieldChange", branch, value)
     const entry = deepClone(get().entry);
 
-    entry[label] = value;
+    entry[branch] = value;
 
     set({ entry })
   },
 
-  onFieldRemove: (label: string) => {
+  onFieldRemove: (branch: string) => {
+    console.log("onFieldRemove", branch)
     const entry = deepClone(get().entry);
 
-    delete entry[label];
+    delete entry[branch];
 
     set({ entry })
   },
 
-  onFieldUpload: async (label: string, file: any) => {
+  onFieldUpload: async (branch: string, file: any) => {
     await uploadFile(get().repoRoute, file);
 
     const entry = deepClone(get().entry);
 
-    entry[label] = file.name;
+    entry[branch] = file.name;
 
     set({ entry });
   },
 
-  onFieldUploadElectron: async (label: string) => {
+  onFieldUploadElectron: async (branch: string) => {
     const filepath = await window.electron.uploadFile(get().repoRoute);
 
     const entry = deepClone(get().entry);
 
-    entry[label] = filepath;
+    entry[branch] = filepath;
 
     set({ entry })
   }

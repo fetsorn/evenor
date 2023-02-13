@@ -3,9 +3,9 @@ import { Button } from "@/components";
 import styles from "./input_upload.module.css";
 
 interface IInputUploadProps {
-  label: any;
-  description: any;
+  branch: string;
   value: any;
+  description: any;
   onFieldRemove: any;
   onFieldChange: any;
   onFieldUpload?: any;
@@ -13,9 +13,9 @@ interface IInputUploadProps {
 }
 
 export default function InputUpload({
-  label,
-  description,
+  branch,
   value,
+  description,
   onFieldRemove,
   onFieldChange,
   onFieldUpload,
@@ -27,8 +27,8 @@ export default function InputUpload({
     <div>
       {description}
       <button
-        title={t("line.button.remove", { field: label })}
-        onClick={() => onFieldRemove(label)}
+        title={t("line.button.remove", { field: branch })}
+        onClick={() => onFieldRemove(branch)}
       >
           X
       </button>
@@ -39,16 +39,16 @@ export default function InputUpload({
             className={styles.input}
             type="text"
             value={value}
-            onChange={(e) => onFieldChange(label, e.target.value)}
+            onChange={(e) => onFieldChange(branch, e.target.value)}
           />
-          <Button type="button" onClick={() => onFieldUploadElectron(label)}>
+          <Button type="button" onClick={() => onFieldUploadElectron(branch)}>
             {t("line.button.upload")}
           </Button>
         </div>
       ) : (
         <input
           type="file"
-          onChange={(e) => onFieldUpload(label, e.target.files[0])}
+          onChange={(e) => onFieldUpload(branch, e.target.files[0])}
         />
       )}
     </div>

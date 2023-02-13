@@ -2,19 +2,19 @@ import { useTranslation } from "react-i18next";
 import styles from "./input_text.module.css";
 
 interface IInputTextProps {
-  label: any;
-  description: any;
+  branch: any;
   value: any;
   list?: any;
+  description: any;
   onFieldChange: any;
   onFieldRemove: any;
 }
 
 export default function InputText({
-  label,
-  description,
+  branch,
   value,
   list,
+  description,
   onFieldChange,
   onFieldRemove,
 }: IInputTextProps) {
@@ -24,8 +24,8 @@ export default function InputText({
     <div>
       {description}
       <button
-        title={t("line.button.remove", { field: label })}
-        onClick={() => onFieldRemove(label)}
+        title={t("line.button.remove", { field: branch })}
+        onClick={() => onFieldRemove(branch)}
       >
           X
       </button>
@@ -35,7 +35,7 @@ export default function InputText({
         type="text"
         list={list}
         value={value}
-        onChange={(e) => onFieldChange(label, e.target.value)}
+        onChange={(e) => onFieldChange(branch, e.target.value)}
       />
     </div>
   );

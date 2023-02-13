@@ -16,7 +16,7 @@ export default function FilterSearchBar() {
 
   const [
     queries,
-    rawSchema,
+    schema,
     onQueryAdd,
     isInitialized,
     repoRoute
@@ -28,37 +28,23 @@ export default function FilterSearchBar() {
     state.repoRoute
   ]);
 
-  const schema = useMemo(
-    () =>
-      rawSchema
-        ? Object.keys(rawSchema).reduce(
-          (acc, key) => [...acc, { ...rawSchema[key], name: key }],
-          []
-        )
-        : [],
-    [rawSchema]
-  );
-
-  const notAddedFields = useMemo(
-    () =>
-      schema.filter(
-        (item: any) =>
-          !Object.prototype.hasOwnProperty.call(queries, item.name) &&
-          item.type !== "array"
-      ),
-    [schema, queries]
+  const notAddedBranches = Object.keys(schema).filter(
+    (branch: any) =>
+      !Object.prototype.hasOwnProperty.call(queries, branch)
   );
 
   async function onQueryFieldChange() {
     if (isInitialized) {
-      const options = await queryOptions(repoRoute, queryField);
+      const options: any = await queryOptions(repoRoute, queryField);
 
-      setOptions(options);
+      const optionValues = options.map((entry: any) => entry[queryField])
+
+      setOptions(optionValues);
     }
   }
 
   useEffect(() => {
-    setQueryField(notAddedFields?.[0]?.name);
+    setQueryField(notAddedBranches?.[0]);
 
     setQueryValue("")
   }, [schema, queries]);
@@ -73,11 +59,15 @@ export default function FilterSearchBar() {
         name="searchBarDropdown"
         value={queryField}
         title={t("header.dropdown.search", { field: queryField })}
-        onChange={({ target: { value } }) => setQueryField(value)}
+        onChange={({ target: { value } }) => {
+          setQueryField(value);
+
+          setOptions([]);
+        }}
       >
-        {notAddedFields.map((field: any, idx: any) => (
-          <option key={idx} value={field.name}>
-            {field.name}
+        {notAddedBranches.map((branch: any, idx: any) => (
+          <option key={idx} value={branch}>
+            {branch}
           </option>
         ))}
       </select>

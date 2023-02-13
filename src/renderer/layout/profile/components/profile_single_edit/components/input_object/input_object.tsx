@@ -1,23 +1,21 @@
-import React, { useMemo, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { EditInput, InputPropsDropdown } from "..";
+import { EditInput, InputDropdown } from "..";
 import { queryOptions } from "@/api";
 import { useStore } from "@/store";
 
 interface IInputObjectProps {
-  label: any;
-  description: any;
-  value: any;
   schema: any;
+  entry: any;
+  description: any;
   onFieldChange: any;
   onFieldRemove: any;
 }
 
 export default function InputObject({
-  label,
-  description,
-  value,
   schema,
+  entry,
+  description,
   onFieldChange,
   onFieldRemove,
 }: IInputObjectProps) {
@@ -27,35 +25,66 @@ export default function InputObject({
 
   const repoRoute = useStore((state) => state.repoRoute);
 
-  const notAddedFields = useMemo(
-    () =>
-      value
-        ? Object.keys(schema).filter((prop: any) => {
-          const { trunk } = schema[prop];
+  const branch = entry['|']
 
-          const trunkIsValue = trunk === value.ITEM_NAME;
+  const addedLeaves = Object.keys(entry).filter((b) =>  b !== "|" && b !== "UUID")
 
-          const valueHasField = Object.prototype.hasOwnProperty.call(
-            value,
-            schema[prop].label
-          );
+  const notAddedLeaves = entry
+    ? Object.keys(schema).filter((leaf: any) => {
+      const isLeaf = schema[leaf]?.trunk === branch;
 
-          return trunkIsValue && !valueHasField;
-        })
-        : [],
-    [value]
-  );
+      const entryHasLeaf = Object.prototype.hasOwnProperty.call(entry, leaf);
 
-  function onAddObjectField(fieldLabel: string) {
-    const objectNew = { ...value };
+      return isLeaf && !entryHasLeaf;
+    })
+    : [];
 
-    objectNew[fieldLabel] = "";
+  function onAddObjectField(fieldBranch: string) {
+    const objectNew = { ...entry };
 
-    onFieldChange(label, objectNew);
+    objectNew[fieldBranch] = "";
+
+    onFieldChange(branch, objectNew);
+  }
+
+  function generateLeaf(leaf: any, index: any) {
+    function onFieldChangeObjectField(
+      fieldBranch: string,
+      fieldValue: string
+    ) {
+      console.log("onFieldChangeObjectField", fieldBranch, fieldValue)
+      const objectNew = { ...entry };
+
+      objectNew[fieldBranch] = fieldValue;
+
+      onFieldChange(branch, objectNew);
+    }
+
+    function onFieldRemoveObjectField(fieldBranch: string) {
+      console.log("onFieldRemoveObjectField", fieldBranch)
+      const objectNew = { ...entry };
+
+      delete objectNew[fieldBranch];
+
+      onFieldChange(branch, objectNew);
+    }
+
+    return (
+      <div key={index}>
+        <EditInput
+          {...{
+            schema,
+            entry: { '|': leaf, [leaf]: entry[leaf] },
+            onFieldChange: onFieldChangeObjectField,
+            onFieldRemove: onFieldRemoveObjectField,
+          }}
+        />
+      </div>
+    );
   }
 
   async function onUseEffect() {
-    const options = await queryOptions(repoRoute, label);
+    const options = await queryOptions(repoRoute, branch);
 
     setOptions(options);
   }
@@ -69,8 +98,8 @@ export default function InputObject({
       <div>
         object {description}
         <button
-          title={t("line.button.remove", { field: label })}
-          onClick={() => onFieldRemove(label)}
+          title={t("line.button.remove", { field: branch })}
+          onClick={() => onFieldRemove(branch)}
         >
           X
         </button>
@@ -78,12 +107,12 @@ export default function InputObject({
 
       <br />
 
-      <div>{ value.UUID }</div>
+      <div>{ entry.UUID }</div>
       { options.length > 0 && (
         <select
           value="default"
           onChange={({ target: { value } }) => {
-            onFieldChange(label, JSON.parse(value))
+            onFieldChange(branch, JSON.parse(value))
           }}
         >
           <option hidden disabled value="default">
@@ -97,47 +126,11 @@ export default function InputObject({
         </select>
       )}
 
-      { notAddedFields.length > 0 && (
-        <InputPropsDropdown {...{ schema, notAddedFields, onFieldAdd: onAddObjectField }} />
+      { notAddedLeaves.length > 0 && (
+        <InputDropdown {...{ schema, fields: notAddedLeaves, onFieldAdd: onAddObjectField }} />
       ) }
 
-      { Object.keys(value)
-        .filter((l) => l !== "UUID" && l !== "ITEM_NAME")
-        .map((field: any, index: any) => {
-          function onFieldChangeObjectField(
-            fieldLabel: string,
-            fieldValue: string
-          ) {
-            const objectNew = { ...value };
-
-            objectNew[fieldLabel] = fieldValue;
-
-            onFieldChange(label, objectNew);
-          }
-
-          function onFieldRemoveObjectField(fieldLabel: string) {
-            const objectNew = { ...value };
-
-            delete objectNew[fieldLabel];
-
-            onFieldChange(label, objectNew);
-          }
-
-          return (
-            <div key={index}>
-              <EditInput
-                {...{
-                  schema,
-                  onFieldChange: onFieldChangeObjectField,
-                  onFieldRemove: onFieldRemoveObjectField,
-                }}
-                label={field}
-                value={value[field]}
-              />
-            </div>
-          );
-        })
-      }
+      { addedLeaves.map(generateLeaf) }
     </div>
   );
 }

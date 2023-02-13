@@ -4,21 +4,18 @@ import { checkRepo, syncRepo } from "./dispenser_sync";
 import { useStore } from "@/store";
 
 interface IDispenserProps {
-  repoRoute: string;
-  schema: any;
-  entry: any;
-  field: string;
-  value: any;
+  baseEntry: any;
+  branchEntry: any;
 }
 
-export function Dispenser({repoRoute, schema, entry, field, value}: IDispenserProps) {
+export function Dispenser({baseEntry, branchEntry}: IDispenserProps) {
 
   const setRepoRoute = useStore((state) => state.setRepoRoute)
 
   const [entries, setEntries] = useState<any>([]);
 
   async function onCheckRepo() {
-    const { sourceEntries, targetEntries } = await checkRepo(`repos/${entry.REPO_NAME}`, `repos/${value.SYNC_TAG_TARGET}`, value.SYNC_TAG_SEARCH)
+    const { sourceEntries, targetEntries } = await checkRepo(`repos/${baseEntry.REPO_NAME}`, `repos/${branchEntry.SYNC_TAG_TARGET}`, branchEntry.SYNC_TAG_SEARCH)
 
     // TODO: resolve diff between sourceEntries and targetEntries
     const entriesDiff = sourceEntries.concat(targetEntries)
@@ -27,25 +24,25 @@ export function Dispenser({repoRoute, schema, entry, field, value}: IDispenserPr
   }
 
   async function onSyncRepo() {
-    await syncRepo(`repos/${entry.REPO_NAME}`, `repos/${value.SYNC_TAG_TARGET}`, entries)
+    await syncRepo(`repos/${baseEntry.REPO_NAME}`, `repos/${branchEntry.SYNC_TAG_TARGET}`, entries)
   }
 
-  switch (field) {
+  switch (branchEntry['|']) {
   case "local_tag":
     return (
       <div>
-        <a onClick={() => setRepoRoute(`repos/${entry.REPO_NAME}`)}>{entry.REPO_NAME}</a>
+        <a onClick={() => setRepoRoute(`repos/${baseEntry.REPO_NAME}`)}>{baseEntry.REPO_NAME}</a>
         <br/>
-        <a onClick={() => updateRepo(entry)}>🔄</a>
+        <a onClick={() => updateRepo(baseEntry)}>🔄</a>
       </div>
     )
 
   case "sync_tag":
     return (
       <div>
-        <a>{value.SYNC_TAG_SEARCH}</a>
+        <a>{branchEntry.SYNC_TAG_SEARCH}</a>
         <br/>
-        <a>{value.SYNC_TAG_TARGET}</a>
+        <a>{branchEntry.SYNC_TAG_TARGET}</a>
         <br/>
         <a onClick={onCheckRepo}>🔄</a>
         <br/>

@@ -105,7 +105,8 @@ function queryWorkerInit(dir: string) {
 
         const contents = await wasm.grep(
           message.data.contentFile,
-          message.data.patternFile
+          message.data.patternFile,
+          message.data.isInverted ?? false
         );
 
         // console.log("main thread returns fetch")
@@ -251,12 +252,13 @@ export function updateOverview(overview: any, entryNew: any) {
 }
 
 export async function editEntry(repoRoute: string, entry: any) {
-  await csvs.editEntry(entry, {
-    fetch: (path: string) => fetchDataMetadir(repoRoute, path),
-    write: (path: string, content: string) =>
+  await (new csvs.Entry({
+    entry,
+    readFile: (path: string) => fetchDataMetadir(repoRoute, path),
+    writeFile: (path: string, content: string) =>
       writeDataMetadir(repoRoute, path, content),
-    random: () => crypto.randomUUID(),
-  });
+    randomUUID: () => crypto.randomUUID(),
+  })).update();
 }
 
 export async function deleteEntry(
@@ -264,11 +266,12 @@ export async function deleteEntry(
   overview: any,
   entry: any
 ) {
-  await csvs.deleteEntry(entry.UUID, {
-    fetch: (path: string) => fetchDataMetadir(repoRoute, path),
-    write: (path: string, content: string) =>
+  await (new csvs.Entry({
+    entry,
+    readFile: (path: string) => fetchDataMetadir(repoRoute, path),
+    writeFile: (path: string, content: string) =>
       writeDataMetadir(repoRoute, path, content),
-  });
+  })).delet();
 
   return overview.filter((e: any) => e.UUID !== entry.UUID);
 }
@@ -317,17 +320,12 @@ export async function uploadFile(dir: string, file: File) {
   }
 }
 
-export async function addField(schema: any, entry: any, label: string) {
-  const prop =
-    Object.keys(schema).find((p: any) => schema[p].label === label) ?? label;
-
-  const { trunk } = schema[prop];
+export async function addField(schema: any, entry: any, branch: string) {
+  const { trunk } = schema[branch];
 
   if (trunk && schema[trunk].type === "array") {
-    const trunkLabel = schema[trunk].label;
-
     // ensure trunk array
-    if (entry[trunkLabel] === undefined) {
+    if (entry[trunk] === undefined) {
       const trunk: any = {};
 
       const arrayUUID = await digestMessage(crypto.randomUUID());
@@ -336,7 +334,7 @@ export async function addField(schema: any, entry: any, label: string) {
 
       trunk.items = [];
 
-      entry[trunkLabel] = { ...trunk };
+      entry[trunk] = { ...trunk };
     }
 
     // assume that array items are always objects
@@ -346,27 +344,27 @@ export async function addField(schema: any, entry: any, label: string) {
 
     obj.UUID = itemUUID;
 
-    obj.ITEM_NAME = prop;
+    obj['|'] = branch;
 
-    // const fieldLabels = Object.keys(schema)
-    //   .filter((p) => schema[p].trunk === prop)
-    //   .map((p) => schema[p].label);
+    // set empty default values
+    // const leaves = Object.keys(schema)
+    //   .filter((b) => schema[b].trunk === branch)
 
-    // for (const fieldLabel of fieldLabels) {
-    //   obj[fieldLabel] = "";
+    // for (const leaf of leaves) {
+    //   obj[leaf] = "";
     // }
 
-    entry[trunkLabel].items.push({ ...obj });
-  } else if (trunk && schema[prop].type === "object") {
+    entry[trunk].items.push({ ...obj });
+  } else if (trunk && schema[branch].type === "object") {
     const obj: any = {};
 
     const uuid = await digestMessage(crypto.randomUUID());
 
     obj.UUID = uuid;
 
-    entry[label] = { ...obj };
+    entry[branch] = { ...obj };
   } else {
-    entry[label] = "";
+    entry[branch] = "";
   }
 
   return entry;
@@ -385,53 +383,48 @@ export async function createEntry() {
 export function getDefaultGroupBy(schema: any, data: any, searchParams: URLSearchParams) {
   // fallback to groupBy param from the search query
   if (searchParams.has("groupBy")) {
-    const groupByProp = searchParams.get("groupBy");
+    const groupBy = searchParams.get("groupBy");
 
-    return groupByProp;
+    return groupBy;
   }
 
-  let groupByProp;
+  let groupBy;
 
   const car = data[0] ?? {};
 
   // fallback to first date param present in data
-  groupByProp = Object.keys(schema).find((prop: any) => {
-    const propLabel = schema[prop].label ?? prop;
-
+  groupBy = Object.keys(schema).find((branch: any) => {
     return (
-      schema[prop].type === "date" &&
-      Object.prototype.hasOwnProperty.call(car, propLabel)
+      schema[branch].type === "date" &&
+      Object.prototype.hasOwnProperty.call(car, branch)
     );
   });
 
   // fallback to first param present in data
-  if (!groupByProp) {
-    groupByProp = Object.keys(schema).find((prop: any) => {
-      const propLabel = schema[prop].label ?? prop;
-
-      return Object.prototype.hasOwnProperty.call(car, propLabel);
+  if (!groupBy) {
+    groupBy = Object.keys(schema).find((branch: any) => {
+      return Object.prototype.hasOwnProperty.call(car, branch);
     });
   }
 
   // fallback to first date param present in schema
-  if (!groupByProp) {
-    groupByProp = Object.keys(schema).find(
-      (prop: any) => schema[prop].type === "date"
+  if (!groupBy) {
+    groupBy = Object.keys(schema).find(
+      (branch: any) => schema[branch].type === "date"
     );
   }
 
   // fallback to first param present in schema
-  if (!groupByProp) {
-    groupByProp = Object.keys(schema)[0];
+  if (!groupBy) {
+    groupBy = Object.keys(schema)[0];
   }
 
   // unreachable with a valid scheme
-  // fallback to empty string
-  if (!groupByProp) {
-    groupByProp = "";
+  if (!groupBy) {
+    throw Error("failed to find default groupBy in the schema");
   }
 
-  return groupByProp;
+  return groupBy;
 }
 
 export async function getRepoSettings(repoRoute: string) {

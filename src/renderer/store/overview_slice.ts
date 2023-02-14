@@ -101,7 +101,7 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
       const searchParams = queriesToParams(get().queries);
 
-      const overview = await searchRepo(get().repoRoute, searchParams);
+      const overview = await searchRepo(get().repoRoute, searchParams, base);
 
       const groupBy = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
         ? get().groupBy
@@ -109,6 +109,14 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
       set({ overview, base, schema, groupBy })
     }
+  },
+
+  onChangeBase: async (base: string) => {
+    const searchParams = queriesToParams(get().queries);
+
+    const overview = await searchRepo(get().repoRoute, searchParams, base);
+
+    set({ base, overview })
   },
 
   setRepoRoute: (repoRoute: string) => set({ repoRoute, queries: {}, entry: undefined })

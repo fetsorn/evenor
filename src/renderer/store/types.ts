@@ -59,6 +59,7 @@ interface IOverviewSlice {
   isInitialized: boolean
   initialize: (repoRoute: any, search: any) => Promise<void>
   onQueries: () => Promise<void>
+  onChangeBase: (base: string) => Promise<void>
   setRepoRoute: (repoRoute: string) => void
 }
 

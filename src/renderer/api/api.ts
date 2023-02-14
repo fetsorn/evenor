@@ -128,12 +128,12 @@ function queryWorkerInit(dir: string) {
 
   const queryMetadir =
     __BUILD_MODE__ === "server"
-      ? async (searchParams: URLSearchParams) => {
+      ? async (searchParams: URLSearchParams, base = undefined as any) => {
         const response = await fetch("/query?" + searchParams.toString());
 
         return response.json();
       }
-      : (searchParams: URLSearchParams) =>
+      : (searchParams: URLSearchParams, base = undefined as any) =>
         new Promise((res, rej) => {
           const channel = new MessageChannel();
 
@@ -148,8 +148,7 @@ function queryWorkerInit(dir: string) {
           };
 
           worker.postMessage(
-            { action: "query", searchParams: searchParams.toString() },
-
+            { action: "query", searchParams: searchParams.toString(), base },
             [channel.port2]
           );
         });
@@ -225,10 +224,10 @@ export async function writeDataMetadir(
   }
 }
 
-export async function searchRepo(dir: string, searchParams: URLSearchParams): Promise<any> {
+export async function searchRepo(dir: string, searchParams: URLSearchParams, base = undefined as any): Promise<any> {
   const queryWorker = queryWorkerInit(dir);
 
-  const overview = await queryWorker.queryMetadir(searchParams);
+  const overview = await queryWorker.queryMetadir(searchParams, base);
 
   return overview;
 }

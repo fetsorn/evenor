@@ -8,6 +8,7 @@ import {
 } from "@/components";
 import {
   HeaderFilter,
+  HeaderBaseDropdown,
   HeaderGroupByDropdown,
   HeaderOverviewTypeDropdown,
 } from "./components";
@@ -88,6 +89,8 @@ export default function Header() {
 
         <HeaderGroupByDropdown />
       </div>
+
+      <HeaderBaseDropdown />
 
       <HeaderFilter />
 

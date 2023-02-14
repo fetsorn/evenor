@@ -66,7 +66,9 @@ async function queryMetadir(message: any) {
 
       const searchParams = new URLSearchParams(message.data.searchParams);
 
-      result = await (new csvs.Query({ searchParams, readFile: fetchDataMetadir, grep })).select();
+      const { base } = message.data;
+
+      result = await (new csvs.Query({ '|': base, searchParams, readFile: fetchDataMetadir, grep })).select();
 
       // console.log("csvs completes")
     } catch (e) {

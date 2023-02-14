@@ -42,9 +42,12 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
 
       // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
     } else {
-      throw Error(
+      console.log(
         `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
       );
+      // throw Error(
+      //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
+      // );
     }
   }
 
@@ -70,7 +73,8 @@ export async function fetchDataMetadir(repoRoute: string, path: string) {
       return await fetchDataMetadirBrowser(repoRoute, path);
     }
   } catch (e) {
-    throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
+    console.log(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
+    // throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
   }
 }
 
@@ -232,6 +236,7 @@ export async function searchRepo(dir: string, searchParams: URLSearchParams): Pr
 export async function fetchSchema(dir: string): Promise<any> {
   const schemaFile = await fetchDataMetadir(dir, "metadir.json");
 
+  console.log(schemaFile)
   const schema = JSON.parse(schemaFile);
 
   return schema;
@@ -326,15 +331,17 @@ export async function addField(schema: any, entry: any, branch: string) {
   if (trunk && schema[trunk].type === "array") {
     // ensure trunk array
     if (entry[trunk] === undefined) {
-      const trunk: any = {};
+      const trunkEntry: any = {};
 
       const arrayUUID = await digestMessage(crypto.randomUUID());
 
-      trunk.UUID = arrayUUID;
+      trunkEntry['|'] = trunk;
 
-      trunk.items = [];
+      trunkEntry.UUID = arrayUUID;
 
-      entry[trunk] = { ...trunk };
+      trunkEntry.items = [];
+
+      entry[trunk] = { ...trunkEntry };
     }
 
     // assume that array items are always objects
@@ -371,10 +378,12 @@ export async function addField(schema: any, entry: any, branch: string) {
 }
 
 // TODO: set default values for required fields
-export async function createEntry() {
+export async function createEntry(base: string) {
   const entry: Record<string, string> = {};
 
   entry.UUID = await digestMessage(crypto.randomUUID());
+
+  entry['|'] = base;
 
   return entry;
 }

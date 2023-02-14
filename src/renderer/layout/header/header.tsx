@@ -68,14 +68,19 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      { __BUILD_MODE__ === "electron" ? (
-        <Button
-          type="button"
-          title={t("header.button.back")}
-          onClick={() => setRepoRoute("store/root")}
-        >
-          &lt;=
-        </Button>) : <div/>
+      { __BUILD_MODE__ === "electron"
+        || (repoRoute !== "store/view"
+         && repoRoute !== "store/root")
+        ? (
+          <Button
+            type="button"
+            title={t("header.button.back")}
+            onClick={() => setRepoRoute("store/root")}
+          >
+            {/* &lt;= */}
+            🏠
+          </Button>)
+        : <div/>
       }
 
       <div className={styles.dropdowns}>
@@ -94,7 +99,7 @@ export default function Header() {
           title={t("header.button.back")}
           onClick={onSettingsOpen}
         >
-        ⚙️
+            ⚙️
         </Button>
       )}
 

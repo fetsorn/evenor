@@ -53,6 +53,7 @@ interface IEntrySlice {
 
 interface IOverviewSlice {
   schema: any
+  base: string
   overview: any
   repoRoute: string
   isInitialized: boolean

@@ -70,7 +70,7 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
   },
 
   onEntryCreate: async (index: string) => {
-    const entry = await createEntry();
+    const entry = await createEntry(get().base);
 
     set({ index, isEdit: true, entry })
   },
@@ -102,7 +102,6 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
   },
 
   onFieldChange: (branch: string, value: string) => {
-    console.log("onFieldChange", branch, value)
     const entry = deepClone(get().entry);
 
     entry[branch] = value;
@@ -111,7 +110,6 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
   },
 
   onFieldRemove: (branch: string) => {
-    console.log("onFieldRemove", branch)
     const entry = deepClone(get().entry);
 
     delete entry[branch];

@@ -52,7 +52,6 @@ export default function InputObject({
       fieldBranch: string,
       fieldValue: string
     ) {
-      console.log("onFieldChangeObjectField", fieldBranch, fieldValue)
       const objectNew = { ...entry };
 
       objectNew[fieldBranch] = fieldValue;
@@ -61,7 +60,6 @@ export default function InputObject({
     }
 
     function onFieldRemoveObjectField(fieldBranch: string) {
-      console.log("onFieldRemoveObjectField", fieldBranch)
       const objectNew = { ...entry };
 
       delete objectNew[fieldBranch];

@@ -36,7 +36,6 @@ export default function InputArray({
 
       {entry.items.map((item: any, index: any) => {
         function onFieldChangeArrayItem(itemBranch: string, itemValue: any) {
-          console.log("onFieldChangeArrayItem", itemBranch, itemValue)
           const itemsNew = entry.items.filter((i: any) => i.UUID !== item.UUID);
 
           itemsNew.push(itemValue);
@@ -50,7 +49,6 @@ export default function InputArray({
         }
 
         function onFieldRemoveArrayItem() {
-          console.log("onFieldRemoveArrayItem")
           const itemsNew = entry.items.filter((i: any) => i.UUID !== item.UUID);
 
           const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };

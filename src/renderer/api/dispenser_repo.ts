@@ -93,6 +93,51 @@ export async function gitcommit(dir: string) {
   }
 }
 
+export async function addRemote(dir: string, url: string) {
+  const fs = new LightningFS("fs");
+
+  await git.addRemote({
+    fs,
+    dir,
+    remote: 'upstream',
+    url,
+    force: true,
+  })
+}
+
+export async function pull(dir: string, token: string) {
+  const fs = new LightningFS("fs");
+
+  // console.log("gitPull");
+  // fastForward instead of pull
+  // https://github.com/isomorphic-git/isomorphic-git/issues/1073
+  await git.fastForward({
+    fs,
+    http,
+    dir,
+    remote: "upstream",
+    onAuth: () => ({
+      username: token,
+    }),
+  });
+}
+
+export async function push(dir: string, token: string) {
+  const fs = new LightningFS("fs");
+
+  // console.log("gitPush");
+  await git.push({
+    fs,
+    http,
+    force: true,
+    dir,
+    remote: "upstream",
+    onAuth: () => ({
+      username: token,
+    }),
+  });
+}
+
 export async function ls(path: string) {
   const pfs = new LightningFS("fs").promises;
 
@@ -160,6 +205,7 @@ export async function rimraf(path: string) {
 }
 
 async function ensureRepoBrowser(repo: string, schema: string) {
+  console.log('ensureRepoBrowser', repo, schema)
   const fs = new LightningFS("fs");
 
   const pfs = fs.promises;
@@ -220,9 +266,9 @@ async function linkRepo(repodir: string, reponame: string) {
 }
 
 export async function updateRepo(entry: any) {
-  await ensureRepo(entry.UUID, entry.SCHEMA);
+  await ensureRepo(entry.UUID, entry.schema);
 
-  await linkRepo(entry.UUID, entry.REPO_NAME);
+  await linkRepo(entry.UUID, entry.reponame);
 }
 
 export async function ensureRoot() {
@@ -313,3 +359,4 @@ export async function cloneRepo(url: string, token: string) {
     throw Error(`${e}`);
   }
 }
+

@@ -63,10 +63,39 @@ export default function EditInput({
     setIsOpen(false)
   }
 
-  function Spoiler({ children }: any) {
+  // TODO: find a way to wrap the Spoiler and Label
+  // in a component with a children prop
+  // without losing input focus after onFieldChange
+
+  // if non-array root, treat as object
+  // if array root, treat as array later
+  if (schema[branch].trunk === undefined
+        && schema[branch].type !== 'array'
+        && isBaseObject) {
+    return (
+      <InputObject
+        {...{
+          schema,
+          entry,
+          onFieldChange,
+        }}
+      />
+    )
+  }
+
+  switch (branchType) {
+  case "array":
     return (
       <div>
-        {schema[branch].trunk === undefined ? children : (
+        {schema[branch].trunk === undefined ? (
+          <InputArray
+            {...{
+              schema,
+              entry,
+              onFieldChange,
+            }}
+          />
+        ) : (
           <div>
             {!isOpen ? (
               <div>
@@ -94,107 +123,163 @@ export default function EditInput({
                   X
                 </button>
 
-                {children}
+                <InputArray
+                  {...{
+                    schema,
+                    entry,
+                    onFieldChange,
+                  }}
+                />
               </div>
             )}
           </div>
         )}
       </div>
-    )}
-
-  // if non-array root, treat as object
-  // if array root, treat as array later
-  if (schema[branch].trunk === undefined
-        && schema[branch].type !== 'array'
-        && isBaseObject) {
-    return (
-      <Spoiler>
-        <InputObject
-          {...{
-            schema,
-            entry,
-            onFieldChange,
-          }}
-        />
-      </Spoiler>
-    )
-  }
-
-  switch (branchTask) {
-  case "text":
-  case "schema":
-    return (
-      <Spoiler>
-        <InputTextarea
-          {...{
-            branch,
-            value,
-            onFieldChange,
-          }}
-        />
-      </Spoiler>
     );
 
-  case "path":
+  case "object":
     return (
-      <Spoiler>
-        <InputUpload
-          {...{
-            branch,
-            value,
-            onFieldChange,
-            onFieldUpload,
-            onFieldUploadElectron,
-          }}
-        />
-      </Spoiler>
-    );
+      <div>
+        {!isOpen ? (
+          <div>
+            <a onClick={open}>▶️</a>
 
-  case "date":
-    return (
-      <Spoiler>
-        <InputDate
-          {...{
-            branch,
-            value,
-            onFieldChange,
-          }}
-        />
-      </Spoiler>
-    );
+            {description}
 
+            <button
+              title={t("line.button.remove", { field: branch })}
+              onClick={() => onFieldRemove(branch)}
+            >
+                  X
+            </button>
+          </div>
+        ) : (
+          <div>
+            <a onClick={close}>🔽</a>
+
+            {description}
+
+            <button
+              title={t("line.button.remove", { field: branch })}
+              onClick={() => onFieldRemove(branch)}
+            >
+                  X
+            </button>
+
+            <InputObject
+              {...{
+                schema,
+                entry,
+                onFieldChange,
+              }}
+            />
+          </div>
+        )}
+      </div>
+    );
 
   default:
-    switch (branchType) {
-    case "array":
+    switch (branchTask) {
+    case "text":
       return (
-        <Spoiler>
-          <InputArray
-            {...{
-              schema,
-              entry,
-              onFieldChange,
-            }}
-          />
-        </Spoiler>
+        <div>
+          {!isOpen ? (
+            <div>
+              <a onClick={open}>▶️</a>
+
+              {description}
+
+              <button
+                title={t("line.button.remove", { field: branch })}
+                onClick={() => onFieldRemove(branch)}
+              >
+                  X
+              </button>
+            </div>
+          ) : (
+            <div>
+              <a onClick={close}>🔽</a>
+
+              {description}
+
+              <button
+                title={t("line.button.remove", { field: branch })}
+                onClick={() => onFieldRemove(branch)}
+              >
+                  X
+              </button>
+
+              <InputTextarea
+                {...{
+                  branch,
+                  value,
+                  onFieldChange,
+                }}
+              />
+            </div>
+          )}
+        </div>
       );
 
-    case "object":
+    case "path":
       return (
-        <Spoiler>
-          <InputObject
+        <div>
+          {description}
+
+          <button
+            title={t("line.button.remove", { field: branch })}
+            onClick={() => onFieldRemove(branch)}
+          >
+          X
+          </button>
+
+          <InputUpload
             {...{
-              schema,
-              entry,
+              branch,
+              value,
+              onFieldChange,
+              onFieldUpload,
+              onFieldUploadElectron,
+            }}
+          />
+        </div>
+      );
+
+    case "date":
+      return (
+        <div>
+          {description}
+
+          <button
+            title={t("line.button.remove", { field: branch })}
+            onClick={() => onFieldRemove(branch)}
+          >
+          X
+          </button>
+
+          <InputDate
+            {...{
+              branch,
+              value,
               onFieldChange,
             }}
           />
-        </Spoiler>
+        </div>
       );
+
 
     default:
       return (
-        <Spoiler>
+        <div>
+          {description}
+
+          <button
+            title={t("line.button.remove", { field: branch })}
+            onClick={() => onFieldRemove(branch)}
+          >
+          X
+          </button>
+
           <InputText
             {...{
               branch,
@@ -202,7 +287,7 @@ export default function EditInput({
               onFieldChange,
             }}
           />
-        </Spoiler>
+        </div>
       );
     }
   }

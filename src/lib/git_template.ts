@@ -1,6 +1,7 @@
 export const manifest = `{
   "datum": {
-    "type": "text",
+    "task": "text",
+    "type": "string",
     "description": {
       "en": "Description of the event",
       "ru": "Описание события"
@@ -67,15 +68,6 @@ export const manifestRoot = `{
   },
   "schema": {
     "trunk": "reponame",
-    "type": "string",
-    "task": "schema",
-    "description": {
-      "en": "Schema of the repo",
-      "ru": "Структура проекта"
-    }
-  },
-  "schema_test": {
-    "trunk": "reponame",
     "type": "array",
     "description": {
       "en": "Schema of the repo",
@@ -83,7 +75,7 @@ export const manifestRoot = `{
     }
   },
   "schema_branch": {
-    "trunk": "schema_test",
+    "trunk": "schema",
     "type": "object",
     "description": {
       "en": "Schema branch",
@@ -112,6 +104,14 @@ export const manifestRoot = `{
     "description": {
       "en": "Branch type",
       "ru": "Тип ветки"
+    }
+  },
+  "schema_branch_task": {
+    "trunk": "schema_branch",
+    "type": "string",
+    "description": {
+      "en": "Branch task",
+      "ru": "Предназначение ветки"
     }
   },
   "schema_branch_dir": {

@@ -1,8 +1,10 @@
 export async function buildItinerary(overview: any, groupBy: any) {
+  console.log('buildItinerary')
   const queryWorker = queryWorkerInit();
 
   const itinerary = await queryWorker.buildLine(overview, groupBy);
 
+  console.log('buildItinerary-finish')
   return itinerary;
 }
 

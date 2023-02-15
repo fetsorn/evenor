@@ -264,10 +264,57 @@ async function linkRepo(repodir: string, reponame: string) {
   }
 }
 
-export async function updateRepo(entry: any) {
-  await ensureRepo(entry.UUID, entry.schema);
+function schemaToString(schema: any) {
+  const schemaObject: any = {};
 
-  await linkRepo(entry.UUID, entry.reponame);
+  for (const item of schema.items) {
+    const branch = item.schema_branch_name;
+
+    schemaObject[branch] = {};
+
+    if (item.schema_branch_trunk) {
+      schemaObject[branch].trunk = item.schema_branch_trunk;
+    }
+
+    if (item.schema_branch_type) {
+      schemaObject[branch].type = item.schema_branch_type;
+    }
+
+    if (item.schema_branch_task) {
+      schemaObject[branch].task = item.schema_branch_task;
+    }
+
+    if (item.schema_branch_dir) {
+      schemaObject[branch].dir = item.schema_branch_dir;
+    }
+
+    if (item.schema_branch_decription) {
+      schemaObject[branch].description = {};
+
+      if (item.schema_branch_decription.schema_branch_description_en) {
+        schemaObject[branch].description.en =
+          item.schema_branch_decription.schema_branch_description_en;
+      }
+
+      if (item.schema_branch_decription.schema_branch_description_ru) {
+        schemaObject[branch].description.ru =
+          item.schema_branch_decription.schema_branch_description_ru;
+      }
+    }
+
+  }
+
+  const schemaString = JSON.stringify(schemaObject);
+
+  return schemaString
+}
+
+export async function updateRepo(uuid: string, schema: any, reponame: string) {
+  const schemaString = schemaToString(schema);
+
+  await ensureRepo(uuid, schemaString);
+
+  await linkRepo(uuid, reponame);
 }
 
 export async function ensureRoot() {

@@ -67,7 +67,7 @@ export function Dispenser({baseEntry, branchEntry}: IDispenserProps) {
       <div>
         <a onClick={() => setRepoRoute(`repos/${baseEntry.reponame}`)}>{baseEntry.reponame}</a>
         <br/>
-        <a onClick={() => updateRepo(baseEntry)}>🔄</a>
+        <a onClick={() => updateRepo(baseEntry.UUID, baseEntry.schema, baseEntry.reponame)}>🔄</a>
       </div>
     )
 

@@ -34,40 +34,90 @@ export default function ViewField({ entry }: IViewFieldProps) {
 
   return (
     <div>
-      {!isOpen ? (
+      {branchType === "array" ? (
         <div>
-          <a onClick={() => setIsOpen(true)}>▶️</a>
-          {branchDescription}
+          {!isOpen ? (
+            <div>
+              <a onClick={() => setIsOpen(true)}>▶️</a>
+
+              {branchDescription}
+            </div>
+          ) : (
+            <div>
+              <div>
+                <a onClick={() => setIsOpen(false)}>🔽</a>
+
+                {branchDescription}
+              </div>
+
+              { entry.items.map((item: any, index: any) => (
+                <div key={index}>
+                  <ViewField entry={item}/>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : trunk === "tags" ? (
+        <div>
+          {!isOpen ? (
+            <div>
+              <a onClick={() => setIsOpen(true)}>▶️</a>
+
+              {branchDescription}
+            </div>
+          ) : (
+            <div>
+              <div>
+                <a onClick={() => setIsOpen(false)}>🔽</a>
+
+                {branchDescription}
+              </div>
+
+              <Dispenser {...{ baseEntry, branchEntry: entry }}/>
+            </div>
+          )}
+        </div>
+      ) : branchType === "object" ? (
+        <div>
+          {!isOpen ? (
+            <div>
+              <a onClick={() => setIsOpen(true)}>▶️</a>
+
+              {branchDescription}
+            </div>
+          ) : (
+            <div>
+              <div>
+                <a onClick={() => setIsOpen(false)}>🔽</a>
+
+                {branchDescription}
+              </div>
+
+              {entry.UUID}
+
+              { Object.keys(entry).map((leaf: any, leafIndex: any) => {
+                if (leaf === '|' || leaf === 'UUID') { return <></> }
+
+                const leafEntry = schema[leaf]?.type === 'object'
+                                 || schema[leaf]?.type === 'array'
+                  ? entry[leaf]
+                  : { '|': leaf, [leaf]: entry[leaf] };
+
+                return (
+                  <div key={leafIndex}>
+                    <ViewField entry={leafEntry}/>
+                  </div>
+                )
+              })}
+            </div>
+          )}
         </div>
       ) : (
         <div>
-          <div>
-            <a onClick={() => setIsOpen(false)}>🔽</a>
-            {branchDescription}
-          </div>
-          <div>
-            {branchType === "array" ? (
-              <div>
-                { entry.items.map((item: any, index: any) => (
-                  <div key={index}>
-                    <ViewField entry={item}/>
-                  </div>
-                )) }
-              </div>
-            ) : trunk === "tags" ? (
-              <Dispenser {...{ baseEntry, branchEntry: entry }}/>
-            ) : branchType === "object" ? (
-              <div>
-                { Object.keys(entry).map((field: any, index: any) => (
-                  <div key={index}>
-                    <ViewField entry={{'|': field, [field]: entry[field]}}/>
-                  </div>
-                )) }
-              </div>
-            ) : (
-              <FieldText value={entry[branch]} />
-            )}
-          </div>
+          {branchDescription}
+
+          <FieldText value={entry[branch]} />
         </div>
       )}
     </div>

@@ -69,9 +69,8 @@ export default function Header() {
 
   return (
     <header className={styles.header}>
-      { __BUILD_MODE__ === "electron"
-        || (repoRoute !== "store/view"
-         && repoRoute !== "store/root")
+      { repoRoute !== "store/view"
+         && repoRoute !== "store/root"
         ? (
           <Button
             type="button"

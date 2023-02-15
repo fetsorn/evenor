@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, InputDropdown } from "..";
-import { queryOptions, addField, deepClone } from "@/api";
+import { queryOptions, addField } from "@/api";
 import { useStore } from "@/store";
 
 interface IInputObjectProps {
@@ -51,7 +51,7 @@ export default function InputObject({
       fieldBranch: string,
       fieldValue: string
     ) {
-      const objectNew = deepClone(entry);
+      const objectNew = { ...entry };
 
       objectNew[fieldBranch] = fieldValue;
 
@@ -59,14 +59,14 @@ export default function InputObject({
     }
 
     function onFieldRemoveObjectField(fieldBranch: string) {
-      const objectNew = deepClone(entry);
+      const objectNew = { ...entry };
 
       delete objectNew[fieldBranch];
 
       onFieldChange(branch, objectNew);
     }
 
-    const leafEntry = schema[leaf].type === 'object' || schema[leaf].type === 'array'
+    const leafEntry = schema[leaf]?.type === 'object' || schema[leaf]?.type === 'array'
       ? entry[leaf]
       : { '|': leaf, [leaf]: entry[leaf] };
 

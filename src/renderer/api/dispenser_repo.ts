@@ -3,11 +3,10 @@ import http from "isomorphic-git/http/web";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
 import { manifestRoot } from "@/../lib/git_template";
+import { fs } from "./api";
 
 export async function gitcommit(dir: string) {
   // console.log("commit");
-
-  const fs = new LightningFS("fs");
 
   if (__BUILD_MODE__ === "server") {
     try {
@@ -94,7 +93,6 @@ export async function gitcommit(dir: string) {
 }
 
 export async function addRemote(dir: string, url: string) {
-  const fs = new LightningFS("fs");
 
   await git.addRemote({
     fs,
@@ -106,7 +104,6 @@ export async function addRemote(dir: string, url: string) {
 }
 
 export async function pull(dir: string, token: string) {
-  const fs = new LightningFS("fs");
 
   // console.log("gitPull");
   // fastForward instead of pull
@@ -123,7 +120,6 @@ export async function pull(dir: string, token: string) {
 }
 
 export async function push(dir: string, token: string) {
-  const fs = new LightningFS("fs");
 
   // console.log("gitPush");
   await git.push({
@@ -139,7 +135,7 @@ export async function push(dir: string, token: string) {
 }
 
 export async function ls(path: string) {
-  const pfs = new LightningFS("fs").promises;
+  const pfs = fs.promises;
 
   let files;
 
@@ -163,7 +159,7 @@ export async function ls(path: string) {
 }
 
 export async function rimraf(path: string) {
-  const pfs = new LightningFS("fs").promises;
+  const pfs = fs.promises;
 
   if (__BUILD_MODE__ === "electron") {
     try {
@@ -205,7 +201,6 @@ export async function rimraf(path: string) {
 }
 
 async function ensureRepoBrowser(repo: string, schema: string) {
-  const fs = new LightningFS("fs");
 
   const pfs = fs.promises;
 
@@ -241,7 +236,7 @@ async function ensureRepo(repo: string, schema: string) {
 }
 
 async function linkRepoBrowser(repodir: string, reponame: string) {
-  const pfs = new LightningFS("fs").promises;
+  const pfs = fs.promises;
 
   if (!(await pfs.readdir("/")).includes("repos")) {
     await pfs.mkdir("/repos");
@@ -342,7 +337,6 @@ export async function clone(
   token: string,
   dir: string
 ) {
-  const fs = new LightningFS("fs");
 
   console.log("AAAA", url, token, dir);
 
@@ -377,7 +371,7 @@ export async function cloneRepoBrowser(
   url: string,
   token: string,
 ) {
-  const pfs = new LightningFS("fs").promises;
+  const pfs = fs.promises;
 
   if (!(await pfs.readdir("/")).includes("store")) {
     await pfs.mkdir("/store");

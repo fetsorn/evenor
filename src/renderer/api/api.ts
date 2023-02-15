@@ -4,6 +4,8 @@ import * as csvs from "@fetsorn/csvs-js";
 import { digestMessage } from "@fetsorn/csvs-js";
 import { deepClone } from ".";
 
+export const fs = new LightningFS("fs");
+
 // if (typeof crypto === 'undefined')
 //   var crypto = require('crypto');
 
@@ -23,8 +25,6 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
   // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
 
   let root = "";
-
-  const fs = new LightningFS("fs");
 
   const pfs = fs.promises;
 
@@ -54,8 +54,6 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
   const file: any = await pfs.readFile("/" + dir + "/" + path);
 
   const restext = new TextDecoder().decode(file);
-
-  // console.log(restext)
 
   return restext;
 }
@@ -102,7 +100,7 @@ function queryWorkerInit(dir: string) {
     }
 
     if (message.data.action === "grep") {
-      console.log('callback grep', message.data)
+      // console.log('callback grep', message.data)
       try {
         const wasm = await import("@fetsorn/wasm-grep");
 
@@ -136,7 +134,6 @@ function queryWorkerInit(dir: string) {
       }
       : (searchParams: URLSearchParams, base = undefined as any) =>
         new Promise((res, rej) => {
-          console.log('worker queryMetadir')
           const channel = new MessageChannel();
 
           channel.port1.onmessage = ({ data }) => {
@@ -173,8 +170,6 @@ async function writeDataMetadirBrowser(
   path_elements.pop();
 
   let root = "";
-
-  const fs = new LightningFS("fs");
 
   const pfs = fs.promises;
 
@@ -227,12 +222,10 @@ export async function writeDataMetadir(
 }
 
 export async function searchRepo(dir: string, searchParams: URLSearchParams, base = undefined as any): Promise<any> {
-  console.log('searchRepo')
   const queryWorker = queryWorkerInit(dir);
 
   const overview = await queryWorker.queryMetadir(searchParams, base);
 
-  console.log('searchRepo-finish')
   return overview;
 }
 

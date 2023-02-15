@@ -43,11 +43,7 @@ interface IEntrySlice {
   onEntryRevert: () => void
   onEntryDelete: any
   onEntryClose: () => void
-  onFieldAdd: (branch: string) => Promise<void>
-  onFieldChange: (branch: string, value: string) => void
-  onFieldUpload: (branch: string, file: any) => void
-  onFieldRemove: (branch: string) => void
-  onFieldUploadElectron: (branch: string) => void
+  onEntryChange: (_: any, entry: any) => void
   onSettingsOpen: () => Promise<void>
 }
 

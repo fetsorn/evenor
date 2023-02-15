@@ -114,9 +114,11 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
   onChangeBase: async (base: string) => {
     const searchParams = queriesToParams(get().queries);
 
+    set({ base })
+
     const overview = await searchRepo(get().repoRoute, searchParams, base);
 
-    set({ base, overview })
+    set({ overview })
   },
 
   setRepoRoute: (repoRoute: string) => set({ repoRoute, queries: {}, entry: undefined })

@@ -2,6 +2,7 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
 import * as csvs from "@fetsorn/csvs-js";
 import { digestMessage } from "@fetsorn/csvs-js";
+import { deepClone } from ".";
 
 // if (typeof crypto === 'undefined')
 //   var crypto = require('crypto');
@@ -19,7 +20,6 @@ if (!('randomUUID' in crypto))
 async function fetchDataMetadirBrowser(dir: string, path: string) {
   // check if path exists in the repo
   const path_elements = dir.split("/").concat(path.split("/"));
-
   // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
 
   let root = "";
@@ -36,15 +36,15 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
     const files = await pfs.readdir(root);
 
     // console.log("fetchDataMetadir: files", root, files);
-
     if (files.includes(path_element)) {
       root += path_element;
 
       // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
     } else {
-      console.log(
-        `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
-      );
+      // console.log(
+      //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
+      // );
+      return undefined
       // throw Error(
       //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
       // );
@@ -235,7 +235,6 @@ export async function searchRepo(dir: string, searchParams: URLSearchParams, bas
 export async function fetchSchema(dir: string): Promise<any> {
   const schemaFile = await fetchDataMetadir(dir, "metadir.json");
 
-  console.log(schemaFile)
   const schema = JSON.parse(schemaFile);
 
   return schema;
@@ -324,65 +323,59 @@ export async function uploadFile(dir: string, file: File) {
   }
 }
 
-export async function addField(schema: any, entry: any, branch: string) {
-  const { trunk } = schema[branch];
+export async function addField(schema: any, entryOriginal: any, branch: string) {
+  const entry = deepClone(entryOriginal);
 
-  if (trunk && schema[trunk].type === "array") {
-    // ensure trunk array
-    if (entry[trunk] === undefined) {
-      const trunkEntry: any = {};
+  let value;
 
-      const arrayUUID = await digestMessage(crypto.randomUUID());
-
-      trunkEntry['|'] = trunk;
-
-      trunkEntry.UUID = arrayUUID;
-
-      trunkEntry.items = [];
-
-      entry[trunk] = { ...trunkEntry };
-    }
-
-    // assume that array items are always objects
-    const obj: any = {};
-
-    const itemUUID = await digestMessage(crypto.randomUUID());
-
-    obj.UUID = itemUUID;
-
-    obj['|'] = branch;
-
-    // set empty default values
-    // const leaves = Object.keys(schema)
-    //   .filter((b) => schema[b].trunk === branch)
-
-    // for (const leaf of leaves) {
-    //   obj[leaf] = "";
-    // }
-
-    entry[trunk].items.push({ ...obj });
-  } else if (trunk && schema[branch].type === "object") {
+  if (schema[branch].type === "object" || schema[branch].type === "array") {
     const obj: any = {};
 
     const uuid = await digestMessage(crypto.randomUUID());
 
+    obj['|'] = branch;
+
     obj.UUID = uuid;
 
-    entry[branch] = { ...obj };
+    if (schema[branch].type === "array") {
+      obj.items = []
+    }
+
+    value = obj;
   } else {
-    entry[branch] = "";
+    value = ''
+  }
+  const base = entry['|']
+
+  const { trunk } = schema[branch];
+
+  if (trunk !== base && branch !== base) {
+    return;
   }
 
+  if (schema[base].type === "array") {
+    if (entry.items === undefined) {
+      entry.items = [];
+    }
+
+    entry.items.push({ ...value });
+  } else {
+    entry[branch] = value;
+  }
   return entry;
 }
 
 // TODO: set default values for required fields
-export async function createEntry(base: string) {
-  const entry: Record<string, string> = {};
+export async function createEntry(schema: any, base: string) {
+  const entry: Record<string, any> = {};
 
   entry.UUID = await digestMessage(crypto.randomUUID());
 
   entry['|'] = base;
+
+  if (schema[base].type === 'array') {
+    entry.items = [];
+  }
 
   return entry;
 }

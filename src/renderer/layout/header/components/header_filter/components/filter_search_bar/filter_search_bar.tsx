@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
 import { queryOptions } from "@/api";
@@ -6,7 +6,7 @@ import { useStore } from "@/store";
 import styles from "./filter_search_bar.module.css";
 
 export default function FilterSearchBar() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [queryField, setQueryField] = useState("")
 
@@ -17,20 +17,32 @@ export default function FilterSearchBar() {
   const [
     queries,
     schema,
+    base,
     onQueryAdd,
     isInitialized,
     repoRoute
   ] = useStore((state) => [
     state.queries,
     state.schema,
+    state.base,
     state.onQueryAdd,
     state.isInitialized,
     state.repoRoute
   ]);
 
-  const notAddedBranches = Object.keys(schema).filter(
+  const notAddedQueries = Object.keys(schema).filter(
     (branch: any) =>
-      !Object.prototype.hasOwnProperty.call(queries, branch)
+      schema[branch].trunk === base
+                && !Object.prototype.hasOwnProperty.call(queries, branch)
+  ).map(
+    (branch: any) => {
+      const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+
+      return {
+        branch,
+        label: `${description} (${branch})`
+      }
+    }
   );
 
   async function onQueryFieldChange() {
@@ -44,7 +56,7 @@ export default function FilterSearchBar() {
   }
 
   useEffect(() => {
-    setQueryField(notAddedBranches?.[0]);
+    setQueryField(notAddedQueries?.[0]?.branch);
 
     setQueryValue("")
   }, [schema, queries]);
@@ -65,9 +77,9 @@ export default function FilterSearchBar() {
           setOptions([]);
         }}
       >
-        {notAddedBranches.map((branch: any, idx: any) => (
-          <option key={idx} value={branch}>
-            {branch}
+        {notAddedQueries.map((query: any, idx: any) => (
+          <option key={idx} value={query.branch}>
+            {query.label}
           </option>
         ))}
       </select>

@@ -5,8 +5,6 @@ import styles from "./input_upload.module.css";
 interface IInputUploadProps {
   branch: string;
   value: any;
-  description: any;
-  onFieldRemove: any;
   onFieldChange: any;
   onFieldUpload?: any;
   onFieldUploadElectron?: any;
@@ -15,8 +13,6 @@ interface IInputUploadProps {
 export default function InputUpload({
   branch,
   value,
-  description,
-  onFieldRemove,
   onFieldChange,
   onFieldUpload,
   onFieldUploadElectron,
@@ -25,14 +21,6 @@ export default function InputUpload({
 
   return (
     <div>
-      {description}
-      <button
-        title={t("line.button.remove", { field: branch })}
-        onClick={() => onFieldRemove(branch)}
-      >
-          X
-      </button>
-      <br />
       {__BUILD_MODE__ === "electron" ? (
         <div>
           <input

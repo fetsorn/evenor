@@ -1,6 +1,7 @@
 import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
+import { create } from 'zustand';
 import {
   AssetView,
   Button,
@@ -23,6 +24,22 @@ function formatDate(title: string): string {
   return isDate(title) ? title : title
 }
 
+interface IEditStore {
+  mapIsOpen: any
+  openIndex: (index: string, isOpen: boolean) => void
+}
+
+export const useEditStore = create<IEditStore>()((set, get) => ({
+  mapIsOpen: {},
+  openIndex: (index: string, isOpen: boolean) => {
+    const mapIsOpen = get().mapIsOpen;
+
+    mapIsOpen[index] = isOpen;
+
+    set({mapIsOpen})
+  }
+}))
+
 export default function ProfileSingleEdit() {
   const { t } = useTranslation();
 
@@ -33,11 +50,7 @@ export default function ProfileSingleEdit() {
     isSettings,
     onEntryRevert,
     onEntrySave,
-    onFieldAdd,
-    onFieldRemove,
-    onFieldChange,
-    onFieldUpload,
-    onFieldUploadElectron
+    onEntryChange,
   ] = useStore((state) => [
     state.entry,
     state.group,
@@ -45,39 +58,10 @@ export default function ProfileSingleEdit() {
     state.isSettings,
     state.onEntryRevert,
     state.onEntrySave,
-    state.onFieldAdd,
-    state.onFieldRemove,
-    state.onFieldChange,
-    state.onFieldUpload,
-    state.onFieldUploadElectron
+    state.onEntryChange,
   ])
 
   const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
-
-  const addedBranches = entry ? Object.keys(entry).filter((b) => b !== '|') : [];
-
-  // list all missing entry fields
-  // in case the field is array, list all its items
-  const notAddedBranches = entry
-    ? Object.keys(schema).filter((branch: any) => {
-      const { trunk } = schema[branch];
-
-      const isEntryLeaf = trunk === entry['|'] || branch === entry['|'];
-
-      const isEntryField = Object.prototype.hasOwnProperty.call(
-        entry,
-        branch
-      );
-
-      const isArray = schema[branch]?.type === "array";
-
-      const trunkIsLeaf = schema[trunk]?.trunk === entry['|'];
-
-      const isArrayItem = schema[trunk]?.type === "array";
-
-      return (isEntryLeaf && !isEntryField && !isArray) || (trunkIsLeaf && isArrayItem);
-    })
-    : [];
 
   const title = formatDate(group);
 
@@ -100,28 +84,15 @@ export default function ProfileSingleEdit() {
               </Button>
             </div>
 
-            <div>
-              {addedBranches.map((branch: any, index: any) => (
-                <div key={index}>
-                  <EditInput
-                    {...{
-                      schema,
-                      onFieldChange,
-                      onFieldRemove,
-                      onFieldUpload,
-                      onFieldUploadElectron,
-                      onFieldAdd,
-                      notAddedFields: notAddedBranches,
-                    }}
-                    entry={
-                      schema[branch]?.type === 'array' || schema[branch]?.type === 'object'
-                        ? entry[branch]
-                        : {'|': branch, [branch]: entry[branch]}
-                    }
-                  />
-                </div>
-              ))}
-            </div>
+            <EditInput
+              {...{
+                index: entry.UUID,
+                entry,
+                schema,
+                onFieldChange: onEntryChange,
+                isBaseObject: true,
+              }}
+            />
 
             <AssetView filepath={entry?.FILE_PATH} />
           </div>

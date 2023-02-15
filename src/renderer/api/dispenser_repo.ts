@@ -205,7 +205,6 @@ export async function rimraf(path: string) {
 }
 
 async function ensureRepoBrowser(repo: string, schema: string) {
-  console.log('ensureRepoBrowser', repo, schema)
   const fs = new LightningFS("fs");
 
   const pfs = fs.promises;

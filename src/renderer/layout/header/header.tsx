@@ -87,10 +87,11 @@ export default function Header() {
       <div className={styles.dropdowns}>
         <HeaderOverviewTypeDropdown />
 
+        <HeaderBaseDropdown />
+
         <HeaderGroupByDropdown />
       </div>
 
-      <HeaderBaseDropdown />
 
       <HeaderFilter />
 

@@ -1,15 +1,12 @@
 import {
-  addField,
   createEntry,
   deepClone,
   deleteEntry,
   editEntry,
   updateOverview,
-  uploadFile,
   getRepoSettings,
 } from "../api";
 import { EntrySlice } from "./types";
-import { manifestRoot } from "../../lib/git_template";
 
 export const createEntrySlice: EntrySlice = (set, get) => ({
   // entry selected from overview for viewing/editing
@@ -40,9 +37,14 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
     const repoRouteRoot = "store/root";
 
-    const { onEntrySave, onEntryDelete, onFieldAdd } = get();
+    const { onEntrySave, onEntryDelete } = get();
 
-    const onSettingsClose = () => set({ entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
+    const onSettingsClose = () => set({
+      entry: undefined,
+      onEntrySave,
+      onEntryDelete,
+      isSettings: false
+    });
 
     const onSettingsSave = async () => {
       await editEntry(repoRouteRoot, deepClone(get().entry));
@@ -53,24 +55,28 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     const onSettingsDelete = async () => {
       await deleteEntry(repoRouteRoot, [], deepClone(get().entry));
 
-      set({ repoRoute: repoRouteRoot, entry: undefined, onEntrySave, onEntryDelete, onFieldAdd, isSettings: false });
+      set({
+        repoRoute: repoRouteRoot,
+        entry: undefined,
+        onEntrySave,
+        onEntryDelete,
+        isSettings: false
+      });
     }
 
-    const onSettingsAdd = async (branch: string) => {
-      const rootSchema = JSON.parse(manifestRoot);
-
-      const entry = await addField(rootSchema, deepClone(get().entry), branch);
-
-      set({ entry })
-    }
-
-    // ignore fieldUpload
-
-    set({ entry, index: "", group: `${get().repoRoute} settings`, onEntryClose: onSettingsClose, onEntrySave: onSettingsSave, onEntryDelete: onSettingsDelete, onFieldAdd: onSettingsAdd, isSettings: true })
+    set({
+      entry,
+      index: "",
+      group: `${get().repoRoute} settings`,
+      onEntryClose: onSettingsClose,
+      onEntrySave: onSettingsSave,
+      onEntryDelete: onSettingsDelete,
+      isSettings: true
+    })
   },
 
   onEntryCreate: async (index: string) => {
-    const entry = await createEntry(get().base);
+    const entry = await createEntry(get().schema, get().base);
 
     set({ index, isEdit: true, entry })
   },
@@ -95,45 +101,5 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
 
   onEntryClose: () => set({ entry: undefined }),
 
-  onFieldAdd: async (branch: string) => {
-    const entry = await addField(get().schema, deepClone(get().entry), branch);
-
-    set({ entry })
-  },
-
-  onFieldChange: (branch: string, value: string) => {
-    const entry = deepClone(get().entry);
-
-    entry[branch] = value;
-
-    set({ entry })
-  },
-
-  onFieldRemove: (branch: string) => {
-    const entry = deepClone(get().entry);
-
-    delete entry[branch];
-
-    set({ entry })
-  },
-
-  onFieldUpload: async (branch: string, file: any) => {
-    await uploadFile(get().repoRoute, file);
-
-    const entry = deepClone(get().entry);
-
-    entry[branch] = file.name;
-
-    set({ entry });
-  },
-
-  onFieldUploadElectron: async (branch: string) => {
-    const filepath = await window.electron.uploadFile(get().repoRoute);
-
-    const entry = deepClone(get().entry);
-
-    entry[branch] = filepath;
-
-    set({ entry })
-  }
+  onEntryChange: (_, entry: string) => set({ entry }),
 })

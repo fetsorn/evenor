@@ -1,42 +1,42 @@
-import { EditInput } from "..";
-import { useTranslation } from "react-i18next";
+import { EditInput , InputDropdown } from "..";
+import { addField } from '@/api';
 
 interface IInputArrayProps {
   schema: any;
   entry: any;
-  description?: string;
   onFieldChange: any;
-  onFieldRemove: any;
 }
 
 export default function InputArray({
   schema,
   entry,
-  description,
   onFieldChange,
-  onFieldRemove,
 }: IInputArrayProps) {
-  const { t } = useTranslation();
-
   const branch = entry['|'];
+
+  const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch)
+
+  const items = entry.items
+    ? entry.items.sort((a: any, b: any) => a.UUID.localeCompare(b.UUID))
+    : [];
+
+  async function onFieldAddArrayItem(itemBranch: string) {
+    console.log('onFieldAddArrayItem', itemBranch);
+
+    const arrayNew = await addField(schema, entry, itemBranch);
+
+    onFieldChange(branch, arrayNew);
+  }
 
   return (
     <div>
-      <div>
-        array {description}
-        <button
-          title={t("line.button.remove", { field: branch })}
-          onClick={() => onFieldRemove(branch)}
-        >
-          X
-        </button>
-      </div>
-
       <div>{entry.UUID}</div>
 
-      {entry.items.map((item: any, index: any) => {
+      <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
+
+      {items.map((item: any, index: any) => {
         function onFieldChangeArrayItem(itemBranch: string, itemValue: any) {
-          const itemsNew = entry.items.filter((i: any) => i.UUID !== item.UUID);
+          const itemsNew = entry.items?.filter((i: any) => i.UUID !== item.UUID) ?? [];
 
           itemsNew.push(itemValue);
 
@@ -49,7 +49,7 @@ export default function InputArray({
         }
 
         function onFieldRemoveArrayItem() {
-          const itemsNew = entry.items.filter((i: any) => i.UUID !== item.UUID);
+          const itemsNew = entry.items?.filter((i: any) => i.UUID !== item.UUID) ?? [];
 
           const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };
 
@@ -60,10 +60,12 @@ export default function InputArray({
           <div key={index}>
             <EditInput
               {...{
+                index: entry.UUID + item.UUID,
                 schema,
                 entry: item,
                 onFieldChange: onFieldChangeArrayItem,
                 onFieldRemove: onFieldRemoveArrayItem,
+                onFieldAdd: onFieldAddArrayItem,
               }}
             />
           </div>

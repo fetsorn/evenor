@@ -1,37 +1,39 @@
-import React from "react";
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   InputTextarea,
   InputText,
   InputUpload,
   InputDate,
-  InputDropdown,
   InputArray,
   InputObject,
 } from "..";
-import { useTranslation } from "react-i18next";
+import {
+  useEditStore
+} from "../../profile_single_edit";
 
 interface IEditInputProps {
+  index: string;
   schema: any;
   entry: any;
   onFieldChange?: any;
   onFieldRemove?: any;
   onFieldUpload?: any;
   onFieldUploadElectron?: any;
-  onFieldAdd?: any;
-  notAddedFields?: any;
+  isBaseObject?: boolean
 }
 
 export default function EditInput({
+  index,
   schema,
   entry,
   onFieldChange,
   onFieldRemove,
   onFieldUpload,
   onFieldUploadElectron,
-  onFieldAdd,
-  notAddedFields,
+  isBaseObject,
 }: IEditInputProps) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const branch = entry['|'];
 
@@ -41,105 +43,167 @@ export default function EditInput({
 
   const branchTask = schema[branch]?.task;
 
-  const lang = i18n.resolvedLanguage;
+  const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
-  const description = schema?.[branch]?.description?.[lang] ?? branch;
+  const openIndex = useEditStore((state) => state.openIndex);
+
+  const mapIsOpen = useEditStore((state) => state.mapIsOpen);
+
+  const [isOpen, setIsOpen] = useState(mapIsOpen[index])
+
+  function open() {
+    openIndex(index, true)
+
+    setIsOpen(true)
+  }
+
+  function close() {
+    openIndex(index, false)
+
+    setIsOpen(false)
+  }
+
+  function Spoiler({ children }: any) {
+    return (
+      <div>
+        {schema[branch].trunk === undefined ? children : (
+          <div>
+            {!isOpen ? (
+              <div>
+                <a onClick={open}>▶️</a>
+
+                {description}
+
+                <button
+                  title={t("line.button.remove", { field: branch })}
+                  onClick={() => onFieldRemove(branch)}
+                >
+                  X
+                </button>
+              </div>
+            ) : (
+              <div>
+                <a onClick={close}>🔽</a>
+
+                {description}
+
+                <button
+                  title={t("line.button.remove", { field: branch })}
+                  onClick={() => onFieldRemove(branch)}
+                >
+                  X
+                </button>
+
+                {children}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    )}
+
+  // if non-array root, treat as object
+  // if array root, treat as array later
+  if (schema[branch].trunk === undefined
+        && schema[branch].type !== 'array'
+        && isBaseObject) {
+    return (
+      <Spoiler>
+        <InputObject
+          {...{
+            schema,
+            entry,
+            onFieldChange,
+          }}
+        />
+      </Spoiler>
+    )
+  }
 
   switch (branchTask) {
   case "text":
   case "schema":
     return (
-      <InputTextarea
-        {...{
-          branch,
-          value,
-          description,
-          onFieldChange,
-          onFieldRemove,
-        }}
-      />
+      <Spoiler>
+        <InputTextarea
+          {...{
+            branch,
+            value,
+            onFieldChange,
+          }}
+        />
+      </Spoiler>
     );
 
   case "path":
     return (
-      <InputUpload
-        {...{
-          branch,
-          value,
-          description,
-          onFieldRemove,
-          onFieldChange,
-          onFieldUpload,
-          onFieldUploadElectron,
-        }}
-      />
+      <Spoiler>
+        <InputUpload
+          {...{
+            branch,
+            value,
+            onFieldChange,
+            onFieldUpload,
+            onFieldUploadElectron,
+          }}
+        />
+      </Spoiler>
     );
+
+  case "date":
+    return (
+      <Spoiler>
+        <InputDate
+          {...{
+            branch,
+            value,
+            onFieldChange,
+          }}
+        />
+      </Spoiler>
+    );
+
 
   default:
     switch (branchType) {
     case "array":
       return (
-        <InputArray
-          {...{
-            schema,
-            entry,
-            description,
-            onFieldChange,
-            onFieldRemove,
-          }}
-        />
+        <Spoiler>
+          <InputArray
+            {...{
+              schema,
+              entry,
+              onFieldChange,
+            }}
+          />
+        </Spoiler>
       );
 
     case "object":
       return (
-        <InputObject
-          {...{
-            schema,
-            entry,
-            description,
-            onFieldChange,
-            onFieldRemove,
-          }}
-        />
-      );
-
-    case "date":
-      return (
-        <InputDate
-          {...{
-            branch,
-            value,
-            description,
-            onFieldChange,
-            onFieldRemove,
-          }}
-        />
+        <Spoiler>
+          <InputObject
+            {...{
+              schema,
+              entry,
+              onFieldChange,
+            }}
+          />
+        </Spoiler>
       );
 
     default:
-      if (branch === "UUID") {
-        return (
-          <div>
-            <div>{description}</div>
-
-            <div>{value}</div>
-
-            <InputDropdown {...{ schema, fields: notAddedFields, onFieldAdd }} />
-          </div>
-        );
-      } else {
-        return (
+      return (
+        <Spoiler>
           <InputText
             {...{
               branch,
               value,
-              description,
               onFieldChange,
-              onFieldRemove,
             }}
           />
-        );
-      }
+        </Spoiler>
+      );
     }
   }
 }

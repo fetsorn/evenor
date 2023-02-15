@@ -9,7 +9,7 @@ export const manifest = `{
   "hostdate": {
     "trunk": "datum",
     "dir": "date",
-    "type": "date",
+    "task": "date",
     "description": {
       "en": "Date of the event",
       "ru": "Дата события"
@@ -26,7 +26,7 @@ export const manifest = `{
   "guestdate": {
     "trunk": "datum",
     "dir": "date",
-    "type": "date",
+    "task": "date",
     "description": {
       "en": "Date of entry",
       "ru": "Дата записи"
@@ -72,6 +72,78 @@ export const manifestRoot = `{
     "description": {
       "en": "Schema of the repo",
       "ru": "Структура проекта"
+    }
+  },
+  "schema_test": {
+    "trunk": "reponame",
+    "type": "array",
+    "description": {
+      "en": "Schema of the repo",
+      "ru": "Структура проекта"
+    }
+  },
+  "schema_branch": {
+    "trunk": "schema_test",
+    "type": "object",
+    "description": {
+      "en": "Schema branch",
+      "ru": "Ветка схемы"
+    }
+  },
+  "schema_branch_name": {
+    "trunk": "schema_branch",
+    "type": "string",
+    "description": {
+      "en": "Branch name",
+      "ru": "Название ветки"
+    }
+  },
+  "schema_branch_trunk": {
+    "trunk": "schema_branch",
+    "type": "string",
+    "description": {
+      "en": "Branch trunk",
+      "ru": "Ствол ветки"
+    }
+  },
+  "schema_branch_type": {
+    "trunk": "schema_branch",
+    "type": "string",
+    "description": {
+      "en": "Branch type",
+      "ru": "Тип ветки"
+    }
+  },
+  "schema_branch_dir": {
+    "trunk": "schema_branch",
+    "type": "string",
+    "description": {
+      "en": "Branch dir",
+      "ru": "Директория ветки"
+    }
+  },
+  "schema_branch_description": {
+    "trunk": "schema_branch",
+    "type": "object",
+    "description": {
+      "en": "Branch description",
+      "ru": "Описание ветки"
+    }
+  },
+  "schema_branch_description_en": {
+    "trunk": "schema_branch_description",
+    "type": "string",
+    "description": {
+      "en": "Branch description EN",
+      "ru": "Описание ветки на английском"
+    }
+  },
+  "schema_branch_description_ru": {
+    "trunk": "schema_branch_description",
+    "type": "string",
+    "description": {
+      "en": "Branch description RU",
+      "ru": "Описание ветки на русском"
     }
   },
   "tags": {

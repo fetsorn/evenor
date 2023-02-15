@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 
 export default function HeaderBaseDropdown() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [
     schema,
@@ -17,7 +17,17 @@ export default function HeaderBaseDropdown() {
 
   const roots = Object.keys(schema)
     .filter((branch) =>
-      schema[branch].trunk === undefined || schema[branch].type === 'object');
+      schema[branch].trunk === undefined
+                   || schema[branch].type === 'object'
+                   || schema[branch].type === 'array')
+    .map((branch) => {
+      const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+
+      return {
+        branch,
+        label: `${description} (${branch})`
+      }
+    });
 
   return (
     <select
@@ -26,9 +36,9 @@ export default function HeaderBaseDropdown() {
       title={t("header.dropdown.search", { field: base })}
       onChange={({ target: { value } }) => onChangeBase(value)}
     >
-      {roots.map((field: any, idx: any) => (
-        <option key={idx} value={field}>
-          {field}
+      {roots.map((root: any, idx: any) => (
+        <option key={idx} value={root.branch}>
+          {root.label}
         </option>
       ))}
     </select>

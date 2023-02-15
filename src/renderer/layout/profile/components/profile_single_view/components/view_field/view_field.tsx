@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
 import { Dispenser } from "@/api";
@@ -11,6 +11,8 @@ interface IViewFieldProps {
 
 export default function ViewField({ entry }: IViewFieldProps) {
   const { i18n } = useTranslation();
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const [
     baseEntry,
@@ -32,28 +34,41 @@ export default function ViewField({ entry }: IViewFieldProps) {
 
   return (
     <div>
-      {branchType === "array" ? (
+      {!isOpen ? (
         <div>
-          <div>array {branchDescription} </div>
-          { entry.items.map((item: any, index: any) => (
-            <div key={index}>
-              <ViewField entry={item}/>
-            </div>
-          )) }
-        </div>
-      ) : trunk === "tags" ? (
-        <Dispenser {...{ baseEntry, branchEntry: entry }}/>
-      ) : branchType === "object" ? (
-        <div>
-          <div>object {branchDescription}</div>
-          { Object.keys(entry).map((field: any, index: any) => (
-            <div key={index}>
-              <FieldText label={branch} value={entry[branch]} />
-            </div>
-          )) }
+          <a onClick={() => setIsOpen(true)}>▶️</a>
+          {branchDescription}
         </div>
       ) : (
-        <FieldText label={branch} value={entry[branch]} />
+        <div>
+          <div>
+            <a onClick={() => setIsOpen(false)}>🔽</a>
+            {branchDescription}
+          </div>
+          <div>
+            {branchType === "array" ? (
+              <div>
+                { entry.items.map((item: any, index: any) => (
+                  <div key={index}>
+                    <ViewField entry={item}/>
+                  </div>
+                )) }
+              </div>
+            ) : trunk === "tags" ? (
+              <Dispenser {...{ baseEntry, branchEntry: entry }}/>
+            ) : branchType === "object" ? (
+              <div>
+                { Object.keys(entry).map((field: any, index: any) => (
+                  <div key={index}>
+                    <ViewField entry={{'|': field, [field]: entry[field]}}/>
+                  </div>
+                )) }
+              </div>
+            ) : (
+              <FieldText value={entry[branch]} />
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

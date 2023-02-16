@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { updateRepo, deleteRepo, gitcommit, push, pull, addRemote } from "./dispenser_repo";
 import { checkRepo, syncRepo } from "./dispenser_sync";
+import { RSS } from "./dispenser_rss";
 import { useStore } from "@/store";
 
 interface IDispenserProps {
@@ -98,6 +99,9 @@ export function Dispenser({baseEntry, branchEntry}: IDispenserProps) {
         <a onClick={onRemoteSync}>🔄️</a>
       </div>
     )
+
+  case "rss_tag":
+      return (<RSS {...{ baseEntry, branchEntry }}/>)
 
   default:
     return (

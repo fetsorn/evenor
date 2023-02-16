@@ -93,7 +93,6 @@ export async function gitcommit(dir: string) {
 }
 
 export async function addRemote(dir: string, url: string) {
-
   await git.addRemote({
     fs,
     dir,

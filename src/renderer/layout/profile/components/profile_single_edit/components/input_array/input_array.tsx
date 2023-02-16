@@ -1,5 +1,8 @@
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { EditInput , InputDropdown } from "..";
-import { addField } from '@/api';
+import { queryOptions, addField } from '@/api';
+import { useStore } from "@/store";
 
 interface IInputArrayProps {
   schema: any;
@@ -12,6 +15,14 @@ export default function InputArray({
   entry,
   onFieldChange,
 }: IInputArrayProps) {
+  const { t } = useTranslation();
+
+  const [options, setOptions]: any[] = useState([]);
+
+  const repoRoute = useStore((state) => state.repoRoute);
+
+  const base = useStore((state) => state.base);
+
   const branch = entry['|'];
 
   const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch)
@@ -28,9 +39,40 @@ export default function InputArray({
     onFieldChange(branch, arrayNew);
   }
 
+  async function onUseEffect() {
+    if (branch !== base) {
+      const options = await queryOptions(repoRoute, branch);
+
+      setOptions(options);
+    }
+  }
+
+  useEffect(() => {
+    onUseEffect();
+  }, []);
+
   return (
     <div>
       <div>{entry.UUID}</div>
+
+      { options.length > 0 && (
+        <select
+          value="default"
+          onChange={({ target: { value } }) => {
+            onFieldChange(branch, JSON.parse(value))
+          }}
+        >
+          <option hidden disabled value="default">
+            {t("line.dropdown.input")}
+          </option>
+
+          {options.map((field: any, idx: any) => (
+            <option key={idx} value={JSON.stringify(field)}>
+              {JSON.stringify(field)}
+            </option>
+          ))}
+        </select>
+      )}
 
       <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
 

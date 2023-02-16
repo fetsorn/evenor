@@ -164,7 +164,7 @@ async function writeDataMetadirBrowser(
   // split path into array of directory names
   const path_elements = dir.split("/").concat(path.split("/"));
 
-  // console.log(path_elements, path)
+  // console.log('writeDataMetadirBrowser', dir, path, content);
 
   // remove file name
   path_elements.pop();
@@ -175,6 +175,7 @@ async function writeDataMetadirBrowser(
 
   for (let i = 0; i < path_elements.length; i++) {
     const path_element = path_elements[i];
+    // console.log('writeDataMetadirBrowser-path', path_element)
 
     root += "/";
 
@@ -183,11 +184,11 @@ async function writeDataMetadirBrowser(
     // console.log(files)
 
     if (!files.includes(path_element)) {
-      // console.log(`creating directory ${path_element} in ${root}`)
+      // console.log(`writeDataMetadirBrowser creating directory ${path_element} in ${root}`)
 
       await pfs.mkdir(root + "/" + path_element);
     } else {
-      // console.log(`${root} has ${path_element}`)
+      // console.log(`writeDataMetadirBrowser ${root} has ${path_element}`)
     }
 
     root += path_element;
@@ -216,15 +217,19 @@ export async function writeDataMetadir(
     default:
       await writeDataMetadirBrowser(repoRoute, path, content);
     }
-  } catch {
-    throw Error(`Cannot write file ${path}.`);
+  } catch(e) {
+    throw Error(`Cannot write file ${path}. ${e}`);
   }
 }
 
 export async function searchRepo(dir: string, searchParams: URLSearchParams, base = undefined as any): Promise<any> {
+  console.log('searchRepo', dir, searchParams, base)
+
   const queryWorker = queryWorkerInit(dir);
 
   const overview = await queryWorker.queryMetadir(searchParams, base);
+
+  console.log('searchRepo-finish')
 
   return overview;
 }

@@ -86,6 +86,8 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
     const schema = await fetchSchema(repoRoute);
 
+    console.log(schema)
+
     const base = Object.keys(schema).find((prop) => !Object.prototype.hasOwnProperty.call(schema[prop], 'trunk'))
 
     set({ schema, base, queries, overviewType, groupBy, isInitialized: true, repoRoute })
@@ -94,6 +96,8 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
   onQueries: async () => {
     if (get().isInitialized) {
       const schema = await fetchSchema(get().repoRoute);
+
+      console.log(schema)
 
       const base = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
         ? get().base

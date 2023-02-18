@@ -1,10 +1,10 @@
 import { fetchDataMetadir } from ".";
 
-export async function queryOptions(dir: string, selected: any) {
+export async function queryOptions(dir: string, branch: any) {
   const queryWorker = queryWorkerInit(dir);
 
   try {
-    const options = await queryWorker.queryOptions(selected);
+    const options = await queryWorker.queryOptions(branch);
 
     return options;
   } catch (e) {
@@ -20,7 +20,7 @@ function queryWorkerInit(dir: string) {
   async function callback(message: any) {
     // console.log("main thread receives message", message)
 
-    if (message.data.action === "fetch") {
+    if (message.data.action === "readFile") {
       try {
         // console.log("main thread tries to fetch", message.data.path);
 
@@ -75,7 +75,11 @@ function queryWorkerInit(dir: string) {
         }
       };
 
-      worker.postMessage({ action: "options", param }, [channel.port2]);
+      const searchParams = new URLSearchParams();
+
+      searchParams.set('|', param);
+
+      worker.postMessage({ action: "select", searchParams: searchParams.toString() }, [channel.port2]);
     });
 
   return { queryOptions };

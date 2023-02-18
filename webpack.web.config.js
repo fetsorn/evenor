@@ -62,11 +62,11 @@ module.exports = (env) => {
             to: "[name][ext]",
           },
           //{ context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
-          {
-            context: "node_modules/@hpcc-js/",
-            from: "**/*.wasm",
-            to: "[name][ext]",
-          },
+          // {
+          //   context: "node_modules/@hpcc-js/",
+          //   from: "**/*.wasm",
+          //   to: "[name][ext]",
+          // },
           { context: "public/js/", from: "**", to: "[name][ext]" },
         ],
       }),
@@ -76,7 +76,7 @@ module.exports = (env) => {
     ],
     resolve: {
       alias: {
-        "@": path.resolve(__dirname, './src/renderer'),
+        "@": path.resolve(__dirname, "./src/renderer"),
       },
       fallback: {
         // For WASM

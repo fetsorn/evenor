@@ -79,18 +79,18 @@ module.exports = {
           to: "vendors-node_modules_fetsorn_csvs-js_dist_csvs_js/[name][ext]",
         },
         //{ context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
-        {
-          context: "node_modules/@hpcc-js/",
-          from: "**/*.wasm",
-          to: "[name][ext]",
-        },
+        // {
+        //   context: "node_modules/@hpcc-js/",
+        //   from: "**/*.wasm",
+        //   to: "[name][ext]",
+        // },
         { context: "public/js/", from: "**", to: "[name][ext]" },
       ],
     }),
   ],
   resolve: {
     alias: {
-      "@": path.resolve(__dirname, './src/renderer'),
+      "@": path.resolve(__dirname, "./src/renderer"),
     },
     fallback: {
       // For WASM
@@ -109,4 +109,4 @@ module.exports = {
     },
     extensions: [".js", ".ts", ".jsx", ".tsx", ".css"],
   },
-}
+};

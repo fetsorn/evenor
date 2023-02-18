@@ -10,7 +10,7 @@ import git from 'isomorphic-git';
 // import http from 'isomorphic-git/http/node/index.cjs';
 import { promisify } from 'util';
 import { exec } from 'child_process';
-import { queryMetadir } from '@fetsorn/csvs-js';
+import { CSVS } from '@fetsorn/csvs-js';
 import formidable from 'formidable';
 
 const __dirname = path.dirname(new URL(import.meta.url).pathname)
@@ -27,41 +27,50 @@ app.use("/", router);
 
 async function fetchCallback(filepath) {
   const realpath = path.join(process.cwd(), filepath)
+
   let contents
+
   try {
     contents = await fs.promises.readFile(realpath, { encoding: 'utf8' })
+
     return contents
   } catch {
     throw("couldn't find file", filepath)
   }
 }
 
-async function grepCallback(contentFile, patternFile) {
+async function grepCallback(contentFile, patternFile, isInverse) {
   // console.log("grepCallback")
-  const contentFilePath = "/tmp/content";
-  const patternFilePath = "/tmp/pattern";
+
+  const contentFilePath = `/tmp/${crypto.randomUUID()}`;
+
+  const patternFilePath = `/tmp/${crypto.randomUUID()}`;
 
   await fs.promises.writeFile(contentFilePath, contentFile);
+
   await fs.promises.writeFile(patternFilePath, patternFile);
 
   let output = '';
+
   try {
     // console.log(`grep ${contentFile} for ${patternFile}`)
     const { stdout, stderr } = await promisify(exec)(
       'export PATH=$PATH:~/.nix-profile/bin/; ' +
-        `rg -f ${patternFilePath} ${contentFilePath}`);
+        `rg ${isInverse ? '-v' : ''} -f ${patternFilePath} ${contentFilePath}`
+    );
 
     if (stderr) {
-      console.log('grep cli failed');
+      console.log('grep cli failed', stderr);
     } else {
       output = stdout;
     }
-  } catch {
-    console.log('grep cli returned empty');
+  } catch(e) {
+    // console.log('grep cli returned empty', e);
   }
 
-  // await fs.promises.unlink(contentFilePath);
-  // await fs.promises.unlink(patternFilePath);
+  await fs.promises.unlink(contentFilePath);
+
+  await fs.promises.unlink(patternFilePath);
 
   return output;
 }
@@ -69,36 +78,50 @@ async function grepCallback(contentFile, patternFile) {
 // on POST `/grep` return results of a search
 router.get('/query*', async (req, res) => {
   console.log("post query", req.path, req.query)
-  const data = await queryMetadir({
-    searchParams: req.query,
-    callback: {
-      fetch: fetchCallback,
+
+  try {
+    const data = await (new CSVS({
+      readFile: fetchCallback,
       grep: grepCallback
-    }})
-  res.send(data)
+    })).select(req.query)
+
+    res.send(data)
+  } catch(e) {
+    console.log("aaa", e)
+  }
+
 })
 
 // on GET `/api/path` serve `/path` in current directory
 router.get('/api/*', (req, res) => {
   console.log("get api", req.path)
+
   const filepath = decodeURI(req.path.replace(/^\/api/, ""))
+
   const realpath = path.join(process.cwd(), filepath)
+
   res.sendFile(realpath);
 })
 
 // on POST `/api/path` write `/path` in current directory
 router.post('/api/*', async (req, res) => {
   console.log("post api", req.path)
+
   const content = req.body.content;
+
   const filepath = decodeURI(req.path.replace(/^\/api/, ""));
+
   const realpath = path.join(process.cwd(), filepath)
+
   await fs.promises.writeFile(realpath, content);
+
   res.end()
 });
 
 // on PUT `/api/path` git commit current directory
 router.put('/api/*', () => {
   console.log("put api")
+
   git.commit({
     fs,
     dir: '.',
@@ -113,15 +136,20 @@ router.put('/api/*', () => {
 // on POST `/upload` write file to local/
 router.post('/upload', async (req, res) => {
   const form = formidable({});
+
   const uploadDir = path.join(process.cwd(), "local/");
+
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
     // console.log(`Directory ${root} is created.`);
   } else {
     // console.log(`Directory ${root} already exists.`);
   }
+
   form.uploadDir = uploadDir;
+
   form.keepExtensions = true;
+
   form.parse(req, async (err, fields, files) => {
     if (err) {
       console.log(err);
@@ -129,8 +157,11 @@ router.post('/upload', async (req, res) => {
       return;
     }
     const file = files.file;
+
     const uploadPath = path.join(uploadDir, file.originalFilename);
+
     await fs.promises.rename(file.filepath, uploadPath)
+
     res.end()
   });
 });
@@ -138,6 +169,7 @@ router.post('/upload', async (req, res) => {
 // on `/` serve a react app with hash router
 router.get('/', (req, res) => {
   console.log(req.path)
+
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 })
 
@@ -145,7 +177,9 @@ router.get('/', (req, res) => {
 app.use(express.static(path.join(__dirname, 'build')))
 
 const PORT = process.env.PORT || 8080;
+
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
+
   console.log('Press Ctrl+C to quit.');
 });

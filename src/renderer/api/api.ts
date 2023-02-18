@@ -1,23 +1,30 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
-import * as csvs from "@fetsorn/csvs-js";
-import { digestMessage } from "@fetsorn/csvs-js";
+import { CSVS, digestMessage } from "@fetsorn/csvs-js";
 import { deepClone } from ".";
 
 export const fs = new LightningFS("fs");
 
-// if (typeof crypto === 'undefined')
-//   var crypto = require('crypto');
+// if (typeof crypto === "undefined") var crypto = require("crypto");
 
-if (!('randomUUID' in crypto))
-  // https://stackoverflow.com/a/2117523/2800218
-  // LICENSE: https://creativecommons.org/licenses/by-sa/4.0/legalcode
-  crypto.randomUUID = function randomUUID() {
-    return (
-      <any>[1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g,
-      (c: any) => (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-    );
-  };
+// https://stackoverflow.com/a/2117523/2800218
+// LICENSE: https://creativecommons.org/licenses/by-sa/4.0/legalcode
+function randomUUIDPolyfill() {
+  return (<any>[1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c: any) =>
+    (
+      c ^
+      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
+    ).toString(16)
+  );
+}
+
+function randomUUID() {
+  if (crypto.randomUUID) {
+    return crypto.randomUUID();
+  } else {
+    return randomUUIDPolyfill();
+  }
+}
 
 async function fetchDataMetadirBrowser(dir: string, path: string) {
   // check if path exists in the repo
@@ -44,7 +51,7 @@ async function fetchDataMetadirBrowser(dir: string, path: string) {
       // console.log(
       //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
       // );
-      return undefined
+      return undefined;
       // throw Error(
       //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
       // );
@@ -71,7 +78,9 @@ export async function fetchDataMetadir(repoRoute: string, path: string) {
       return await fetchDataMetadirBrowser(repoRoute, path);
     }
   } catch (e) {
-    console.log(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
+    console.log(
+      `Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`
+    );
     // throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
   }
 }
@@ -82,7 +91,7 @@ function queryWorkerInit(dir: string) {
   async function callback(message: any) {
     // console.log("main thread receives message", message);
 
-    if (message.data.action === "fetch") {
+    if (message.data.action === "readFile") {
       try {
         // console.log("main thread tries to fetch", message.data.path);
 
@@ -125,14 +134,14 @@ function queryWorkerInit(dir: string) {
 
   worker.onmessage = callback;
 
-  const queryMetadir =
+  const select =
     __BUILD_MODE__ === "server"
-      ? async (searchParams: URLSearchParams, base = undefined as any) => {
+      ? async (searchParams: URLSearchParams) => {
         const response = await fetch("/query?" + searchParams.toString());
 
         return response.json();
       }
-      : (searchParams: URLSearchParams, base = undefined as any) =>
+      : (searchParams: URLSearchParams) =>
         new Promise((res, rej) => {
           const channel = new MessageChannel();
 
@@ -147,12 +156,12 @@ function queryWorkerInit(dir: string) {
           };
 
           worker.postMessage(
-            { action: "query", searchParams: searchParams.toString(), base },
+            { action: "select", searchParams: searchParams.toString() },
             [channel.port2]
           );
         });
 
-  return { queryMetadir };
+  return { select };
 }
 
 async function writeDataMetadirBrowser(
@@ -217,19 +226,27 @@ export async function writeDataMetadir(
     default:
       await writeDataMetadirBrowser(repoRoute, path, content);
     }
-  } catch(e) {
+  } catch (e) {
     throw Error(`Cannot write file ${path}. ${e}`);
   }
 }
 
-export async function searchRepo(dir: string, searchParams: URLSearchParams, base = undefined as any): Promise<any> {
-  console.log('searchRepo', dir, searchParams, base)
+export async function searchRepo(
+  dir: string,
+  urlSearchParams: URLSearchParams,
+  base = undefined as any
+): Promise<any> {
+  console.log("searchRepo", dir, urlSearchParams, base);
+
+  const searchParams = urlSearchParams;
+
+  searchParams.set('|', base);
 
   const queryWorker = queryWorkerInit(dir);
 
-  const overview = await queryWorker.queryMetadir(searchParams, base);
+  const overview = await queryWorker.select(searchParams);
 
-  console.log('searchRepo-finish')
+  console.log("searchRepo-finish");
 
   return overview;
 }
@@ -257,13 +274,12 @@ export function updateOverview(overview: any, entryNew: any) {
 }
 
 export async function editEntry(repoRoute: string, entry: any) {
-  await (new csvs.Entry({
-    entry,
+  return new CSVS({
     readFile: (path: string) => fetchDataMetadir(repoRoute, path),
     writeFile: (path: string, content: string) =>
       writeDataMetadir(repoRoute, path, content),
     randomUUID: () => crypto.randomUUID(),
-  })).update();
+  }).update(entry);
 }
 
 export async function deleteEntry(
@@ -271,12 +287,11 @@ export async function deleteEntry(
   overview: any,
   entry: any
 ) {
-  await (new csvs.Entry({
-    entry,
+  await new CSVS({
     readFile: (path: string) => fetchDataMetadir(repoRoute, path),
     writeFile: (path: string, content: string) =>
       writeDataMetadir(repoRoute, path, content),
-  })).delet();
+  }).delete(entry);
 
   return overview.filter((e: any) => e.UUID !== entry.UUID);
 }
@@ -325,7 +340,11 @@ export async function uploadFile(dir: string, file: File) {
   }
 }
 
-export async function addField(schema: any, entryOriginal: any, branch: string) {
+export async function addField(
+  schema: any,
+  entryOriginal: any,
+  branch: string
+) {
   const entry = deepClone(entryOriginal);
 
   let value;
@@ -335,19 +354,19 @@ export async function addField(schema: any, entryOriginal: any, branch: string) 
 
     const uuid = await digestMessage(crypto.randomUUID());
 
-    obj['|'] = branch;
+    obj["|"] = branch;
 
     obj.UUID = uuid;
 
     if (schema[branch].type === "array") {
-      obj.items = []
+      obj.items = [];
     }
 
     value = obj;
   } else {
-    value = ''
+    value = "";
   }
-  const base = entry['|']
+  const base = entry["|"];
 
   const { trunk } = schema[branch];
 
@@ -373,9 +392,9 @@ export async function createEntry(schema: any, base: string) {
 
   entry.UUID = await digestMessage(crypto.randomUUID());
 
-  entry['|'] = base;
+  entry["|"] = base;
 
-  if (schema[base].type === 'array') {
+  if (schema[base].type === "array") {
     entry.items = [];
   }
 
@@ -383,7 +402,11 @@ export async function createEntry(schema: any, base: string) {
 }
 
 // pick a param to group data by
-export function getDefaultGroupBy(schema: any, data: any, searchParams: URLSearchParams) {
+export function getDefaultGroupBy(
+  schema: any,
+  data: any,
+  searchParams: URLSearchParams
+) {
   // fallback to groupBy param from the search query
   if (searchParams.has("groupBy")) {
     const groupBy = searchParams.get("groupBy");
@@ -435,7 +458,7 @@ export async function getRepoSettings(repoRoute: string) {
 
   const searchParams = new URLSearchParams();
 
-  const pathname = repoRoute.replace(/^repos\//, '')
+  const pathname = repoRoute.replace(/^repos\//, "");
 
   searchParams.set("reponame", pathname);
 
@@ -444,5 +467,5 @@ export async function getRepoSettings(repoRoute: string) {
 
   const entry = overview[0];
 
-  return entry
+  return entry;
 }

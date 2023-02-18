@@ -1,4 +1,4 @@
-import { graphviz } from "@hpcc-js/wasm";
+import { Graphviz } from "@hpcc-js/wasm";
 import { ged2dot, ged2dot_ } from "@fetsorn/ged2dot";
 import { fetchDataMetadir } from "@/api";
 
@@ -73,7 +73,7 @@ async function renderGed(
 
   // TODO: ged2dot needs to be able to figure out familyID
   // when passed familyID is undefined or non-existing
-  let dot
+  let dot;
 
   if (familyID) {
     dot = ged2dot(index, depth, familyID);
@@ -81,8 +81,10 @@ async function renderGed(
     dot = ged2dot_(index);
   }
 
+  const graphviz = await Graphviz.load();
+
   // render dot notation with graphviz
-  const svg = await graphviz.layout(dot, "svg", "dot");
+  const svg = graphviz.layout(dot, "svg", "dot");
 
   return svg;
 }

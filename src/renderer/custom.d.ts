@@ -6,3 +6,4 @@ declare module "word-extractor";
 declare module "cfb";
 declare module "@fetsorn/ppt";
 declare module "file-saver";
+declare module "@isomorphic-git/lightning-fs";

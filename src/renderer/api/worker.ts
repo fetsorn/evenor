@@ -1,6 +1,6 @@
-import * as csvs from "@fetsorn/csvs-js";
+import { CSVS } from "@fetsorn/csvs-js";
 
-const fetchDataMetadir = (path: any) =>
+const readFile = (path: any) =>
   new Promise((res: any, rej: any) => {
     // console.log("csvs invokes callback")
 
@@ -22,7 +22,7 @@ const fetchDataMetadir = (path: any) =>
 
     // console.log("query worker asks main thread to fetch")
 
-    postMessage({ action: "fetch", path }, [channel.port2] as any);
+    postMessage({ action: "readFile", path }, [channel.port2] as any);
   });
 
 const grep = (contentFile: string, patternFile: string, isInverted: boolean) =>
@@ -52,7 +52,7 @@ const grep = (contentFile: string, patternFile: string, isInverted: boolean) =>
     ] as any);
   });
 
-async function queryMetadir(message: any) {
+async function select(message: any) {
   try {
     console.log(
       "query worker tries to query metadir",
@@ -66,45 +66,11 @@ async function queryMetadir(message: any) {
 
       const searchParams = new URLSearchParams(message.data.searchParams);
 
-      const { base } = message.data;
-
-      result = await (new csvs.Query({ '|': base, searchParams, readFile: fetchDataMetadir, grep })).select();
+      result = await (new CSVS({ readFile, grep })).select(searchParams);
 
       // console.log("csvs completes")
     } catch (e) {
-      console.log("Query.select() fails", message.data.searchParams, e);
-
-      result = [];
-    }
-
-    // console.log("query worker returns query")
-
-    message.ports[0].postMessage({ result });
-  } catch (e) {
-    // console.log("query worker errors", e);
-
-    message.ports[0].postMessage({ error: e });
-  }
-}
-
-async function queryOptions(message: any) {
-  try {
-    // console.log("query worker tries to query options", message.data.param);
-
-    let result;
-
-    try {
-      // console.log("query worker calls to csvs")
-
-      result = await (new csvs.Query({
-        '|': message.data.param,
-        readFile: fetchDataMetadir,
-        grep,
-      })).select();
-
-      // console.log("csvs completes")
-    } catch (e) {
-      console.log(`Query.select() options fails`, message.data.param, e);
+      console.log("CSVS.select() fails", message.data.searchParams, e);
 
       result = [];
     }
@@ -122,9 +88,7 @@ async function queryOptions(message: any) {
 onmessage = async (message: any) => {
   // console.log("query worker received message", message)
 
-  if (message.data.action === "query") {
-    await queryMetadir(message);
-  } else if (message.data.action === "options") {
-    await queryOptions(message);
+  if (message.data.action === "select") {
+    await select(message);
   }
 };

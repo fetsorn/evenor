@@ -319,15 +319,19 @@ export class BrowserAPI {
   }
 
   async ensure(schema: string) {
+    const dir = this.dir;
+
+    const name = dir.replace(/^\/store\//, "");
+
     const pfs = fs.promises;
 
     if (!(await pfs.readdir("/")).includes("store")) {
       await pfs.mkdir("/store");
     }
 
-    const repoDir = "/store/" + this.dir;
+    const repoDir = "/store/" + name;
 
-    if (!(await pfs.readdir("/store")).includes(this.dir)) {
+    if (!(await pfs.readdir("/store")).includes(name)) {
       await pfs.mkdir(repoDir);
 
       await git.init({ fs: fs, dir: repoDir });

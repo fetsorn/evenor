@@ -5,13 +5,13 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
 import { exportPDF, generateLatex } from "./latex";
 
-class ElectronAPI {
+export class ElectronAPI {
 
   constructor() {
-    //
+    // do nothing
   }
 
-  async readFile(
+  static async readFile(
     _event: any,
     repo: string,
     filepath: string
@@ -27,7 +27,7 @@ class ElectronAPI {
     return content;
   }
 
-  async writeFile(
+  static async writeFile(
     _event: any,
     dir: string,
     filepath: string,
@@ -68,7 +68,7 @@ class ElectronAPI {
     await fs.promises.writeFile(file, content);
   }
 
-  async uploadFile(_event: any, repo: string) {
+  static async uploadFile(_event: any, repo: string) {
     const res = await dialog.showOpenDialog({ properties: ["openFile"] });
 
     if (res.canceled) {
@@ -112,23 +112,23 @@ class ElectronAPI {
     }
   }
 
-  async select(_event: any, searchParams: URLSearchParams) {
+  static async select(_event: any, searchParams: URLSearchParams) {
   //
   }
 
-  async queryOptions(_event: any, branch: string) {
+  static async queryOptions(_event: any, branch: string) {
   //
   }
 
-  async updateEntry(_event: any, entry: any, overview: any) {
+  static async updateEntry(_event: any, entry: any, overview: any) {
   //
   }
 
-  async deleteEntry(_event: any, entry: any, overview: any) {
+  static async deleteEntry(_event: any, entry: any, overview: any) {
   //
   }
 
-  async clone(
+  static async clone(
     _event: any,
     url: string,
     token: string,
@@ -158,7 +158,7 @@ class ElectronAPI {
     await git.clone(options);
   }
 
-  async commit(_event: any, dir: string) {
+  static async commit(_event: any, dir: string) {
     console.log("commit", dir);
 
     const message = [];
@@ -237,19 +237,19 @@ class ElectronAPI {
     }
   }
 
-  async push(_event: any, token: string) {
+  static async push(_event: any, token: string) {
   //
   }
 
-  async pull(_event: any, token: string) {
+  static async pull(_event: any, token: string) {
   //
   }
 
-  async addRemote(_event: any, url: string) {
+  static async addRemote(_event: any, url: string) {
   //
   }
 
-  async ensure(_event: any, repo: string, schema: string) {
+  static async ensure(_event: any, dir: string, schema: string) {
     const home = app.getPath("home");
 
     const root = path.join(home, ".qualia");
@@ -264,9 +264,11 @@ class ElectronAPI {
       await fs.promises.mkdir(store);
     }
 
-    const repoDir = path.join(store, repo);
+    const name = dir.replace(/^\/store\//, "");
 
-    if (!(await fs.promises.readdir(store)).includes(repo)) {
+    const repoDir = path.join(store, name);
+
+    if (!(await fs.promises.readdir(store)).includes(name)) {
       await fs.promises.mkdir(repoDir);
 
       await git.init({ fs, dir: repoDir });
@@ -274,10 +276,10 @@ class ElectronAPI {
 
     await fs.promises.writeFile(repoDir + "/metadir.json", schema, "utf8");
 
-    await this.commit({}, repoDir);
+    await ElectronAPI.commit({}, repoDir);
   }
 
-  async symlink(_event: any, repodir: string, reponame: string) {
+  static async symlink(_event: any, dir: string, name: string) {
     const home = app.getPath("home");
 
     const root = path.join(home, ".qualia");
@@ -290,12 +292,12 @@ class ElectronAPI {
 
     const store = path.join(root, "store");
 
-    await fs.promises.unlink(`${repos}/${reponame}`);
+    await fs.promises.unlink(`${repos}/${name}`);
 
-    await fs.promises.symlink(`${store}/${repodir}`, `${repos}/${reponame}`);
+    await fs.promises.symlink(`${store}/${dir}`, `${repos}/${name}`);
   }
 
-  async rimraf(_event: any, filepath: string) {
+  static async rimraf(_event: any, filepath: string) {
     const home = app.getPath("home");
 
     const root = path.join(home, ".qualia");
@@ -315,11 +317,11 @@ class ElectronAPI {
     }
   }
 
-  async ls(_event: any, filepath: string) {
+  static async ls(_event: any, filepath: string) {
   //
   }
 
-  async getRemote(_event: any, repo: string) {
+  static async getRemote(_event: any, repo: string) {
     const home = app.getPath("home");
 
     const root = path.join(home, ".qualia");
@@ -335,7 +337,7 @@ class ElectronAPI {
     });
   }
 
-  async latex() {
+  static async latex() {
     const text = generateLatex([]);
 
     const pdfURL = await exportPDF(text);
@@ -343,7 +345,7 @@ class ElectronAPI {
     return pdfURL;
   }
 
-  async openPDF(_event: any, url: string) {
+  static async openPDF(_event: any, url: string) {
     const win = new BrowserWindow({
       webPreferences: {
         plugins: true,
@@ -353,7 +355,7 @@ class ElectronAPI {
     win.loadURL(url);
   }
 
-  async fetchAsset(
+  static async fetchAsset(
     _event: any,
     repo: string,
     filepath: string
@@ -374,5 +376,3 @@ class ElectronAPI {
     return content;
   }
 }
-
-export const api = new ElectronAPI();

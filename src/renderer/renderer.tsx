@@ -16,18 +16,26 @@ declare global {
     pfs: any;
     dir: any;
     electron: {
-      fetchDataMetadir(repo: string, path: string): any;
-      writeDataMetadir(repo: string, path: string, content: string): any;
-      clone(url: string, token: string, dir: string): any;
-      gitListRepos(): Promise<string[]>;
-      getRemote(repo: string): any;
+      readFile(dir: string, path: string): any;
+      writeFile(dir: string, path: string, content: string): any;
+      uploadFile(dir: string): any;
+      select(dir: string, searchParams: URLSearchParams): any;
+      queryOptions(dir: string, branch: string): any;
+      updateEntry(dir: string, entry: any, overview: any): any;
+      deleteEntry(dir: string, entry: any, overview: any): any;
+      clone(dir: string, url: string, token: string): any;
+      commit(dir: string): any;
+      push(dir: string, token: string): any;
+      pull(dir: string, token: string): any;
+      addRemote(dir: string, url: string): any;
+      ensure(dir: string, schema: string): any;
+      symlink(dir: string, name: string): any;
       rimraf(path: string): any;
+      ls(path: string): any;
+      getRemote(dir: string): any;
       latex(): any;
       openPDF(url: string): any;
-      uploadFile(repo: string): any;
-      fetchAsset(repo: string, path: string): Promise<ArrayBuffer>;
-      linkRepo(repodir: string, reponame: string): any;
-      ensureRepo(repo: string, schema: string): any;
+      fetchAsset(dir: string, path: string): Promise<ArrayBuffer>;
     };
   }
 }

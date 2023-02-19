@@ -1,11 +1,58 @@
-import {
-  ensureRoot,
-  fetchSchema,
-  getDefaultGroupBy,
-  searchRepo,
-  cloneRepo,
-} from "../api";
+import { API } from "../api";
+import { manifestRoot } from "@/../lib/git_template";
 import { OverviewSlice, OverviewType } from "./types";
+
+// pick a param to group data by
+function getDefaultGroupBy(
+  schema: any,
+  data: any,
+  searchParams: URLSearchParams
+) {
+  // fallback to groupBy param from the search query
+  if (searchParams.has("groupBy")) {
+    const groupBy = searchParams.get("groupBy");
+
+    return groupBy;
+  }
+
+  let groupBy;
+
+  const car = data[0] ?? {};
+
+  // fallback to first date param present in data
+  groupBy = Object.keys(schema).find((branch: any) => {
+    return (
+      schema[branch].type === "date" &&
+      Object.prototype.hasOwnProperty.call(car, branch)
+    );
+  });
+
+  // fallback to first param present in data
+  if (!groupBy) {
+    groupBy = Object.keys(schema).find((branch: any) => {
+      return Object.prototype.hasOwnProperty.call(car, branch);
+    });
+  }
+
+  // fallback to first date param present in schema
+  if (!groupBy) {
+    groupBy = Object.keys(schema).find(
+      (branch: any) => schema[branch].type === "date"
+    );
+  }
+
+  // fallback to first param present in schema
+  if (!groupBy) {
+    groupBy = Object.keys(schema)[0];
+  }
+
+  // unreachable with a valid scheme
+  if (!groupBy) {
+    throw Error("failed to find default groupBy in the schema");
+  }
+
+  return groupBy;
+}
 
 export function queriesToParams(queries: any) {
   const searchParams = new URLSearchParams();
@@ -49,7 +96,9 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
     let repoRoute;
 
     if (searchParams.has("url")) {
-      repoRoute = "store/view";
+      repoRoute = "/store/view";
+
+      const api = new API(repoRoute);
 
       const url = searchParams.get("url");
 
@@ -59,16 +108,26 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
       searchParams.delete("token")
 
-      await cloneRepo(url, token);
+      try {
+        await api.rimraf(repoRoute);
+      } catch {
+        // do nothing if nothing to rimraf
+      }
+
+      await api.clone(url, token);
     } else if (repoRouteOriginal === undefined) {
-      repoRoute = "store/root";
+      repoRoute = "/store/root";
 
       if (__BUILD_MODE__ !== "server") {
-        await ensureRoot();
+        const apiRoot = new API("/store/root");
+
+        await apiRoot.ensure(manifestRoot);
       }
     } else {
-      repoRoute = `repos/${repoRouteOriginal}`;
+      repoRoute = `/repos/${repoRouteOriginal}`;
     }
+
+    const api = new API(repoRoute);
 
     const queries = paramsToQueries(searchParams);
 
@@ -84,7 +143,7 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
       "groupBy"
     ) ?? "";
 
-    const schema = await fetchSchema(repoRoute);
+    const schema = await api.readFile("metadir.json");
 
     console.log(schema)
 
@@ -95,7 +154,9 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
   onQueries: async () => {
     if (get().isInitialized) {
-      const schema = await fetchSchema(get().repoRoute);
+      const api = new API(get().repoRoute);
+
+      const schema = await api.readFile("metadir.json");
 
       console.log(schema)
 
@@ -105,7 +166,9 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
 
       const searchParams = queriesToParams(get().queries);
 
-      const overview = await searchRepo(get().repoRoute, searchParams, base);
+      searchParams.set('|', base);
+
+      const overview = await api.select(searchParams);
 
       const groupBy = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
         ? get().groupBy
@@ -118,9 +181,13 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
   onChangeBase: async (base: string) => {
     const searchParams = queriesToParams(get().queries);
 
-    set({ base })
+    set({ base });
 
-    const overview = await searchRepo(get().repoRoute, searchParams, base);
+    searchParams.set('|', base);
+
+    const api = new API(get().repoRoute);
+
+    const overview = await api.select(searchParams);
 
     set({ overview })
   },

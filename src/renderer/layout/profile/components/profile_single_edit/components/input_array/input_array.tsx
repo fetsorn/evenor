@@ -1,13 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { EditInput , InputDropdown } from "..";
-import { queryOptions, addField } from '@/api';
+import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
+import { API } from '@/api';
 import { useStore } from "@/store";
+import { EditInput , InputDropdown } from "..";
 
 interface IInputArrayProps {
   schema: any;
   entry: any;
   onFieldChange: any;
+}
+
+async function addField(
+  schema: any,
+  entryOriginal: any,
+  branch: string
+) {
+  // used to use deepClone
+  const entry = JSON.parse(JSON.stringify(entryOriginal));
+
+  let value;
+
+  if (schema[branch].type === "object" || schema[branch].type === "array") {
+    const obj: any = {};
+
+    obj["|"] = branch;
+
+    const uuid = crypto.randomUUID ? crypto.randomUUID() : randomUUIDPolyfill();
+
+    obj.UUID = await digestMessage(uuid);
+
+    if (schema[branch].type === "array") {
+      obj.items = [];
+    }
+
+    value = obj;
+  } else {
+    value = "";
+  }
+  const base = entry["|"];
+
+  const { trunk } = schema[branch];
+
+  if (trunk !== base && branch !== base) {
+    return;
+  }
+
+  if (schema[base].type === "array") {
+    if (entry.items === undefined) {
+      entry.items = [];
+    }
+
+    entry.items.push({ ...value });
+  } else {
+    entry[branch] = value;
+  }
+  return entry;
 }
 
 export default function InputArray({
@@ -20,6 +68,8 @@ export default function InputArray({
   const [options, setOptions]: any[] = useState([]);
 
   const repoRoute = useStore((state) => state.repoRoute);
+
+  const api = new API(repoRoute);
 
   const base = useStore((state) => state.base);
 
@@ -41,7 +91,7 @@ export default function InputArray({
 
   async function onUseEffect() {
     if (branch !== base) {
-      const options = await queryOptions(repoRoute, branch);
+      const options = await api.queryOptions(branch);
 
       setOptions(options);
     }

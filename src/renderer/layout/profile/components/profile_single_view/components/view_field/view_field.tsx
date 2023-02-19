@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import { Dispenser } from "@/api";
+import { Dispenser } from "@/dispensers";
+import { API } from "@/api";
 import { manifestRoot } from "@/../lib/git_template"
 import { FieldText } from "..";
 
@@ -15,9 +16,11 @@ export default function ViewField({ entry }: IViewFieldProps) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [
+    repoRoute,
     baseEntry,
     isSettings,
   ] = useStore((state) => [
+    state.repoRoute,
     state.entry,
     state.isSettings,
   ])
@@ -50,6 +53,8 @@ export default function ViewField({ entry }: IViewFieldProps) {
                 {branchDescription}
               </div>
 
+              {entry.UUID}
+
               { entry.items.map((item: any, index: any) => (
                 <div key={index}>
                   <ViewField entry={item}/>
@@ -74,7 +79,7 @@ export default function ViewField({ entry }: IViewFieldProps) {
                 {branchDescription}
               </div>
 
-              <Dispenser {...{ baseEntry, branchEntry: entry }}/>
+              <Dispenser {...{ baseEntry, branchEntry: entry, api: new API(repoRoute) }}/>
             </div>
           )}
         </div>

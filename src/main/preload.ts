@@ -1,22 +1,57 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electron", {
-  fetchDataMetadir: (repo: string, path: string) =>
-    ipcRenderer.invoke("fetchDataMetadir", repo, path),
-  writeDataMetadir: (repo: string, path: string, content: string) =>
-    ipcRenderer.invoke("writeDataMetadir", repo, path, content),
-  clone: (url: string, token: string, dir: string) =>
-    ipcRenderer.invoke("clone", url, token, dir),
-  gitListRepos: () => ipcRenderer.invoke("gitListRepos"),
-  getRemote: (repo: string) => ipcRenderer.invoke("getRemote", repo),
+  readFile: (dir: string, path: string) =>
+    ipcRenderer.invoke("readFile", dir, path),
+
+  writeFile: (dir: string, path: string, content: string) =>
+    ipcRenderer.invoke("writeFile", dir, path, content),
+
+  uploadFile: (dir: string) => ipcRenderer.invoke("uploadFile", dir),
+
+  select: (dir: string, searchParams: URLSearchParams) =>
+    ipcRenderer.invoke("select", dir, searchParams),
+
+  queryOptions: (dir: string, branch: string) =>
+    ipcRenderer.invoke("queryOptions", dir, branch),
+
+  updateEntry: (dir: string, entry: any, overview: any) =>
+    ipcRenderer.invoke("updateEntry", dir, entry, overview),
+
+  deleteEntry: (dir: string, entry: any, overview: any) =>
+    ipcRenderer.invoke("deleteEntry", dir, entry, overview),
+
+  clone: (dir: string, url: string, token: string) =>
+    ipcRenderer.invoke("clone", dir, url, token),
+
+  commit: (dir: string) =>
+    ipcRenderer.invoke("commit", dir),
+
+  push: (dir: string, token: string) =>
+    ipcRenderer.invoke("push", dir, token),
+
+  pull: (dir: string, token: string) =>
+    ipcRenderer.invoke("pull", dir, token),
+
+  addRemote: (dir: string, url: string) =>
+    ipcRenderer.invoke("addRemote", dir, url),
+
+  ensure: (dir: string, schema: string) =>
+    ipcRenderer.invoke("ensure", dir, schema),
+
+  symlink: (dir: string, name: string) =>
+    ipcRenderer.invoke("symlink", dir, name),
+
   rimraf: (path: string) => ipcRenderer.invoke("rimraf", path),
+
+  ls: (path: string) => ipcRenderer.invoke("ls", path),
+
+  getRemote: (repo: string) => ipcRenderer.invoke("getRemote", repo),
+
   latex: () => ipcRenderer.invoke("latex"),
+
   openPDF: (url: string) => ipcRenderer.invoke("openPDF", url),
-  uploadFile: (repo: string) => ipcRenderer.invoke("uploadFile", repo),
-  fetchAsset: (repo: string, path: string) =>
-    ipcRenderer.invoke("fetchAsset", repo, path),
-  ensureRepo: (repo: string, schema: string) =>
-    ipcRenderer.invoke("ensureRepo", repo, schema),
-  linkRepo: (repodir: string, reponame: string) =>
-    ipcRenderer.invoke("linkRepo", repodir, reponame),
+
+  fetchAsset: (dir: string, path: string) =>
+    ipcRenderer.invoke("fetchAsset", dir, path),
 });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
-import { queryOptions } from "@/api";
+import { API } from "@/api";
 import { useStore } from "@/store";
 import styles from "./filter_search_bar.module.css";
 
@@ -30,6 +30,8 @@ export default function FilterSearchBar() {
     state.repoRoute
   ]);
 
+  const api = new API(repoRoute);
+
   const notAddedQueries = Object.keys(schema).filter(
     (branch: any) =>
       schema[branch].trunk === base
@@ -47,7 +49,7 @@ export default function FilterSearchBar() {
 
   async function onQueryFieldChange() {
     if (isInitialized) {
-      const options: any = await queryOptions(repoRoute, queryField);
+      const options: any = await api.queryOptions(queryField);
 
       const optionValues = options.map((entry: any) => entry[queryField])
 

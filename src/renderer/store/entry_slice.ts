@@ -1,12 +1,23 @@
-import {
-  createEntry,
-  deepClone,
-  deleteEntry,
-  editEntry,
-  updateOverview,
-  getRepoSettings,
-} from "../api";
+import { API } from "../api";
 import { EntrySlice } from "./types";
+import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
+
+// TODO: set default values for required fields
+async function createEntry(schema: any, base: string) {
+  const entry: Record<string, any> = {};
+
+  const uuid = crypto.randomUUID ? crypto.randomUUID() : randomUUIDPolyfill();
+
+  entry.UUID = await digestMessage(uuid);
+
+  entry["|"] = base;
+
+  if (schema[base].type === "array") {
+    entry.items = [];
+  }
+
+  return entry;
+}
 
 export const createEntrySlice: EntrySlice = (set, get) => ({
   // entry selected from overview for viewing/editing
@@ -32,10 +43,14 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
   onEntrySelect: (entry: any, index: any, group: any) => set({ entry, index, group }),
 
   onSettingsOpen: async () => {
+    const apiRepo = new API(get().repoRoute);
+
     // get current repo settings from root db
-    const entry = await getRepoSettings(get().repoRoute)
+    const entry = await apiRepo.getSettings()
 
     const repoRouteRoot = "store/root";
+
+    const apiRoot = new API(repoRouteRoot);
 
     const { onEntrySave, onEntryDelete } = get();
 
@@ -47,13 +62,13 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
     });
 
     const onSettingsSave = async () => {
-      await editEntry(repoRouteRoot, deepClone(get().entry));
+      await apiRoot.updateEntry(get().entry);
 
       set({ isEdit: false })
     }
 
     const onSettingsDelete = async () => {
-      await deleteEntry(repoRouteRoot, [], deepClone(get().entry));
+      await apiRoot.deleteEntry(get().entry);
 
       set({
         repoRoute: repoRouteRoot,
@@ -86,15 +101,17 @@ export const createEntrySlice: EntrySlice = (set, get) => ({
   onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
 
   onEntrySave: async () => {
-    await editEntry(get().repoRoute, deepClone(get().entry));
+    const api = new API(get().repoRoute);
 
-    const overview = updateOverview(get().overview, deepClone(get().entry));
+    const overview = await api.updateEntry(get().entry, get().overview);
 
     set({ overview, isEdit: false })
   },
 
   onEntryDelete: async () => {
-    const overview = await deleteEntry(get().repoRoute, get().overview, get().entry);
+    const api = new API(get().repoRoute);
+
+    const overview = await api.deleteEntry(get().entry, get().overview);
 
     set({ overview, entry: undefined });
   },

@@ -1,471 +1,223 @@
-import LightningFS from "@isomorphic-git/lightning-fs";
 import axios from "axios";
-import { CSVS, digestMessage } from "@fetsorn/csvs-js";
-import { deepClone } from ".";
+import { BrowserAPI } from "./browser";
 
-export const fs = new LightningFS("fs");
+export default class API {
+  dir;
 
-// if (typeof crypto === "undefined") var crypto = require("crypto");
+  browser;
 
-// https://stackoverflow.com/a/2117523/2800218
-// LICENSE: https://creativecommons.org/licenses/by-sa/4.0/legalcode
-function randomUUIDPolyfill() {
-  return (<any>[1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c: any) =>
-    (
-      c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16)
-  );
-}
+  constructor(dir: string) {
+    this.dir = dir;
 
-function randomUUID() {
-  if (crypto.randomUUID) {
-    return crypto.randomUUID();
-  } else {
-    return randomUUIDPolyfill();
+    this.browser = new BrowserAPI(dir);
   }
-}
 
-async function fetchDataMetadirBrowser(dir: string, path: string) {
-  // check if path exists in the repo
-  const path_elements = dir.split("/").concat(path.split("/"));
-  // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
+  async readFile(path: string) {
+    try {
+      switch (__BUILD_MODE__) {
+      case "server":
+        return (await fetch("/api/" + path)).text();
 
-  let root = "";
+      case "electron":
+        return await window.electron.readFile(this.dir, path);
 
-  const pfs = fs.promises;
-
-  for (let i = 0; i < path_elements.length; i++) {
-    const path_element = path_elements[i];
-
-    root += "/";
-
-    const files = await pfs.readdir(root);
-
-    // console.log("fetchDataMetadir: files", root, files);
-    if (files.includes(path_element)) {
-      root += path_element;
-
-      // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
-    } else {
+      default:
+        return await this.browser.readFile(path);
+      }
+    } catch (e) {
       // console.log(
-      //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
+      //   `Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`
       // );
-      return undefined;
-      // throw Error(
-      //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
-      // );
+      // throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
     }
   }
 
-  const file: any = await pfs.readFile("/" + dir + "/" + path);
-
-  const restext = new TextDecoder().decode(file);
-
-  return restext;
-}
-
-export async function fetchDataMetadir(repoRoute: string, path: string) {
-  try {
-    switch (__BUILD_MODE__) {
-    case "server":
-      return (await fetch("/api/" + path)).text();
-
-    case "electron":
-      return await window.electron.fetchDataMetadir(repoRoute, path);
-
-    default:
-      return await fetchDataMetadirBrowser(repoRoute, path);
-    }
-  } catch (e) {
-    console.log(
-      `Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`
-    );
-    // throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
-  }
-}
-
-function queryWorkerInit(dir: string) {
-  const worker = new Worker(new URL("./worker", import.meta.url));
-
-  async function callback(message: any) {
-    // console.log("main thread receives message", message);
-
-    if (message.data.action === "readFile") {
-      try {
-        // console.log("main thread tries to fetch", message.data.path);
-
-        const contents = await fetchDataMetadir(dir, message.data.path);
-
-        // console.log("main thread returns fetch");
-
-        message.ports[0].postMessage({ result: contents });
-      } catch (e) {
-        // console.log("main thread errors", e);
-
-        // safari cannot clone the error object, force to string
-        message.ports[0].postMessage({ error: `${e}` });
-      }
-    }
-
-    if (message.data.action === "grep") {
-      // console.log('callback grep', message.data)
-      try {
-        const wasm = await import("@fetsorn/wasm-grep");
-
-        // console.log("main thread tries to fetch", message.data.path);
-
-        const contents = await wasm.grep(
-          message.data.contentFile,
-          message.data.patternFile,
-          message.data.isInverted ?? false
-        );
-
-        // console.log("main thread returns fetch")
-
-        message.ports[0].postMessage({ result: contents });
-      } catch (e) {
-        // console.log("main thread errors");
-
-        message.ports[0].postMessage({ error: e });
-      }
-    }
-  }
-
-  worker.onmessage = callback;
-
-  const select =
-    __BUILD_MODE__ === "server"
-      ? async (searchParams: URLSearchParams) => {
-        const response = await fetch("/query?" + searchParams.toString());
-
-        return response.json();
-      }
-      : (searchParams: URLSearchParams) =>
-        new Promise((res, rej) => {
-          const channel = new MessageChannel();
-
-          channel.port1.onmessage = ({ data }) => {
-            channel.port1.close();
-
-            if (data.error) {
-              rej(data.error);
-            } else {
-              res(data.result);
-            }
-          };
-
-          worker.postMessage(
-            { action: "select", searchParams: searchParams.toString() },
-            [channel.port2]
-          );
+  async writeFile(path: string, content: string) {
+    try {
+      switch (__BUILD_MODE__) {
+      case "server":
+        await axios.post("/api/" + path, {
+          content,
         });
+        break;
 
-  return { select };
-}
+      case "electron":
+        await window.electron.writeFile(this.dir, path, content);
+        break;
 
-async function writeDataMetadirBrowser(
-  dir: string,
-  path: string,
-  content: string
-) {
-  // if path doesn't exist, create it
-  // split path into array of directory names
-  const path_elements = dir.split("/").concat(path.split("/"));
-
-  // console.log('writeDataMetadirBrowser', dir, path, content);
-
-  // remove file name
-  path_elements.pop();
-
-  let root = "";
-
-  const pfs = fs.promises;
-
-  for (let i = 0; i < path_elements.length; i++) {
-    const path_element = path_elements[i];
-    // console.log('writeDataMetadirBrowser-path', path_element)
-
-    root += "/";
-
-    const files = await pfs.readdir(root);
-
-    // console.log(files)
-
-    if (!files.includes(path_element)) {
-      // console.log(`writeDataMetadirBrowser creating directory ${path_element} in ${root}`)
-
-      await pfs.mkdir(root + "/" + path_element);
-    } else {
-      // console.log(`writeDataMetadirBrowser ${root} has ${path_element}`)
+      default:
+        await this.browser.writeFile(path, content);
+      }
+    } catch (e) {
+      // throw Error(`Cannot write file ${path}. ${e}`);
     }
-
-    root += path_element;
   }
 
-  await pfs.writeFile("/" + dir + "/" + path, content, "utf8");
-}
-
-export async function writeDataMetadir(
-  repoRoute: string,
-  path: string,
-  content: string
-) {
-  try {
+  async uploadFile(file: File) {
     switch (__BUILD_MODE__) {
-    case "server":
-      await axios.post("/api/" + path, {
-        content,
-      });
-      break;
+    case "server": {
+      const form = new FormData();
 
+      form.append("file", file);
+
+      await axios.post("/upload", form);
+
+      break;
+    }
+
+    default:
+      await this.browser.uploadFile(file);
+    }
+  }
+
+  async select(searchParams: URLSearchParams) {
+    switch (__BUILD_MODE__) {
+    default: {
+      return this.browser.select(searchParams);
+    }
+    }
+  }
+
+  async queryOptions(branch: string) {
+    switch (__BUILD_MODE__) {
+    default: {
+      return this.browser.queryOptions(branch);
+    }
+    }
+  }
+
+  async updateEntry(entry: any, overview: any = []) {
+    switch (__BUILD_MODE__) {
     case "electron":
-      await window.electron.writeDataMetadir(repoRoute, path, content);
+      return window.electron.updateEntry(this.dir, entry, overview);
       break;
 
     default:
-      await writeDataMetadirBrowser(repoRoute, path, content);
+      return this.browser.updateEntry(entry, overview);
     }
-  } catch (e) {
-    throw Error(`Cannot write file ${path}. ${e}`);
   }
-}
 
-export async function searchRepo(
-  dir: string,
-  urlSearchParams: URLSearchParams,
-  base = undefined as any
-): Promise<any> {
-  console.log("searchRepo", dir, urlSearchParams, base);
+  async deleteEntry(entry: any, overview: any = []) {
+    switch (__BUILD_MODE__) {
+    case "electron":
+      return window.electron.deleteEntry(this.dir, entry, overview);
 
-  const searchParams = urlSearchParams;
+    default:
+      return this.browser.deleteEntry(entry, overview);
+    }
+  }
 
-  searchParams.set('|', base);
+  async clone(url: string, token: string) {
+    switch (__BUILD_MODE__) {
+    case "electron":
+      return await window.electron.clone("store/view", url, token);
+      break;
 
-  const queryWorker = queryWorkerInit(dir);
+    default:
+      await this.browser.clone(url, token);
+    }
+  }
 
-  const overview = await queryWorker.select(searchParams);
+  async commit() {
+    switch (__BUILD_MODE__) {
+    case "server":
+      await axios.put("api/");
+      break;
 
-  console.log("searchRepo-finish");
+    default:
+      await this.browser.commit();
+    }
+  }
 
-  return overview;
-}
+  async push(token: string) {
+    switch (__BUILD_MODE__) {
+    default:
+      await this.browser.push(token);
+    }
+  }
 
-export async function fetchSchema(dir: string): Promise<any> {
-  const schemaFile = await fetchDataMetadir(dir, "metadir.json");
+  async pull(token: string) {
+    switch (__BUILD_MODE__) {
+    default:
+      await this.browser.pull(token);
+    }
+  }
 
-  const schema = JSON.parse(schemaFile);
+  async addRemote(url: string) {
+    switch (__BUILD_MODE__) {
+    default:
+      await this.browser.addRemote(url);
+    }
+  }
 
-  return schema;
-}
+  async ensure(schema: string) {
+    try {
+      switch (__BUILD_MODE__) {
+      case "electron":
+        return await window.electron.ensure(this.dir, schema);
 
-export function updateOverview(overview: any, entryNew: any) {
-  if (overview.find((e: any) => e.UUID === entryNew.UUID)) {
-    return overview.map((e: any) => {
-      if (e.UUID === entryNew.UUID) {
-        return entryNew;
-      } else {
-        return e;
+      default:
+        return await this.browser.ensure(schema);
       }
-    });
-  } else {
-    return overview.concat([entryNew]);
-  }
-}
-
-export async function editEntry(repoRoute: string, entry: any) {
-  return new CSVS({
-    readFile: (path: string) => fetchDataMetadir(repoRoute, path),
-    writeFile: (path: string, content: string) =>
-      writeDataMetadir(repoRoute, path, content),
-    randomUUID: () => crypto.randomUUID(),
-  }).update(entry);
-}
-
-export async function deleteEntry(
-  repoRoute: string,
-  overview: any,
-  entry: any
-) {
-  await new CSVS({
-    readFile: (path: string) => fetchDataMetadir(repoRoute, path),
-    writeFile: (path: string, content: string) =>
-      writeDataMetadir(repoRoute, path, content),
-  }).delete(entry);
-
-  return overview.filter((e: any) => e.UUID !== entry.UUID);
-}
-
-export async function uploadFile(dir: string, file: File) {
-  if (__BUILD_MODE__ === "server") {
-    const form = new FormData();
-
-    form.append("file", file);
-
-    await axios.post("/upload", form);
-  } else {
-    const pfs = new LightningFS("fs").promises;
-
-    const root = "/";
-
-    const rootFiles = await pfs.readdir("/");
-
-    const repoDir = root + dir;
-
-    if (!rootFiles.includes(dir)) {
-      await pfs.mkdir(repoDir);
-    }
-
-    const repoFiles = await pfs.readdir(repoDir);
-
-    const local = "local";
-
-    const localDir = repoDir + "/" + local;
-
-    if (!repoFiles.includes(local)) {
-      await pfs.mkdir(localDir);
-    }
-
-    const localFiles = await pfs.readdir(localDir);
-
-    const filename = file.name;
-
-    const filepath = localDir + "/" + filename;
-
-    if (!localFiles.includes(filename)) {
-      const buf: any = await file.arrayBuffer();
-
-      await pfs.writeFile(filepath, buf);
+    } catch (e) {
+      throw Error(`${e}`);
     }
   }
-}
 
-export async function addField(
-  schema: any,
-  entryOriginal: any,
-  branch: string
-) {
-  const entry = deepClone(entryOriginal);
+  async symlink(name: string) {
+    try {
+      switch (__BUILD_MODE__) {
+      case "electron":
+        return await window.electron.symlink(this.dir, name);
 
-  let value;
-
-  if (schema[branch].type === "object" || schema[branch].type === "array") {
-    const obj: any = {};
-
-    const uuid = await digestMessage(crypto.randomUUID());
-
-    obj["|"] = branch;
-
-    obj.UUID = uuid;
-
-    if (schema[branch].type === "array") {
-      obj.items = [];
+      default:
+        return await this.browser.symlink(name);
+      }
+    } catch (e) {
+      throw Error(`${e}`);
     }
-
-    value = obj;
-  } else {
-    value = "";
-  }
-  const base = entry["|"];
-
-  const { trunk } = schema[branch];
-
-  if (trunk !== base && branch !== base) {
-    return;
   }
 
-  if (schema[base].type === "array") {
-    if (entry.items === undefined) {
-      entry.items = [];
+  async rimraf(path: string) {
+    try {
+      switch (__BUILD_MODE__) {
+      case "electron":
+        return window.electron.rimraf(path);
+
+      default:
+        return await this.browser.rimraf(path);
+      }
+    } catch (e) {
+      throw Error(`${e}`);
     }
-
-    entry.items.push({ ...value });
-  } else {
-    entry[branch] = value;
-  }
-  return entry;
-}
-
-// TODO: set default values for required fields
-export async function createEntry(schema: any, base: string) {
-  const entry: Record<string, any> = {};
-
-  entry.UUID = await digestMessage(crypto.randomUUID());
-
-  entry["|"] = base;
-
-  if (schema[base].type === "array") {
-    entry.items = [];
   }
 
-  return entry;
-}
+  async ls(path: string) {
+    try {
+      switch (__BUILD_MODE__) {
+      case "electron":
+        return window.electron.ls(path);
 
-// pick a param to group data by
-export function getDefaultGroupBy(
-  schema: any,
-  data: any,
-  searchParams: URLSearchParams
-) {
-  // fallback to groupBy param from the search query
-  if (searchParams.has("groupBy")) {
-    const groupBy = searchParams.get("groupBy");
-
-    return groupBy;
+      default:
+        return await this.browser.ls(path);
+      }
+    } catch (e) {
+      throw Error(`${e}`);
+    }
   }
 
-  let groupBy;
+  async getSettings() {
+    const pathname = this.dir.replace(/^repos\//, "");
 
-  const car = data[0] ?? {};
+    const searchParams = new URLSearchParams();
 
-  // fallback to first date param present in data
-  groupBy = Object.keys(schema).find((branch: any) => {
-    return (
-      schema[branch].type === "date" &&
-      Object.prototype.hasOwnProperty.call(car, branch)
-    );
-  });
+    searchParams.set("reponame", pathname);
 
-  // fallback to first param present in data
-  if (!groupBy) {
-    groupBy = Object.keys(schema).find((branch: any) => {
-      return Object.prototype.hasOwnProperty.call(car, branch);
-    });
+    // query root db to get entry with repo settings
+    const overview = await (new API("/store/root")).select(searchParams);
+
+    const entry = overview[0];
+
+    return entry;
   }
-
-  // fallback to first date param present in schema
-  if (!groupBy) {
-    groupBy = Object.keys(schema).find(
-      (branch: any) => schema[branch].type === "date"
-    );
-  }
-
-  // fallback to first param present in schema
-  if (!groupBy) {
-    groupBy = Object.keys(schema)[0];
-  }
-
-  // unreachable with a valid scheme
-  if (!groupBy) {
-    throw Error("failed to find default groupBy in the schema");
-  }
-
-  return groupBy;
-}
-
-export async function getRepoSettings(repoRoute: string) {
-  const repoRouteRoot = "store/root";
-
-  const searchParams = new URLSearchParams();
-
-  const pathname = repoRoute.replace(/^repos\//, "");
-
-  searchParams.set("reponame", pathname);
-
-  // query root db to get entry with repo settings
-  const overview = await searchRepo(repoRouteRoot, searchParams);
-
-  const entry = overview[0];
-
-  return entry;
 }

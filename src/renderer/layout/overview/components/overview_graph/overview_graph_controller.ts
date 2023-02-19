@@ -1,6 +1,6 @@
 import { Graphviz } from "@hpcc-js/wasm";
 import { ged2dot, ged2dot_ } from "@fetsorn/ged2dot";
-import { fetchDataMetadir } from "@/api";
+import { API } from "@/api";
 
 declare global {
   interface Window {
@@ -69,7 +69,9 @@ async function renderGed(
   depth: any,
   familyID: any
 ): Promise<string> {
-  const index = await fetchDataMetadir(dir, "index.ged");
+  const api = new API(dir);
+
+  const index = await api.readFile("index.ged");
 
   // TODO: ged2dot needs to be able to figure out familyID
   // when passed familyID is undefined or non-existing
@@ -90,7 +92,9 @@ async function renderGed(
 }
 
 async function renderIndex(dir: string): Promise<string> {
-  const index = await fetchDataMetadir(dir, "index.html");
+  const api = new API(dir);
+
+  const index = await api.readFile("index.html");
 
   return index;
 }

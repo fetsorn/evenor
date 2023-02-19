@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
-import { API } from '@/api';
+import { API, deepClone } from '@/api';
 import { useStore } from "@/store";
 import { EditInput , InputDropdown } from "..";
 
@@ -17,7 +17,7 @@ async function addField(
   branch: string
 ) {
   // used to use deepClone
-  const entry = JSON.parse(JSON.stringify(entryOriginal));
+  const entry = deepClone(entryOriginal);
 
   let value;
 

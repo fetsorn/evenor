@@ -1,11 +1,11 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("electron", {
-  readFile: (dir: string, path: string) =>
-    ipcRenderer.invoke("readFile", dir, path),
+  readFile: (dir: string, filepath: string) =>
+    ipcRenderer.invoke("readFile", dir, filepath),
 
-  writeFile: (dir: string, path: string, content: string) =>
-    ipcRenderer.invoke("writeFile", dir, path, content),
+  writeFile: (dir: string, filepath: string, content: string) =>
+    ipcRenderer.invoke("writeFile", dir, filepath, content),
 
   uploadFile: (dir: string) => ipcRenderer.invoke("uploadFile", dir),
 
@@ -42,9 +42,9 @@ contextBridge.exposeInMainWorld("electron", {
   symlink: (dir: string, name: string) =>
     ipcRenderer.invoke("symlink", dir, name),
 
-  rimraf: (path: string) => ipcRenderer.invoke("rimraf", path),
+  rimraf: (rimrafpath: string) => ipcRenderer.invoke("rimraf", rimrafpath),
 
-  ls: (path: string) => ipcRenderer.invoke("ls", path),
+  ls: (lspath: string) => ipcRenderer.invoke("ls", lspath),
 
   getRemote: (repo: string) => ipcRenderer.invoke("getRemote", repo),
 
@@ -52,6 +52,6 @@ contextBridge.exposeInMainWorld("electron", {
 
   openPDF: (url: string) => ipcRenderer.invoke("openPDF", url),
 
-  fetchAsset: (dir: string, path: string) =>
-    ipcRenderer.invoke("fetchAsset", dir, path),
+  fetchAsset: (dir: string, filepath: string) =>
+    ipcRenderer.invoke("fetchAsset", dir, filepath),
 });

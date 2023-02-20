@@ -91,6 +91,7 @@ module.exports = {
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src/renderer"),
+      lib: path.resolve(__dirname, "./src/lib"),
     },
     fallback: {
       // For WASM

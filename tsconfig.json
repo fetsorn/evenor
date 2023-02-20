@@ -15,6 +15,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@/*": ["src/renderer/*"],
+      "lib/*": ["src/lib/*"],
       "*": ["node_modules/*"]
     }
   },

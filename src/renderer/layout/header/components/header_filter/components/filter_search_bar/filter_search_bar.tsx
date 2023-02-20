@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
-import { API } from "@/api";
+import { API } from "lib/api";
 import { useStore } from "@/store";
 import styles from "./filter_search_bar.module.css";
 

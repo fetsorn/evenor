@@ -3,24 +3,24 @@ import fs from "fs";
 import path from "path";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
-import { exportPDF, generateLatex } from "./latex";
+import { exportPDF, generateLatex } from "lib/latex";
 
-export class ElectronAPI {
+const home = app.getPath("home");
+
+export default class ElectronAPI {
 
   constructor() {
-    // do nothing
+    //
   }
 
   static async readFile(
     _event: any,
-    repo: string,
+    dir: string,
     filepath: string
   ) {
-    const home = app.getPath("home");
-
     const root = path.join(home, ".qualia");
 
-    const file = path.join(root, repo, filepath);
+    const file = path.join(root, dir, filepath);
 
     const content = fs.readFileSync(file, { encoding: "utf8" });
 
@@ -33,8 +33,6 @@ export class ElectronAPI {
     filepath: string,
     content: string
   ) {
-    const home = app.getPath("home");
-
     const appdata = path.join(home, ".qualia");
 
     const file = path.join(appdata, dir, filepath);
@@ -68,7 +66,7 @@ export class ElectronAPI {
     await fs.promises.writeFile(file, content);
   }
 
-  static async uploadFile(_event: any, repo: string) {
+  static async uploadFile(_event: any, dir: string) {
     const res = await dialog.showOpenDialog({ properties: ["openFile"] });
 
     if (res.canceled) {
@@ -78,13 +76,11 @@ export class ElectronAPI {
 
       const filename = pathSource.substring(pathSource.lastIndexOf("/") + 1);
 
-      const homePath = app.getPath("home");
-
-      const rootPath = path.join(homePath, ".qualia");
+      const rootPath = path.join(home, ".qualia");
 
       const localDir = "local";
 
-      const localPath = path.join(rootPath, repo, localDir);
+      const localPath = path.join(rootPath, dir, localDir);
 
       if (!fs.existsSync(localPath)) {
         fs.mkdirSync(localPath);
@@ -134,8 +130,6 @@ export class ElectronAPI {
     token: string,
     dir: string
   ) {
-    const home = app.getPath("home");
-
     const root = path.join(home, ".qualia");
 
     const dirPath = path.join(root, dir);
@@ -159,8 +153,6 @@ export class ElectronAPI {
   }
 
   static async commit(_event: any, dir: string) {
-    console.log("commit", dir);
-
     const message = [];
 
     const statusMatrix: any = await git.statusMatrix({
@@ -250,8 +242,6 @@ export class ElectronAPI {
   }
 
   static async ensure(_event: any, dir: string, schema: string) {
-    const home = app.getPath("home");
-
     const root = path.join(home, ".qualia");
 
     if (!(await fs.promises.readdir(home)).includes(".qualia")) {
@@ -280,8 +270,6 @@ export class ElectronAPI {
   }
 
   static async symlink(_event: any, dir: string, name: string) {
-    const home = app.getPath("home");
-
     const root = path.join(home, ".qualia");
 
     const repos = path.join(root, "repos");
@@ -298,8 +286,6 @@ export class ElectronAPI {
   }
 
   static async rimraf(_event: any, filepath: string) {
-    const home = app.getPath("home");
-
     const root = path.join(home, ".qualia");
 
     const file = path.join(root, filepath);
@@ -321,12 +307,10 @@ export class ElectronAPI {
   //
   }
 
-  static async getRemote(_event: any, repo: string) {
-    const home = app.getPath("home");
-
+  static async getRemote(_event: any, repodir: string) {
     const root = path.join(home, ".qualia");
 
-    const dir = path.join(root, repo);
+    const dir = path.join(root, repodir);
 
     return await git.getConfig({
       fs,
@@ -357,14 +341,12 @@ export class ElectronAPI {
 
   static async fetchAsset(
     _event: any,
-    repo: string,
+    dir: string,
     filepath: string
   ): Promise<ArrayBuffer> {
-    const home = app.getPath("home");
-
     const root = path.join(home, ".qualia");
 
-    const file = path.join(root, repo, filepath);
+    const file = path.join(root, dir, filepath);
 
     const b: Buffer = fs.readFileSync(file);
 

@@ -14,9 +14,9 @@ export class BrowserAPI {
     this.dir = dir;
   }
 
-  async readFile(path: string) {
+  async readFile(filepath: string) {
   // check if path exists in the repo
-    const path_elements = this.dir.split("/").concat(path.split("/"));
+    const path_elements = this.dir.split("/").concat(filepath.split("/"));
     // console.log("readFile: path_elements, path", path_elements, path);
 
     let root = "";
@@ -46,7 +46,7 @@ export class BrowserAPI {
       }
     }
 
-    const file: any = await pfs.readFile("/" + this.dir + "/" + path);
+    const file: any = await pfs.readFile("/" + this.dir + "/" + filepath);
 
     const restext = new TextDecoder().decode(file);
 
@@ -54,12 +54,12 @@ export class BrowserAPI {
   }
 
   async writeFile(
-    path: string,
+    filepath: string,
     content: string
   ) {
   // if path doesn't exist, create it
   // split path into array of directory names
-    const path_elements = this.dir.split("/").concat(path.split("/"));
+    const path_elements = this.dir.split("/").concat(filepath.split("/"));
 
     // console.log('writeFileBrowser', dir, path, content);
 
@@ -91,7 +91,7 @@ export class BrowserAPI {
       root += path_element;
     }
 
-    await pfs.writeFile("/" + this.dir + "/" + path, content, "utf8");
+    await pfs.writeFile("/" + this.dir + "/" + filepath, content, "utf8");
   }
 
   async uploadFile(file: File) {
@@ -132,7 +132,7 @@ export class BrowserAPI {
   }
 
   async select(searchParams: URLSearchParams) {
-    const queryWorker = new QueryWorker(this.readFile);
+    const queryWorker = new QueryWorker(this.readFile.bind(this));
 
     const overview = await queryWorker.select(searchParams);
 
@@ -140,24 +140,22 @@ export class BrowserAPI {
   }
 
   async queryOptions(branch: string) {
-    const queryWorker = new QueryWorker(this.readFile);
+    const searchParams = new URLSearchParams();
 
-    try {
-      const options = await queryWorker.queryOptions(branch);
+    searchParams.set('|', branch);
 
-      return options;
-    } catch (e) {
-      console.log(e);
+    const queryWorker = new QueryWorker(this.readFile.bind(this));
 
-      return [];
-    }
+    const overview = await queryWorker.select(searchParams);
+
+    return overview;
   }
 
   async updateEntry(entry: any, overview: any) {
     const entryNew = await new CSVS({
-      readFile: (path: string) => this.readFile(path),
-      writeFile: (path: string, content: string) =>
-        this.writeFile(path, content),
+      readFile: (filepath: string) => this.readFile(filepath),
+      writeFile: (filepath: string, content: string) =>
+        this.writeFile(filepath, content),
     }).update(deepClone(entry));
 
     if (overview.find((e: any) => e.UUID === entryNew.UUID)) {
@@ -175,9 +173,9 @@ export class BrowserAPI {
 
   async deleteEntry(entry: any, overview: any) {
     await new CSVS({
-      readFile: (path: string) => this.readFile(path),
-      writeFile: (path: string, content: string) =>
-        this.writeFile(path, content),
+      readFile: (filepath: string) => this.readFile(filepath),
+      writeFile: (filepath: string, content: string) =>
+        this.writeFile(filepath, content),
     }).delete(deepClone(entry));
 
     return overview.filter((e: any) => e.UUID !== entry.UUID);
@@ -267,8 +265,7 @@ export class BrowserAPI {
     }
 
     if (message.length !== 0) {
-    // console.log("commit:", message.toString());
-
+      // console.log("commit:", message.toString());
       await git.commit({
         fs: fs,
         dir,
@@ -352,19 +349,19 @@ export class BrowserAPI {
     await pfs.symlink(`/store/${this.dir}`, `/repos/${reponame}`);
   }
 
-  async rimraf(path: string) {
+  async rimraf(rimrafpath: string) {
     const pfs = fs.promises;
 
     let files;
 
     try {
-      files = await pfs.readdir(path);
+      files = await pfs.readdir(rimrafpath);
     } catch {
-      throw Error(`can't read ${path} to rimraf it`);
+      throw Error(`can't read ${rimrafpath} to rimraf it`);
     }
 
     for (const file of files) {
-      const filepath = path + "/" + file;
+      const filepath = rimrafpath + "/" + file;
 
       const { type } = await pfs.stat(filepath);
 
@@ -375,24 +372,24 @@ export class BrowserAPI {
       }
     }
 
-    await pfs.rmdir(path);
+    await pfs.rmdir(rimrafpath);
   }
 
-  async ls(path: string) {
+  async ls(lspath: string) {
     const pfs = fs.promises;
 
     let files;
 
     try {
-      files = await pfs.readdir(path);
+      files = await pfs.readdir(lspath);
     } catch {
-      throw Error(`can't read ${path} to list it`);
+      throw Error(`can't read ${lspath} to list it`);
     }
 
-    console.log("list ", path, ":", files);
+    console.log("list ", lspath, ":", files);
 
     for (const file of files) {
-      const filepath = path + "/" + file;
+      const filepath = lspath + "/" + file;
 
       const { type } = await pfs.stat(filepath);
 

@@ -1,14 +1,14 @@
 export default class QueryWorker {
   worker;
 
-  constructor(readFile: (path: string) => Promise<string>) {
+  constructor(readFile: (filepath: string) => Promise<string>) {
     const worker = new Worker(new URL("./worker", import.meta.url));
 
     worker.onmessage = async (message: any) => {
       switch (message.data.action) {
       case "readFile": {
         try {
-          const contents = await readFile(message.data.path);
+          const contents = await readFile(message.data.filepath);
 
           message.ports[0].postMessage({ result: contents });
         } catch (e) {
@@ -68,30 +68,5 @@ export default class QueryWorker {
       });
     }
     }
-  }
-
-  async queryOptions(param: string) {
-    return new Promise((res, rej) => {
-      const channel = new MessageChannel();
-
-      channel.port1.onmessage = ({ data }) => {
-        channel.port1.close();
-
-        if (data.error) {
-          rej(data.error);
-        } else {
-          res(data.result);
-        }
-      };
-
-      const searchParams = new URLSearchParams();
-
-      searchParams.set('|', param);
-
-      this.worker.postMessage(
-        { action: "select", searchParams: searchParams.toString()},
-        [ channel.port2 ]
-      );
-    });
   }
 }

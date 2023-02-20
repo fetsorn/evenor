@@ -1,6 +1,6 @@
-import { API } from "../api";
-import { EntrySlice } from "./types";
 import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
+import { API } from "lib/api";
+import { EntrySlice } from "./types";
 
 // TODO: set default values for required fields
 async function createEntry(schema: any, base: string) {

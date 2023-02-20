@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { exportPDF, generateLatex } from "./overview_book_controller";
+import { exportPDF, generateLatex } from "lib/latex";
 import { useStore } from "@/store";
 
 export default function OverviewBook() {

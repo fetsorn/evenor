@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store";
-import { Dispenser } from "@/dispensers";
-import { API } from "@/api";
-import { manifestRoot } from "@/../lib/git_template"
+import { Dispenser } from "lib/dispensers";
+import { API, manifestRoot } from "lib/api";
 import { FieldText } from "..";
 
 interface IViewFieldProps {

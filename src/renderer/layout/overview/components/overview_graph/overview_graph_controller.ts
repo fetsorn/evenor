@@ -1,6 +1,6 @@
 import { Graphviz } from "@hpcc-js/wasm";
 import { ged2dot, ged2dot_ } from "@fetsorn/ged2dot";
-import { API } from "@/api";
+import { API } from "lib/api";
 
 declare global {
   interface Window {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
-import { API, deepClone } from "@/api";
+import { API, deepClone } from "lib/api";
 import { useStore } from "@/store";
 import { EditInput, InputDropdown } from "..";
 

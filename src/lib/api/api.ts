@@ -1,5 +1,6 @@
 import axios from "axios";
 import { BrowserAPI } from "./browser";
+import QueryWorker from "./query.worker";
 
 export default class API {
   dir;
@@ -12,45 +13,46 @@ export default class API {
     this.browser = new BrowserAPI(dir);
   }
 
-  async readFile(path: string) {
-    try {
-      switch (__BUILD_MODE__) {
-      case "server":
-        return (await fetch("/api/" + path)).text();
+  async readFile(filepath: string) {
+    // try {
+    switch (__BUILD_MODE__) {
+    case "server":
+      return (await fetch("/api/" + filepath)).text();
 
-      case "electron":
-        return await window.electron.readFile(this.dir, path);
-
-      default:
-        return await this.browser.readFile(path);
-      }
-    } catch (e) {
-      // console.log(
-      //   `Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`
-      // );
-      // throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
+    case "electron": {
+      return window.electron.readFile(this.dir, filepath);
     }
+
+    default:
+      return this.browser.readFile(filepath);
+    }
+    // } catch (e) {
+    //   // console.log(
+    //   //   `Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`
+    //   // );
+    //   // throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
+    // }
   }
 
-  async writeFile(path: string, content: string) {
-    try {
-      switch (__BUILD_MODE__) {
-      case "server":
-        await axios.post("/api/" + path, {
-          content,
-        });
-        break;
+  async writeFile(filepath: string, content: string) {
+    // try {
+    switch (__BUILD_MODE__) {
+    case "server":
+      await axios.post("/api/" + filepath, {
+        content,
+      });
+      break;
 
-      case "electron":
-        await window.electron.writeFile(this.dir, path, content);
-        break;
+    case "electron":
+      await window.electron.writeFile(this.dir, filepath, content);
+      break;
 
-      default:
-        await this.browser.writeFile(path, content);
-      }
-    } catch (e) {
-      // throw Error(`Cannot write file ${path}. ${e}`);
+    default:
+      await this.browser.writeFile(filepath, content);
     }
+    // } catch (e) {
+    //   // throw Error(`Cannot write file ${path}. ${e}`);
+    // }
   }
 
   async uploadFile(file: File) {
@@ -71,19 +73,23 @@ export default class API {
   }
 
   async select(searchParams: URLSearchParams) {
-    switch (__BUILD_MODE__) {
-    default: {
-      return this.browser.select(searchParams);
-    }
-    }
+    const queryWorker = new QueryWorker(this.readFile.bind(this));
+
+    const overview = await queryWorker.select(searchParams);
+
+    return overview;
   }
 
   async queryOptions(branch: string) {
-    switch (__BUILD_MODE__) {
-    default: {
-      return this.browser.queryOptions(branch);
-    }
-    }
+    const searchParams = new URLSearchParams();
+
+    searchParams.set('|', branch);
+
+    const queryWorker = new QueryWorker(this.readFile.bind(this));
+
+    const overview = await queryWorker.select(searchParams);
+
+    return overview;
   }
 
   async updateEntry(entry: any, overview: any = []) {
@@ -178,28 +184,28 @@ export default class API {
     }
   }
 
-  async rimraf(path: string) {
+  async rimraf(rimrafpath: string) {
     try {
       switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.rimraf(path);
+        return window.electron.rimraf(rimrafpath);
 
       default:
-        return await this.browser.rimraf(path);
+        return await this.browser.rimraf(rimrafpath);
       }
     } catch (e) {
       throw Error(`${e}`);
     }
   }
 
-  async ls(path: string) {
+  async ls(lspath: string) {
     try {
       switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.ls(path);
+        return window.electron.ls(lspath);
 
       default:
-        return await this.browser.ls(path);
+        return await this.browser.ls(lspath);
       }
     } catch (e) {
       throw Error(`${e}`);

@@ -8,7 +8,7 @@ import {
   Title,
 } from "@/components";
 import { useStore } from "@/store";
-import { manifestRoot } from "@/../lib/git_template";
+import { manifestRoot } from "lib/api";
 import {
   EditInput,
 } from "./components";

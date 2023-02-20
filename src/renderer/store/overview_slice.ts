@@ -1,5 +1,4 @@
-import { API } from "../api";
-import { manifestRoot } from "@/../lib/git_template";
+import { API, manifestRoot } from "lib/api";
 import { OverviewSlice, OverviewType } from "./types";
 
 // pick a param to group data by
@@ -143,11 +142,9 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
       "groupBy"
     ) ?? "";
 
-    const schema = await api.readFile("metadir.json");
+    const schema = JSON.parse(await api.readFile("metadir.json"));
 
-    console.log(schema)
-
-    const base = Object.keys(schema).find((prop) => !Object.prototype.hasOwnProperty.call(schema[prop], 'trunk'))
+    const base = Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'))
 
     set({ schema, base, queries, overviewType, groupBy, isInitialized: true, repoRoute })
   },
@@ -156,13 +153,11 @@ export const createOverviewSlice: OverviewSlice = (set, get) => ({
     if (get().isInitialized) {
       const api = new API(get().repoRoute);
 
-      const schema = await api.readFile("metadir.json");
-
-      console.log(schema)
+      const schema = JSON.parse(await api.readFile("metadir.json"));
 
       const base = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
         ? get().base
-        : Object.keys(schema).find((prop) => !Object.prototype.hasOwnProperty.call(schema[prop], 'trunk'))
+        : Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'))
 
       const searchParams = queriesToParams(get().queries);
 

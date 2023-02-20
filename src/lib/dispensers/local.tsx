@@ -44,7 +44,6 @@ export function Local({ baseEntry }: ILocalProps) {
 }
 
 function schemaToString(schema: any) {
-  console.log('schemaToString', schema);
   const schemaObject: any = {};
 
   for (const item of schema.items) {

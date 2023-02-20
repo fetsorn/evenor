@@ -1,29 +1,41 @@
-import * as latex from "../lib/pdf_tex_engine";
+import * as latex from "./pdf_tex_engine";
 
 export async function exportPDF(textext: string) {
   const globalEn = new latex.PdfTeXEngine();
+
   await globalEn.loadEngine();
+
   if (!globalEn.isReady()) {
     console.log("Engine not ready yet");
+
     return;
   }
+
   globalEn.writeMemFSFile("main.tex", textext);
+
   globalEn.setEngineMainFile("main.tex");
+
   const r: any = await globalEn.compileLaTeX();
+
   console.log(r);
+
   if (r.status === 0) {
     const pdfblob = new Blob([r.pdf], { type: "application/pdf" });
+
     const objectURL = URL.createObjectURL(pdfblob);
+
     setTimeout(() => {
       URL.revokeObjectURL(objectURL);
     }, 30000);
+
     console.log(objectURL);
+
     return objectURL;
   }
 }
 
 export function generateLatex(data: any) {
-  let textext = `\\documentclass{tufte-book}
+  let text = `\\documentclass{tufte-book}
 
 \\hypersetup{colorlinks}% uncomment this line if you prefer colored hyperlinks (e.g., for onscreen viewing)
 
@@ -259,15 +271,13 @@ and \\mbox{Donald E.~Knuth}.
 
 \\begin{description}
 `;
-  console.log(textext);
-  for (const event of data) {
-    console.log(event);
-    textext += `
-\\item[\\docfilehook{${event.HOST_DATE}}{common}] ${event.DATUM}
+  for (const entry of data) {
+    // console.log(entry);
+    text += `
+\\item[\\docfilehook{${entry.HOST_DATE}}{common}] ${entry.DATUM}
 `;
-    console.log(textext);
   }
-  textext += `\\end{description}
+  text += `\\end{description}
 
 \\backmatter
 
@@ -279,6 +289,5 @@ and \\mbox{Donald E.~Knuth}.
 
 \\end{document}
 `;
-  console.log(textext);
-  return textext;
+  return text;
 }

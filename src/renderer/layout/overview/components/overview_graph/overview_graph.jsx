@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useStore } from "@/store";
 import { setupVars, load } from "./overview_graph_controller.js";

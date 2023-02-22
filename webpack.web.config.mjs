@@ -1,7 +1,7 @@
 import path from "path";
 import url from "url";
 import webpack from "webpack";
-// import CopyPlugin from "copy-webpack-plugin";
+import CopyPlugin from "copy-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import { createRequire } from 'module';
@@ -52,22 +52,22 @@ export default (env) => {
         Buffer: ["buffer", "Buffer"],
       }),
 
-      // new CopyPlugin({
-      //   patterns: [
-      //     {
-      //       context: "node_modules/@fetsorn/",
-      //       from: "**/*.wasm",
-      //       to: "[name][ext]",
-      //     },
-      //     //{ context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
-      //     // {
-      //     //   context: "node_modules/@hpcc-js/",
-      //     //   from: "**/*.wasm",
-      //     //   to: "[name][ext]",
-      //     // },
-      //     { context: "public/js/", from: "**", to: "[name][ext]" },
-      //   ],
-      // }),
+      new CopyPlugin({
+        patterns: [
+          {
+            context: "node_modules/@fetsorn/",
+            from: "**/*.wasm",
+            to: "[name][ext]",
+          },
+          //{ context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
+          // {
+          //   context: "node_modules/@hpcc-js/",
+          //   from: "**.wasm",
+          //   to: "[name][ext]",
+          // },
+          { context: "public/js/", from: "**", to: "[name][ext]" },
+        ],
+      }),
 
       new HtmlWebpackPlugin({
         template: "./src/renderer/index.html",

@@ -1,6 +1,7 @@
 import path from "path";
 // import { app, BrowserWindow, shell, ipcMain } from "electron";
 import { app, BrowserWindow } from "electron";
+import MenuBuilder from "./menu.js";
 
 let mainWindow = null;
 
@@ -19,12 +20,12 @@ const createWindow = async () => {
     width: 1024,
     height: 728,
     icon: getAssetPath("icon.png"),
-    webPreferences: {
-      preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
-      // preload: path.join(__dirname, "../../.webpack/renderer/main_window/preload.js"),
-      // sandbox: false,
-      // webSecurity: false,
-    },
+    // webPreferences: {
+    // preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+    // preload: path.join(__dirname, "../../.webpack/renderer/main_window/preload.js"),
+    // sandbox: false,
+    // webSecurity: false,
+    // },
   });
 
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
@@ -49,6 +50,9 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
+  const menuBuilder = new MenuBuilder(mainWindow);
+  menuBuilder.buildMenu();
+
 //   // Open urls in the user's browser
 //   mainWindow.webContents.setWindowOpenHandler((edata) => {
 //     shell.openExternal(edata.url);
@@ -60,13 +64,13 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
-// app.on("window-all-closed", () => {
-//   // Respect the OSX convention of having the application in memory even
-//   // after all windows have been closed
-//   if (process.platform !== "darwin") {
-//     app.quit();
-//   }
-// });
+app.on("window-all-closed", () => {
+  // Respect the OSX convention of having the application in memory even
+  // after all windows have been closed
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
 
 app
   .whenReady()

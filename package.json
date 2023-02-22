@@ -31,7 +31,11 @@
         },
         {
           "name": "@electron-forge/maker-zip",
-          "platforms": ["darwin", "win32", "linux"]
+          "platforms": [
+            "darwin",
+            "win32",
+            "linux"
+          ]
         },
         {
           "name": "@electron-forge/maker-deb",
@@ -66,7 +70,10 @@
         {
           "name": "@timfish/forge-externals-plugin",
           "config": {
-            "externals": ["electron", "electron-devtools-installer"],
+            "externals": [
+              "electron",
+              "electron-devtools-installer"
+            ],
             "includeDeps": true
           }
         }
@@ -79,7 +86,11 @@
     "@electron-forge/maker-rpm": "^6.0.5",
     "@electron-forge/maker-squirrel": "^6.0.5",
     "@electron-forge/maker-zip": "^6.0.5",
-    "electron": "23.1.0"
+    "electron": "23.1.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0"
   },
   "dependencies": {
     "@babel/core": "^7.20.12",
@@ -92,7 +103,6 @@
     "@fetsorn/wasm-grep": "0.3.0",
     "@hpcc-js/wasm": "^2.8.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
-    "@teamsupercell/typings-for-css-modules-loader": "2.5.2",
     "@timfish/forge-externals-plugin": "^0.2.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "babel-loader": "^9.1.2",
@@ -109,8 +119,8 @@
     "electron-devtools-installer": "3.2.0",
     "electron-log": "5.0.0-beta.16",
     "electron-squirrel-startup": "^1.0.0",
-    "eslint": "8.34.0",
-    "eslint-plugin-import": "2.27.5",
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-plugin-import": "^2.25.3",
     "events": "^3.3.0",
     "express": "4.18.2",
     "file-saver": "2.0.5",

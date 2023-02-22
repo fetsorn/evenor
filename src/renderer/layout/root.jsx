@@ -39,7 +39,7 @@ function Page() {
     <>
       <Header />
 
-      <main>
+      <main className={styles.main}>
         <Overview />
 
         <Profile />
@@ -50,4 +50,3 @@ function Page() {
   );
 }
 
-      // <main className={styles.main}>

@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./input_textarea.module.css";
 
 export default function InputTextarea({

@@ -1,3 +1,4 @@
+import React from "react";
 import { Paragraph } from "@/components";
 
 export default function FieldText({ value }) {

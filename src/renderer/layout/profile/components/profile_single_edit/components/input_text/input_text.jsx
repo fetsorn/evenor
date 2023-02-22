@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./input_text.module.css";
 
 export default function InputText({

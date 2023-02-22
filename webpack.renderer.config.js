@@ -42,24 +42,24 @@ module.exports = {
     //   },
     // },
   },
-  node: {
-    global: true,
-    __filename: true,
-    __dirname: true,
-  },
+  // node: {
+  //   global: true,
+  //   __filename: true,
+  //   __dirname: true,
+  // },
   experiments: {
     syncWebAssembly: true,
   },
-  externals: {
-    fs: 'commonjs2 fs',
-    path: 'commonjs2 path',
-    child_process: 'commonjs2 child_process',
-    os: 'commonjs2 os',
-    util: 'commonjs2 util',
-    electron: 'commonjs2 electron',
-    "electron-devtools-installer": "commonjs2 electron-devtools-installer",
-    // "word-extractor": "commonjs2 word-extractor",
-  },
+  // externals: {
+  //   fs: 'commonjs2 fs',
+  //   path: 'commonjs2 path',
+  //   child_process: 'commonjs2 child_process',
+  //   os: 'commonjs2 os',
+  //   util: 'commonjs2 util',
+  //   electron: 'commonjs2 electron',
+  //   "electron-devtools-installer": "commonjs2 electron-devtools-installer",
+  //   // "word-extractor": "commonjs2 word-extractor",
+  // },
   // optimization: {
   //   runtimeChunk: "single",
   // },
@@ -81,33 +81,33 @@ module.exports = {
       Buffer: ["buffer", "Buffer"],
     }),
 
-  //   new CopyPlugin({
-  //     patterns: [
-  //       // TODO: deduplicate wasm
-  //       {
-  //         context: "node_modules/@fetsorn/wasm-grep/pkg/bundler/",
-  //         from: "**.wasm",
-  //         to: "[name][ext]",
-  //       },
-  //       {
-  //         context: "node_modules/@fetsorn/wasm-grep/pkg/bundler/",
-  //         from: "**.wasm",
-  //         to: "src_renderer_workers_query_worker_js/[name][ext]",
-  //       },
-  //       {
-  //         context: "node_modules/@fetsorn/wasm-grep/pkg/bundler/",
-  //         from: "**.wasm",
-  //         to: "vendors-node_modules_fetsorn_csvs-js_dist_csvs_js/[name][ext]",
-  //       },
-  //       //{ context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
-  //       // {
-  //       //   context: "node_modules/@hpcc-js/",
-  //       //   from: "**/*.wasm",
-  //       //   to: "[name][ext]",
-  //       // },
-  //       { context: "public/js/", from: "**", to: "[name][ext]" },
-  //     ],
-  //   }),
+    new CopyPlugin({
+      patterns: [
+        // TODO: deduplicate wasm
+        // {
+        //   context: "node_modules/@fetsorn/wasm-grep/pkg/bundler/",
+        //   from: "**.wasm",
+        //   to: "[name][ext]",
+        // },
+        // {
+        //   context: "node_modules/@fetsorn/wasm-grep/pkg/bundler/",
+        //   from: "**.wasm",
+        //   to: "src_renderer_workers_query_worker_js/[name][ext]",
+        // },
+        // {
+        //   context: "node_modules/@fetsorn/wasm-grep/pkg/bundler/",
+        //   from: "**.wasm",
+        //   to: "vendors-node_modules_fetsorn_csvs-js_dist_csvs_js/[name][ext]",
+        // },
+        //{ context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
+        // {
+        //   context: "node_modules/@hpcc-js/",
+        //   from: "**/*.wasm",
+        //   to: "[name][ext]",
+        // },
+        { context: "public/js/", from: "**", to: "[name][ext]" },
+      ],
+    }),
   ],
   resolve: {
     alias: {

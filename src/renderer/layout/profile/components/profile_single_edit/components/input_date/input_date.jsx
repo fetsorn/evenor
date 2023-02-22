@@ -1,3 +1,4 @@
+import React from "react";
 import styles from "./input_date.module.css";
 import { useTranslation } from "react-i18next";
 

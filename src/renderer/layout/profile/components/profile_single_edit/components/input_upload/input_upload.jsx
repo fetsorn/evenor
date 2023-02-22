@@ -1,3 +1,4 @@
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components";
 import styles from "./input_upload.module.css";

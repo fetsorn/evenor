@@ -19,9 +19,9 @@ export default class API {
     case "server":
       return (await fetch("/api/" + filepath)).text();
 
-    case "electron": {
-      return window.electron.readFile(this.dir, filepath);
-    }
+    // case "electron": {
+    //   return window.electron.readFile(this.dir, filepath);
+    // }
 
     default:
       return this.browser.readFile(filepath);
@@ -43,9 +43,9 @@ export default class API {
       // });
       break;
 
-    case "electron":
-      await window.electron.writeFile(this.dir, filepath, content);
-      break;
+    // case "electron":
+    //   await window.electron.writeFile(this.dir, filepath, content);
+    //   break;
 
     default:
       await this.browser.writeFile(filepath, content);
@@ -73,11 +73,25 @@ export default class API {
   }
 
   async select(searchParams) {
-    const queryWorker = new QueryWorker(this.readFile.bind(this));
+    switch (__BUILD_MODE__) {
+    case "electron": {
+      const form = new FormData();
 
-    const overview = await queryWorker.select(searchParams);
+      form.append("file", file);
 
-    return overview;
+      // await axios.post("/upload", form);
+
+      break;
+    }
+
+      default: {
+        const queryWorker = new QueryWorker(this.readFile.bind(this));
+
+        const overview = await queryWorker.select(searchParams);
+
+        return overview;
+      }
+    }
   }
 
   async queryOptions(branch) {
@@ -94,9 +108,9 @@ export default class API {
 
   async updateEntry(entry, overview = []) {
     switch (__BUILD_MODE__) {
-    case "electron":
-      return window.electron.updateEntry(this.dir, entry, overview);
-      break;
+    // case "electron":
+    //   return window.electron.updateEntry(this.dir, entry, overview);
+    //   break;
 
     default:
       return this.browser.updateEntry(entry, overview);
@@ -105,8 +119,8 @@ export default class API {
 
   async deleteEntry(entry, overview = []) {
     switch (__BUILD_MODE__) {
-    case "electron":
-      return window.electron.deleteEntry(this.dir, entry, overview);
+    // case "electron":
+    //   return window.electron.deleteEntry(this.dir, entry, overview);
 
     default:
       return this.browser.deleteEntry(entry, overview);
@@ -115,9 +129,9 @@ export default class API {
 
   async clone(url, token) {
     switch (__BUILD_MODE__) {
-    case "electron":
-      return await window.electron.clone("store/view", url, token);
-      break;
+    // case "electron":
+    //   return await window.electron.clone("store/view", url, token);
+    //   break;
 
     default:
       await this.browser.clone(url, token);
@@ -159,8 +173,8 @@ export default class API {
   async ensure(schema) {
     try {
       switch (__BUILD_MODE__) {
-      case "electron":
-        return await window.electron.ensure(this.dir, schema);
+      // case "electron":
+      //   return await window.electron.ensure(this.dir, schema);
 
       default:
         return await this.browser.ensure(schema);
@@ -173,8 +187,8 @@ export default class API {
   async symlink(name) {
     try {
       switch (__BUILD_MODE__) {
-      case "electron":
-        return await window.electron.symlink(this.dir, name);
+      // case "electron":
+      //   return await window.electron.symlink(this.dir, name);
 
       default:
         return await this.browser.symlink(name);
@@ -187,8 +201,8 @@ export default class API {
   async rimraf(rimrafpath) {
     try {
       switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.rimraf(rimrafpath);
+      // case "electron":
+      //   return window.electron.rimraf(rimrafpath);
 
       default:
         return await this.browser.rimraf(rimrafpath);
@@ -201,8 +215,8 @@ export default class API {
   async ls(lspath) {
     try {
       switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.ls(lspath);
+      // case "electron":
+      //   return window.electron.ls(lspath);
 
       default:
         return await this.browser.ls(lspath);

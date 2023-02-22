@@ -1,10 +1,10 @@
 const path = require("path");
 
 module.exports = {
-  target: 'electron-main',
+  // target: 'electron-main',
   entry: "./src/main/index.js",
-  mode: "development",
-  devtool: "source-map",
+  // mode: "development",
+  // devtool: "source-map",
   module: {
     rules: [
       // Add support for native node modules
@@ -34,21 +34,21 @@ module.exports = {
       },
     ],
   },
-  node: {
-    global: true,
-    __filename: true,
-    __dirname: true,
-  },
-  externals: {
-    fs: 'commonjs2 fs',
-    path: 'commonjs2 path',
-    child_process: 'commonjs2 child_process',
-    os: 'commonjs2 os',
-    util: 'commonjs2 util',
-    electron: 'commonjs2 electron',
-    "electron-devtools-installer": "commonjs2 electron-devtools-installer",
-    // "word-extractor": "commonjs2 word-extractor",
-  },
+  // node: {
+  //   global: true,
+  //   __filename: true,
+  //   __dirname: true,
+  // },
+  // externals: {
+  //   fs: 'commonjs2 fs',
+  //   path: 'commonjs2 path',
+  //   child_process: 'commonjs2 child_process',
+  //   os: 'commonjs2 os',
+  //   util: 'commonjs2 util',
+  //   electron: 'commonjs2 electron',
+  //   "electron-devtools-installer": "commonjs2 electron-devtools-installer",
+  //   // "word-extractor": "commonjs2 word-extractor",
+  // },
   resolve: {
     alias: {
       lib: path.resolve(__dirname, "./src/lib"),

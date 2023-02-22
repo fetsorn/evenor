@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { useMedia, useWindowSize } from "..";
 
 const REM_DESKTOP = 0.277777;

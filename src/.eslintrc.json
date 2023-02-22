@@ -6,18 +6,12 @@
   },
   "extends": [
     "eslint:recommended",
-    "plugin:@typescript-eslint/eslint-recommended",
-    "plugin:@typescript-eslint/recommended",
     "plugin:import/recommended",
-    "plugin:import/electron",
-    "plugin:import/typescript"
+    "plugin:import/electron"
   ],
   "rules": {
-    "@typescript-eslint/no-var-requires": "off",
     "import/no-named-as-default-member": "off",
-    "@typescript-eslint/no-explicit-any": "off",
     "import/no-unresolved": "off"
   },
-  "parser": "@typescript-eslint/parser",
-  "ignorePatterns": ["main/PdfTeXEngine.ts", "renderer/utils/PdfTeXEngine.ts"]
+  "ignorePatterns": ["main/PdfTeXEngine.js", "renderer/utils/PdfTeXEngine.js"]
 }

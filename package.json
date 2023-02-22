@@ -3,15 +3,18 @@
   "productName": "qualia",
   "version": "1.0.0",
   "description": "aa",
-  "main": ".webpack/main",
+  "main": "./.webpack/main",
   "scripts": {
-    "build:webapp": "webpack --config webpack.web.config.js",
-    "start:webapp": "webpack serve --config webpack.web.config.js",
-    "build:server": "webpack --env buildMode=server --mode='development' --config webpack.web.config.js; ln -sTf $(realpath release/renderer) src/server/build; cd src/server; yarn",
-    "start:server": "node ./src/server/index.js",
-    "start:electron": "electron-forge start",
-    "build:electron": "electron-forge make",
-    "lint": "eslint --ext .ts,.tsx ."
+    "build:webapp": "yarn run webpack --config webpack.web.config.mjs",
+    "start:webapp": "yarn webpack serve --config webpack.web.config.mjs",
+    "build:server": "yarn webpack --env buildMode=server --mode='development' --config webpack.web.config.js; ln -sTf $(realpath release/renderer) src/server/build; cd src/server; yarn",
+    "start:server": "yarn node ./src/server/index.js",
+    "start:electron": "yarn run electron-forge start",
+    "build:electron": "yarn run electron-forge make",
+    "lint": "eslint .",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make"
   },
   "keywords": [],
   "author": {
@@ -20,17 +23,68 @@
   },
   "license": "MIT",
   "config": {
-    "forge": "./forge.config.js"
+    "forge": {
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": ["darwin", "win32", "linux"]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ],
+      "plugins": [
+        {
+          "name": "@electron-forge/plugin-webpack",
+          "devContentSecurityPolicy": "Content-Security-Policy: script-src 'self'",
+          "config": {
+            "mainConfig": "./webpack.main.config.js",
+            "renderer": {
+              "config": "./webpack.renderer.config.js",
+              "entryPoints": [
+                {
+                  "name": "main_window",
+                  "html": "./src/renderer/index.html",
+                  "js": "./src/renderer/renderer.jsx",
+                  "preload": {
+                    "js": "./src/renderer/preload.js"
+                  }
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "@timfish/forge-externals-plugin",
+          "config": {
+            "externals": ["electron", "electron-devtools-installer"],
+            "includeDeps": true
+          }
+        }
+      ]
+    }
   },
   "devDependencies": {
-    "@electron-forge/cli": "6.0.5",
+    "@electron-forge/cli": "^6.0.5",
+    "@electron-forge/maker-deb": "^6.0.5",
+    "@electron-forge/maker-rpm": "^6.0.5",
+    "@electron-forge/maker-squirrel": "^6.0.5",
+    "@electron-forge/maker-zip": "^6.0.5",
     "electron": "23.1.0"
   },
   "dependencies": {
-    "@electron-forge/maker-deb": "6.0.5",
-    "@electron-forge/maker-rpm": "6.0.5",
-    "@electron-forge/maker-squirrel": "6.0.5",
-    "@electron-forge/maker-zip": "6.0.5",
+    "@babel/core": "^7.20.12",
+    "@babel/preset-env": "^7.20.2",
+    "@babel/preset-react": "^7.18.6",
     "@electron-forge/plugin-webpack": "6.0.5",
     "@fetsorn/csvs-js": "0.10.2",
     "@fetsorn/ged2dot": "0.2.0",
@@ -39,13 +93,9 @@
     "@hpcc-js/wasm": "^2.8.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
     "@teamsupercell/typings-for-css-modules-loader": "2.5.2",
-    "@types/mime": "3.0.1",
-    "@types/react": "18.0.28",
-    "@types/react-dom": "18.0.11",
-    "@typescript-eslint/eslint-plugin": "5.52.0",
-    "@typescript-eslint/parser": "5.52.0",
+    "@timfish/forge-externals-plugin": "^0.2.0",
     "@vercel/webpack-asset-relocator-loader": "1.7.3",
-    "axios": "1.3.3",
+    "babel-loader": "^9.1.2",
     "buffer": "6.0.3",
     "cfb": "^0.10.0",
     "classnames": "2.3.2",
@@ -58,12 +108,12 @@
     "electron-debug": "3.2.0",
     "electron-devtools-installer": "3.2.0",
     "electron-log": "5.0.0-beta.16",
-    "electron-squirrel-startup": "1.0.0",
+    "electron-squirrel-startup": "^1.0.0",
     "eslint": "8.34.0",
     "eslint-plugin-import": "2.27.5",
+    "events": "^3.3.0",
     "express": "4.18.2",
     "file-saver": "2.0.5",
-    "fork-ts-checker-webpack-plugin": "7.3.0",
     "html-webpack-plugin": "5.5.0",
     "https-browserify": "1.0.0",
     "i18next": "22.4.10",
@@ -90,14 +140,16 @@
     "sass-loader": "13.2.0",
     "stream-browserify": "3.0.0",
     "stream-http": "3.2.0",
+    "string_decoder": "^1.3.0",
     "style-loader": "3.3.1",
-    "ts-loader": "9.4.2",
-    "typescript": "4.9.5",
     "util": "0.12.5",
+    "webpack": "5.75.0",
     "webpack-cli": "5.0.1",
     "webpack-dev-server": "4.11.1",
-    "word-extractor": "1.0.4",
     "zlib-browserify": "0.0.3",
     "zustand": "4.3.3"
+  },
+  "resolutions": {
+    "@fetsorn/csvs-js": "portal:/Users/fetsorn/mm/codes/csvs-js"
   }
 }

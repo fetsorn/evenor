@@ -10,6 +10,18 @@ import crypto from 'crypto';
 
 const home = app.getPath('home');
 
+async function grep(contentFile, patternFile, isInverted) {
+  const wasm = await import('@fetsorn/wasm-grep');
+
+  const contents = await wasm.grep(
+    contentFile,
+    patternFile,
+    isInverted ?? false,
+  );
+
+  return contents;
+}
+
 export class ElectronAPI {
   uuid;
 
@@ -121,6 +133,7 @@ export class ElectronAPI {
     return (new CSVS({
       readFile: this.readFile.bind(this),
       randomUUID: crypto.randomUUID,
+      grep,
     })).select(searchParams);
   }
 
@@ -130,10 +143,10 @@ export class ElectronAPI {
 
     searchParams.set('|', branch);
 
-    console.log('queryOptions', new URLSearchParams(), searchParams, branch);
     return (new CSVS({
       readFile: this.readFile.bind(this),
       randomUUID: crypto.randomUUID,
+      grep,
     })).select(searchParams);
   }
 
@@ -142,6 +155,7 @@ export class ElectronAPI {
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
       randomUUID: crypto.randomUUID,
+      grep,
     }).update(entry);
 
     if (overview.find((e) => e.UUID === entryNew.UUID)) {
@@ -161,6 +175,7 @@ export class ElectronAPI {
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
       randomUUID: crypto.randomUUID,
+      grep,
     }).delete(entry);
 
     return overview.filter((e) => e.UUID !== entry.UUID);

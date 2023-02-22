@@ -35,6 +35,9 @@ module.exports = {
       },
     ],
   },
+  experiments: {
+    asyncWebAssembly: true,
+  },
   // plugins: [
   //   new webpack.DefinePlugin({
   //     URLSearchParams: ['url', 'URLSearchParams'],

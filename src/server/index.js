@@ -5,7 +5,6 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import fs from 'fs';
 import git from 'isomorphic-git';
-// import http from 'isomorphic-git/http/node/index.cjs';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { CSVS } from '@fetsorn/csvs-js';

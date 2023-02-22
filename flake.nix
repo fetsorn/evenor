@@ -32,9 +32,9 @@
             version = package.version;
             src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
             preConfigure = ''
-              substituteInPlace webpack.web.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.web.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
-              substituteInPlace package.json --replace "webpack --config webpack.web.config.js" "yarn exec webpack-cli -- --mode=development --config webpack.web.config.js --env buildMode=${buildMode}"
+              substituteInPlace webpack.web.config.mjs --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
+              substituteInPlace webpack.web.config.mjs --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
+              substituteInPlace package.json --replace "webpack --config webpack.web.config.mjs" "yarn exec webpack-cli -- --mode=development --config webpack.web.config.mjs --env buildMode=${buildMode}"
             '';
             buildPhase = ''
               yarn run build:webapp
@@ -54,35 +54,35 @@
           '';
         };
         electronBuilds = {
-          "20.0.0" = {
+          "23.1.0" = {
             "linux-x64" = pkgs.fetchurl {
               url =
-                "https://github.com/electron/electron/releases/download/v20.0.0/electron-v20.0.0-linux-x64.zip";
-              sha256 = "sha256-rtZVMx2TSBl+KUkt/CNryA2zImCcmVJK4FrtOMUg0Zk=";
+                "https://github.com/electron/electron/releases/download/v23.1.0/electron-v23.1.0-linux-x64.zip";
+              sha256 = "sha256-fqwx/a+xhUr2W9Rr6L8xGFEH2xl5PeUs5HfEj8jSDyk=";
             };
             "win32-x64" = pkgs.fetchurl {
               url =
-                "https://github.com/electron/electron/releases/download/v20.0.0/electron-v20.0.0-win32-x64.zip";
+                "https://github.com/electron/electron/releases/download/v23.1.0/electron-v23.1.0-win32-x64.zip";
               sha256 = "sha256-axPrK77E4PA9UdZjEqCEtsNttWiq/ZGjo/L0mR0dwXU=";
             };
             "win32-ia32" = pkgs.fetchurl {
               url =
-                "https://github.com/electron/electron/releases/download/v20.0.0/electron-v20.0.0-win32-ia32.zip";
-              sha256 = "sha256-GkYWGNBVbDLwL06oyT4yoygsjSAnET0mVnzbX6Z0Jfk=";
+                "https://github.com/electron/electron/releases/download/v23.1.0/electron-v23.1.0-win32-ia32.zip";
+              sha256 = "sha256-GAB7V4P9t5qMCpQk0/ZJkLnPo09UtWmTJ/M+UKG+gyg=";
             };
             "darwin-x64" = pkgs.fetchurl {
               url =
-                "https://github.com/electron/electron/releases/download/v20.0.0/electron-v20.0.0-darwin-x64.zip";
-              sha256 = "sha256-5JMyDjQQv4y3rFsXpdWKCopQuGNzA6fB2TQsCK9s0YA=";
+                "https://github.com/electron/electron/releases/download/v23.1.0/electron-v23.1.0-darwin-x64.zip";
+              sha256 = "sha256-+MnFGuGQzKSya//09sOjq27viLPTysdhvzfFxTPD8+0=";
             };
             "darwin-arm64" = pkgs.fetchurl {
               url =
-                "https://github.com/electron/electron/releases/download/v20.0.0/electron-v20.0.0-darwin-arm64.zip";
-              sha256 = "sha256-BJI5azR2c1ymecDofYbpS0oWMLXNzj5M8VX/RDr/STI=";
+                "https://github.com/electron/electron/releases/download/v23.1.0/electron-v23.1.0-darwin-arm64.zip";
+              sha256 = "sha256-rXQthvZCDMSc2xzpPwqRnqNCjKkCh4u7MkHuYDAw7/8=";
             };
           };
         };
-        electronZipDir = let electronBuild = electronBuilds."20.0.0";
+        electronZipDir = let electronBuild = electronBuilds."23.1.0";
         in pkgs.linkFarm "electron-zip-dir" [
           {
             name = "${electronBuild.linux-x64.name}";

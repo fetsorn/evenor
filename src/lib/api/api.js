@@ -1,257 +1,150 @@
 // import axios from "axios";
 import { BrowserAPI } from './browser.js';
-import { QueryWorker } from './query_worker.js';
 
 export class API {
-  dir;
+  // UUID of repo in the store
+  uuid;
 
-  browser;
+  #browser;
 
-  constructor(dir) {
-    this.dir = dir;
+  constructor(uuid) {
+    this.uuid = uuid;
 
-    this.browser = new BrowserAPI(dir);
-  }
-
-  async readFile(filepath) {
-    // try {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case 'server':
-        return (await fetch(`/api/${filepath}`)).text();
-
-        // case "electron": {
-        //   return window.electron.readFile(this.dir, filepath);
-        // }
-
-      default:
-        return this.browser.readFile(filepath);
-    }
-    // } catch (e) {
-    //   console.log(
-    //     `Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`
-    //   );
-    //   throw Error(`Cannot load file. Ensure there is a file ${path}. ${repoRoute} ${path} ${e}`);
-    // }
-  }
-
-  async writeFile(filepath, content) {
-    // try {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case 'server':
-      // await axios.post("/api/" + filepath, {
-      //   content,
-      // });
-        break;
-
-        // case "electron":
-        //   await window.electron.writeFile(this.dir, filepath, content);
-        //   break;
-
-      default:
-        await this.browser.writeFile(filepath, content);
-    }
-    // } catch (e) {
-    //   // throw Error(`Cannot write file ${path}. ${e}`);
-    // }
+    this.#browser = new BrowserAPI(uuid);
   }
 
   async uploadFile(file) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'server': {
-        const form = new FormData();
-
-        form.append('file', file);
-
-        // await axios.post("/upload", form);
-
-        break;
-      }
+      case 'electron':
+        return window.electron.uploadFile(this.uuid);
 
       default:
-        await this.browser.uploadFile(file);
+        return this.#browser.uploadFile(file);
     }
   }
 
   async select(searchParams) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      // case 'server': {
-      //   const form = new FormData();
+      case 'electron':
+        return window.electron.select(this.uuid, searchParams.toString());
 
-      //   form.append('file', file);
-
-      //   await axios.post("/upload", form);
-
-      //   break;
-      // }
-
-      default: {
-        const queryWorker = new QueryWorker(this.readFile.bind(this));
-
-        const overview = await queryWorker.select(searchParams);
-
-        return overview;
-      }
+      default:
+        return this.#browser.select(searchParams);
     }
   }
 
   async queryOptions(branch) {
-    const searchParams = new URLSearchParams();
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.queryOptions(this.uuid, branch);
 
-    searchParams.set('|', branch);
-
-    const queryWorker = new QueryWorker(this.readFile.bind(this));
-
-    const overview = await queryWorker.select(searchParams);
-
-    return overview;
+      default:
+        return this.#browser.queryOptions(branch);
+    }
   }
 
   async updateEntry(entry, overview = []) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-    // case "electron":
-    //   return window.electron.updateEntry(this.dir, entry, overview);
-    //   break;
+      case 'electron':
+        return window.electron.updateEntry(this.uuid, entry, overview);
 
       default:
-        return this.browser.updateEntry(entry, overview);
+        return this.#browser.updateEntry(entry, overview);
     }
   }
 
   async deleteEntry(entry, overview = []) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-    // case "electron":
-    //   return window.electron.deleteEntry(this.dir, entry, overview);
+      case 'electron':
+        return window.electron.deleteEntry(this.uuid, entry, overview);
 
       default:
-        return this.browser.deleteEntry(entry, overview);
+        return this.#browser.deleteEntry(entry, overview);
     }
   }
 
-  async clone(url, token) {
+  async ensure(schema, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-    // case "electron":
-    //   return window.electron.clone("store/view", url, token);
-    //   break;
+      case 'electron':
+        return window.electron.ensure(this.uuid, schema, name);
 
       default:
-        await this.browser.clone(url, token);
+        return this.#browser.ensure(schema, name);
     }
   }
 
   async commit() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'server':
-      // await axios.put("api/");
-        break;
+      case 'electron':
+        return window.electron.commit(this.uuid);
 
       default:
-        await this.browser.commit();
+        return this.#browser.commit();
     }
   }
 
-  async push(token) {
+  // fresh clone from url to uuid dir, symlink to name
+  async clone(url, token, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.clone(this.uuid, url, token, name);
+
       default:
-        await this.browser.push(token);
+        return this.#browser.tbn2(url, token, name);
     }
   }
 
-  async pull(token) {
+  async push(url, token) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.push(this.uuid, url, token);
+
       default:
-        await this.browser.pull(token);
+        return this.#browser.push(url, token);
     }
   }
 
-  async addRemote(url) {
+  async pull(url, token) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.pull(this.uuid, url, token);
+
       default:
-        await this.browser.addRemote(url);
+        return this.#browser.pull(url, token);
     }
   }
 
-  async ensure(schema) {
-    try {
+  async readSchema() {
     // eslint-disable-next-line
-      switch (__BUILD_MODE__) {
-      // case "electron":
-      //   return window.electron.ensure(this.dir, schema);
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.readSchema(this.uuid);
 
-        default:
-          return this.browser.ensure(schema);
-      }
-    } catch (e) {
-      throw Error(`${e}`);
-    }
-  }
-
-  async symlink(name) {
-    try {
-    // eslint-disable-next-line
-      switch (__BUILD_MODE__) {
-      // case "electron":
-      //   return window.electron.symlink(this.dir, name);
-
-        default:
-          return this.browser.symlink(name);
-      }
-    } catch (e) {
-      throw Error(`${e}`);
-    }
-  }
-
-  async rimraf(rimrafpath) {
-    try {
-    // eslint-disable-next-line
-      switch (__BUILD_MODE__) {
-      // case "electron":
-      //   return window.electron.rimraf(rimrafpath);
-
-        default:
-          return this.browser.rimraf(rimrafpath);
-      }
-    } catch (e) {
-      throw Error(`${e}`);
-    }
-  }
-
-  async ls(lspath) {
-    try {
-    // eslint-disable-next-line
-      switch (__BUILD_MODE__) {
-      // case "electron":
-      //   return window.electron.ls(lspath);
-
-        default:
-          return this.browser.ls(lspath);
-      }
-    } catch (e) {
-      throw Error(`${e}`);
+      default:
+        return this.#browser.readSchema();
     }
   }
 
   async getSettings() {
-    const pathname = this.dir.replace(/^repos\//, '');
-
     const searchParams = new URLSearchParams();
 
-    searchParams.set('reponame', pathname);
+    // search for UUID
+    searchParams.set('reponame', this.uuid);
 
     // query root db to get entry with repo settings
-    const overview = await (new API('/store/root')).select(searchParams);
+    const overview = await (new API('root')).select(searchParams);
 
-    const entry = overview[0];
+    const [entry] = overview;
 
     return entry;
   }

@@ -1,10 +1,9 @@
-import { API } from "../api";
+import { API } from '../api';
 
 export function RSS({ baseEntry, branchEntry }) {
+  const rssAPI = new API('rss');
 
-  const rssAPI = new API('/store/rss');
-
-  const baseAPI = new API(`/repos/${baseEntry.reponame}`);
+  const baseAPI = new API(baseEntry.UUID);
 
   async function onRSSsync() {
     /* console.log('onRSSsync') */
@@ -23,7 +22,7 @@ export function RSS({ baseEntry, branchEntry }) {
     const xml = generateXML(branchEntry, entries);
 
     // write file
-    await rssAPI.writeFile("feed.xml", xml);
+    await rssAPI.writeFile('feed.xml', xml);
 
     // commit
     await rssAPI.commit();
@@ -37,17 +36,17 @@ export function RSS({ baseEntry, branchEntry }) {
   return (
     <div>
       <a>{branchEntry.rss_tag_search}</a>
-      <br/>
+      <br />
       <a>{branchEntry.rss_tag_target}</a>
-      <br/>
+      <br />
       <a onClick={onRSSsync}>🔄️</a>
     </div>
-  )
+  );
 }
 
 function generateXML(branchEntry, entries) {
-
-  const { rss_tag_title,
+  const {
+    rss_tag_title,
     rss_tag_description,
     rss_tag_creator,
     rss_tag_item_title,
@@ -66,7 +65,7 @@ xmlns:dc="http://purl.org/dc/elements/1.1/"
 xmlns:atom="http://www.w3.org/2005/Atom"
 xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
 xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
-`
+`;
 
   // TODO: generate fresh date
   const date = 'Thu, 15 Dec 2022 16:14:04 +0000';
@@ -79,7 +78,7 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
     <description>${rss_tag_description}</description>
     <lastBuildDate>${date}</lastBuildDate>
     <language>en-US</language>
-`
+`;
 
   function generateItem(entry) {
     return `<item>
@@ -97,7 +96,7 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
         <![CDATA[<p>${entry[rss_tag_item_description]}</p>
         ]]>
 </description>
-    </item>`
+    </item>`;
   }
 
   const items = entries.map(generateItem).join('\n');
@@ -108,7 +107,7 @@ ${channelHeader}
 ${items}
 </channel>
 </rss>
-`
+`;
 
-  return xml
+  return xml;
 }

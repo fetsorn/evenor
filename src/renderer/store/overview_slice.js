@@ -83,47 +83,67 @@ export const createOverviewSlice = (set, get) => ({
 
   repoRoute: undefined,
 
+  repoUUID: undefined,
+
+  repoName: undefined,
+
   base: undefined,
 
-  initialize: async (repoRouteOriginal, search) => {
+  initialize: async (repoRoute, search) => {
     const searchParams = new URLSearchParams(search);
 
-    let repoRoute;
+    let repoUUID;
+
+    let repoName;
 
     if (searchParams.has('url')) {
-      repoRoute = '/store/view';
+      repoUUID = 'view';
 
-      const api = new API(repoRoute);
+      // const api = new API(repoRoute);
 
-      const url = searchParams.get('url');
+      // const url = searchParams.get('url');
 
-      const token = searchParams.get('token') ?? '';
+      // const token = searchParams.get('token') ?? '';
 
-      searchParams.delete('url');
+      // searchParams.delete('url');
 
-      searchParams.delete('token');
+      // searchParams.delete('token');
 
-      try {
-        await api.rimraf(repoRoute);
-      } catch {
-        // do nothing if nothing to rimraf
-      }
+      // TODO: rewrite to use higher level API, not rimraf
+      // try {
+      //   await api.rimraf(repoRoute);
+      // } catch {
+      //   // do nothing if nothing to rimraf
+      // }
 
-      await api.clone(url, token);
-    } else if (repoRouteOriginal === undefined) {
-      repoRoute = '/store/root';
+      // await api.clone(url, token);
+    } else if (repoRoute === undefined) {
+      repoUUID = 'root';
 
       // eslint-disable-next-line
       if (__BUILD_MODE__ !== 'server') {
-        const apiRoot = new API('/store/root');
+        const apiRoot = new API('root');
 
+        console.log(apiRoot);
         await apiRoot.ensure(manifestRoot);
       }
     } else {
-      repoRoute = `/repos/${repoRouteOriginal}`;
+      repoName = repoRoute;
+
+      const apiRoot = new API('root');
+
+      const searchParamsReponame = new URLSearchParams();
+
+      searchParamsReponame.set('|', 'reponame');
+
+      searchParamsReponame.set('reponame', repoName);
+
+      const [{ UUID }] = await apiRoot.select(searchParamsReponame);
+
+      repoUUID = UUID;
     }
 
-    const api = new API(repoRoute);
+    const api = new API(repoUUID);
 
     const queries = paramsToQueries(searchParams);
 
@@ -139,20 +159,27 @@ export const createOverviewSlice = (set, get) => ({
       'groupBy',
     ) ?? '';
 
-    const schema = JSON.parse(await api.readFile('metadir.json'));
+    const schema = await api.readSchema();
 
     const base = Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
 
     set({
-      schema, base, queries, overviewType, groupBy, isInitialized: true, repoRoute,
+      schema,
+      base,
+      queries,
+      overviewType,
+      groupBy,
+      isInitialized: true,
+      repoUUID,
+      repoName,
     });
   },
 
   onQueries: async () => {
     if (get().isInitialized) {
-      const api = new API(get().repoRoute);
+      const api = new API(get().repoUUID);
 
-      const schema = JSON.parse(await api.readFile('metadir.json'));
+      const schema = await api.readSchema();
 
       const base = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
         ? get().base
@@ -181,12 +208,12 @@ export const createOverviewSlice = (set, get) => ({
 
     searchParams.set('|', base);
 
-    const api = new API(get().repoRoute);
+    const api = new API(get().repoUUID);
 
     const overview = await api.select(searchParams);
 
     set({ overview });
   },
 
-  setRepoRoute: (repoRoute) => set({ repoRoute, queries: {}, entry: undefined }),
+  setRepoUUID: (repoUUID) => set({ repoUUID, queries: {}, entry: undefined }),
 });

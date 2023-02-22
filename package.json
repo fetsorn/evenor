@@ -60,21 +60,11 @@
                   "html": "./src/renderer/index.html",
                   "js": "./src/renderer/renderer.jsx",
                   "preload": {
-                    "js": "./src/renderer/preload.js"
+                    "js": "./src/main/preload.js"
                   }
                 }
               ]
             }
-          }
-        },
-        {
-          "name": "@timfish/forge-externals-plugin",
-          "config": {
-            "externals": [
-              "electron",
-              "electron-devtools-installer"
-            ],
-            "includeDeps": true
           }
         }
       ]
@@ -105,7 +95,6 @@
     "@hpcc-js/wasm": "^2.8.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
     "@timfish/forge-externals-plugin": "^0.2.0",
-    "@vercel/webpack-asset-relocator-loader": "1.7.3",
     "babel-loader": "^9.1.2",
     "buffer": "6.0.3",
     "cfb": "^0.10.0",
@@ -117,7 +106,6 @@
     "docx4js": "3.2.20",
     "electron": "23.1.0",
     "electron-debug": "3.2.0",
-    "electron-devtools-installer": "3.2.0",
     "electron-log": "5.0.0-beta.16",
     "electron-squirrel-startup": "^1.0.0",
     "eslint": "^7.32.0 || ^8.2.0",

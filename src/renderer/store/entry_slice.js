@@ -42,14 +42,12 @@ export const createEntrySlice = (set, get) => ({
   onEntrySelect: (entry, index, group) => set({ entry, index, group }),
 
   onSettingsOpen: async () => {
-    const apiRepo = new API(get().repoRoute);
+    const apiRepo = new API(get().repoUUID);
 
     // get current repo settings from root db
     const entry = await apiRepo.getSettings();
 
-    const repoRouteRoot = 'store/root';
-
-    const apiRoot = new API(repoRouteRoot);
+    const apiRoot = new API('root');
 
     const { onEntrySave, onEntryDelete } = get();
 
@@ -70,7 +68,7 @@ export const createEntrySlice = (set, get) => ({
       await apiRoot.deleteEntry(get().entry);
 
       set({
-        repoRoute: repoRouteRoot,
+        repoUUID: 'root',
         entry: undefined,
         onEntrySave,
         onEntryDelete,
@@ -81,7 +79,7 @@ export const createEntrySlice = (set, get) => ({
     set({
       entry,
       index: '',
-      group: `${get().repoRoute} settings`,
+      group: `${get().repoUUID} ${get().repoName} settings`,
       onEntryClose: onSettingsClose,
       onEntrySave: onSettingsSave,
       onEntryDelete: onSettingsDelete,
@@ -100,7 +98,7 @@ export const createEntrySlice = (set, get) => ({
   onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
 
   onEntrySave: async () => {
-    const api = new API(get().repoRoute);
+    const api = new API(get().repoUUID);
 
     const overview = await api.updateEntry(get().entry, get().overview);
 
@@ -108,7 +106,7 @@ export const createEntrySlice = (set, get) => ({
   },
 
   onEntryDelete: async () => {
-    const api = new API(get().repoRoute);
+    const api = new API(get().repoUUID);
 
     const overview = await api.deleteEntry(get().entry, get().overview);
 

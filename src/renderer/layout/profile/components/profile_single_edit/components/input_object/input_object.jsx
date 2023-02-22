@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { digestMessage, randomUUIDPolyfill } from '@fetsorn/csvs-js';
 import { API, deepClone } from 'lib/api';
-import { useStore } from '@/store';
+import { useStore } from '@/store/index.js';
 import { EditInput, InputDropdown } from '..';
 
 async function addField(
@@ -37,7 +37,7 @@ async function addField(
   const { trunk } = schema[branch];
 
   if (trunk !== base && branch !== base) {
-    return;
+    return undefined;
   }
 
   if (schema[base].type === 'array') {
@@ -62,9 +62,9 @@ export function InputObject({
 
   const [options, setOptions] = useState([]);
 
-  const repoRoute = useStore((state) => state.repoRoute);
+  const repoUUID = useStore((state) => state.repoUUID);
 
-  const api = new API(repoRoute);
+  const api = new API(repoUUID);
 
   const base = useStore((state) => state.base);
 
@@ -115,7 +115,7 @@ export function InputObject({
       : { '|': leaf, [leaf]: entry[leaf] };
 
     return (
-      <div key={index}>
+      <div key={entry.UUID + leaf}>
         <EditInput
           {...{
             index: entry.UUID + leaf,
@@ -131,9 +131,9 @@ export function InputObject({
 
   async function onUseEffect() {
     if (branch !== base) {
-      const options = await api.queryOptions(branch);
+      const optionsNew = await api.queryOptions(branch);
 
-      setOptions(options);
+      setOptions(optionsNew);
     }
   }
 
@@ -156,8 +156,8 @@ export function InputObject({
             {t('line.dropdown.input')}
           </option>
 
-          {options.map((field, idx) => (
-            <option key={idx} value={JSON.stringify(field)}>
+          {options.map((field) => (
+            <option key={crypto.getRandomValues(new Uint32Array(10)).join('')} value={JSON.stringify(field)}>
               {JSON.stringify(field)}
             </option>
           ))}

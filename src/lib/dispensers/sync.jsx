@@ -1,12 +1,15 @@
-import React, { useState } from "react";
-import { API } from "../api";
+import React, { useState } from 'react';
+import { API } from '../api/index.js';
 
-export function Sync({baseEntry, branchEntry}) {
-  const [entries, setEntries] = useState<any>([]);
+export function Sync({ baseEntry, branchEntry }) {
+  const [entries, setEntries] = useState([]);
 
-  const sourceAPI = new API(`/repos/${baseEntry.reponame}`);
+  const sourceAPI = new API(baseEntry.UUID);
 
-  const targetAPI = new API(`repos/${branchEntry.sync_tag_target}`);
+  // TODO detect UUID of target
+  const target = branchEntry.sync_tag_target;
+
+  const targetAPI = new API(target);
 
   async function onCheckRepo() {
     const searchParams = new URLSearchParams(branchEntry.sync_tag_search);
@@ -18,9 +21,9 @@ export function Sync({baseEntry, branchEntry}) {
     const targetEntries = await targetAPI.select(searchParams);
 
     // TODO: resolve diff between sourceEntries and targetEntries
-    const entriesDiff = sourceEntries.concat(targetEntries)
+    const entriesDiff = sourceEntries.concat(targetEntries);
 
-    setEntries(entriesDiff)
+    setEntries(entriesDiff);
   }
 
   async function onSyncRepo() {
@@ -35,15 +38,15 @@ export function Sync({baseEntry, branchEntry}) {
 
   return (
     <div>
-      <a>{branchEntry.sync_tag_search}</a>
-      <br/>
-      <a>{branchEntry.sync_tag_target}</a>
-      <br/>
-      <a onClick={onCheckRepo}>🔄</a>
-      <br/>
-      <a>{JSON.stringify(entries)}</a>
-      <br/>
-      <a onClick={onSyncRepo}>==V==</a>
+      <p>{branchEntry.sync_tag_search}</p>
+      <br />
+      <p>{branchEntry.sync_tag_target}</p>
+      <br />
+      <button type="button" onClick={onCheckRepo}>🔄</button>
+      <br />
+      <p>{JSON.stringify(entries)}</p>
+      <br />
+      <button type="button" onClick={onSyncRepo}>==V==</button>
     </div>
-  )
+  );
 }

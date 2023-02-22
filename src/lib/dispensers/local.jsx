@@ -1,42 +1,6 @@
-import { useStore } from "@/store";
-import { API } from "../api";
-
-export function Local({ baseEntry }) {
-  const setRepoRoute = useStore((state) => state.setRepoRoute)
-
-  const { reponame, UUID, schema } = baseEntry;
-
-  const dir = `repos/${reponame}`;
-
-  const api = new API(dir);
-
-  function onLink() {
-    setRepoRoute(dir);
-  }
-
-  async function onUpdate() {
-    const schemaString = schemaToString(schema);
-
-    await api.ensure(schemaString);
-
-    await api.symlink(reponame);
-  }
-
-  async function deleteRepo() {
-    await api.rimraf(`/store/${UUID}`);
-
-    // TODO: unlink symlink
-    await api.rimraf(dir);
-  }
-
-  return (
-    <div>
-      <a onClick={onLink}>{baseEntry.reponame}</a>
-      <br/>
-      <a onClick={onUpdate}>🔄</a>
-    </div>
-  )
-}
+import React from 'react';
+import { useStore } from '@/store';
+import { API } from '../api/index.js';
 
 function schemaToString(schema) {
   const schemaObject = {};
@@ -66,18 +30,57 @@ function schemaToString(schema) {
       schemaObject[branch].description = {};
 
       if (item.schema_branch_description.schema_branch_description_en) {
-        schemaObject[branch].description.en =
-          item.schema_branch_description.schema_branch_description_en;
+        schemaObject[branch].description.en = item
+          .schema_branch_description
+          .schema_branch_description_en;
       }
 
       if (item.schema_branch_description.schema_branch_description_ru) {
-        schemaObject[branch].description.ru =
-          item.schema_branch_description.schema_branch_description_ru;
+        schemaObject[branch].description.ru = item
+          .schema_branch_description
+          .schema_branch_description_ru;
       }
     }
   }
 
   const schemaString = JSON.stringify(schemaObject, null, 2);
 
-  return schemaString
+  return schemaString;
+}
+
+export function Local({ baseEntry }) {
+  const setRepoRoute = useStore((state) => state.setRepoRoute);
+
+  const { reponame, UUID, schema } = baseEntry;
+
+  const dir = `repos/${reponame}`;
+
+  const api = new API(dir);
+
+  function onLink() {
+    setRepoRoute(dir);
+  }
+
+  async function onUpdate() {
+    const schemaString = schemaToString(schema);
+
+    await api.ensure(schemaString);
+
+    await api.symlink(reponame);
+  }
+
+  // async function deleteRepo() {
+  //   await api.rimraf(`/store/${UUID}`);
+
+  //   // TODO: unlink symlink
+  //   await api.rimraf(dir);
+  // }
+
+  return (
+    <div>
+      <a onClick={onLink}>{baseEntry.reponame}</a>
+      <br />
+      <button type="button" onClick={onUpdate}>🔄</button>
+    </div>
+  );
 }

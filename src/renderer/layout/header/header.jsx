@@ -2,16 +2,16 @@ import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import styles from './header.module.css';
-import { useStore, queriesToParams } from '@/store';
+import { useStore, queriesToParams } from '@/store/index.js';
 import {
   Button,
-} from '@/components';
+} from '@/components/index.js';
 import {
   HeaderFilter,
   HeaderBaseDropdown,
   HeaderGroupByDropdown,
   HeaderOverviewTypeDropdown,
-} from './components';
+} from './components/index.js';
 
 export function Header() {
   const { t } = useTranslation();
@@ -24,7 +24,7 @@ export function Header() {
     overviewType,
     onQueries,
     isInitialized,
-    repoRoute,
+    repoUUID,
     setRepoRoute,
     onSettingsOpen,
   ] = useStore((state) => [
@@ -33,45 +33,45 @@ export function Header() {
     state.overviewType,
     state.onQueries,
     state.isInitialized,
-    state.repoRoute,
+    state.repoUUID,
     state.setRepoRoute,
     state.onSettingsOpen,
   ]);
 
-  useEffect(() => {
-    // TODO: fix
-    // if (isInitialized && __BUILD_MODE__ !== "electron") {
-    //   const searchParams = queriesToParams(queries);
+  // useEffect(() => {
+  // TODO: fix
+  // if (isInitialized && __BUILD_MODE__ !== "electron") {
+  //   const searchParams = queriesToParams(queries);
 
-    //   if (groupBy !== "") {
-    //     searchParams.set("groupBy", groupBy);
-    //   }
+  //   if (groupBy !== "") {
+  //     searchParams.set("groupBy", groupBy);
+  //   }
 
-    //   searchParams.set("overviewType", overviewType);
+  //   searchParams.set("overviewType", overviewType);
 
-    //   let pathname = repoRoute;
+  //   let pathname = repoRoute;
 
-    //   if (repoRoute === "store/root" || repoRoute === "store/view") {
-    //     pathname = "/";
-    //   } else {
-    //     pathname = "/" + repoRoute.replace(/^repos\//, '')
-    //   }
+  //   if (repoRoute === "store/root" || repoRoute === "store/view") {
+  //     pathname = "/";
+  //   } else {
+  //     pathname = "/" + repoRoute.replace(/^repos\, '')
+  //   }
 
-    //   navigate({
-    //     pathname,
-    //     search: "?" + searchParams.toString(),
-    //   });
-    // }
-  }, [queries, groupBy, overviewType, repoRoute]);
+  //   navigate({
+  //     pathname,
+  //     search: "?" + searchParams.toString(),
+  //   });
+  // }
+  // }, [queries, groupBy, overviewType, repoRoute]);
 
   useEffect(() => {
     onQueries();
-  }, [queries, repoRoute]);
+  }, [queries, repoUUID]);
 
   return (
     <header className={styles.header}>
-      { repoRoute !== 'store/view'
-         && repoRoute !== 'store/root'
+      { repoUUID !== 'view'
+         && repoUUID !== 'root'
         ? (
           <Button
             type="button"
@@ -96,7 +96,7 @@ export function Header() {
 
       <div />
 
-      { repoRoute !== 'store/root' && repoRoute !== 'store/view' && (
+      { repoUUID !== 'root' && repoUUID !== 'view' && (
         <Button
           type="button"
           title={t('header.button.back')}

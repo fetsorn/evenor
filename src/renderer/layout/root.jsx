@@ -6,12 +6,12 @@ import {
   useLocation,
   useParams,
 } from 'react-router-dom';
+import { useStore } from '@/store/index.js';
+import { Header } from './header/index.js';
+import { Overview } from './overview/index.js';
+import { Profile } from './profile/index.js';
+import { Footer } from './footer/index.js';
 import styles from './root.module.css';
-import { Header } from './header';
-import { Overview } from './overview';
-import { Profile } from './profile';
-import { Footer } from './footer';
-import { useStore } from '@/store';
 
 export function Root() {
   return (

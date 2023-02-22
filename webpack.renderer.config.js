@@ -66,7 +66,6 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       __BUILD_MODE__: JSON.stringify('electron'),
-      __filename: () => { console.log('hehe'); },
     }),
 
     new MiniCssExtractPlugin({

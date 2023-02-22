@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useStore } from "@/store";
-import { Dispenser } from "lib/dispensers";
-import { API, manifestRoot } from "lib/api";
-import { FieldText } from "..";
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Dispenser } from 'lib/dispensers';
+import { API, manifestRoot } from 'lib/api';
+import { useStore } from '@/store/index.js';
+import { FieldText } from '..';
 
 export function ViewField({ entry }) {
   const { i18n } = useTranslation();
@@ -11,14 +11,14 @@ export function ViewField({ entry }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [
-    repoRoute,
+    repoUUID,
     baseEntry,
     isSettings,
   ] = useStore((state) => [
-    state.repoRoute,
+    state.repoUUID,
     state.entry,
     state.isSettings,
-  ])
+  ]);
 
   const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
 
@@ -32,18 +32,18 @@ export function ViewField({ entry }) {
 
   return (
     <div>
-      {branchType === "array" ? (
+      {branchType === 'array' ? (
         <div>
           {!isOpen ? (
             <div>
-              <a onClick={() => setIsOpen(true)}>▶️</a>
+              <button type="button" onClick={() => setIsOpen(true)}>▶️</button>
 
               {branchDescription}
             </div>
           ) : (
             <div>
               <div>
-                <a onClick={() => setIsOpen(false)}>🔽</a>
+                <button type="button" onClick={() => setIsOpen(false)}>🔽</button>
 
                 {branchDescription}
               </div>
@@ -52,52 +52,52 @@ export function ViewField({ entry }) {
 
               { entry.items.map((item, index) => (
                 <div key={index}>
-                  <ViewField entry={item}/>
+                  <ViewField entry={item} />
                 </div>
               ))}
             </div>
           )}
         </div>
-      ) : trunk === "tags" ? (
+      ) : trunk === 'tags' ? (
         <div>
           {!isOpen ? (
             <div>
-              <a onClick={() => setIsOpen(true)}>▶️</a>
+              <button type="button" onClick={() => setIsOpen(true)}>▶️</button>
 
               {branchDescription}
             </div>
           ) : (
             <div>
               <div>
-                <a onClick={() => setIsOpen(false)}>🔽</a>
+                <button type="button" onClick={() => setIsOpen(false)}>🔽</button>
 
                 {branchDescription}
               </div>
 
-              <Dispenser {...{ baseEntry, branchEntry: entry, api: new API(repoRoute) }}/>
+              <Dispenser {...{ baseEntry, branchEntry: entry, api: new API(repoUUID) }} />
             </div>
           )}
         </div>
-      ) : branchType === "object" ? (
+      ) : branchType === 'object' ? (
         <div>
           {!isOpen ? (
             <div>
-              <a onClick={() => setIsOpen(true)}>▶️</a>
+              <button type="button" onClick={() => setIsOpen(true)}>▶️</button>
 
               {branchDescription}
             </div>
           ) : (
             <div>
               <div>
-                <a onClick={() => setIsOpen(false)}>🔽</a>
+                <button type="button" onClick={() => setIsOpen(false)}>🔽</button>
 
                 {branchDescription}
               </div>
 
               {entry.UUID}
 
-              { Object.keys(entry).map((leaf, leafIndex) => {
-                if (leaf === '|' || leaf === 'UUID') { return <></> }
+              { Object.keys(entry).map((leaf) => {
+                if (leaf === '|' || leaf === 'UUID') { return; }
 
                 const leafEntry = schema[leaf]?.type === 'object'
                                  || schema[leaf]?.type === 'array'
@@ -105,10 +105,10 @@ export function ViewField({ entry }) {
                   : { '|': leaf, [leaf]: entry[leaf] };
 
                 return (
-                  <div key={leafIndex}>
-                    <ViewField entry={leafEntry}/>
+                  <div key={entry.UUID + leaf}>
+                    <ViewField entry={leafEntry} />
                   </div>
-                )
+                );
               })}
             </div>
           )}

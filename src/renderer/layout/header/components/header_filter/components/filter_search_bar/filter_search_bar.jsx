@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API } from 'lib/api';
-import { Button } from '@/components';
-import { useStore } from '@/store';
+import { Button } from '@/components/index.js';
+import { useStore } from '@/store/index.js';
 import styles from './filter_search_bar.module.css';
 
 export function FilterSearchBar() {
@@ -20,17 +20,17 @@ export function FilterSearchBar() {
     base,
     onQueryAdd,
     isInitialized,
-    repoRoute,
+    repoUUID,
   ] = useStore((state) => [
     state.queries,
     state.schema,
     state.base,
     state.onQueryAdd,
     state.isInitialized,
-    state.repoRoute,
+    state.repoUUID,
   ]);
 
-  const api = new API(repoRoute);
+  const api = new API(repoUUID);
 
   const notAddedQueries = Object.keys(schema).filter(
     (branch) => schema[branch].trunk === base
@@ -48,9 +48,9 @@ export function FilterSearchBar() {
 
   async function onQueryFieldChange() {
     if (isInitialized) {
-      const options = await api.queryOptions(queryField);
+      const optionsNew = await api.queryOptions(queryField);
 
-      const optionValues = options.map((entry) => entry[queryField]);
+      const optionValues = optionsNew.map((entry) => entry[queryField]);
 
       setOptions(optionValues);
     }
@@ -97,8 +97,8 @@ export function FilterSearchBar() {
         />
 
         <datalist id="panel_list">
-          {options.map((option, idx) => (
-            <option key={idx} value={option} />
+          {options.map((option) => (
+            <option key={`panel_list ${option}`} value={option} />
           ))}
         </datalist>
       </div>

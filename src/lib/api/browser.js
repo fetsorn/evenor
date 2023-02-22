@@ -8,16 +8,26 @@ import { QueryWorker } from './query_worker.js';
 const fs = new LightningFS('fs');
 
 export class BrowserAPI {
+  // UUID of repo in the store
+  uuid;
+
   dir;
 
-  constructor(dir) {
-    this.dir = dir;
+  constructor(uuid) {
+    this.uuid = uuid;
+
+    this.dir = `/store/${uuid}`;
   }
 
   async readFile(filepath) {
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ === 'server') {
+      return (await fetch(`/api/${filepath}`)).text();
+    }
+
     // check if path exists in the repo
     const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
-    // console.log("readFile: pathElements, path", pathElements, path);
+    // console.log('readFile: pathElements, path', pathElements, filepath);
 
     let root = '';
 
@@ -30,15 +40,15 @@ export class BrowserAPI {
 
       const files = await pfs.readdir(root);
 
-      // console.log("readFile: files", root, files);
+      // console.log('readFile: files', root, files);
       if (files.includes(pathElement)) {
         root += pathElement;
 
-      // console.log(`readFile: ${root} has ${pathElement}`);
+        // console.log(`readFile: ${root} has ${pathElement}`);
       } else {
-      // console.log(
-      //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
-      // );
+        // console.log(
+        //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`,
+        // );
         return undefined;
       // throw Error(
       //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
@@ -57,8 +67,22 @@ export class BrowserAPI {
     filepath,
     content,
   ) {
-  // if path doesn't exist, create it
-  // split path into array of directory names
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ === 'server') {
+      await fetch(`/api/${filepath}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content,
+        }),
+      });
+
+      return;
+    }
+    // if path doesn't exist, create it
+    // split path into array of directory names
     const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
 
     // console.log('writeFileBrowser', dir, path, content);
@@ -95,15 +119,29 @@ export class BrowserAPI {
   }
 
   async uploadFile(file) {
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ === 'server') {
+      const form = new FormData();
+
+      form.append('file', file);
+
+      await fetch('/upload', {
+        method: 'POST',
+        body: form,
+      });
+
+      return;
+    }
+
     const pfs = new LightningFS('fs').promises;
 
     const root = '/';
 
     const rootFiles = await pfs.readdir('/');
 
-    const repoDir = root + this.dir;
+    const repoDir = root + this.uuid;
 
-    if (!rootFiles.includes(this.dir)) {
+    if (!rootFiles.includes(this.uuid)) {
       await pfs.mkdir(repoDir);
     }
 
@@ -164,6 +202,7 @@ export class BrowserAPI {
         return e;
       });
     }
+
     return overview.concat([entryNew]);
   }
 
@@ -176,12 +215,22 @@ export class BrowserAPI {
     return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
-  async clone(url, token) {
+  async clone(remote, token, name) {
+    // TODO add rimraf?
+
+    await this.tbn2(remote, token);
+
+    if (name) {
+      await this.symlink(name);
+    }
+  }
+
+  async tbn2(remote, token) {
     const options = {
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remote,
       singleBranch: true,
       depth: 1,
     };
@@ -196,6 +245,15 @@ export class BrowserAPI {
   }
 
   async commit() {
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ === 'server') {
+      await fetch('api/', {
+        method: 'PUT',
+      });
+
+      return;
+    }
+
     const { dir } = this;
 
     const message = [];
@@ -273,7 +331,13 @@ export class BrowserAPI {
     }
   }
 
-  async push(token) {
+  async push(remote, token) {
+    await this.addRemote(remote);
+
+    await this.tbn3(token);
+  }
+
+  async tbn3(token) {
     await git.push({
       fs,
       http,
@@ -286,7 +350,13 @@ export class BrowserAPI {
     });
   }
 
-  async pull(token) {
+  async pull(remote, token) {
+    await this.addRemote(remote);
+
+    await this.fastForward(token);
+  }
+
+  async fastForward(token) {
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     await git.fastForward({
@@ -310,7 +380,15 @@ export class BrowserAPI {
     });
   }
 
-  async ensure(schema) {
+  async ensure(schema, name) {
+    await this.tbn1(schema);
+
+    if (name) {
+      await this.symlink(name);
+    }
+  }
+
+  async tbn1(schema) {
     const { dir } = this;
 
     const name = dir.replace(/^\/store\//, '');
@@ -334,14 +412,14 @@ export class BrowserAPI {
     await this.commit();
   }
 
-  async symlink(reponame) {
+  async symlink(name) {
     const pfs = fs.promises;
 
     if (!(await pfs.readdir('/')).includes('repos')) {
       await pfs.mkdir('/repos');
     }
 
-    await pfs.symlink(`/store/${this.dir}`, `/repos/${reponame}`);
+    await pfs.symlink(this.dir, `/repos/${name}`);
   }
 
   async rimraf(rimrafpath) {
@@ -392,5 +470,13 @@ export class BrowserAPI {
         await this.ls(filepath);
       }
     }
+  }
+
+  async readSchema() {
+    const schemaString = await this.readFile('metadir.json');
+
+    const schema = JSON.parse(schemaString);
+
+    return schema;
   }
 }

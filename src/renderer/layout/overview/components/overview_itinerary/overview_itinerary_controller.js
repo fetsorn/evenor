@@ -4,7 +4,7 @@ function queryWorkerInit() {
   const buildLine = (data, branch) => new Promise((res, rej) => {
     const channel = new MessageChannel();
 
-    channel.port1.onmessage = ({ dataNew }) => {
+    channel.port1.onmessage = ({ data: dataNew }) => {
       channel.port1.close();
 
       if (dataNew.error) {

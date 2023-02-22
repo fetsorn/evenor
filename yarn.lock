@@ -1276,10 +1276,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/csvs-js@0.10.2":
-  version "0.10.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.10.2.tgz#0dba2cad7644dbd333c33ff51f9a837e3fa3387f"
-  integrity sha512-8x8Wdf8e3R28jGPSoShKuaLmAaK0xansb2+D+Anv1odbKZnOEMu0f76xKM8la07wB4Oh7T+vmuBVBtIuz0895g==
+"@fetsorn/csvs-js@0.10.3":
+  version "0.10.3"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.10.3.tgz#2bd4576f642daf6c318f5679a88ca0ca2188b960"
+  integrity sha512-3+wyBGUyvXXSvxfO1vU+k48SKhqh3flripYFaTnPfm9E1uqj0KwcqAGb8xpBfJM3K9HLorWBF8doa/m9qbuVqQ==
 
 "@fetsorn/ged2dot@0.2.0":
   version "0.2.0"

@@ -7,13 +7,13 @@ import HtmlWebpackPlugin from 'html-webpack-plugin';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
-const __dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export default (env) => ({
   entry: './src/renderer/renderer.jsx',
   mode: process.env.production ? 'production' : 'development',
   output: {
-    path: path.resolve(__dirname, 'release/renderer'),
+    path: path.resolve(dirname, 'release/renderer'),
     filename: '[name].js',
   },
   experiments: {
@@ -74,8 +74,8 @@ export default (env) => ({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src/renderer'),
-      lib: path.resolve(__dirname, './src/lib'),
+      '@': path.resolve(dirname, './src/renderer'),
+      lib: path.resolve(dirname, './src/lib'),
     },
     fallback: {
       // For WASM

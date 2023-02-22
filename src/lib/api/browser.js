@@ -479,4 +479,36 @@ export class BrowserAPI {
 
     return schema;
   }
+
+  async zip() {
+    const { default: JsZip } = await import('jszip');
+
+    const zip = new JsZip();
+
+    const foo = async (dir, zipDir) => {
+      const files = await fs.promises.readdir(dir);
+
+      for (const file of files) {
+        const filepath = `${dir}/${file}`;
+
+        const { type: filetype } = await fs.promises.stat(filepath);
+
+        if (filetype === 'file') {
+          const content = await fs.promises.readFile(filepath);
+
+          zipDir.file(file, content);
+        } else if (filetype === 'dir') {
+          const zipDirNew = zipDir.folder(file);
+
+          foo(filepath, zipDirNew);
+        }
+      }
+    };
+
+    await foo(this.dir, zip);
+
+    zip.generateAsync({ type: 'blob' }).then((content) => {
+      saveAs(content, 'archive.zip');
+    });
+  }
 }

@@ -469,4 +469,51 @@ export class ElectronAPI {
 
     return schema;
   }
+
+  async zip() {
+    const { default: JsZip } = await import('jszip');
+
+    const zip = new JsZip();
+
+    const foo = async (dir, zipDir) => {
+      const files = await fs.promises.readdir(dir);
+
+      for (const file of files) {
+        const filepath = `${dir}/${file}`;
+
+        const { type: filetype } = await fs.promises.stat(filepath);
+
+        if (filetype === 'file') {
+          const content = await fs.promises.readFile(filepath);
+
+          zipDir.file(file, content);
+        } else if (filetype === 'dir') {
+          const zipDirNew = zipDir.folder(file);
+
+          foo(filepath, zipDirNew);
+        }
+      }
+    };
+
+    await foo(this.dir, zip);
+
+    zip.generateAsync({ type: 'blob' }).then(async (content) => {
+      const file = await dialog.showSaveDialog({
+        title: 'Select the File Path to save',
+        // defaultPath: path.join(__dirname, '../assets/'),
+        buttonLabel: 'Save',
+        // Restricting the user to only Text Files.
+        filters: [
+          {
+            name: 'Zip Files',
+            extensions: ['zip'],
+          }],
+        properties: [],
+      });
+
+      if (!file.canceled) {
+        await fs.promises.writeFile(file.filePath.toString(), content);
+      }
+    });
+  }
 }

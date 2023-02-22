@@ -2,6 +2,7 @@ import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/web/index.cjs';
 import LightningFS from '@isomorphic-git/lightning-fs';
 import { CSVS } from '@fetsorn/csvs-js';
+import { saveAs } from 'file-saver';
 import { deepClone } from './curse_controller.js';
 import { QueryWorker } from './query_worker.js';
 

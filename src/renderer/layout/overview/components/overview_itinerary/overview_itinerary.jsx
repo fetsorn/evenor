@@ -1,33 +1,31 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import styles from "./overview_itinerary.module.css";
-import { VirtualScroll } from "@/components";
-import { useStore } from "@/store";
-import { ItineraryWaypoint } from "./components";
-import { buildItinerary } from "./overview_itinerary_controller.js";
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import styles from './overview_itinerary.module.css';
+import { VirtualScroll } from '@/components';
+import { useStore } from '@/store';
+import { ItineraryWaypoint } from './components';
+import { buildItinerary } from './overview_itinerary_controller.js';
 
-export default function OverviewItinerary() {
+export function OverviewItinerary() {
   const [itinerary, setItinerary] = useState([]);
 
   const { t } = useTranslation();
 
   const [
     entry,
-    schema,
     overview,
     groupBy,
     onEntrySelect,
     onEntryCreate,
-    onBatchSelect
-  ]  = useStore((state) => [
+    onBatchSelect,
+  ] = useStore((state) => [
     state.entry,
-    state.schema,
     state.overview,
     state.groupBy,
     state.onEntrySelect,
     state.onEntryCreate,
-    state.onBatchSelect
-  ])
+    state.onBatchSelect,
+  ]);
 
   async function onUseEffect() {
     const itineraryNew = await buildItinerary(overview, groupBy);
@@ -49,8 +47,8 @@ export default function OverviewItinerary() {
         <button
           className={styles.star}
           type="button"
-          onClick={() => onEntryCreate("", "1")}
-          title={t("line.button.add")}
+          onClick={() => onEntryCreate('', '1')}
+          title={t('line.button.add')}
           key="addevent"
         >
           +

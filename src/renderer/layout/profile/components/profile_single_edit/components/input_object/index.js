@@ -1,1 +1,1 @@
-export { default } from "./input_object.jsx";
+export { InputObject } from './input_object.jsx';

@@ -5,7 +5,7 @@ import { Dispenser } from "lib/dispensers";
 import { API, manifestRoot } from "lib/api";
 import { FieldText } from "..";
 
-export default function ViewField({ entry }) {
+export function ViewField({ entry }) {
   const { i18n } = useTranslation();
 
   const [isOpen, setIsOpen] = useState(false);

@@ -1,8 +1,8 @@
-import React from "react";
-import styles from "./input_date.module.css";
-import { useTranslation } from "react-i18next";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import styles from './input_date.module.css';
 
-export default function InputDate({
+export function InputDate({
   branch,
   value,
   onFieldChange,

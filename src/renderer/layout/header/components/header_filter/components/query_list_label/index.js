@@ -1,1 +1,1 @@
-export { default } from "./query_list_label.jsx";
+export { QueryListLabel } from './query_list_label.jsx';

@@ -1,26 +1,26 @@
-import React, { useEffect } from "react";
+import React, { useEffect } from 'react';
 import {
   HashRouter as Router,
   Routes,
   Route,
   useLocation,
-  useParams
-} from "react-router-dom";
-import styles from "./root.module.css";
-import { default as Header } from "./header";
-import { default as Overview } from "./overview";
-import { default as Profile } from "./profile";
-import { default as Footer } from "./footer";
-import { useStore } from "@/store";
+  useParams,
+} from 'react-router-dom';
+import styles from './root.module.css';
+import { Header } from './header';
+import { Overview } from './overview';
+import { Profile } from './profile';
+import { Footer } from './footer';
+import { useStore } from '@/store';
 
-export default function Root() {
+export function Root() {
   return (
-     <Router>
-       <Routes>
-         <Route index element={<Page />} />
-         <Route path=":repoRoute" element={<Page />} />
-       </Routes>
-     </Router>
+    <Router>
+      <Routes>
+        <Route index element={<Page />} />
+        <Route path=":repoRoute" element={<Page />} />
+      </Routes>
+    </Router>
   );
 }
 
@@ -29,7 +29,7 @@ function Page() {
 
   const location = useLocation();
 
-  const initialize = useStore((state) => state.initialize)
+  const initialize = useStore((state) => state.initialize);
 
   useEffect(() => {
     initialize(repoRoute, location.search);
@@ -49,4 +49,3 @@ function Page() {
     </>
   );
 }
-

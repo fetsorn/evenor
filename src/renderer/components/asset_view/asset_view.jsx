@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { Button, convert, fetchBlob, isIFrameable } from "..";
-import { useStore } from "@/store";
+import React, { useEffect, useState } from 'react';
+import {
+  Button, convert, fetchBlob, isIFrameable,
+} from '..';
+import { useStore } from '@/store';
 
 async function onConvert(repoRoute, filepath, setBlob) {
   const blob = await convert(repoRoute, filepath);
@@ -16,10 +18,10 @@ async function onUseEffect(repoRoute, filepath, setBlob) {
   }
 }
 
-export default function AssetView({ filepath }) {
+export function AssetView({ filepath }) {
   const [blob, setBlob] = useState(undefined);
 
-  const repoRoute = useStore((state) => state.repoRoute)
+  const repoRoute = useStore((state) => state.repoRoute);
 
   useEffect(() => {
     onUseEffect(repoRoute, filepath, setBlob);
@@ -28,7 +30,7 @@ export default function AssetView({ filepath }) {
   return (
     <>
       {blob && (
-        <iframe title="iframe" src={blob} width="100%" height="800px"></iframe>
+        <iframe title="iframe" src={blob} width="100%" height="800px" />
       )}
       {filepath && !blob && !isIFrameable(filepath) && (
         <Button

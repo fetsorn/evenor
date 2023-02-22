@@ -1,1 +1,1 @@
-export { default } from "./input_array.jsx";
+export { InputArray } from './input_array.jsx';

@@ -1,1 +1,1 @@
-export { default } from "./overview_graph.jsx";
+export { OverviewGraph } from './overview_graph.jsx';

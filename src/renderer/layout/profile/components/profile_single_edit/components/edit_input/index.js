@@ -1,1 +1,1 @@
-export { default } from "./edit_input.jsx";
+export { EditInput } from './edit_input.jsx';

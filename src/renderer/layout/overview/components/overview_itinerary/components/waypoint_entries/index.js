@@ -1,1 +1,1 @@
-export { default } from "./waypoint_entries.jsx";
+export { WaypointEntries } from './waypoint_entries.jsx';

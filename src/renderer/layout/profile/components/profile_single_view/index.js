@@ -1,1 +1,1 @@
-export { default } from "./profile_single_view.jsx";
+export { ProfileSingleView } from './profile_single_view.jsx';

@@ -1,1 +1,1 @@
-export { default } from "./itinerary_waypoint.jsx";
+export { ItineraryWaypoint } from './itinerary_waypoint.jsx';

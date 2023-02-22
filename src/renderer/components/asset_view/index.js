@@ -1,1 +1,1 @@
-export { default } from "./asset_view.jsx";
+export { AssetView } from './asset_view.jsx';

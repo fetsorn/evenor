@@ -1,1 +1,1 @@
-export { exportPDF, generateLatex } from "./latex.js";
+export { exportPDF, generateLatex } from './latex.js';

@@ -1,38 +1,38 @@
-import React, { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { digestMessage, randomUUIDPolyfill } from '@fetsorn/csvs-js';
 import { API, deepClone } from 'lib/api';
-import { useStore } from "@/store";
-import { EditInput , InputDropdown } from "..";
+import { useStore } from '@/store';
+import { EditInput, InputDropdown } from '..';
 
 async function addField(
   schema,
   entryOriginal,
-  branch
+  branch,
 ) {
   // used to use deepClone
   const entry = deepClone(entryOriginal);
 
   let value;
 
-  if (schema[branch].type === "object" || schema[branch].type === "array") {
+  if (schema[branch].type === 'object' || schema[branch].type === 'array') {
     const obj = {};
 
-    obj["|"] = branch;
+    obj['|'] = branch;
 
     const uuid = crypto.randomUUID ? crypto.randomUUID() : randomUUIDPolyfill();
 
     obj.UUID = await digestMessage(uuid);
 
-    if (schema[branch].type === "array") {
+    if (schema[branch].type === 'array') {
       obj.items = [];
     }
 
     value = obj;
   } else {
-    value = "";
+    value = '';
   }
-  const base = entry["|"];
+  const base = entry['|'];
 
   const { trunk } = schema[branch];
 
@@ -40,7 +40,7 @@ async function addField(
     return;
   }
 
-  if (schema[base].type === "array") {
+  if (schema[base].type === 'array') {
     if (entry.items === undefined) {
       entry.items = [];
     }
@@ -52,7 +52,7 @@ async function addField(
   return entry;
 }
 
-export default function InputArray({
+export function InputArray({
   schema,
   entry,
   onFieldChange,
@@ -69,7 +69,7 @@ export default function InputArray({
 
   const branch = entry['|'];
 
-  const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch)
+  const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch);
 
   const items = entry.items
     ? entry.items.sort((a, b) => a.UUID.localeCompare(b.UUID))
@@ -103,11 +103,11 @@ export default function InputArray({
         <select
           value="default"
           onChange={({ target: { value } }) => {
-            onFieldChange(branch, JSON.parse(value))
+            onFieldChange(branch, JSON.parse(value));
           }}
         >
           <option hidden disabled value="default">
-            {t("line.dropdown.input")}
+            {t('line.dropdown.input')}
           </option>
 
           {options.map((field, idx) => (

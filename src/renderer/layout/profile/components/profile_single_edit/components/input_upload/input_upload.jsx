@@ -1,9 +1,9 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components";
-import styles from "./input_upload.module.css";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import { Button } from '@/components';
+import styles from './input_upload.module.css';
 
-export default function InputUpload({
+export function InputUpload({
   branch,
   value,
   onFieldChange,
@@ -14,7 +14,7 @@ export default function InputUpload({
 
   return (
     <div>
-      {__BUILD_MODE__ === "electron" ? (
+      {__BUILD_MODE__ === 'electron' ? (
         <div>
           <input
             className={styles.input}
@@ -23,7 +23,7 @@ export default function InputUpload({
             onChange={(e) => onFieldChange(branch, e.target.value)}
           />
           <Button type="button" onClick={() => onFieldUploadElectron(branch)}>
-            {t("line.button.upload")}
+            {t('line.button.upload')}
           </Button>
         </div>
       ) : (

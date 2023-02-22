@@ -1,1 +1,1 @@
-export { default } from "./field_text.jsx";
+export { FieldText } from './field_text.jsx';

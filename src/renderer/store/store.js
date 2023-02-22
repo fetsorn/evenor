@@ -7,4 +7,4 @@ export const useStore = create((...a) => ({
   ...createEntrySlice(...a),
   ...createFilterSlice(...a),
   ...createOverviewSlice(...a),
-}))
+}));

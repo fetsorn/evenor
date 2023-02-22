@@ -1,6 +1,6 @@
-import * as React from "react";
-import { Root } from "./layout";
+import * as React from 'react';
+import { Root } from './layout';
 
-export default function App() {
+export function App() {
   return <Root />;
 }

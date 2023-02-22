@@ -1,25 +1,22 @@
-import path from "path";
+import path from 'path';
 // import { app, BrowserWindow, shell, ipcMain } from "electron";
-import { app, BrowserWindow } from "electron";
-import MenuBuilder from "./menu.js";
+import { app, BrowserWindow } from 'electron';
+import { MenuBuilder } from './menu.js';
 
 let mainWindow = null;
 
 const createWindow = async () => {
-
   const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, "assets")
-    : path.join(__dirname, "../../assets");
+    ? path.join(process.resourcesPath, 'assets')
+    : path.join(__dirname, '../../assets');
 
-  const getAssetPath = (...paths) => {
-    return path.join(RESOURCES_PATH, ...paths);
-  };
+  const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
 
   mainWindow = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
-    icon: getAssetPath("icon.png"),
+    icon: getAssetPath('icon.png'),
     // webPreferences: {
     // preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
     // preload: path.join(__dirname, "../../.webpack/renderer/main_window/preload.js"),
@@ -28,14 +25,15 @@ const createWindow = async () => {
     // },
   });
 
+  // eslint-disable-next-line
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   // mainWindow.loadURL("https://example.com");
 
-  mainWindow.webContents.once("dom-ready", () => {
+  mainWindow.webContents.once('dom-ready', () => {
     mainWindow.webContents.openDevTools();
   });
 
-  mainWindow.on("ready-to-show", () => {
+  mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
     }
@@ -46,7 +44,7 @@ const createWindow = async () => {
     }
   });
 
-  mainWindow.on("closed", () => {
+  mainWindow.on('closed', () => {
     mainWindow = null;
   });
 
@@ -64,10 +62,10 @@ const createWindow = async () => {
  * Add event listeners...
  */
 
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
   // Respect the OSX convention of having the application in memory even
   // after all windows have been closed
-  if (process.platform !== "darwin") {
+  if (process.platform !== 'darwin') {
     app.quit();
   }
 });
@@ -79,6 +77,6 @@ app
   })
   .catch(console.log);
 
-app.on("activate", () => {
+app.on('activate', () => {
   if (mainWindow === null) createWindow();
 });

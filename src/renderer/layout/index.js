@@ -1,1 +1,1 @@
-export { default as Root } from "./root.jsx";
+export { Root } from './root.jsx';

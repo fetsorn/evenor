@@ -7,7 +7,7 @@ import {
 } from "./components";
 import { useStore } from "@/store";
 
-export default function Profile() {
+export function Profile() {
   const [isBatch, isEdit] = useStore((state) => [state.isBatch, state.isEdit])
 
   return (

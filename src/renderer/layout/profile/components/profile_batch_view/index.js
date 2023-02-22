@@ -1,1 +1,1 @@
-export { default } from "./profile_batch_view.jsx";
+export { ProfileBatchView } from './profile_batch_view.jsx';

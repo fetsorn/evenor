@@ -4,16 +4,207 @@ import {
   pptx,
   // xlsx,
   // drawml
-} from "docx4js";
+} from 'docx4js';
 // import WordExtractor from "word-extractor";
-import { RTFJS } from "rtf.js";
-import cfb from "cfb";
-import PPT from "@fetsorn/ppt";
-import git from "isomorphic-git";
+import { RTFJS } from 'rtf.js';
+import cfb from 'cfb';
+import PPT from '@fetsorn/ppt';
+import git from 'isomorphic-git';
 // import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
-import mime from "mime";
-import http from "isomorphic-git/http/web/index.cjs";
+import mime from 'mime';
+import http from 'isomorphic-git/http/web/index.cjs';
 
+// returns Blob
+export async function fetchAsset(repoRoute, path) {
+  // eslint-disable-next-line
+  if (__BUILD_MODE__ === 'server') {
+    const localpath = `/api/${path}`;
+
+    try {
+      const result = await fetch(localpath);
+
+      if (result.ok) {
+        return result.blob();
+      }
+
+      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
+    } catch {
+      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
+    }
+    // eslint-disable-next-line
+  } else if (__BUILD_MODE__ === 'electron') {
+    try {
+      const result = await window.electron.fetchAsset(repoRoute, path);
+
+      const mimetype = mime.getType(path);
+
+      const blob = new Blob([result], { type: mimetype });
+
+      return blob;
+    } catch {
+      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
+    }
+  } else {
+    // check if path exists in the repo
+    const pathElements = [repoRoute].concat(path.split('/'));
+
+    // console.log("fetchDataMetadir: pathElements, path", pathElements, path);
+
+    let root = '';
+
+    for (let i = 0; i < pathElements.length; i += 1) {
+      const pathElement = pathElements[i];
+
+      root += '/';
+
+      const files = await window.pfs.readdir(root);
+
+      // console.log("fetchDataMetadir: files", files);
+
+      if (files.includes(pathElement)) {
+        root += pathElement;
+
+        // console.log(`fetchDataMetadir: ${root} has ${pathElement}`);
+      } else {
+        throw Error(
+          `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`,
+        );
+      }
+    }
+
+    const restext = await window.pfs.readFile(`/${repoRoute}/${path}`);
+
+    const mimetype = mime.getType(path);
+
+    const blob = new Blob([restext], { type: mimetype });
+
+    // console.log(restext)
+
+    return blob;
+  }
+}
+
+async function bodyToBuffer(body) {
+  const buffers = [];
+
+  let offset = 0;
+
+  let size = 0;
+
+  for await (const chunk of body) {
+    buffers.push(chunk);
+
+    size += chunk.byteLength;
+  }
+
+  const result = new Uint8Array(size);
+
+  for (const buffer of buffers) {
+    result.set(buffer, offset);
+
+    offset += buffer.byteLength;
+  }
+
+  return Buffer.from(result.buffer);
+}
+
+export async function resolveLFS(
+  filename,
+  content,
+  remote,
+  token,
+) {
+  const lines = content.split('\n');
+
+  const oid = lines[1].slice(11);
+
+  const size = parseInt(lines[2].slice(5), 10);
+
+  const lfsInfoRequestData = {
+    operation: 'download',
+    objects: [{ oid, size }],
+    transfers: ['basic'],
+    ref: { name: 'refs/heads/main' },
+  };
+
+  let lfsInfoBody;
+
+  if (token !== '') {
+    const { body } = await http.request({
+      url: `${remote}/info/lfs/objects/batch`,
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${token}:`).toString('base64')}`,
+        Accept: 'application/vnd.git-lfs+json',
+        'Content-Type': 'application/vnd.git-lfs+json',
+      },
+      body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
+    });
+
+    lfsInfoBody = body;
+  } else {
+    const { body } = await http.request({
+      url: `${remote}/info/lfs/objects/batch`,
+      method: 'POST',
+      headers: {
+        Accept: 'application/vnd.git-lfs+json',
+        'Content-Type': 'application/vnd.git-lfs+json',
+      },
+      body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
+    });
+
+    lfsInfoBody = body;
+  }
+
+  const lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString();
+
+  const lfsInfoResponse = JSON.parse(lfsInfoResponseRaw);
+  // console.log("resolveLFS");
+  // console.log(lfsInfoRequestData);
+  // console.log(lfsInfoResponse);
+  const downloadAction = lfsInfoResponse.objects[0].actions.download;
+
+  const lfsObjectDownloadURL = downloadAction.href;
+
+  const lfsObjectDownloadHeaders = downloadAction.header ?? {};
+
+  const { body: lfsObjectBody } = await http.request({
+    url: lfsObjectDownloadURL,
+    method: 'GET',
+    headers: lfsObjectDownloadHeaders,
+  });
+
+  const lfsObjectBuffer = await bodyToBuffer(lfsObjectBody);
+
+  const mimetype = mime.getType(filename);
+
+  const blob = new Blob([lfsObjectBuffer], { type: mimetype });
+
+  return URL.createObjectURL(blob);
+}
+
+// fails at parseConfig with "cannot split null",
+// as if it doesn't find the config
+export async function getRemote(repo) {
+  // console.log("getRemote");
+  // console.log(window.fs, repo);
+  // eslint-disable-next-line
+  if (__BUILD_MODE__ === 'electron') {
+    try {
+      const result = await window.electron.getRemote(repo);
+
+      return result;
+    } catch {
+      throw Error('Could not create git repo');
+    }
+  } else {
+    return git.getConfig({
+      fs: window.fs,
+      dir: `/${repo}`,
+      path: 'remote.origin.url',
+    });
+  }
+}
 // fetch asset blob url
 export async function fetchBlob(repoRoute, filepath) {
   // fetch FILEPATH as Blob
@@ -22,14 +213,14 @@ export async function fetchBlob(repoRoute, filepath) {
   let blob;
 
   try {
-    const lfsPath = "lfs/" + filepath;
+    const lfsPath = `lfs/${filepath}`;
 
     blob = await fetchAsset(repoRoute, lfsPath);
   } catch (e1) {
     /* console.log("fetch lfs/ failed", e1); */
 
     try {
-      const localPath = "local/" + filepath;
+      const localPath = `local/${filepath}`;
 
       blob = await fetchAsset(repoRoute, localPath);
     } catch (e2) {
@@ -45,7 +236,7 @@ export async function fetchBlob(repoRoute, filepath) {
 
       const remote = await getRemote(repoRoute);
 
-      const token = "";
+      const token = '';
 
       const blobPath = await resolveLFS(filepath, content, remote, token);
 
@@ -58,15 +249,15 @@ export async function fetchBlob(repoRoute, filepath) {
       return url;
     }
   }
+
+  return undefined;
 }
 
 // buf: ArrayBuffer
 async function pptxToHtml(buf) {
-  const _pptx = await pptx.load(buf);
+  const pptxObj = await pptx.load(buf);
 
-  const html = await _pptx.render((_type, _props, children) => {
-    return children.join("\n");
-  });
+  const html = await pptxObj.render((_type, _props, children) => children.join('\n'));
 
   return html;
 }
@@ -86,26 +277,24 @@ async function pptxToHtml(buf) {
 
 // buf: ArrayBuffer
 async function pptToHtml(buf) {
-  const _buf = Buffer.from(buf);
+  const b = Buffer.from(buf);
 
   // ppt requires cfb^0.10.0
-  const _cfb = cfb.read(_buf, { type: "buffer" });
+  const cfbObj = cfb.read(b, { type: 'buffer' });
 
-  const _ppt = PPT.parse_pptcfb(_cfb);
+  const pptObj = PPT.parse_pptcfb(cfbObj);
 
   // { docs: [ { slideList: [ "" ] } ]
   //   slides: [ { drawing: { groupShape: [ { clientTextbox: { t: "" } } ] } } ] }
-  const textboxes = _ppt.slides.map((slide) =>
-    slide.drawing?.groupShape
+  const textboxes = pptObj.slides.map((slide) => slide.drawing?.groupShape
 
-      ?.map((shape) => shape.clientTextbox?.t)
+    ?.map((shape) => shape.clientTextbox?.t)
 
-      .join("\n")
-  );
+    .join('\n'));
 
-  const headings = _ppt.docs.map((doc) => doc.slideList?.join("\n"));
+  const headings = pptObj.docs.map((doc) => doc.slideList?.join('\n'));
 
-  const html = headings.join("\n") + textboxes.join("\n");
+  const html = headings.join('\n') + textboxes.join('\n');
 
   return html;
 }
@@ -139,31 +328,31 @@ export async function toHtml(path, buf) {
 
   // if (/.docx$/.test(path)) {
 
-  //   return await docxToHtml(buf);
+  //   return docxToHtml(buf);
 
   // }
 
   if (/.pptx$/.test(path)) {
-    return await pptxToHtml(buf);
+    return pptxToHtml(buf);
   }
 
-  if (/.doc$/.test(path)) {
-    return await docToHtml(buf);
-  }
+  // if (/.doc$/.test(path)) {
+  //   return docToHtml(buf);
+  // }
 
   if (/.ppt$/.test(path)) {
-    return await pptToHtml(buf);
+    return pptToHtml(buf);
   }
 
   if (/.rtf$/.test(path)) {
-    return await rtfToHtml(buf);
+    return rtfToHtml(buf);
   }
 
-  throw Error("unknown extension");
+  throw Error('unknown extension');
 }
 
 export async function convert(repoRoute, filepath) {
-  const localPath = "local/" + filepath;
+  const localPath = `local/${filepath}`;
 
   const blob = await fetchAsset(repoRoute, localPath);
 
@@ -179,7 +368,7 @@ export async function convert(repoRoute, filepath) {
 
     return blobURL;
   } catch (e1) {
-    console.log("handleDoc failed", e1);
+    console.log('handleDoc failed', e1);
 
     // try to fetch plain text
     try {
@@ -187,7 +376,7 @@ export async function convert(repoRoute, filepath) {
       /* new TextDecoder("windows-1251").decode(window.buf); */
       window.buf = abuf;
 
-      const text = new TextDecoder("utf-8").decode(abuf);
+      const text = new TextDecoder('utf-8').decode(abuf);
 
       const content = new Blob([text]);
 
@@ -198,6 +387,8 @@ export async function convert(repoRoute, filepath) {
       /* console.log("handlePlain failed", e2); */
     }
   }
+
+  return undefined;
 }
 
 export function isIFrameable(path) {
@@ -210,70 +401,70 @@ export function isIFrameable(path) {
   }
 
   const img = [
-    "BMP",
-    "GIF",
-    "ICO",
-    "JPEG",
-    "JPG",
-    "NPO",
-    "PNG",
-    "TIF",
-    "bmp",
-    "eps",
-    "gif",
-    "ico",
-    "jpeg",
-    "jpg",
-    "png",
-    "svg",
-    "tif",
-    "webp",
-    "MPO",
+    'BMP',
+    'GIF',
+    'ICO',
+    'JPEG',
+    'JPG',
+    'NPO',
+    'PNG',
+    'TIF',
+    'bmp',
+    'eps',
+    'gif',
+    'ico',
+    'jpeg',
+    'jpg',
+    'png',
+    'svg',
+    'tif',
+    'webp',
+    'MPO',
   ];
 
   const vid = [
-    "AVI",
-    "BUP",
-    "IFO",
-    "MOV",
-    "MP4",
-    "VOB",
-    "avi",
-    "flv",
-    "m2v",
-    "m4v",
-    "mov",
-    "mp4",
-    "swf",
-    "webm",
+    'AVI',
+    'BUP',
+    'IFO',
+    'MOV',
+    'MP4',
+    'VOB',
+    'avi',
+    'flv',
+    'm2v',
+    'm4v',
+    'mov',
+    'mp4',
+    'swf',
+    'webm',
   ];
 
-  const src = ["PDF", "Pdf", "acsm", "mobi", "pdf", "xps"];
+  const src = ['PDF', 'Pdf', 'acsm', 'mobi', 'pdf', 'xps'];
 
   const wav = [
-    "caf",
-    "MOD",
-    "aac",
-    "m3u",
-    "m4a",
-    "mid",
-    "mp3",
-    "ogg",
-    "pk",
-    "flac",
+    'caf',
+    'MOD',
+    'aac',
+    'm3u',
+    'm4a',
+    'mid',
+    'mp3',
+    'ogg',
+    'pk',
+    'flac',
   ];
 
   const web = [
-    "less",
-    "sass",
-    "scss",
-    "css",
-    "htm",
-    "html",
-    "js",
-    "mht",
-    "url",
-    "xml",
+    'less',
+    'sass',
+    'scss',
+    'css',
+    'htm',
+    'html',
+    'js',
+    'mht',
+    'url',
+    'xml',
   ];
 
   const iframeable = img.concat(vid, src, wav, web);
@@ -357,74 +548,6 @@ export function isIFrameable(path) {
 //   return blobURL;
 // }
 
-// returns Blob
-export async function fetchAsset(repoRoute, path) {
-  if (__BUILD_MODE__ === "server") {
-    const localpath = "/api/" + path;
-
-    try {
-      const result = await fetch(localpath);
-
-      if (result.ok) {
-        return result.blob();
-      }
-
-      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
-    } catch {
-      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
-    }
-  } else if (__BUILD_MODE__ === "electron") {
-    try {
-      const result = await window.electron.fetchAsset(repoRoute, path);
-
-      const mimetype = mime.getType(path);
-
-      const blob = new Blob([result], { type: mimetype });
-
-      return blob;
-    } catch {
-      throw Error(`Cannot load file. Ensure there is a file ${path}.`);
-    }
-  } else {
-    // check if path exists in the repo
-    const path_elements = [repoRoute].concat(path.split("/"));
-
-    // console.log("fetchDataMetadir: path_elements, path", path_elements, path);
-
-    let root = "";
-
-    for (let i = 0; i < path_elements.length; i++) {
-      const path_element = path_elements[i];
-
-      root += "/";
-
-      const files = await window.pfs.readdir(root);
-
-      // console.log("fetchDataMetadir: files", files);
-
-      if (files.includes(path_element)) {
-        root += path_element;
-
-        // console.log(`fetchDataMetadir: ${root} has ${path_element}`);
-      } else {
-        throw Error(
-          `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
-        );
-      }
-    }
-
-    const restext = await window.pfs.readFile("/" + repoRoute + "/" + path);
-
-    const mimetype = mime.getType(path);
-
-    const blob = new Blob([restext], { type: mimetype });
-
-    // console.log(restext)
-
-    return blob;
-  }
-}
-
 // const SPEC_URL = 'https://git-lfs.github.com/spec/v1';
 // const LFS_POINTER_PREAMBLE = `version ${SPEC_URL}\n`;
 // function pointsToLFS(content) {
@@ -433,115 +556,3 @@ export async function fetchAsset(repoRoute, path) {
 // && content.subarray(0, 100).indexOf(LFS_POINTER_PREAMBLE) === 0);
 // tries to find preamble at the start of the pointer, fails for some reason
 // }
-
-async function bodyToBuffer(body) {
-  const buffers = [];
-  let offset = 0;
-  let size = 0;
-  for await (const chunk of body) {
-    buffers.push(chunk);
-    size += chunk.byteLength;
-  }
-
-  const result = new Uint8Array(size);
-  for (const buffer of buffers) {
-    result.set(buffer, offset);
-    offset += buffer.byteLength;
-  }
-  return Buffer.from(result.buffer);
-}
-
-export async function resolveLFS(
-  filename,
-  content,
-  remote,
-  token
-) {
-  const lines = content.split("\n");
-
-  const oid = lines[1].slice(11);
-
-  const size = parseInt(lines[2].slice(5));
-
-  const lfsInfoRequestData = {
-    operation: "download",
-    objects: [{ oid, size }],
-    transfers: ["basic"],
-    ref: { name: "refs/heads/main" },
-  };
-
-  let lfsInfoBody;
-
-  if (token !== "") {
-    const { body } = await http.request({
-      url: `${remote}/info/lfs/objects/batch`,
-      method: "POST",
-      headers: {
-        Authorization: `Basic ${Buffer.from(`${token}:`).toString("base64")}`,
-        Accept: "application/vnd.git-lfs+json",
-        "Content-Type": "application/vnd.git-lfs+json",
-      },
-      body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
-    });
-    lfsInfoBody = body;
-  } else {
-    const { body } = await http.request({
-      url: `${remote}/info/lfs/objects/batch`,
-      method: "POST",
-      headers: {
-        Accept: "application/vnd.git-lfs+json",
-        "Content-Type": "application/vnd.git-lfs+json",
-      },
-      body: [Buffer.from(JSON.stringify(lfsInfoRequestData))],
-    });
-    lfsInfoBody = body;
-  }
-
-  const lfsInfoResponseRaw = (await bodyToBuffer(lfsInfoBody)).toString();
-
-  const lfsInfoResponse = JSON.parse(lfsInfoResponseRaw);
-  // console.log("resolveLFS");
-  // console.log(lfsInfoRequestData);
-  // console.log(lfsInfoResponse);
-  const downloadAction = lfsInfoResponse.objects[0].actions.download;
-
-  const lfsObjectDownloadURL = downloadAction.href;
-
-  const lfsObjectDownloadHeaders = downloadAction.header ?? {};
-
-  const { body: lfsObjectBody } = await http.request({
-    url: lfsObjectDownloadURL,
-    method: "GET",
-    headers: lfsObjectDownloadHeaders,
-  });
-
-  const lfsObjectBuffer = await bodyToBuffer(lfsObjectBody);
-
-  const mimetype = mime.getType(filename);
-
-  const blob = new Blob([lfsObjectBuffer], { type: mimetype });
-
-  return URL.createObjectURL(blob);
-}
-
-// fails at parseConfig with "cannot split null",
-// as if it doesn't find the config
-export async function getRemote(repo) {
-  // console.log("getRemote");
-  // console.log(window.fs, repo);
-  if (__BUILD_MODE__ === "electron") {
-    try {
-      const result = await window.electron.getRemote(repo);
-
-      return result;
-    } catch {
-      throw Error(`Could not create git repo`);
-    }
-  } else {
-    return await git.getConfig({
-      fs: window.fs,
-      dir: "/" + repo,
-      path: "remote.origin.url",
-    });
-  }
-}

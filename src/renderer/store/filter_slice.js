@@ -1,9 +1,9 @@
-import { OverviewType } from "./types.js";
+import { OverviewType } from './types.js';
 
 export const createFilterSlice = (set, get) => ({
   queries: {},
 
-  groupBy: "",
+  groupBy: '',
 
   overviewType: OverviewType.itinerary,
 
@@ -16,14 +16,14 @@ export const createFilterSlice = (set, get) => ({
       ? OverviewType[overviewTypeParam]
       : get().overviewType;
 
-    set({ overviewType })
+    set({ overviewType });
   },
 
   onQueryAdd: async (queryField, queryValue) => {
     if (queryValue) {
       const queries = { ...get().queries, [queryField]: queryValue };
 
-      set({ queries })
+      set({ queries });
     }
   },
 
@@ -32,6 +32,6 @@ export const createFilterSlice = (set, get) => ({
 
     delete queries[queryField];
 
-    set({ queries })
+    set({ queries });
   },
-})
+});

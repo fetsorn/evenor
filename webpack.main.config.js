@@ -1,8 +1,8 @@
-const path = require("path");
+const path = require('path');
 
 module.exports = {
   // target: 'electron-main',
-  entry: "./src/main/index.js",
+  entry: './src/main/index.js',
   // mode: "development",
   // devtool: "source-map",
   module: {
@@ -30,7 +30,7 @@ module.exports = {
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
-        }
+        },
       },
     ],
   },
@@ -51,8 +51,8 @@ module.exports = {
   // },
   resolve: {
     alias: {
-      lib: path.resolve(__dirname, "./src/lib"),
+      lib: path.resolve(__dirname, './src/lib'),
     },
-    extensions: [".js", ".jsx", ".css", ".json"],
+    extensions: ['.js', '.jsx', '.css', '.json'],
   },
 };

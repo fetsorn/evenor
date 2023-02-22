@@ -1,1 +1,1 @@
-export { default } from "./input_textarea.jsx";
+export { InputTextarea } from './input_textarea.jsx';

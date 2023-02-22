@@ -22,7 +22,7 @@ function formatDate(title) {
   return isDate(title) ? title : title
 }
 
-export default function ProfileSingleView() {
+export function ProfileSingleView() {
   const { t } = useTranslation();
 
   const [

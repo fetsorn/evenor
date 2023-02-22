@@ -1,1 +1,1 @@
-export { default } from "./overview_itinerary.jsx";
+export { OverviewItinerary } from './overview_itinerary.jsx';

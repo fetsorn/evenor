@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { Button } from "@/components";
-import { API } from "lib/api";
-import { useStore } from "@/store";
-import styles from "./filter_search_bar.module.css";
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { API } from 'lib/api';
+import { Button } from '@/components';
+import { useStore } from '@/store';
+import styles from './filter_search_bar.module.css';
 
-export default function FilterSearchBar() {
+export function FilterSearchBar() {
   const { i18n, t } = useTranslation();
 
-  const [queryField, setQueryField] = useState("")
+  const [queryField, setQueryField] = useState('');
 
-  const [queryValue, setQueryValue] = useState("")
+  const [queryValue, setQueryValue] = useState('');
 
   const [options, setOptions] = useState([]);
 
@@ -20,38 +20,37 @@ export default function FilterSearchBar() {
     base,
     onQueryAdd,
     isInitialized,
-    repoRoute
+    repoRoute,
   ] = useStore((state) => [
     state.queries,
     state.schema,
     state.base,
     state.onQueryAdd,
     state.isInitialized,
-    state.repoRoute
+    state.repoRoute,
   ]);
 
   const api = new API(repoRoute);
 
   const notAddedQueries = Object.keys(schema).filter(
-    (branch) =>
-      schema[branch].trunk === base
-                && !Object.prototype.hasOwnProperty.call(queries, branch)
+    (branch) => schema[branch].trunk === base
+                && !Object.prototype.hasOwnProperty.call(queries, branch),
   ).map(
     (branch) => {
       const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
       return {
         branch,
-        label: `${description} (${branch})`
-      }
-    }
+        label: `${description} (${branch})`,
+      };
+    },
   );
 
   async function onQueryFieldChange() {
     if (isInitialized) {
       const options = await api.queryOptions(queryField);
 
-      const optionValues = options.map((entry) => entry[queryField])
+      const optionValues = options.map((entry) => entry[queryField]);
 
       setOptions(optionValues);
     }
@@ -60,7 +59,7 @@ export default function FilterSearchBar() {
   useEffect(() => {
     setQueryField(notAddedQueries?.[0]?.branch);
 
-    setQueryValue("")
+    setQueryValue('');
   }, [schema, queries]);
 
   useEffect(() => {
@@ -72,7 +71,7 @@ export default function FilterSearchBar() {
       <select
         name="searchBarDropdown"
         value={queryField}
-        title={t("header.dropdown.search", { field: queryField })}
+        title={t('header.dropdown.search', { field: queryField })}
         onChange={({ target: { value } }) => {
           setQueryField(value);
 
@@ -90,23 +89,23 @@ export default function FilterSearchBar() {
         <input
           className={styles.input}
           type="text"
-          list={`panel_list`}
+          list="panel_list"
           value={queryValue}
           onChange={({ target: { value } }) => {
             setQueryValue(value);
           }}
         />
 
-        <datalist id={`panel_list`}>
+        <datalist id="panel_list">
           {options.map((option, idx) => (
-            <option key={idx} value={option}></option>
+            <option key={idx} value={option} />
           ))}
         </datalist>
       </div>
 
       <Button
         type="button"
-        title={t("header.button.search")}
+        title={t('header.button.search')}
         onClick={() => onQueryAdd(queryField, queryValue)}
       >
         🔎

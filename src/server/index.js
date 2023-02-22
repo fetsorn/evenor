@@ -1,7 +1,5 @@
 #!/usr/bin/env node
 
-'use strict';
-
 import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
@@ -13,29 +11,29 @@ import { exec } from 'child_process';
 import { CSVS } from '@fetsorn/csvs-js';
 import formidable from 'formidable';
 
-const __dirname = path.dirname(new URL(import.meta.url).pathname)
+const dirname = path.dirname(new URL(import.meta.url).pathname);
 
 const router = express.Router();
 const app = express();
 
-app.set('query parser', (queryString) => new URLSearchParams(queryString))
+app.set('query parser', (queryString) => new URLSearchParams(queryString));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use("/", router);
+app.use('/', router);
 
 async function fetchCallback(filepath) {
-  const realpath = path.join(process.cwd(), filepath)
+  const realpath = path.join(process.cwd(), filepath);
 
-  let contents
+  let contents;
 
   try {
-    contents = await fs.promises.readFile(realpath, { encoding: 'utf8' })
+    contents = await fs.promises.readFile(realpath, { encoding: 'utf8' });
 
-    return contents
+    return contents;
   } catch {
-    throw("couldn't find file", filepath)
+    throw ("couldn't find file", filepath);
   }
 }
 
@@ -55,8 +53,8 @@ async function grepCallback(contentFile, patternFile, isInverse) {
   try {
     // console.log(`grep ${contentFile} for ${patternFile}`)
     const { stdout, stderr } = await promisify(exec)(
-      'export PATH=$PATH:~/.nix-profile/bin/; ' +
-        `rg ${isInverse ? '-v' : ''} -f ${patternFilePath} ${contentFilePath}`
+      'export PATH=$PATH:~/.nix-profile/bin/; '
+        + `rg ${isInverse ? '-v' : ''} -f ${patternFilePath} ${contentFilePath}`,
     );
 
     if (stderr) {
@@ -64,7 +62,7 @@ async function grepCallback(contentFile, patternFile, isInverse) {
     } else {
       output = stdout;
     }
-  } catch(e) {
+  } catch (e) {
     // console.log('grep cli returned empty', e);
   }
 
@@ -77,50 +75,49 @@ async function grepCallback(contentFile, patternFile, isInverse) {
 
 // on POST `/grep` return results of a search
 router.get('/query*', async (req, res) => {
-  console.log("post query", req.path, req.query)
+  console.log('post query', req.path, req.query);
 
   try {
     const data = await (new CSVS({
       readFile: fetchCallback,
-      grep: grepCallback
-    })).select(req.query)
+      grep: grepCallback,
+    })).select(req.query);
 
-    res.send(data)
-  } catch(e) {
-    console.log("aaa", e)
+    res.send(data);
+  } catch (e) {
+    console.log('aaa', e);
   }
-
-})
+});
 
 // on GET `/api/path` serve `/path` in current directory
 router.get('/api/*', (req, res) => {
-  console.log("get api", req.path)
+  console.log('get api', req.path);
 
-  const filepath = decodeURI(req.path.replace(/^\/api/, ""))
+  const filepath = decodeURI(req.path.replace(/^\/api/, ''));
 
-  const realpath = path.join(process.cwd(), filepath)
+  const realpath = path.join(process.cwd(), filepath);
 
   res.sendFile(realpath);
-})
+});
 
 // on POST `/api/path` write `/path` in current directory
 router.post('/api/*', async (req, res) => {
-  console.log("post api", req.path)
+  console.log('post api', req.path);
 
-  const content = req.body.content;
+  const { content } = req.body;
 
-  const filepath = decodeURI(req.path.replace(/^\/api/, ""));
+  const filepath = decodeURI(req.path.replace(/^\/api/, ''));
 
-  const realpath = path.join(process.cwd(), filepath)
+  const realpath = path.join(process.cwd(), filepath);
 
   await fs.promises.writeFile(realpath, content);
 
-  res.end()
+  res.end();
 });
 
 // on PUT `/api/path` git commit current directory
 router.put('/api/*', () => {
-  console.log("put api")
+  console.log('put api');
 
   git.commit({
     fs,
@@ -129,15 +126,15 @@ router.put('/api/*', () => {
       name: 'fetsorn',
       email: 'fetsorn@gmail.com',
     },
-    message: 'qualia'
-  }).then((sha) => console.log(sha))
-})
+    message: 'qualia',
+  }).then((sha) => console.log(sha));
+});
 
 // on POST `/upload` write file to local/
 router.post('/upload', async (req, res) => {
   const form = formidable({});
 
-  const uploadDir = path.join(process.cwd(), "local/");
+  const uploadDir = path.join(process.cwd(), 'local/');
 
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
@@ -156,25 +153,25 @@ router.post('/upload', async (req, res) => {
       // next(err);
       return;
     }
-    const file = files.file;
+    const { file } = files;
 
     const uploadPath = path.join(uploadDir, file.originalFilename);
 
-    await fs.promises.rename(file.filepath, uploadPath)
+    await fs.promises.rename(file.filepath, uploadPath);
 
-    res.end()
+    res.end();
   });
 });
 
 // on `/` serve a react app with hash router
 router.get('/', (req, res) => {
-  console.log(req.path)
+  console.log(req.path);
 
-  res.sendFile(path.join(__dirname, 'build', 'index.html'));
-})
+  res.sendFile(path.join(dirname, 'build', 'index.html'));
+});
 
 // serve `build/file` at `/file`
-app.use(express.static(path.join(__dirname, 'build')))
+app.use(express.static(path.join(dirname, 'build')));
 
 const PORT = process.env.PORT || 8080;
 

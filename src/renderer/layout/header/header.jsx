@@ -1,19 +1,19 @@
-import React, { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import styles from "./header.module.css";
-import { useStore, queriesToParams } from "@/store";
+import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import styles from './header.module.css';
+import { useStore, queriesToParams } from '@/store';
 import {
-  Button
-} from "@/components";
+  Button,
+} from '@/components';
 import {
   HeaderFilter,
   HeaderBaseDropdown,
   HeaderGroupByDropdown,
   HeaderOverviewTypeDropdown,
-} from "./components";
+} from './components';
 
-export default function Header() {
+export function Header() {
   const { t } = useTranslation();
 
   const navigate = useNavigate();
@@ -35,8 +35,8 @@ export default function Header() {
     state.isInitialized,
     state.repoRoute,
     state.setRepoRoute,
-    state.onSettingsOpen
-  ])
+    state.onSettingsOpen,
+  ]);
 
   useEffect(() => {
     // TODO: fix
@@ -62,27 +62,27 @@ export default function Header() {
     //     search: "?" + searchParams.toString(),
     //   });
     // }
-  }, [queries, groupBy, overviewType, repoRoute])
+  }, [queries, groupBy, overviewType, repoRoute]);
 
   useEffect(() => {
     onQueries();
-  }, [queries, repoRoute])
+  }, [queries, repoRoute]);
 
   return (
     <header className={styles.header}>
-      { repoRoute !== "store/view"
-         && repoRoute !== "store/root"
+      { repoRoute !== 'store/view'
+         && repoRoute !== 'store/root'
         ? (
           <Button
             type="button"
-            title={t("header.button.back")}
-            onClick={() => setRepoRoute("store/root")}
+            title={t('header.button.back')}
+            onClick={() => setRepoRoute('store/root')}
           >
             {/* &lt;= */}
             🏠
-          </Button>)
-        : <div/>
-      }
+          </Button>
+        )
+        : <div />}
 
       <div className={styles.dropdowns}>
         <HeaderOverviewTypeDropdown />
@@ -92,18 +92,17 @@ export default function Header() {
         <HeaderGroupByDropdown />
       </div>
 
-
       <HeaderFilter />
 
-      <div/>
+      <div />
 
-      { repoRoute !== "store/root" && repoRoute !== "store/view" && (
+      { repoRoute !== 'store/root' && repoRoute !== 'store/view' && (
         <Button
           type="button"
-          title={t("header.button.back")}
+          title={t('header.button.back')}
           onClick={onSettingsOpen}
         >
-            ⚙️
+          ⚙️
         </Button>
       )}
 

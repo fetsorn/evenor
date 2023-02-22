@@ -1,1 +1,1 @@
-export { default } from "./overview_book.jsx";
+export { OverviewBook } from './overview_book.jsx';

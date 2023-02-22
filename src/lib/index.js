@@ -1,3 +1,3 @@
-export { API, deepClone } from "./api/";
-export { exportPDF, generateLatex } from "./latex/";
-export { Dispenser } from "./dispensers/";
+export { API, deepClone } from './api/index.js';
+export { exportPDF, generateLatex } from './latex/index.js';
+export { Dispenser } from './dispensers/index.js';

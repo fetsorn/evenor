@@ -1,6 +1,5 @@
-import { digestMessage, randomUUIDPolyfill } from "@fetsorn/csvs-js";
-import { API } from "lib/api";
-import { EntrySlice } from "./types.js";
+import { digestMessage, randomUUIDPolyfill } from '@fetsorn/csvs-js';
+import { API } from 'lib/api';
 
 // TODO: set default values for required fields
 async function createEntry(schema, base) {
@@ -10,9 +9,9 @@ async function createEntry(schema, base) {
 
   entry.UUID = await digestMessage(uuid);
 
-  entry["|"] = base;
+  entry['|'] = base;
 
-  if (schema[base].type === "array") {
+  if (schema[base].type === 'array') {
     entry.items = [];
   }
 
@@ -46,9 +45,9 @@ export const createEntrySlice = (set, get) => ({
     const apiRepo = new API(get().repoRoute);
 
     // get current repo settings from root db
-    const entry = await apiRepo.getSettings()
+    const entry = await apiRepo.getSettings();
 
-    const repoRouteRoot = "store/root";
+    const repoRouteRoot = 'store/root';
 
     const apiRoot = new API(repoRouteRoot);
 
@@ -58,14 +57,14 @@ export const createEntrySlice = (set, get) => ({
       entry: undefined,
       onEntrySave,
       onEntryDelete,
-      isSettings: false
+      isSettings: false,
     });
 
     const onSettingsSave = async () => {
       await apiRoot.updateEntry(get().entry);
 
-      set({ isEdit: false })
-    }
+      set({ isEdit: false });
+    };
 
     const onSettingsDelete = async () => {
       await apiRoot.deleteEntry(get().entry);
@@ -75,25 +74,25 @@ export const createEntrySlice = (set, get) => ({
         entry: undefined,
         onEntrySave,
         onEntryDelete,
-        isSettings: false
+        isSettings: false,
       });
-    }
+    };
 
     set({
       entry,
-      index: "",
+      index: '',
       group: `${get().repoRoute} settings`,
       onEntryClose: onSettingsClose,
       onEntrySave: onSettingsSave,
       onEntryDelete: onSettingsDelete,
-      isSettings: true
-    })
+      isSettings: true,
+    });
   },
 
   onEntryCreate: async (index) => {
     const entry = await createEntry(get().schema, get().base);
 
-    set({ index, isEdit: true, entry })
+    set({ index, isEdit: true, entry });
   },
 
   onEntryEdit: () => set({ isEdit: true, entryOriginal: get().entry }),
@@ -105,7 +104,7 @@ export const createEntrySlice = (set, get) => ({
 
     const overview = await api.updateEntry(get().entry, get().overview);
 
-    set({ overview, isEdit: false })
+    set({ overview, isEdit: false });
   },
 
   onEntryDelete: async () => {
@@ -119,4 +118,4 @@ export const createEntrySlice = (set, get) => ({
   onEntryClose: () => set({ entry: undefined }),
 
   onEntryChange: (_, entry) => set({ entry }),
-})
+});

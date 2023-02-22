@@ -1,7 +1,7 @@
-import React from "react";
-import styles from "./input_text.module.css";
+import React from 'react';
+import styles from './input_text.module.css';
 
-export default function InputText({
+export function InputText({
   branch,
   value,
   options,
@@ -20,7 +20,7 @@ export default function InputText({
       {options?.length > 0 && (
         <datalist id={branch}>
           {options.map((option, idx) => (
-            <option key={idx} value={option}></option>
+            <option key={idx} value={option} />
           ))}
         </datalist>
       )}

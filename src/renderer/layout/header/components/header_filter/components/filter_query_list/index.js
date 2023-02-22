@@ -1,1 +1,1 @@
-export { default } from "./filter_query_list.jsx";
+export { FilterQueryList } from './filter_query_list.jsx';

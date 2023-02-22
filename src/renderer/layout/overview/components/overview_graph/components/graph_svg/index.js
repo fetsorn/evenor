@@ -1,1 +1,1 @@
-export { default } from "./graph_svg.jsx";
+export { GraphSvg } from './graph_svg.jsx';

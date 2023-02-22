@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
+import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   InputTextarea,
   InputText,
@@ -7,12 +7,12 @@ import {
   InputDate,
   InputArray,
   InputObject,
-} from "..";
+} from '..';
 import {
-  useEditStore
-} from "../../profile_single_edit";
+  useEditStore,
+} from '../../profile_single_edit';
 
-export default function EditInput({
+export function EditInput({
   index,
   schema,
   entry,
@@ -38,18 +38,18 @@ export default function EditInput({
 
   const mapIsOpen = useEditStore((state) => state.mapIsOpen);
 
-  const [isOpen, setIsOpen] = useState(mapIsOpen[index])
+  const [isOpen, setIsOpen] = useState(mapIsOpen[index]);
 
   function open() {
-    openIndex(index, true)
+    openIndex(index, true);
 
-    setIsOpen(true)
+    setIsOpen(true);
   }
 
   function close() {
-    openIndex(index, false)
+    openIndex(index, false);
 
-    setIsOpen(false)
+    setIsOpen(false);
   }
 
   // TODO: find a way to wrap the Spoiler and Label
@@ -69,107 +69,64 @@ export default function EditInput({
           onFieldChange,
         }}
       />
-    )
+    );
   }
 
   switch (branchType) {
-  case "array":
-    return (
-      <div>
-        {schema[branch].trunk === undefined ? (
-          <InputArray
-            {...{
-              schema,
-              entry,
-              onFieldChange,
-            }}
-          />
-        ) : (
-          <div>
-            {!isOpen ? (
-              <div>
-                <a onClick={open}>▶️</a>
-
-                {description}
-
-                <button
-                  title={t("line.button.remove", { field: branch })}
-                  onClick={() => onFieldRemove(branch)}
-                >
-                  X
-                </button>
-              </div>
-            ) : (
-              <div>
-                <a onClick={close}>🔽</a>
-
-                {description}
-
-                <button
-                  title={t("line.button.remove", { field: branch })}
-                  onClick={() => onFieldRemove(branch)}
-                >
-                  X
-                </button>
-
-                <InputArray
-                  {...{
-                    schema,
-                    entry,
-                    onFieldChange,
-                  }}
-                />
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    );
-
-  case "object":
-    return (
-      <div>
-        {!isOpen ? (
-          <div>
-            <a onClick={open}>▶️</a>
-
-            {description}
-
-            <button
-              title={t("line.button.remove", { field: branch })}
-              onClick={() => onFieldRemove(branch)}
-            >
-                  X
-            </button>
-          </div>
-        ) : (
-          <div>
-            <a onClick={close}>🔽</a>
-
-            {description}
-
-            <button
-              title={t("line.button.remove", { field: branch })}
-              onClick={() => onFieldRemove(branch)}
-            >
-                  X
-            </button>
-
-            <InputObject
+    case 'array':
+      return (
+        <div>
+          {schema[branch].trunk === undefined ? (
+            <InputArray
               {...{
                 schema,
                 entry,
                 onFieldChange,
               }}
             />
-          </div>
-        )}
-      </div>
-    );
+          ) : (
+            <div>
+              {!isOpen ? (
+                <div>
+                  <a onClick={open}>▶️</a>
 
-  default:
-    switch (branchTask) {
-    case "text":
+                  {description}
+
+                  <button
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <a onClick={close}>🔽</a>
+
+                  {description}
+
+                  <button
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+
+                  <InputArray
+                    {...{
+                      schema,
+                      entry,
+                      onFieldChange,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      );
+
+    case 'object':
       return (
         <div>
           {!isOpen ? (
@@ -179,10 +136,10 @@ export default function EditInput({
               {description}
 
               <button
-                title={t("line.button.remove", { field: branch })}
+                title={t('line.button.remove', { field: branch })}
                 onClick={() => onFieldRemove(branch)}
               >
-                  X
+                X
               </button>
             </div>
           ) : (
@@ -192,16 +149,16 @@ export default function EditInput({
               {description}
 
               <button
-                title={t("line.button.remove", { field: branch })}
+                title={t('line.button.remove', { field: branch })}
                 onClick={() => onFieldRemove(branch)}
               >
-                  X
+                X
               </button>
 
-              <InputTextarea
+              <InputObject
                 {...{
-                  branch,
-                  value,
+                  schema,
+                  entry,
                   onFieldChange,
                 }}
               />
@@ -210,74 +167,116 @@ export default function EditInput({
         </div>
       );
 
-    case "path":
-      return (
-        <div>
-          {description}
-
-          <button
-            title={t("line.button.remove", { field: branch })}
-            onClick={() => onFieldRemove(branch)}
-          >
-          X
-          </button>
-
-          <InputUpload
-            {...{
-              branch,
-              value,
-              onFieldChange,
-              onFieldUpload,
-              onFieldUploadElectron,
-            }}
-          />
-        </div>
-      );
-
-    case "date":
-      return (
-        <div>
-          {description}
-
-          <button
-            title={t("line.button.remove", { field: branch })}
-            onClick={() => onFieldRemove(branch)}
-          >
-          X
-          </button>
-
-          <InputDate
-            {...{
-              branch,
-              value,
-              onFieldChange,
-            }}
-          />
-        </div>
-      );
-
-
     default:
-      return (
-        <div>
-          {description}
+      switch (branchTask) {
+        case 'text':
+          return (
+            <div>
+              {!isOpen ? (
+                <div>
+                  <a onClick={open}>▶️</a>
 
-          <button
-            title={t("line.button.remove", { field: branch })}
-            onClick={() => onFieldRemove(branch)}
-          >
-          X
-          </button>
+                  {description}
 
-          <InputText
-            {...{
-              branch,
-              value,
-              onFieldChange,
-            }}
-          />
-        </div>
-      );
-    }
+                  <button
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <a onClick={close}>🔽</a>
+
+                  {description}
+
+                  <button
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+
+                  <InputTextarea
+                    {...{
+                      branch,
+                      value,
+                      onFieldChange,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          );
+
+        case 'path':
+          return (
+            <div>
+              {description}
+
+              <button
+                title={t('line.button.remove', { field: branch })}
+                onClick={() => onFieldRemove(branch)}
+              >
+                X
+              </button>
+
+              <InputUpload
+                {...{
+                  branch,
+                  value,
+                  onFieldChange,
+                  onFieldUpload,
+                  onFieldUploadElectron,
+                }}
+              />
+            </div>
+          );
+
+        case 'date':
+          return (
+            <div>
+              {description}
+
+              <button
+                title={t('line.button.remove', { field: branch })}
+                onClick={() => onFieldRemove(branch)}
+              >
+                X
+              </button>
+
+              <InputDate
+                {...{
+                  branch,
+                  value,
+                  onFieldChange,
+                }}
+              />
+            </div>
+          );
+
+        default:
+          return (
+            <div>
+              {description}
+
+              <button
+                title={t('line.button.remove', { field: branch })}
+                onClick={() => onFieldRemove(branch)}
+              >
+                X
+              </button>
+
+              <InputText
+                {...{
+                  branch,
+                  value,
+                  onFieldChange,
+                }}
+              />
+            </div>
+          );
+      }
   }
 }

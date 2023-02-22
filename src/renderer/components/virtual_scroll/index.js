@@ -1,1 +1,1 @@
-export { default } from "./virtual_scroll.jsx";
+export { VirtualScroll } from './virtual_scroll.jsx';

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useStore } from "@/store";
-import { setupVars, load } from "./overview_graph_controller.js";
-import { GraphSvg, GraphTextInput, GraphRangeInput } from "./components";
-import styles from "./overview_graph.module.css";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useStore } from '@/store';
+import { setupVars, load } from './overview_graph_controller.js';
+import { GraphSvg, GraphTextInput, GraphRangeInput } from './components';
+import styles from './overview_graph.module.css';
 
-export default function OverviewGraph() {
+export function OverviewGraph() {
   const navigate = useNavigate();
 
   const [depth, setDepth] = useState(4);
@@ -15,9 +15,9 @@ export default function OverviewGraph() {
   const [html, setHTML] = useState(undefined);
 
   const [
-    repoRoute
+    repoRoute,
   ] = useStore((state) => [
-    state.repoRoute
+    state.repoRoute,
   ]);
 
   async function onSetDepth(_depth) {

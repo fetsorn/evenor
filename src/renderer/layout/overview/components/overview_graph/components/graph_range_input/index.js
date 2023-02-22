@@ -1,1 +1,1 @@
-export { default } from "./graph_range_input.jsx";
+export { GraphRangeInput } from './graph_range_input.jsx';

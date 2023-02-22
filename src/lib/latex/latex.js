@@ -1,4 +1,4 @@
-import * as latex from "./pdf_tex_engine.js";
+import * as latex from './pdf_tex_engine.js';
 
 export async function exportPDF(textext) {
   const globalEn = new latex.PdfTeXEngine();
@@ -6,21 +6,21 @@ export async function exportPDF(textext) {
   await globalEn.loadEngine();
 
   if (!globalEn.isReady()) {
-    console.log("Engine not ready yet");
+    console.log('Engine not ready yet');
 
-    return;
+    return undefined;
   }
 
-  globalEn.writeMemFSFile("main.tex", textext);
+  globalEn.writeMemFSFile('main.tex', textext);
 
-  globalEn.setEngineMainFile("main.tex");
+  globalEn.setEngineMainFile('main.tex');
 
   const r = await globalEn.compileLaTeX();
 
   console.log(r);
 
   if (r.status === 0) {
-    const pdfblob = new Blob([r.pdf], { type: "application/pdf" });
+    const pdfblob = new Blob([r.pdf], { type: 'application/pdf' });
 
     const objectURL = URL.createObjectURL(pdfblob);
 
@@ -32,6 +32,8 @@ export async function exportPDF(textext) {
 
     return objectURL;
   }
+
+  return undefined;
 }
 
 export function generateLatex(data) {

@@ -1,9 +1,9 @@
-import git from "isomorphic-git";
-import http from "isomorphic-git/http/web/index.cjs";
-import LightningFS from "@isomorphic-git/lightning-fs";
-import { CSVS } from "@fetsorn/csvs-js";
-import { deepClone } from "./curse_controller.js";
-import QueryWorker from "./query_worker.js";
+import git from 'isomorphic-git';
+import http from 'isomorphic-git/http/web/index.cjs';
+import LightningFS from '@isomorphic-git/lightning-fs';
+import { CSVS } from '@fetsorn/csvs-js';
+import { deepClone } from './curse_controller.js';
+import { QueryWorker } from './query_worker.js';
 
 const fs = new LightningFS('fs');
 
@@ -16,37 +16,37 @@ export class BrowserAPI {
 
   async readFile(filepath) {
     // check if path exists in the repo
-    const path_elements = this.dir.replace(/^\//, "").split("/").concat(filepath.split("/"));
-    // console.log("readFile: path_elements, path", path_elements, path);
+    const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
+    // console.log("readFile: pathElements, path", pathElements, path);
 
-    let root = "";
+    let root = '';
 
     const pfs = fs.promises;
 
-    for (let i = 0; i < path_elements.length; i++) {
-      const path_element = path_elements[i];
+    for (let i = 0; i < pathElements.length; i += 1) {
+      const pathElement = pathElements[i];
 
-      root += "/";
+      root += '/';
 
       const files = await pfs.readdir(root);
 
       // console.log("readFile: files", root, files);
-      if (files.includes(path_element)) {
-        root += path_element;
+      if (files.includes(pathElement)) {
+        root += pathElement;
 
-      // console.log(`readFile: ${root} has ${path_element}`);
+      // console.log(`readFile: ${root} has ${pathElement}`);
       } else {
       // console.log(
-      //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
+      //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
       // );
         return undefined;
       // throw Error(
-      //   `Cannot load file. Ensure there is a file called ${path_element} in ${root}.`
+      //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
       // );
       }
     }
 
-    const file = await pfs.readFile(this.dir + "/" + filepath);
+    const file = await pfs.readFile(`${this.dir}/${filepath}`);
 
     const restext = new TextDecoder().decode(file);
 
@@ -55,51 +55,51 @@ export class BrowserAPI {
 
   async writeFile(
     filepath,
-    content
+    content,
   ) {
   // if path doesn't exist, create it
   // split path into array of directory names
-    const path_elements = this.dir.replace(/^\//, "").split("/").concat(filepath.split("/"));
+    const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
 
     // console.log('writeFileBrowser', dir, path, content);
 
     // remove file name
-    path_elements.pop();
+    pathElements.pop();
 
-    let root = "";
+    let root = '';
 
     const pfs = fs.promises;
 
-    for (let i = 0; i < path_elements.length; i++) {
-      const path_element = path_elements[i];
-      // console.log('writeFileBrowser-path', path_element)
+    for (let i = 0; i < pathElements.length; i += 1) {
+      const pathElement = pathElements[i];
+      // console.log('writeFileBrowser-path', pathElement)
 
-      root += "/";
+      root += '/';
 
       const files = await pfs.readdir(root);
 
       // console.log(files)
 
-      if (!files.includes(path_element)) {
-      // console.log(`writeFileBrowser creating directory ${path_element} in ${root}`)
+      if (!files.includes(pathElement)) {
+      // console.log(`writeFileBrowser creating directory ${pathElement} in ${root}`)
 
-        await pfs.mkdir(root + "/" + path_element);
+        await pfs.mkdir(`${root}/${pathElement}`);
       } else {
-      // console.log(`writeFileBrowser ${root} has ${path_element}`)
+      // console.log(`writeFileBrowser ${root} has ${pathElement}`)
       }
 
-      root += path_element;
+      root += pathElement;
     }
 
-    await pfs.writeFile(this.dir + "/" + filepath, content, "utf8");
+    await pfs.writeFile(`${this.dir}/${filepath}`, content, 'utf8');
   }
 
   async uploadFile(file) {
-    const pfs = new LightningFS("fs").promises;
+    const pfs = new LightningFS('fs').promises;
 
-    const root = "/";
+    const root = '/';
 
-    const rootFiles = await pfs.readdir("/");
+    const rootFiles = await pfs.readdir('/');
 
     const repoDir = root + this.dir;
 
@@ -109,9 +109,9 @@ export class BrowserAPI {
 
     const repoFiles = await pfs.readdir(repoDir);
 
-    const local = "local";
+    const local = 'local';
 
-    const localDir = repoDir + "/" + local;
+    const localDir = `${repoDir}/${local}`;
 
     if (!repoFiles.includes(local)) {
       await pfs.mkdir(localDir);
@@ -121,14 +121,13 @@ export class BrowserAPI {
 
     const filename = file.name;
 
-    const filepath = localDir + "/" + filename;
+    const filepath = `${localDir}/${filename}`;
 
     if (!localFiles.includes(filename)) {
       const buf = await file.arrayBuffer();
 
       await pfs.writeFile(filepath, buf);
     }
-
   }
 
   async select(searchParams) {
@@ -154,28 +153,24 @@ export class BrowserAPI {
   async updateEntry(entry, overview) {
     const entryNew = await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) =>
-        this.writeFile(filepath, content),
+      writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).update(deepClone(entry));
 
     if (overview.find((e) => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {
         if (e.UUID === entryNew.UUID) {
           return entryNew;
-        } else {
-          return e;
         }
+        return e;
       });
-    } else {
-      return overview.concat([entryNew]);
     }
+    return overview.concat([entryNew]);
   }
 
   async deleteEntry(entry, overview) {
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) =>
-        this.writeFile(filepath, content),
+      writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).delete(deepClone(entry));
 
     return overview.filter((e) => e.UUID !== entry.UUID);
@@ -194,14 +189,14 @@ export class BrowserAPI {
     if (token) {
       options.onAuth = () => ({
         username: token,
-      })
+      });
     }
 
     await git.clone(options);
   }
 
   async commit() {
-    const dir = this.dir;
+    const { dir } = this;
 
     const message = [];
 
@@ -223,14 +218,14 @@ export class BrowserAPI {
           filepath: filePath,
         });
 
-        [filePath, HEADStatus, workingDirStatus, stageStatus] =
-        await git.statusMatrix({
+        [filePath, HEADStatus, workingDirStatus, stageStatus] = await git.statusMatrix({
           fs,
           dir,
           filepaths: [filePath],
         });
 
         if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
+          // eslint-disable-next-line
           continue;
         }
       }
@@ -239,7 +234,7 @@ export class BrowserAPI {
         let status;
 
         if (workingDirStatus === 0) {
-          status = "deleted";
+          status = 'deleted';
 
           await git.remove({
             fs,
@@ -254,9 +249,9 @@ export class BrowserAPI {
           });
 
           if (HEADStatus === 1) {
-            status = "modified";
+            status = 'modified';
           } else {
-            status = "added";
+            status = 'added';
           }
         }
 
@@ -267,11 +262,11 @@ export class BrowserAPI {
     if (message.length !== 0) {
       // console.log("commit:", message.toString());
       await git.commit({
-        fs: fs,
+        fs,
         dir,
         author: {
-          name: "name",
-          email: "name@mail.com",
+          name: 'name',
+          email: 'name@mail.com',
         },
         message: message.toString(),
       });
@@ -284,7 +279,7 @@ export class BrowserAPI {
       http,
       force: true,
       dir: this.dir,
-      remote: "upstream",
+      remote: 'upstream',
       onAuth: () => ({
         username: token,
       }),
@@ -298,7 +293,7 @@ export class BrowserAPI {
       fs,
       http,
       dir: this.dir,
-      remote: "upstream",
+      remote: 'upstream',
       onAuth: () => ({
         username: token,
       }),
@@ -312,29 +307,29 @@ export class BrowserAPI {
       remote: 'upstream',
       url,
       force: true,
-    })
+    });
   }
 
   async ensure(schema) {
-    const dir = this.dir;
+    const { dir } = this;
 
-    const name = dir.replace(/^\/store\//, "");
+    const name = dir.replace(/^\/store\//, '');
 
     const pfs = fs.promises;
 
-    if (!(await pfs.readdir("/")).includes("store")) {
-      await pfs.mkdir("/store");
+    if (!(await pfs.readdir('/')).includes('store')) {
+      await pfs.mkdir('/store');
     }
 
-    const repoDir = "/store/" + name;
+    const repoDir = `/store/${name}`;
 
-    if (!(await pfs.readdir("/store")).includes(name)) {
+    if (!(await pfs.readdir('/store')).includes(name)) {
       await pfs.mkdir(repoDir);
 
-      await git.init({ fs: fs, dir: repoDir });
+      await git.init({ fs, dir: repoDir });
     }
 
-    await pfs.writeFile(repoDir + "/metadir.json", schema, "utf8");
+    await pfs.writeFile(`${repoDir}/metadir.json`, schema, 'utf8');
 
     await this.commit();
   }
@@ -342,8 +337,8 @@ export class BrowserAPI {
   async symlink(reponame) {
     const pfs = fs.promises;
 
-    if (!(await pfs.readdir("/")).includes("repos")) {
-      await pfs.mkdir("/repos");
+    if (!(await pfs.readdir('/')).includes('repos')) {
+      await pfs.mkdir('/repos');
     }
 
     await pfs.symlink(`/store/${this.dir}`, `/repos/${reponame}`);
@@ -361,13 +356,13 @@ export class BrowserAPI {
     }
 
     for (const file of files) {
-      const filepath = rimrafpath + "/" + file;
+      const filepath = `${rimrafpath}/${file}`;
 
       const { type } = await pfs.stat(filepath);
 
-      if (type === "file") {
+      if (type === 'file') {
         await pfs.unlink(filepath);
-      } else if (type === "dir") {
+      } else if (type === 'dir') {
         await this.rimraf(filepath);
       }
     }
@@ -386,14 +381,14 @@ export class BrowserAPI {
       throw Error(`can't read ${lspath} to list it`);
     }
 
-    console.log("list ", lspath, ":", files);
+    console.log('list ', lspath, ':', files);
 
     for (const file of files) {
-      const filepath = lspath + "/" + file;
+      const filepath = `${lspath}/${file}`;
 
       const { type } = await pfs.stat(filepath);
 
-      if (type === "dir") {
+      if (type === 'dir') {
         await this.ls(filepath);
       }
     }

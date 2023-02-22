@@ -1,1 +1,1 @@
-export { default } from "./overview_gallery.jsx";
+export { OverviewGallery } from './overview_gallery.jsx';

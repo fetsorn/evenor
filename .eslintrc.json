@@ -17,6 +17,14 @@
     "plugins": [
         "react"
     ],
+    "parser": "@babel/eslint-parser",
     "rules": {
+      "import/extensions": ["error", "ignorePackages"],
+      "import/prefer-default-export": "off",
+      "import/no-default-export": "error",
+      "no-console": "off",
+      "no-await-in-loop": "off",
+      "import/no-cycle": "off",
+      "no-restricted-syntax": "off"
     }
 }

@@ -1,1 +1,1 @@
-export { default } from "./graph_text_input.jsx";
+export { GraphTextInput } from './graph_text_input.jsx';

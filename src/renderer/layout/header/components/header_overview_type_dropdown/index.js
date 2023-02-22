@@ -1,1 +1,1 @@
-export { default } from "./header_overview_type_dropdown.jsx";
+export { HeaderOverviewTypeDropdown } from './header_overview_type_dropdown.jsx';

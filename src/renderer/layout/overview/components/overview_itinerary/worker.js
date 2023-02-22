@@ -1,8 +1,8 @@
-function _buildLine(data, branch) {
+function groupArray(data, branch) {
   // [event1, event, event3]
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
-  const object_of_arrays = data.reduce((acc, entry) => {
+  const objectOfArrays = data.reduce((acc, entry) => {
     const value = entry[branch];
 
     acc[value] = acc[value] || [];
@@ -12,18 +12,16 @@ function _buildLine(data, branch) {
     return acc;
   }, {});
 
-  // console.log(object_of_arrays);
+  // console.log(objectOfArrays);
 
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
-  const array_of_objects = Object.keys(object_of_arrays)
+  const arrayOfObjects = Object.keys(objectOfArrays)
     .sort()
-    .map((key) => {
-      return { date: key, events: object_of_arrays[key] };
-    });
+    .map((key) => ({ date: key, events: objectOfArrays[key] }));
 
-  // console.log(array_of_objects);
+  // console.log(arrayOfObjects);
 
-  return array_of_objects;
+  return arrayOfObjects;
 }
 
 async function buildLine(message) {
@@ -33,9 +31,9 @@ async function buildLine(message) {
     let result;
 
     try {
-      result = _buildLine(message.data.data, message.data.branch);
+      result = groupArray(message.data.data, message.data.branch);
     } catch (e) {
-      console.log("buildLine fails", e);
+      console.log('buildLine fails', e);
 
       result = [];
     }
@@ -53,7 +51,7 @@ async function buildLine(message) {
 onmessage = async (message) => {
   // console.log("query worker received message", message)
 
-  if (message.data.action === "build") {
+  if (message.data.action === 'build') {
     await buildLine(message);
   }
 };

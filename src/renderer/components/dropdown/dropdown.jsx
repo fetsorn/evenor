@@ -1,8 +1,8 @@
-import React, { useState } from "react";
-import cn from "classnames";
-import styles from "./dropdown.module.css";
+import React, { useState } from 'react';
+import cn from 'classnames';
+import styles from './dropdown.module.css';
 
-export default function DropdownMenu({
+export function Dropdown({
   label,
   title,
   menuItems,

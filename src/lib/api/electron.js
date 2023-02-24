@@ -74,8 +74,12 @@ export class ElectronAPI {
       const files = await fs.promises.readdir(path.join(appdata, root));
 
       if (!files.includes(pathElement)) {
-        // console.log(`creating directory ${pathElement} in ${root}`)
-        await fs.promises.mkdir(path.join(appdata, root, pathElement));
+        // console.log(`creating directory ${pathElement} in ${root}`);
+        try {
+          await fs.promises.mkdir(path.join(appdata, root, pathElement));
+        } catch {
+          // do nothing
+        }
       } else {
         // console.log(`${root} has ${pathElement}`)
       }
@@ -342,7 +346,9 @@ export class ElectronAPI {
   }
 
   async ensure(schema, name) {
-    await this.tbn1(schema);
+    if (schema) {
+      await this.tbn1(schema);
+    }
 
     if (name) {
       await this.symlink(name);
@@ -372,6 +378,8 @@ export class ElectronAPI {
 
     await fs.promises.writeFile(`${dir}/metadir.json`, schema, 'utf8');
 
+    // TODO: write default schema with freshly generated uuids
+
     await this.commit();
   }
 
@@ -384,7 +392,11 @@ export class ElectronAPI {
       await fs.promises.mkdir(repos);
     }
 
-    await fs.promises.unlink(`${repos}/${name}`);
+    try {
+      await fs.promises.unlink(`${repos}/${name}`);
+    } catch {
+      // do nothing
+    }
 
     await fs.promises.symlink(this.dir, `${repos}/${name}`);
   }

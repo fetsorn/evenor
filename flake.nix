@@ -63,7 +63,7 @@
             "win32-x64" = pkgs.fetchurl {
               url =
                 "https://github.com/electron/electron/releases/download/v23.1.0/electron-v23.1.0-win32-x64.zip";
-              sha256 = "sha256-axPrK77E4PA9UdZjEqCEtsNttWiq/ZGjo/L0mR0dwXU=";
+              sha256 = "sha256-UnbuaHBFnxbuhGk3Uwamp8A+Rp9ZyETmAQZWvGQo8OY=";
             };
             "win32-ia32" = pkgs.fetchurl {
               url =

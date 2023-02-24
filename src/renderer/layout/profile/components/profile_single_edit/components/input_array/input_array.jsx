@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { digestMessage, randomUUIDPolyfill } from '@fetsorn/csvs-js';
+import { digestMessage, randomUUID } from '@fetsorn/csvs-js';
 import { API, deepClone } from 'lib/api';
 import { useStore } from '@/store/index.js';
 import { EditInput, InputDropdown } from '..';
@@ -20,7 +20,7 @@ async function addField(
 
     obj['|'] = branch;
 
-    const uuid = crypto.randomUUID ? crypto.randomUUID() : randomUUIDPolyfill();
+    const uuid = await randomUUID();
 
     obj.UUID = await digestMessage(uuid);
 
@@ -73,7 +73,7 @@ export function InputArray({
   const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch);
 
   const items = entry.items
-    ? entry.items.sort((a, b) => a.UUID.localeCompare(b.UUID))
+    ? entry.items.sort((a, b) => a.UUID?.localeCompare(b.UUID))
     : [];
 
   async function onFieldAddArrayItem(itemBranch) {
@@ -128,7 +128,7 @@ export function InputArray({
           itemsNew.push(itemValue);
 
           // sort so that the order of objects remains the same after push
-          itemsNew.sort((a, b) => a.UUID.localeCompare(b.UUID));
+          itemsNew.sort((a, b) => a.UUID?.localeCompare(b.UUID));
 
           const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };
 
@@ -144,10 +144,10 @@ export function InputArray({
         }
 
         return (
-          <div key={entry.UUID + item.UUID}>
+          <div key={`${entry.UUID ?? ''}${item.UUID}`}>
             <EditInput
               {...{
-                index: entry.UUID + item.UUID,
+                index: `${entry.UUID ?? ''}${item.UUID}`,
                 schema,
                 entry: item,
                 onFieldChange: onFieldChangeArrayItem,

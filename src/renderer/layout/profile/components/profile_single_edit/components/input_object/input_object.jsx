@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { digestMessage, randomUUIDPolyfill } from '@fetsorn/csvs-js';
+import { digestMessage, randomUUID } from '@fetsorn/csvs-js';
 import { API, deepClone } from 'lib/api';
 import { useStore } from '@/store/index.js';
 import { EditInput, InputDropdown } from '..';
@@ -20,7 +20,7 @@ async function addField(
 
     obj['|'] = branch;
 
-    const uuid = crypto.randomUUID ? crypto.randomUUID() : randomUUIDPolyfill();
+    const uuid = await randomUUID();
 
     obj.UUID = await digestMessage(uuid);
 
@@ -115,10 +115,10 @@ export function InputObject({
       : { '|': leaf, [leaf]: entry[leaf] };
 
     return (
-      <div key={entry.UUID + leaf}>
+      <div key={`${entry.UUID ?? ''}${leaf}`}>
         <EditInput
           {...{
-            index: entry.UUID + leaf,
+            index: `${entry.UUID ?? ''}${leaf}`,
             schema,
             entry: leafEntry,
             onFieldChange: onFieldChangeObjectField,

@@ -105,7 +105,7 @@ export function ViewField({ entry }) {
                   : { '|': leaf, [leaf]: entry[leaf] };
 
                 return (
-                  <div key={entry.UUID + leaf}>
+                  <div key={(entry.UUID ?? '') + leaf}>
                     <ViewField entry={leafEntry} />
                   </div>
                 );

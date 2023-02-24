@@ -1,16 +1,16 @@
-import React, { useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import cn from "classnames";
+import React from 'react';
+import { useTranslation } from 'react-i18next';
+import cn from 'classnames';
 import {
   AssetView,
   Button,
   Title,
-} from "@/components";
-import { useStore } from "@/store";
+} from '@/components/index.js';
+import { useStore } from '@/store/index.js';
 import {
   ViewField,
-} from "./components";
-import styles from "./profile_single_view.module.css";
+} from './components/index.js';
+import styles from './profile_single_view.module.css';
 
 // TODO: replace with Day.js
 function isDate(title) {
@@ -19,7 +19,7 @@ function isDate(title) {
 
 // TODO: replace with Day.js
 function formatDate(title) {
-  return isDate(title) ? title : title
+  return isDate(title) ? title : title;
 }
 
 export function ProfileSingleView() {
@@ -41,7 +41,7 @@ export function ProfileSingleView() {
     state.onEntryEdit,
     state.onEntryClose,
     state.onEntryDelete,
-  ])
+  ]);
 
   const title = formatDate(group);
 
@@ -53,31 +53,34 @@ export function ProfileSingleView() {
         <div className={styles.container}>
           <div id="scrollcontainer" className={styles.sticky}>
             <Title>
-              {title} {index}
+              {title}
+              {' '}
+              {index}
             </Title>
 
             <div className={styles.buttonbar}>
-              <Button type="button" title={t("line.button.edit")} onClick={onEntryEdit}>
+              <Button type="button" title={t('line.button.edit')} onClick={onEntryEdit}>
                 ✏️
               </Button>
 
-              <Button type="button" title={t("line.button.delete")} onClick={onEntryDelete}>
+              <Button type="button" title={t('line.button.delete')} onClick={onEntryDelete}>
                 🗑️
               </Button>
 
-              <Button type="button" title={t("line.button.close")} onClick={onEntryClose}>
+              <Button type="button" title={t('line.button.close')} onClick={onEntryClose}>
                 X
               </Button>
             </div>
 
             <div>
-              {addedBranches.map((branch, index) => (
-                <div key={index}>
+              {addedBranches.map((branch) => (
+                <div key={`view${branch}`}>
                   <ViewField entry={
                     schema[branch]?.type === 'array' || schema[branch]?.type === 'object'
                       ? entry[branch]
-                      : {'|': branch, [branch]: entry[branch]}
-                  }/>
+                      : { '|': branch, [branch]: entry[branch] }
+                  }
+                  />
                 </div>
               ))}
             </div>

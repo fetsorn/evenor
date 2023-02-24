@@ -227,6 +227,8 @@ export class BrowserAPI {
   }
 
   async tbn2(remote, token) {
+    console.log('tbn2', remote, token);
+
     const options = {
       fs,
       http,
@@ -409,6 +411,8 @@ export class BrowserAPI {
     }
 
     await pfs.writeFile(`${repoDir}/metadir.json`, schema, 'utf8');
+
+    // TODO: write default schema with freshly generated uuids
 
     await this.commit();
   }

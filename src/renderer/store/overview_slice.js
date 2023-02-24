@@ -124,7 +124,6 @@ export const createOverviewSlice = (set, get) => ({
       if (__BUILD_MODE__ !== 'server') {
         const apiRoot = new API('root');
 
-        console.log(apiRoot);
         await apiRoot.ensure(manifestRoot);
       }
     } else {

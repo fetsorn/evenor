@@ -30,6 +30,8 @@ export function ProfileSingleView() {
     schema,
     group,
     index,
+    repoUUID,
+    setRepoName,
     onEntryEdit,
     onEntryClose,
     onEntryDelete,
@@ -38,6 +40,8 @@ export function ProfileSingleView() {
     state.schema,
     state.group,
     state.index,
+    state.repoUUID,
+    state.setRepoName,
     state.onEntryEdit,
     state.onEntryClose,
     state.onEntryDelete,
@@ -71,6 +75,10 @@ export function ProfileSingleView() {
                 X
               </Button>
             </div>
+
+            {repoUUID === 'root' && (
+              <a onClick={() => setRepoName(entry.reponame)}>{entry.reponame}</a>
+            )}
 
             <div>
               {addedBranches.map((branch) => (

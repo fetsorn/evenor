@@ -115,8 +115,6 @@
             extraBuildInputs = [ pkgs.zip ];
             # DEBUG = "*"; 
             preConfigure = ''
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
               substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform darwin --targets @electron-forge/maker-zip"
             '';
             buildPhase = ''

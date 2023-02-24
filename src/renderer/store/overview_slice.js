@@ -215,4 +215,22 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoUUID: (repoUUID) => set({ repoUUID, queries: {}, entry: undefined }),
+
+  setRepoName: async (repoName) => {
+    const api = new API('root');
+
+    const searchParams = new URLSearchParams();
+
+    searchParams.set('|', 'reponame');
+
+    searchParams.set('reponame', repoName);
+
+    const [entry] = await api.select(searchParams);
+
+    const repoUUID = entry.UUID;
+
+    set({
+      repoName, repoUUID, queries: {}, entry: undefined,
+    });
+  },
 });

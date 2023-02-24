@@ -58,12 +58,6 @@ export default (env) => ({
           from: '**/*.wasm',
           to: '[name][ext]',
         },
-        // { context: "node_modules/@ffmpeg/",  from: "**/*.wasm", to: "static/js/[name][ext]" },
-        // {
-        //   context: "node_modules/@hpcc-js/",
-        //   from: "**.wasm",
-        //   to: "[name][ext]",
-        // },
         { context: 'public/js/', from: '**', to: '[name][ext]' },
       ],
     }),

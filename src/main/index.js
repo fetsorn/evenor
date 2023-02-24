@@ -1,9 +1,9 @@
 import path from 'path';
 import url from 'url';
-// import { app, BrowserWindow, shell, ipcMain } from "electron";
-import { app, BrowserWindow, ipcMain } from 'electron';
+import {
+  app, BrowserWindow, ipcMain, shell,
+} from 'electron';
 import { ElectronAPI as API } from 'lib/api/electron.js';
-import { MenuBuilder } from './menu.js';
 
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
@@ -11,8 +11,8 @@ let mainWindow = null;
 
 const createWindow = async () => {
   const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, 'assets')
-    : path.join(__dirname, '../../assets');
+    ? path.join(process.resourcesPath, 'app/.webpack/renderer/public')
+    : path.join(dirname, '../../.webpack/renderer/public');
 
   const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
 
@@ -23,21 +23,18 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       // eslint-disable-next-line
-      preload: path.resolve(dirname, 'preload.js'),
+      preload: getAssetPath("preload.js"),
       contextIsolation: true,
     },
   });
-  // preload: path.join(__dirname, "../../.webpack/renderer/main_window/preload.js"),
-  // sandbox: false,
-  // webSecurity: false,
 
   // eslint-disable-next-line
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
   // mainWindow.loadURL("https://example.com");
 
-  // mainWindow.webContents.once('dom-ready', () => {
-  //   mainWindow.webContents.openDevTools();
-  // });
+  mainWindow.webContents.once('dom-ready', () => {
+    mainWindow.webContents.openDevTools();
+  });
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -54,14 +51,11 @@ const createWindow = async () => {
     mainWindow = null;
   });
 
-  const menuBuilder = new MenuBuilder(mainWindow);
-  menuBuilder.buildMenu();
-
-//   // Open urls in the user's browser
-//   mainWindow.webContents.setWindowOpenHandler((edata) => {
-//     shell.openExternal(edata.url);
-//     return { action: "deny" };
-//   });
+  // Open urls in the user's browser
+  mainWindow.webContents.setWindowOpenHandler((edata) => {
+    shell.openExternal(edata.url);
+    return { action: 'deny' };
+  });
 };
 
 /**

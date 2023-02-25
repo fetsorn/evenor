@@ -32,9 +32,14 @@ export function FilterSearchBar() {
 
   const api = new API(repoUUID);
 
-  const notAddedQueries = Object.keys(schema).filter(
-    (branch) => schema[branch].trunk === base
-                && !Object.prototype.hasOwnProperty.call(queries, branch),
+  function isConnected(leaf) {
+    const { trunk } = schema[leaf];
+
+    return trunk !== undefined && (trunk === base || isConnected(trunk));
+  }
+
+  const queriesToAdd = Object.keys(schema).filter(
+    (branch) => branch === base || isConnected(branch),
   ).map(
     (branch) => {
       const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
@@ -48,16 +53,16 @@ export function FilterSearchBar() {
 
   async function onQueryFieldChange() {
     if (isInitialized) {
-      // const optionsNew = await api.queryOptions(queryField);
+      const optionsNew = await api.queryOptions(queryField);
 
-      // const optionValues = optionsNew.map((entry) => entry[queryField]);
+      const optionValues = optionsNew.map((entry) => entry[queryField]);
 
-      // setOptions(optionValues);
+      setOptions(optionValues);
     }
   }
 
   useEffect(() => {
-    setQueryField(notAddedQueries?.[0]?.branch);
+    setQueryField(queriesToAdd?.[0]?.branch);
 
     setQueryValue('');
   }, [schema, queries]);
@@ -78,8 +83,8 @@ export function FilterSearchBar() {
           setOptions([]);
         }}
       >
-        {notAddedQueries.map((query, idx) => (
-          <option key={idx} value={query.branch}>
+        {queriesToAdd.map((query) => (
+          <option key={`filteroption-${query ?? Math.random()}`} value={query.branch}>
             {query.label}
           </option>
         ))}

@@ -1,6 +1,14 @@
-import * as React from 'react';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import { Root } from './layout/index.js';
+import 'normalize.css';
+import './index.css';
+import './i18n/config.js';
 
-export function App() {
-  return <Root />;
+const container = document.getElementById('root');
+
+if (container) {
+  const root = createRoot(container);
+
+  root.render(<Root />);
 }

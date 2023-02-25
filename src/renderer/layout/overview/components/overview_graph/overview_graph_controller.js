@@ -1,5 +1,3 @@
-import { Graphviz } from '@hpcc-js/wasm';
-import { ged2dot, ged2dot_ } from '@fetsorn/ged2dot';
 import { API } from 'lib/api';
 
 export function setupVars(navigate, setFamily) {
@@ -29,11 +27,15 @@ async function renderGed(
   // when passed familyID is undefined or non-existing
   let dot;
 
+  const { ged2dot, ged2dot_ } = await import('@fetsorn/ged2dot');
+
   if (familyID) {
     dot = ged2dot(index, depth, familyID);
   } else {
     dot = ged2dot_(index);
   }
+
+  const { Graphviz } = await import('@hpcc-js/wasm');
 
   const graphviz = await Graphviz.load();
 

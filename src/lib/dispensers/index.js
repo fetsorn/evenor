@@ -1,1 +1,3 @@
-export { Dispenser } from './dispenser.jsx';
+import { Dispenser } from './dispenser.jsx';
+
+export default Dispenser;

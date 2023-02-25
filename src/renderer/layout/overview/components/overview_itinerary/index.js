@@ -1,1 +1,3 @@
-export { OverviewItinerary } from './overview_itinerary.jsx';
+import { OverviewItinerary } from './overview_itinerary.jsx';
+
+export default OverviewItinerary;

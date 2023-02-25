@@ -1,4 +1,3 @@
-import { digestMessage, randomUUID } from '@fetsorn/csvs-js';
 import {
   API, generateDefaultSchemaEntry, schemaToEntry, entryToSchema,
 } from 'lib/api';
@@ -6,6 +5,8 @@ import {
 // TODO: set default values for required fields
 async function createEntry(schema, base) {
   const entry = {};
+
+  const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
 
   const uuid = await randomUUID();
 

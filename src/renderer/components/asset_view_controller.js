@@ -1,18 +1,6 @@
 // import mammoth from "mammoth";
-import {
-  // docx,
-  pptx,
-  // xlsx,
-  // drawml
-} from 'docx4js';
 // import WordExtractor from "word-extractor";
-import { RTFJS } from 'rtf.js';
-import cfb from 'cfb';
-import PPT from '@fetsorn/ppt';
-import git from 'isomorphic-git';
 // import { createFFmpeg, fetchFile } from '@ffmpeg/ffmpeg'
-import mime from 'mime';
-import http from 'isomorphic-git/http/web/index.cjs';
 
 // returns Blob
 export async function fetchAsset(repoRoute, path) {
@@ -35,6 +23,8 @@ export async function fetchAsset(repoRoute, path) {
   } else if (__BUILD_MODE__ === 'electron') {
     try {
       const result = await window.electron.fetchAsset(repoRoute, path);
+
+      const mime = await import('mime');
 
       const mimetype = mime.getType(path);
 
@@ -73,6 +63,8 @@ export async function fetchAsset(repoRoute, path) {
     }
 
     const restext = await window.pfs.readFile(`/${repoRoute}/${path}`);
+
+    const mime = await import('mime');
 
     const mimetype = mime.getType(path);
 
@@ -129,6 +121,8 @@ export async function resolveLFS(
 
   let lfsInfoBody;
 
+  const http = await import('isomorphic-git/http/web/index.cjs');
+
   if (token !== '') {
     const { body } = await http.request({
       url: `${remote}/info/lfs/objects/batch`,
@@ -176,6 +170,8 @@ export async function resolveLFS(
 
   const lfsObjectBuffer = await bodyToBuffer(lfsObjectBody);
 
+  const mime = await import('mime');
+
   const mimetype = mime.getType(filename);
 
   const blob = new Blob([lfsObjectBuffer], { type: mimetype });
@@ -198,6 +194,8 @@ export async function getRemote(repo) {
       throw Error('Could not create git repo');
     }
   } else {
+    const git = await import('isomorphic-git');
+
     return git.getConfig({
       fs: window.fs,
       dir: `/${repo}`,
@@ -255,6 +253,12 @@ export async function fetchBlob(repoRoute, filepath) {
 
 // buf: ArrayBuffer
 async function pptxToHtml(buf) {
+  const {
+  // docx,
+    pptx,
+  // xlsx,
+  // drawml
+  } = await import('docx4js');
   const pptxObj = await pptx.load(buf);
 
   const html = await pptxObj.render((_type, _props, children) => children.join('\n'));
@@ -279,8 +283,12 @@ async function pptxToHtml(buf) {
 async function pptToHtml(buf) {
   const b = Buffer.from(buf);
 
+  const cfb = await import('cfb');
+
   // ppt requires cfb^0.10.0
   const cfbObj = cfb.read(b, { type: 'buffer' });
+
+  const PPT = await import('@fetsorn/ppt');
 
   const pptObj = PPT.parse_pptcfb(cfbObj);
 
@@ -301,6 +309,8 @@ async function pptToHtml(buf) {
 
 // buf: ArrayBuffer
 async function rtfToHtml(buf) {
+  const { RTFJS } = await import('rtf.js');
+
   RTFJS.loggingEnabled(false);
 
   const doc = new (RTFJS.Document)(buf);
@@ -527,6 +537,8 @@ export function isIFrameable(path) {
 
 //   const blob1 = await resp1.blob();
 
+//   const mime = await import('mime');
+//
 //   const mimetype = mime.getType(path);
 
 //   const resp2 = await fetch(

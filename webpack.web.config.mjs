@@ -1,28 +1,31 @@
 import path from 'path';
 import url from 'url';
+import { createRequire } from 'module';
 import webpack from 'webpack';
-import CopyPlugin from 'copy-webpack-plugin';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
-import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export default (env) => ({
-  entry: './src/renderer/renderer.jsx',
+  entry: './src/renderer/app.jsx',
   mode: process.env.production ? 'production' : 'development',
+  devtool: 'source-map',
   output: {
     path: path.resolve(dirname, 'release/renderer'),
-    filename: '[name].js',
+    filename: '[name].bundle.js',
   },
   experiments: {
     syncWebAssembly: true,
   },
+  performance: {
+    hints: false,
+  },
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
+        test: /\.(jsx)$/,
         exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
@@ -30,7 +33,8 @@ export default (env) => ({
       },
       {
         test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        // use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
   },
@@ -51,19 +55,9 @@ export default (env) => ({
       Buffer: ['buffer', 'Buffer'],
     }),
 
-    new CopyPlugin({
-      patterns: [
-        {
-          context: 'node_modules/@fetsorn/',
-          from: '**/*.wasm',
-          to: '[name][ext]',
-        },
-        { context: 'public/js/', from: '**', to: '[name][ext]' },
-      ],
-    }),
-
     new HtmlWebpackPlugin({
       template: './src/renderer/index.html',
+      favicon: './public/favicon.ico',
     }),
   ],
   resolve: {
@@ -75,18 +69,13 @@ export default (env) => ({
       // For WASM
       stream: require.resolve('stream-browserify'),
       // For Ethereum Web3
-      os: require.resolve('os-browserify/browser'),
-      http: require.resolve('stream-http'),
-      events: require.resolve('events/'),
-      string_decoder: require.resolve('string_decoder/'),
       crypto: require.resolve('crypto-browserify'),
-      https: require.resolve('https-browserify'),
-      path: require.resolve('path-browserify'),
       fs: false,
+      // path: require.resolve('path-browserify'),
       buffer: require.resolve('buffer/'),
-      util: require.resolve('util'),
-      zlib: require.resolve('zlib-browserify'),
-      process: require.resolve('process/browser'),
+      // util: require.resolve('util'),
+      // zlib: require.resolve('zlib-browserify'),
+      // process: require.resolve('process/browser'),
     },
     extensions: ['.js', '.jsx', '.css'],
   },

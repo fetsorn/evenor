@@ -1,10 +1,4 @@
-import git from 'isomorphic-git';
-import http from 'isomorphic-git/http/web/index.cjs';
 import LightningFS from '@isomorphic-git/lightning-fs';
-import { CSVS } from '@fetsorn/csvs-js';
-import { saveAs } from 'file-saver';
-import { deepClone } from './curse_controller.js';
-import { QueryWorker } from './query_worker.js';
 
 const fs = new LightningFS('fs');
 
@@ -170,6 +164,8 @@ export class BrowserAPI {
   }
 
   async select(searchParams) {
+    const { QueryWorker } = await import('./query_worker.js');
+
     const queryWorker = new QueryWorker(this.readFile.bind(this));
 
     const overview = await queryWorker.select(searchParams);
@@ -178,6 +174,8 @@ export class BrowserAPI {
   }
 
   async queryOptions(branch) {
+    const { QueryWorker } = await import('./query_worker.js');
+
     const searchParams = new URLSearchParams();
 
     searchParams.set('|', branch);
@@ -190,6 +188,10 @@ export class BrowserAPI {
   }
 
   async updateEntry(entry, overview) {
+    const { CSVS } = await import('@fetsorn/csvs-js');
+
+    const { deepClone } = await import('./curse_controller.js');
+
     const entryNew = await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
@@ -208,6 +210,10 @@ export class BrowserAPI {
   }
 
   async deleteEntry(entry, overview) {
+    const { CSVS } = await import('@fetsorn/csvs-js');
+
+    const { deepClone } = await import('./curse_controller.js');
+
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
@@ -227,6 +233,8 @@ export class BrowserAPI {
   }
 
   async tbn2(remote, token) {
+    const http = await import('isomorphic-git/http/web/index.cjs');
+
     const options = {
       fs,
       http,
@@ -242,7 +250,9 @@ export class BrowserAPI {
       });
     }
 
-    await git.clone(options);
+    const { clone } = await import('isomorphic-git');
+
+    await clone(options);
   }
 
   async commit() {
@@ -259,7 +269,11 @@ export class BrowserAPI {
 
     const message = [];
 
-    const statusMatrix = await git.statusMatrix({
+    const {
+      statusMatrix, resetIndex, remove, add, commit,
+    } = await import('isomorphic-git');
+
+    const matrix = await statusMatrix({
       fs,
       dir,
     });
@@ -269,15 +283,15 @@ export class BrowserAPI {
       HEADStatus,
       workingDirStatus,
       stageStatus,
-    ] of statusMatrix) {
+    ] of matrix) {
       if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
-        await git.resetIndex({
+        await resetIndex({
           fs,
           dir,
           filepath: filePath,
         });
 
-        [filePath, HEADStatus, workingDirStatus, stageStatus] = await git.statusMatrix({
+        [filePath, HEADStatus, workingDirStatus, stageStatus] = await statusMatrix({
           fs,
           dir,
           filepaths: [filePath],
@@ -295,13 +309,13 @@ export class BrowserAPI {
         if (workingDirStatus === 0) {
           status = 'deleted';
 
-          await git.remove({
+          await remove({
             fs,
             dir,
             filepath: filePath,
           });
         } else {
-          await git.add({
+          await add({
             fs,
             dir,
             filepath: filePath,
@@ -320,7 +334,7 @@ export class BrowserAPI {
 
     if (message.length !== 0) {
       // console.log("commit:", message.toString());
-      await git.commit({
+      await commit({
         fs,
         dir,
         author: {
@@ -339,7 +353,11 @@ export class BrowserAPI {
   }
 
   async tbn3(token) {
-    await git.push({
+    const { push } = await import('isomorphic-git');
+
+    const http = await import('isomorphic-git/http/web/index.cjs');
+
+    await push({
       fs,
       http,
       force: true,
@@ -360,7 +378,11 @@ export class BrowserAPI {
   async fastForward(token) {
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
-    await git.fastForward({
+    const { fastForward } = await import('isomorphic-git');
+
+    const http = await import('isomorphic-git/http/web/index.cjs');
+
+    await fastForward({
       fs,
       http,
       dir: this.dir,
@@ -372,7 +394,9 @@ export class BrowserAPI {
   }
 
   async addRemote(url) {
-    await git.addRemote({
+    const { addRemote } = await import('isomorphic-git');
+
+    await addRemote({
       fs,
       dir: this.dir,
       remote: 'upstream',
@@ -405,7 +429,9 @@ export class BrowserAPI {
     if (!(await pfs.readdir('/store')).includes(name)) {
       await pfs.mkdir(repoDir);
 
-      await git.init({ fs, dir: repoDir });
+      const { init } = await import('isomorphic-git');
+
+      await init({ fs, dir: repoDir });
     }
 
     await pfs.writeFile(`${repoDir}/metadir.json`, schema, 'utf8');
@@ -521,6 +547,8 @@ export class BrowserAPI {
     };
 
     await foo(this.dir, zip);
+
+    const { saveAs } = await import('file-saver');
 
     zip.generateAsync({ type: 'blob' }).then((content) => {
       saveAs(content, 'archive.zip');

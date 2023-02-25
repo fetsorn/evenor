@@ -1,1 +1,3 @@
-export { ProfileBatchEdit } from './profile_batch_edit.jsx';
+import { ProfileBatchEdit } from './profile_batch_edit.jsx';
+
+export default ProfileBatchEdit;

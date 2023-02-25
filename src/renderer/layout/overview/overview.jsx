@@ -1,12 +1,9 @@
-import React from 'react';
-import { OverviewType, useStore } from '@/store';
-import {
-  OverviewItinerary,
-  OverviewGraph,
-  OverviewBook,
-  // OverviewGallery,
-  // OverviewListing,
-} from './components';
+import React, { Suspense } from 'react';
+import { OverviewType, useStore } from '@/store/index.js';
+
+const OverviewItinerary = React.lazy(() => import('./components/overview_itinerary/index.js'));
+const OverviewBook = React.lazy(() => import('./components/overview_book/index.js'));
+const OverviewGraph = React.lazy(() => import('./components/overview_graph/index.js'));
 
 export function Overview() {
   const overviewType = useStore((state) => state.overviewType);
@@ -14,14 +11,24 @@ export function Overview() {
   switch (overviewType) {
     case OverviewType.itinerary:
       return (
-        <OverviewItinerary />
+        <Suspense>
+          <OverviewItinerary />
+        </Suspense>
       );
 
     case OverviewType.graph:
-      return <OverviewGraph />;
+      return (
+        <Suspense>
+          <OverviewGraph />
+        </Suspense>
+      );
 
     case OverviewType.book:
-      return <OverviewBook />;
+      return (
+        <Suspense>
+          <OverviewBook />
+        </Suspense>
+      );
 
       /* case OverviewType.gallery:
      *   return <OverviewGallery />; */

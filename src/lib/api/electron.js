@@ -5,21 +5,28 @@ import { app, dialog } from 'electron';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node/index.cjs';
 import { exportPDF, generateLatex } from 'lib/latex';
-import { CSVS } from '@fetsorn/csvs-js';
-import crypto from 'crypto';
+// import { spawn, Thread, Worker } from 'threads';
+import { Worker } from 'node:worker_threads';
 
 const home = app.getPath('home');
 
-async function grep(contentFile, patternFile, isInverted) {
-  const wasm = await import('@fetsorn/wasm-grep');
+async function runWorker(workerData) {
+  return new Promise((resolve, reject) => {
+    const worker = new Worker(
+      new URL('./electron.worker.js', import.meta.url),
+      {
+        workerData,
+      },
+    );
 
-  const contents = await wasm.grep(
-    contentFile,
-    patternFile,
-    isInverted ?? false,
-  );
+    worker.on('message', resolve);
 
-  return contents;
+    worker.on('error', reject);
+
+    worker.on('exit', (code) => {
+      if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
+    });
+  });
 }
 
 export class ElectronAPI {
@@ -128,34 +135,32 @@ export class ElectronAPI {
   }
 
   async select(searchParams) {
-    // TODO spawn worker thread
-    return (new CSVS({
-      readFile: this.readFile.bind(this),
-      randomUUID: crypto.randomUUID,
-      grep,
-    })).select(searchParams);
+    return runWorker({
+      msg: 'query',
+      dir: this.dir,
+      searchParamsString: searchParams.toString(),
+    });
   }
 
   async queryOptions(branch) {
-    // TODO spawn worker thread
     const searchParams = new URLSearchParams();
 
     searchParams.set('|', branch);
 
-    return (new CSVS({
-      readFile: this.readFile.bind(this),
-      randomUUID: crypto.randomUUID,
-      grep,
-    })).select(searchParams);
+    return runWorker({
+      msg: 'query',
+      dir: this.dir,
+      searchParamsString: searchParams.toString(),
+    });
   }
 
   async updateEntry(entry, overview) {
-    const entryNew = await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) => this.writeFile(filepath, content),
-      randomUUID: crypto.randomUUID,
-      grep,
-    }).update(entry);
+    const entryNew = await runWorker({
+      msg: 'update',
+      dir: this.dir,
+      home,
+      entry,
+    });
 
     if (overview.find((e) => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {
@@ -170,19 +175,17 @@ export class ElectronAPI {
   }
 
   async deleteEntry(entry, overview) {
-    await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) => this.writeFile(filepath, content),
-      randomUUID: crypto.randomUUID,
-      grep,
-    }).delete(entry);
+    await runWorker({
+      msg: 'delete',
+      dir: this.dir,
+      home,
+      entry,
+    });
 
     return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
   async clone(remote, token, name) {
-    // TODO add rimraf?
-
     await this.tbn2(remote, token);
 
     if (name) {
@@ -372,8 +375,6 @@ export class ElectronAPI {
     }
 
     await fs.promises.writeFile(`${dir}/metadir.json`, schema, 'utf8');
-
-    // TODO: write default schema with freshly generated uuids
 
     await this.commit();
   }

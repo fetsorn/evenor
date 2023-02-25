@@ -1,1 +1,3 @@
-export { OverviewBook } from './overview_book.jsx';
+import { OverviewBook } from './overview_book.jsx';
+
+export default OverviewBook;

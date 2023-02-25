@@ -1,17 +1,16 @@
-import React from "react";
-import {
-  ProfileBatchEdit,
-  ProfileBatchView,
-  ProfileSingleEdit,
-  ProfileSingleView,
-} from "./components";
-import { useStore } from "@/store";
+import React, { Suspense } from 'react';
+import { useStore } from '@/store/index.js';
+
+const ProfileSingleEdit = React.lazy(() => import('./components/profile_single_edit/index.js'));
+const ProfileSingleView = React.lazy(() => import('./components/profile_single_view/index.js'));
+const ProfileBatchEdit = React.lazy(() => import('./components/profile_batch_edit/index.js'));
+const ProfileBatchView = React.lazy(() => import('./components/profile_batch_view/index.js'));
 
 export function Profile() {
-  const [isBatch, isEdit] = useStore((state) => [state.isBatch, state.isEdit])
+  const [isBatch, isEdit] = useStore((state) => [state.isBatch, state.isEdit]);
 
   return (
-    <>
+    <Suspense>
       {isBatch ? (
         isEdit ? (
           <ProfileBatchEdit />
@@ -23,6 +22,6 @@ export function Profile() {
       ) : (
         <ProfileSingleView />
       )}
-    </>
+    </Suspense>
   );
 }

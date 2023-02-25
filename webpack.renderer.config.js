@@ -6,8 +6,8 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   // target: 'electron-renderer', // do not set,
   // causes "require is not defined" in electron-webpack-plugin
-  entry: { renderer: './src/renderer/renderer.jsx' },
-  mode: 'development',
+  entry: { renderer: './src/renderer/app.jsx' },
+  mode: process.env.production ? 'production' : 'development',
   devtool: 'source-map',
   module: {
     rules: [
@@ -20,7 +20,7 @@ module.exports = {
       },
       {
         test: /\.css$/,
-        use: [{ loader: 'style-loader' }, { loader: 'css-loader' }],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
     ],
   },
@@ -47,6 +47,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { context: 'src/main/', from: 'preload.js', to: 'public/[name][ext]' },
+        { context: 'public/', from: 'icon.png', to: 'public/[name][ext]' },
         { context: 'public/js/', from: '**', to: '[name][ext]' },
       ],
     }),
@@ -60,18 +61,18 @@ module.exports = {
       // For WASM
       stream: require.resolve('stream-browserify'),
       // For Ethereum Web3
-      os: require.resolve('os-browserify/browser'),
-      http: require.resolve('stream-http'),
-      events: require.resolve('events/'),
-      string_decoder: require.resolve('string_decoder/'),
+      // os: require.resolve('os-browserify/browser'),
+      // http: require.resolve('stream-http'),
+      // events: require.resolve('events/'),
+      // string_decoder: require.resolve('string_decoder/'),
       crypto: require.resolve('crypto-browserify'),
-      https: require.resolve('https-browserify'),
-      path: require.resolve('path-browserify'),
+      // https: require.resolve('https-browserify'),
+      // path: require.resolve('path-browserify'),
       fs: false,
       buffer: require.resolve('buffer/'),
-      util: require.resolve('util'),
-      zlib: require.resolve('zlib-browserify'),
-      process: require.resolve('process/browser'),
+      // util: require.resolve('util'),
+      // zlib: require.resolve('zlib-browserify'),
+      // process: require.resolve('process/browser'),
     },
     extensions: ['.js', '.jsx', '.css'],
   },

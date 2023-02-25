@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { digestMessage, randomUUID } from '@fetsorn/csvs-js';
 import { API, deepClone } from 'lib/api';
 import { useStore } from '@/store/index.js';
 import { EditInput, InputDropdown } from '..';
@@ -19,6 +18,8 @@ async function addField(
     const obj = {};
 
     obj['|'] = branch;
+
+    const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
 
     const uuid = await randomUUID();
 

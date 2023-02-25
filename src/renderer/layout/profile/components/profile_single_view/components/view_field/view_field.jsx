@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Dispenser } from 'lib/dispensers';
-import { API, manifestRoot } from 'lib/api';
+import { manifestRoot } from 'lib/api';
 import { useStore } from '@/store/index.js';
 import { FieldText } from '..';
+
+const Dispenser = React.lazy(() => import('lib/dispensers/index.js'));
 
 export function ViewField({ entry }) {
   const { i18n } = useTranslation();
@@ -11,11 +12,9 @@ export function ViewField({ entry }) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [
-    repoUUID,
     baseEntry,
     isSettings,
   ] = useStore((state) => [
-    state.repoUUID,
     state.entry,
     state.isSettings,
   ]);
@@ -74,7 +73,9 @@ export function ViewField({ entry }) {
                 {branchDescription}
               </div>
 
-              <Dispenser {...{ baseEntry, branchEntry: entry, api: new API(repoUUID) }} />
+              <Suspense>
+                <Dispenser {...{ baseEntry, branchEntry: entry }} />
+              </Suspense>
             </div>
           )}
         </div>

@@ -214,7 +214,29 @@ export const createOverviewSlice = (set, get) => ({
     set({ overview });
   },
 
-  setRepoUUID: (repoUUID) => set({ repoUUID, queries: {}, entry: undefined }),
+  setRepoUUID: async (repoUUID) => {
+    let repoName;
+
+    if (repoUUID === 'root' || repoUUID === 'view') {
+      // leave repoName as undefined
+    } else {
+      const api = new API('root');
+
+      const searchParams = new URLSearchParams();
+
+      searchParams.set('|', 'reponame');
+
+      searchParams.set('reponame', repoUUID);
+
+      const [entry] = await api.select(searchParams);
+
+      repoName = entry.reponame;
+    }
+
+    set({
+      repoName, repoUUID, queries: {}, entry: undefined,
+    });
+  },
 
   setRepoName: async (repoName) => {
     const api = new API('root');
@@ -226,6 +248,10 @@ export const createOverviewSlice = (set, get) => ({
     searchParams.set('reponame', repoName);
 
     const [entry] = await api.select(searchParams);
+
+    if (entry === undefined) {
+      return;
+    }
 
     const repoUUID = entry.UUID;
 

@@ -25,7 +25,8 @@ export function Header() {
     onQueries,
     isInitialized,
     repoUUID,
-    setRepoRoute,
+    repoName,
+    setRepoUUID,
     onSettingsOpen,
   ] = useStore((state) => [
     state.queries,
@@ -34,35 +35,30 @@ export function Header() {
     state.onQueries,
     state.isInitialized,
     state.repoUUID,
-    state.setRepoRoute,
+    state.repoName,
+    state.setRepoUUID,
     state.onSettingsOpen,
   ]);
 
-  // useEffect(() => {
-  // TODO: fix
-  // if (isInitialized && __BUILD_MODE__ !== "electron") {
-  //   const searchParams = queriesToParams(queries);
+  useEffect(() => {
+    // eslint-disable-next-line
+    if (isInitialized && __BUILD_MODE__ !== 'electron') {
+      const searchParams = queriesToParams(queries);
 
-  //   if (groupBy !== "") {
-  //     searchParams.set("groupBy", groupBy);
-  //   }
+      // if (groupBy !== '') {
+      //   searchParams.set('groupBy', groupBy);
+      // }
 
-  //   searchParams.set("overviewType", overviewType);
+      // searchParams.set('overviewType', overviewType);
 
-  //   let pathname = repoRoute;
+      const pathname = repoName === undefined ? '/' : `/${repoName}`;
 
-  //   if (repoRoute === "store/root" || repoRoute === "store/view") {
-  //     pathname = "/";
-  //   } else {
-  //     pathname = "/" + repoRoute.replace(/^repos\, '')
-  //   }
-
-  //   navigate({
-  //     pathname,
-  //     search: "?" + searchParams.toString(),
-  //   });
-  // }
-  // }, [queries, groupBy, overviewType, repoRoute]);
+      navigate({
+        pathname,
+        search: `?${searchParams.toString()}`,
+      });
+    }
+  }, [queries, groupBy, overviewType, repoName]);
 
   useEffect(() => {
     onQueries();
@@ -76,7 +72,7 @@ export function Header() {
           <Button
             type="button"
             title={t('header.button.back')}
-            onClick={() => setRepoRoute('store/root')}
+            onClick={() => setRepoUUID('root')}
           >
             {/* &lt;= */}
             🏠

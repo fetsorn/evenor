@@ -19,7 +19,13 @@ async function runWorker(workerData) {
       },
     );
 
-    worker.on('message', resolve);
+    worker.on('message', (message) => {
+      if (typeof message === 'string' && message.startsWith('log')) {
+        console.log(message);
+      } else {
+        resolve(message);
+      }
+    });
 
     worker.on('error', reject);
 
@@ -162,8 +168,6 @@ export class ElectronAPI {
       home,
       entry,
     });
-
-    console.log('updateEntry', entryNew);
 
     if (overview.find((e) => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {

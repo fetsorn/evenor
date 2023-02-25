@@ -1276,10 +1276,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fetsorn/csvs-js@0.10.3":
-  version "0.10.3"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.10.3.tgz#2bd4576f642daf6c318f5679a88ca0ca2188b960"
-  integrity sha512-3+wyBGUyvXXSvxfO1vU+k48SKhqh3flripYFaTnPfm9E1uqj0KwcqAGb8xpBfJM3K9HLorWBF8doa/m9qbuVqQ==
+"@fetsorn/csvs-js@0.10.4":
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.10.4.tgz#6ffc0fa636e7cf646b76fa4b90d2d6393aa0c59d"
+  integrity sha512-QyCo9nAfjy0s5FLEXqmNwDboNIHlL7BpXP6XY7iJPs2MpkIeJjshcsfnQ/KWU+tHD4ftyZAqFZ2K95wh5kMMqQ==
 
 "@fetsorn/ged2dot@0.2.0":
   version "0.2.0"
@@ -2824,6 +2824,11 @@ colorette@^2.0.10, colorette@^2.0.14, colorette@^2.0.19:
   version "2.0.19"
   resolved "https://registry.yarnpkg.com/colorette/-/colorette-2.0.19.tgz#cdf044f47ad41a0f4b56b3a0d5b4e6e1a2d5a798"
   integrity sha512-3tlv/dIP7FWvj3BsbHrGLJ6l/oKh1O3TcgBqMn+yyCagOxc23fyzDS6HypQbgxWbkpDnf52p1LuR4eWDQ/K9WQ==
+
+command-exists@^1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/command-exists/-/command-exists-1.2.9.tgz#c50725af3808c8ab0260fd60b01fbfa25b954f69"
+  integrity sha512-LTQ/SGc+s0Xc0Fu5WaKnR0YiygZkm9eKFvyS+fRsU7/ZWFF8ykFM6Pc9aCVf1+xasOOZpO3BAVgVrKvsqKHV7w==
 
 commander@:
   version "10.0.0"

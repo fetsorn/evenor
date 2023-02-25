@@ -48,11 +48,11 @@ export function FilterSearchBar() {
 
   async function onQueryFieldChange() {
     if (isInitialized) {
-      const optionsNew = await api.queryOptions(queryField);
+      // const optionsNew = await api.queryOptions(queryField);
 
-      const optionValues = optionsNew.map((entry) => entry[queryField]);
+      // const optionValues = optionsNew.map((entry) => entry[queryField]);
 
-      setOptions(optionValues);
+      // setOptions(optionValues);
     }
   }
 

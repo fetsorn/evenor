@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useStore } from '@/store';
+import { useStore } from '@/store/index.js';
 import { setupVars, load } from './overview_graph_controller.js';
-import { GraphSvg, GraphTextInput, GraphRangeInput } from './components';
+import { GraphSvg, GraphTextInput, GraphRangeInput } from './components/index.js';
 import styles from './overview_graph.module.css';
 
 export function OverviewGraph() {
@@ -15,21 +15,21 @@ export function OverviewGraph() {
   const [html, setHTML] = useState(undefined);
 
   const [
-    repoRoute,
+    repoUUID,
   ] = useStore((state) => [
-    state.repoRoute,
+    state.repoUUID,
   ]);
 
   async function onSetDepth(_depth) {
     setDepth(_depth);
 
-    await load(repoRoute, _depth, family);
+    await load(repoUUID, _depth, family);
   }
 
   async function onSetFamily(_family) {
     setFamily(_family);
 
-    await load(repoRoute, depth, _family);
+    await load(repoUUID, depth, _family);
   }
 
   useEffect(() => {
@@ -38,7 +38,7 @@ export function OverviewGraph() {
 
   useEffect(() => {
     (async () => {
-      const newHTML = await load(repoRoute, depth, family);
+      const newHTML = await load(repoUUID, depth, family);
 
       setHTML(newHTML);
     })();

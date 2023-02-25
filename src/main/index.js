@@ -75,62 +75,72 @@ app
   .then(() => {
     ipcMain.handle(
       'uploadFile',
-      (_event, dir) => (new API(dir)).uploadFile(),
+      async (_event, dir) => (new API(dir)).uploadFile(),
     );
 
     ipcMain.handle(
       'select',
-      (_event, dir, searchParams) => (new API(dir)).select(new URLSearchParams(searchParams)),
+      async (_event, dir, searchParams) => (new API(dir)).select(new URLSearchParams(searchParams)),
     );
 
     ipcMain.handle(
       'queryOptions',
-      (_event, dir, branch) => (new API(dir)).queryOptions(branch),
+      async (_event, dir, branch) => (new API(dir)).queryOptions(branch),
     );
 
     ipcMain.handle(
       'updateEntry',
-      (_event, dir, entry, overview) => (new API(dir)).updateEntry(entry, overview),
+      async (_event, dir, entry, overview) => (new API(dir)).updateEntry(entry, overview),
     );
 
     ipcMain.handle(
       'deleteEntry',
-      (_event, dir, entry, overview) => (new API(dir)).deleteEntry(entry, overview),
+      async (_event, dir, entry, overview) => (new API(dir)).deleteEntry(entry, overview),
     );
 
     ipcMain.handle(
       'ensure',
-      (_event, dir, schema, name) => (new API(dir)).ensure(schema, name),
+      async (_event, dir, schema, name) => (new API(dir)).ensure(schema, name),
     );
 
     ipcMain.handle(
       'commit',
-      (_event, dir) => (new API(dir)).commit(),
+      async (_event, dir) => (new API(dir)).commit(),
     );
 
     ipcMain.handle(
       'clone',
-      (_event, dir, remote, token, name) => (new API(dir)).clone(remote, token, name),
+      async (_event, dir, remote, token, name) => (new API(dir)).clone(remote, token, name),
     );
 
     ipcMain.handle(
       'push',
-      (_event, dir, remote, token) => (new API(dir)).push(remote, token),
+      async (_event, dir, remote, token) => (new API(dir)).push(remote, token),
     );
 
     ipcMain.handle(
       'pull',
-      (_event, dir, remote, token) => (new API(dir)).pull(remote, token),
+      async (_event, dir, remote, token) => (new API(dir)).pull(remote, token),
     );
 
     ipcMain.handle(
       'getSettings',
-      (_event, dir) => (new API(dir)).getSettings(),
+      async (_event, dir) => (new API(dir)).getSettings(),
     );
 
     ipcMain.handle(
       'readSchema',
-      (_event, dir) => (new API(dir)).readSchema(),
+      async (_event, dir) => (new API(dir)).readSchema(),
+    );
+
+    ipcMain.handle(
+      'readGedcom',
+      async (_event, dir) => (new API(dir)).readGedcom(),
+    );
+
+    ipcMain.handle(
+      'readIndex',
+      async (_event, dir) => (new API(dir)).readIndex(),
     );
 
     createWindow();

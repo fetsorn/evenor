@@ -1,5 +1,5 @@
 import React from 'react';
-import { FilterSearchBar, FilterQueryList } from './components';
+import { FilterSearchBar, FilterQueryList } from './components/index.js';
 import styles from './header_filter.module.css';
 
 export function HeaderFilter() {

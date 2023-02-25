@@ -227,8 +227,6 @@ export class BrowserAPI {
   }
 
   async tbn2(remote, token) {
-    console.log('tbn2', remote, token);
-
     const options = {
       fs,
       http,
@@ -483,6 +481,18 @@ export class BrowserAPI {
     const schema = JSON.parse(schemaString);
 
     return schema;
+  }
+
+  async readGedcom() {
+    const gedcom = await this.readFile('index.ged');
+
+    return gedcom;
+  }
+
+  async readIndex() {
+    const index = await this.readFile('index.html');
+
+    return index;
   }
 
   async zip() {

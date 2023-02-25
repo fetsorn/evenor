@@ -23,7 +23,7 @@ async function renderGed(
 ) {
   const api = new API(dir);
 
-  const index = await api.readFile('index.ged');
+  const index = await api.readGedcom();
 
   // TODO: ged2dot needs to be able to figure out familyID
   // when passed familyID is undefined or non-existing
@@ -46,7 +46,7 @@ async function renderGed(
 async function renderIndex(dir) {
   const api = new API(dir);
 
-  const index = await api.readFile('index.html');
+  const index = await api.readIndex();
 
   return index;
 }

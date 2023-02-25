@@ -135,6 +135,28 @@ export class API {
     }
   }
 
+  async readGedcom() {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.readGedcom(this.uuid);
+
+      default:
+        return this.#browser.readGedcom();
+    }
+  }
+
+  async readIndex() {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.readIndex(this.uuid);
+
+      default:
+        return this.#browser.readIndex();
+    }
+  }
+
   async getSettings() {
     const searchParams = new URLSearchParams();
 

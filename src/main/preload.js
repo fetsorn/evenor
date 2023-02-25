@@ -25,4 +25,8 @@ contextBridge.exposeInMainWorld('electron', {
   getSettings: (dir) => ipcRenderer.invoke('getSettings', dir),
 
   readSchema: (dir) => ipcRenderer.invoke('readSchema', dir),
+
+  readGedcom: (dir) => ipcRenderer.invoke('readGedcom', dir),
+
+  readIndex: (dir) => ipcRenderer.invoke('readIndex', dir),
 });

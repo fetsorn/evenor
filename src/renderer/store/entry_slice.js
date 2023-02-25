@@ -34,8 +34,6 @@ async function selectRepo(repoUUID, entry) {
 
   const schemaEntry = await schemaToEntry(schema);
 
-  console.log(schemaEntry);
-
   if (schema) {
     entryNew.schema = schemaEntry;
   }

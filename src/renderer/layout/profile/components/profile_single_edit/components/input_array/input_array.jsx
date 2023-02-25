@@ -77,8 +77,6 @@ export function InputArray({
     : [];
 
   async function onFieldAddArrayItem(itemBranch) {
-    console.log('onFieldAddArrayItem', itemBranch);
-
     const arrayNew = await addField(schema, entry, itemBranch);
 
     onFieldChange(branch, arrayNew);

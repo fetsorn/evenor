@@ -98,7 +98,7 @@ export function FilterSearchBar() {
 
         <datalist id="panel_list">
           {options.map((option) => (
-            <option key={`panel_list ${option}`} value={option} />
+            <option key={`panel_list ${option ?? Math.random()}`} value={option} />
           ))}
         </datalist>
       </div>

@@ -37,9 +37,7 @@ export class ElectronAPI {
     this.dir = path.join(store, uuid);
   }
 
-  async readFile(
-    filepath,
-  ) {
+  async readFile(filepath) {
     const file = path.join(this.dir, filepath);
 
     const content = fs.readFileSync(file, { encoding: 'utf8' });
@@ -47,10 +45,7 @@ export class ElectronAPI {
     return content;
   }
 
-  async writeFile(
-    filepath,
-    content,
-  ) {
+  async writeFile(filepath, content) {
     const appdata = path.join(home, '.qualia');
 
     const store = path.join(appdata, 'store');
@@ -480,6 +475,18 @@ export class ElectronAPI {
     const schema = JSON.parse(schemaString);
 
     return schema;
+  }
+
+  async readGedcom() {
+    const gedcom = await this.readFile('index.ged');
+
+    return gedcom;
+  }
+
+  async readIndex() {
+    const index = await this.readFile('index.html');
+
+    return index;
   }
 
   async zip() {

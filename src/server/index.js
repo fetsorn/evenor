@@ -84,7 +84,7 @@ router.get('/query*', async (req, res) => {
 
     res.send(data);
   } catch (e) {
-    console.log('aaa', e);
+    // console.log('/query', e);
   }
 });
 

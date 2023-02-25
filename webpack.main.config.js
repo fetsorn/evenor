@@ -1,6 +1,5 @@
 const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
-const ThreadsPlugin = require('threads-plugin');
 
 module.exports = {
   // target: 'electron-main',
@@ -24,18 +23,12 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { context: 'src/lib/api/', from: 'grep.worker.js', to: '[name][ext]' },
-        { context: 'src/lib/api/', from: 'grep.worker.js', to: '[name][ext]' },
         {
           context: 'node_modules/@fetsorn/wasm-grep/pkg/nodejs/',
           from: '*',
           to: '[name][ext]',
         },
       ],
-    }),
-
-    new ThreadsPlugin({
-      target: 'electron-node-worker',
     }),
   ],
   resolve: {

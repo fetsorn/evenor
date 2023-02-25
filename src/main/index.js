@@ -22,19 +22,13 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon'),
     webPreferences: {
-      // eslint-disable-next-line
-      preload: getAssetPath("preload.js"),
+      preload: getAssetPath('preload.js'),
       contextIsolation: true,
     },
   });
 
   // eslint-disable-next-line
   mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
-  // mainWindow.loadURL("https://example.com");
-
-  mainWindow.webContents.once('dom-ready', () => {
-    mainWindow.webContents.openDevTools();
-  });
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {

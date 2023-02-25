@@ -157,10 +157,13 @@ export class ElectronAPI {
   async updateEntry(entry, overview) {
     const entryNew = await runWorker({
       msg: 'update',
+      uuid: this.uuid,
       dir: this.dir,
       home,
       entry,
     });
+
+    console.log('updateEntry', entryNew);
 
     if (overview.find((e) => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {
@@ -177,6 +180,7 @@ export class ElectronAPI {
   async deleteEntry(entry, overview) {
     await runWorker({
       msg: 'delete',
+      uuid: this.uuid,
       dir: this.dir,
       home,
       entry,

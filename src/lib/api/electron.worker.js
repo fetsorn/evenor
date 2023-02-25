@@ -3,9 +3,8 @@ import path from 'path';
 import { URLSearchParams } from 'url';
 import { CSVS } from '@fetsorn/csvs-js';
 import crypto from 'crypto';
-
-const { workerData, parentPort } = require('worker_threads');
-const wasm = require('@fetsorn/wasm-grep/pkg/nodejs/index.js');
+import { workerData, parentPort } from 'worker_threads';
+import wasm from '@fetsorn/wasm-grep/pkg/nodejs/index.js';
 
 async function grep(contentFile, patternFile, isInverted) {
   return wasm.grep(contentFile, patternFile, isInverted ?? false);
@@ -22,17 +21,17 @@ async function readFile(filepath) {
 }
 
 async function writeFile(filepath, content) {
-  const { home } = workerData;
+  const { home, uuid } = workerData;
 
   const appdata = path.join(home, '.qualia');
 
   const store = path.join(appdata, 'store');
 
-  const file = path.join(store, this.uuid, filepath);
+  const file = path.join(store, uuid, filepath);
 
   // if path doesn't exist, create it
   // split path into array of directory names
-  const pathElements = ['store', this.uuid].concat(filepath.split('/'));
+  const pathElements = ['store', uuid].concat(filepath.split('/'));
 
   // remove file name
   pathElements.pop();
@@ -78,24 +77,29 @@ async function select() {
 
 async function updateEntry() {
   const { entry } = workerData;
+  console.log('worker-updateEntry', entry);
 
-  return new CSVS({
+  const entryNew = await new CSVS({
     readFile: (filepath) => readFile(filepath),
     writeFile: (filepath, content) => writeFile(filepath, content),
     randomUUID: crypto.randomUUID,
     grep,
   }).update(entry);
+
+  parentPort.postMessage(entryNew);
 }
 
 async function deleteEntry() {
   const { entry } = workerData;
 
-  return new CSVS({
+  await new CSVS({
     readFile: (filepath) => readFile(filepath),
     writeFile: (filepath, content) => writeFile(filepath, content),
     randomUUID: crypto.randomUUID,
     grep,
   }).delete(entry);
+
+  parentPort.postMessage({});
 }
 
 async function run() {

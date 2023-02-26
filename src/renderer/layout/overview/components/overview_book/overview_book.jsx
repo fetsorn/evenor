@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { exportPDF, generateLatex } from 'lib/latex/';
-import { useStore } from '@/store';
+import { useStore } from '@/store/index.js';
 
 export function OverviewBook() {
   const [blobURL, setBlobURL] = useState([]);

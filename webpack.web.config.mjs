@@ -4,6 +4,7 @@ import { createRequire } from 'module';
 import webpack from 'webpack';
 import MiniCssExtractPlugin from 'mini-css-extract-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
+import CopyPlugin from 'copy-webpack-plugin';
 
 const require = createRequire(import.meta.url);
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
@@ -58,6 +59,16 @@ export default (env) => ({
     new HtmlWebpackPlugin({
       template: './src/renderer/index.html',
       favicon: './public/favicon.ico',
+    }),
+
+    new CopyPlugin({
+      patterns: [
+        {
+          context: 'public/js/',
+          from: '*',
+          to: '[name][ext]',
+        },
+      ],
     }),
   ],
   resolve: {

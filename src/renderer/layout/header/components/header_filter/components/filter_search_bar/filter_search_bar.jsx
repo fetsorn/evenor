@@ -84,7 +84,7 @@ export function FilterSearchBar() {
         }}
       >
         {queriesToAdd.map((query) => (
-          <option key={`filteroption-${query ?? Math.random()}`} value={query.branch}>
+          <option key={`filteroption-${query.branch ?? Math.random()}`} value={query.branch}>
             {query.label}
           </option>
         ))}

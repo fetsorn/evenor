@@ -160,13 +160,9 @@ export class API {
   async getSettings() {
     const searchParams = new URLSearchParams();
 
-    // search for UUID
     searchParams.set('reponame', this.uuid);
 
-    // query root db to get entry with repo settings
-    const overview = await (new API('root')).select(searchParams);
-
-    const [entry] = overview;
+    const [entry] = await (new API('root')).select(searchParams);
 
     return entry;
   }

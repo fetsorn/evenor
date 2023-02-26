@@ -135,8 +135,14 @@ export const createEntrySlice = (set, get) => ({
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);
 
+    const baseOld = get().base;
+
+    const base = 'reponame';
+
     // get current repo settings from root db
-    const entry = await apiRepo.getSettings();
+    const entryRepo = await apiRepo.getSettings();
+
+    const entry = await selectRepo(get().repoUUID, entryRepo);
 
     const apiRoot = new API('root');
 
@@ -144,13 +150,16 @@ export const createEntrySlice = (set, get) => ({
 
     const onSettingsClose = () => set({
       entry: undefined,
+      base: baseOld,
       onEntrySave,
       onEntryDelete,
       isSettings: false,
     });
 
     const onSettingsSave = async () => {
-      await apiRoot.updateEntry(get().entry);
+      const entryNew = await saveRepo(get().repoUUID, get().entry);
+
+      await apiRoot.updateEntry(entryNew);
 
       set({ isEdit: false });
     };
@@ -161,6 +170,7 @@ export const createEntrySlice = (set, get) => ({
       set({
         repoUUID: 'root',
         entry: undefined,
+        base: baseOld,
         onEntrySave,
         onEntryDelete,
         isSettings: false,
@@ -170,12 +180,11 @@ export const createEntrySlice = (set, get) => ({
     set({
       entry,
       index: '',
-      group: `${get().repoUUID} ${get().repoName} settings`,
+      group: `${get().repoName} settings`,
       onEntryClose: onSettingsClose,
       onEntrySave: onSettingsSave,
       onEntryDelete: onSettingsDelete,
       isSettings: true,
     });
   },
-
 });

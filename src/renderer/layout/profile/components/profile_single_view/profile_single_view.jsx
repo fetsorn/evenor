@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
+import { manifestRoot } from 'lib/api';
 import {
   AssetView,
   Button,
@@ -27,7 +28,6 @@ export function ProfileSingleView() {
 
   const [
     entry,
-    schema,
     group,
     index,
     repoUUID,
@@ -35,9 +35,10 @@ export function ProfileSingleView() {
     onEntryEdit,
     onEntryClose,
     onEntryDelete,
+    isSettings,
+    schemaRepo,
   ] = useStore((state) => [
     state.entry,
-    state.schema,
     state.group,
     state.index,
     state.repoUUID,
@@ -45,15 +46,17 @@ export function ProfileSingleView() {
     state.onEntryEdit,
     state.onEntryClose,
     state.onEntryDelete,
+    state.isSettings,
+    state.schema,
   ]);
 
   const title = formatDate(group);
 
-  const addedBranches = entry ? Object.keys(entry).filter((b) => b !== '|') : [];
+  const schema = isSettings ? JSON.parse(manifestRoot) : schemaRepo;
 
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
-      {entry && schema && (
+      {entry && (
         <div className={styles.container}>
           <div id="scrollcontainer" className={styles.sticky}>
             <Title>
@@ -80,18 +83,13 @@ export function ProfileSingleView() {
               <a onClick={() => setRepoName(entry.reponame)}>{entry.reponame}</a>
             )}
 
-            <div>
-              {addedBranches.map((branch) => (
-                <div key={`view${branch}`}>
-                  <ViewField entry={
-                    schema[branch]?.type === 'array' || schema[branch]?.type === 'object'
-                      ? entry[branch]
-                      : { '|': branch, [branch]: entry[branch] }
-                  }
-                  />
-                </div>
-              ))}
-            </div>
+            <ViewField
+              {...{
+                entry,
+                schema,
+                isBaseObject: true,
+              }}
+            />
 
             <AssetView filepath={entry?.FILE_PATH} />
           </div>

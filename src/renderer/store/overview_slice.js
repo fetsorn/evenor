@@ -1,4 +1,4 @@
-import { API, manifestRoot } from 'lib/api';
+import { API, schemaRoot } from 'lib/api';
 import { OverviewType } from './types.js';
 
 // pick a param to group data by
@@ -117,7 +117,7 @@ export const createOverviewSlice = (set, get) => ({
       if (__BUILD_MODE__ !== 'server') {
         const apiRoot = new API('root');
 
-        await apiRoot.ensure(manifestRoot);
+        await apiRoot.ensure(schemaRoot);
       }
     } else {
       repoName = repoRoute;

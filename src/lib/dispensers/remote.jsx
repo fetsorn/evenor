@@ -1,6 +1,41 @@
 import React from 'react';
 import { API } from '../api/index.js';
 
+export const schemaRemote = {
+  remote_tag: {
+    trunk: 'tags',
+    type: 'object',
+    description: {
+      en: 'Remote git tag',
+      ru: 'Тег удаленного git репозитория',
+    },
+  },
+  remote_tag_search: {
+    trunk: 'remote_tag',
+    type: 'string',
+    description: {
+      en: 'Search query',
+      ru: 'Поисковый запрос',
+    },
+  },
+  remote_tag_target: {
+    trunk: 'remote_tag',
+    type: 'string',
+    description: {
+      en: 'Name of database to sync',
+      ru: 'Название базы данных для синхронизации',
+    },
+  },
+  remote_tag_token: {
+    trunk: 'remote_tag',
+    type: 'string',
+    description: {
+      en: 'Authentication token',
+      ru: 'Токен для синхронизации',
+    },
+  },
+};
+
 export function Remote({ baseEntry, branchEntry }) {
   const api = new API(baseEntry.UUID);
 

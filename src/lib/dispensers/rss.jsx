@@ -1,4 +1,101 @@
-import { API } from '../api';
+import { API } from '../api/index.js';
+
+export const schemaRSS = {
+  rss_tag: {
+    trunk: 'tags',
+    type: 'object',
+    description: {
+      en: 'Rss git tag',
+      ru: 'Тег удаленного RSS git репозитория',
+    },
+  },
+  rss_tag_search: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Search query',
+      ru: 'Поисковый запрос',
+    },
+  },
+  rss_tag_target: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Name of database to sync',
+      ru: 'Название базы данных для синхронизации',
+    },
+  },
+  rss_tag_token: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Authentication token',
+      ru: 'Токен для синхронизации',
+    },
+  },
+  rss_tag_title: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Title of RSS feed',
+      ru: 'Название RSS ленты',
+    },
+  },
+  rss_tag_description: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Description of RSS feed',
+      ru: 'Описание RSS ленты',
+    },
+  },
+  rss_tag_creator: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Creator of RSS feed',
+      ru: 'Создатель RSS ленты',
+    },
+  },
+  rss_tag_item_title: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Branch for post title',
+      ru: 'Ветка для названия поста',
+    },
+  },
+  rss_tag_item_description: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Branch for post description',
+      ru: 'Ветка для описания поста',
+    },
+  },
+  rss_tag_item_pubdate: {
+    trunk: 'rss_tag',
+    task: 'date',
+    description: {
+      en: 'Branch for post pubdate',
+      ru: 'Ветка для даты публикации поста',
+    },
+  },
+  rss_tag_item_category: {
+    trunk: 'rss_tag',
+    description: {
+      en: 'Branch for post category',
+      ru: 'Ветка для категории поста',
+    },
+  },
+  rss_tag_item_link: {
+    trunk: 'rss_tag',
+    description: {
+      en: 'Branch for post link',
+      ru: 'Ветка для ссылки поста',
+    },
+  },
+};
 
 export function RSS({ baseEntry, branchEntry }) {
   const rssAPI = new API('rss');

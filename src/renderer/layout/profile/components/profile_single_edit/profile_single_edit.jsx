@@ -2,16 +2,16 @@ import React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
-import { manifestRoot } from 'lib/api';
+import { schemaRoot } from 'lib/api';
 import {
   AssetView,
   Button,
   Title,
-} from '@/components';
-import { useStore } from '@/store';
+} from '@/components/index.js';
+import { useStore } from '@/store/index.js';
 import {
   EditInput,
-} from './components';
+} from './components/index.js';
 import styles from './profile_single_edit.module.css';
 
 // TODO: replace with Day.js
@@ -56,7 +56,7 @@ export function ProfileSingleEdit() {
     state.onEntryChange,
   ]);
 
-  const schema = isSettings ? JSON.parse(manifestRoot) : useStore((state) => state.schema);
+  const schema = isSettings ? schemaRoot : useStore((state) => state.schema);
 
   const title = formatDate(group);
 

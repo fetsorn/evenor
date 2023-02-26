@@ -414,29 +414,21 @@ export class BrowserAPI {
   }
 
   async tbn1(schema) {
-    const { dir } = this;
-
-    const name = dir.replace(/^\/store\//, '');
-
     const pfs = fs.promises;
 
     if (!(await pfs.readdir('/')).includes('store')) {
       await pfs.mkdir('/store');
     }
 
-    const repoDir = `/store/${name}`;
-
-    if (!(await pfs.readdir('/store')).includes(name)) {
-      await pfs.mkdir(repoDir);
+    if (!(await pfs.readdir('/store')).includes(this.uuid)) {
+      await pfs.mkdir(this.dir);
 
       const { init } = await import('isomorphic-git');
 
-      await init({ fs, dir: repoDir });
+      await init({ fs, dir: this.dir });
     }
 
-    await pfs.writeFile(`${repoDir}/metadir.json`, schema, 'utf8');
-
-    // TODO: write default schema with freshly generated uuids
+    await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema), 'utf8');
 
     await this.commit();
   }

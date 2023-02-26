@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
-import { manifestRoot } from 'lib/api';
+import { schemaRoot } from 'lib/api';
 import {
   AssetView,
   Button,
@@ -52,7 +52,7 @@ export function ProfileSingleView() {
 
   const title = formatDate(group);
 
-  const schema = isSettings ? JSON.parse(manifestRoot) : schemaRepo;
+  const schema = isSettings ? schemaRoot : schemaRepo;
 
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>

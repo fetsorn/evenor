@@ -382,7 +382,7 @@ export class ElectronAPI {
       await git.init({ fs, dir });
     }
 
-    await fs.promises.writeFile(`${dir}/metadir.json`, schema, 'utf8');
+    await fs.promises.writeFile(`${dir}/metadir.json`, JSON.stringify(schema), 'utf8');
 
     await this.commit();
   }

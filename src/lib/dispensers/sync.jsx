@@ -1,6 +1,33 @@
 import React, { useState } from 'react';
 import { API } from '../api/index.js';
 
+export const schemaSync = {
+  sync_tag: {
+    trunk: 'tags',
+    type: 'object',
+    description: {
+      en: 'Synchronization tag',
+      ru: 'Тег синхронизации баз данных',
+    },
+  },
+  sync_tag_search: {
+    trunk: 'sync_tag',
+    type: 'string',
+    description: {
+      en: 'Search query',
+      ru: 'Поисковый запрос',
+    },
+  },
+  sync_tag_target: {
+    trunk: 'sync_tag',
+    type: 'string',
+    description: {
+      en: 'Name of database to sync',
+      ru: 'Название базы данных для синхронизации',
+    },
+  },
+};
+
 export function Sync({ baseEntry, branchEntry }) {
   const [entries, setEntries] = useState([]);
 

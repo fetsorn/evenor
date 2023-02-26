@@ -47,7 +47,7 @@ async function saveRepo(repoUUID, entry) {
 
   const remoteTags = entry.tags?.items?.filter((item) => item['|'] === 'remote_tag') ?? [];
 
-  let schemaString = entry.schema ? entryToSchema(entry.schema) : '{}';
+  let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
   if (remoteTags.length === 1) {
     // TODO: only do if no .git exists yet
@@ -55,12 +55,12 @@ async function saveRepo(repoUUID, entry) {
 
     await api.clone(remoteTag.remote_tag_target, remoteTag.remote_tag_token);
 
-    schemaString = JSON.stringify(await api.readSchema());
+    schema = await api.readSchema();
   }
 
-  await api.ensure(schemaString, entry.reponame);
+  await api.ensure(schema, entry.reponame);
 
-  const { schema, ...entryNew } = entry;
+  const { schema: omitSchema, ...entryNew } = entry;
 
   return entryNew;
 }

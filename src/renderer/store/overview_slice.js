@@ -99,24 +99,17 @@ export const createOverviewSlice = (set, get) => ({
     if (searchParams.has('url')) {
       repoUUID = 'view';
 
-      // const api = new API(repoRoute);
+      const api = new API(repoUUID);
 
-      // const url = searchParams.get('url');
+      const url = searchParams.get('url');
 
-      // const token = searchParams.get('token') ?? '';
+      const token = searchParams.get('token') ?? '';
 
-      // searchParams.delete('url');
+      searchParams.delete('url');
 
-      // searchParams.delete('token');
+      searchParams.delete('token');
 
-      // TODO: rewrite to use higher level API, not rimraf
-      // try {
-      //   await api.rimraf(repoRoute);
-      // } catch {
-      //   // do nothing if nothing to rimraf
-      // }
-
-      // await api.clone(url, token);
+      await api.cloneView(url, token);
     } else if (repoRoute === undefined) {
       repoUUID = 'root';
 

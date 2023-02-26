@@ -137,6 +137,11 @@ app
       async (_event, dir) => (new API(dir)).readIndex(),
     );
 
+    ipcMain.handle(
+      'cloneView',
+      async (_event, dir, remote, token) => (new API(dir)).clone(remote, token),
+    );
+
     createWindow();
   })
   .catch(console.log);

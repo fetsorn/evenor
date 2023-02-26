@@ -157,6 +157,17 @@ export class API {
     }
   }
 
+  async cloneView(remote, token) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.cloneView(this.uuid, remote, token);
+
+      default:
+        return this.#browser.cloneView(remote, token);
+    }
+  }
+
   async getSettings() {
     const searchParams = new URLSearchParams();
 

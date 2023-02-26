@@ -29,4 +29,6 @@ contextBridge.exposeInMainWorld('electron', {
   readGedcom: (dir) => ipcRenderer.invoke('readGedcom', dir),
 
   readIndex: (dir) => ipcRenderer.invoke('readIndex', dir),
+
+  cloneView: (dir, remote, token) => ipcRenderer.invoke('cloneView', dir, remote, token),
 });

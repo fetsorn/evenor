@@ -58,8 +58,6 @@ async function render(dir, depth, familyID) {
   try {
     const html = await renderGed(dir, depth, familyID);
 
-    console.log('set index.ged');
-
     return html;
   } catch (e1) {
     console.log('no index.ged', e1);
@@ -68,8 +66,6 @@ async function render(dir, depth, familyID) {
   // if there's an index file, render it as overview
   try {
     const html = await renderIndex(dir);
-
-    console.log('set index.html');
 
     return html;
   } catch (e2) {

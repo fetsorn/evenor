@@ -554,4 +554,14 @@ export class BrowserAPI {
       saveAs(content, 'archive.zip');
     });
   }
+
+  async cloneView(remote, token) {
+    try {
+      await this.rimraf(this.dir);
+    } catch {
+      // do nothing
+    }
+
+    await this.clone(remote, token);
+  }
 }

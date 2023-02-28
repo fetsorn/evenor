@@ -24,6 +24,10 @@ export const createFilterSlice = (set, get) => ({
       const queries = { ...get().queries, [queryField]: queryValue };
 
       set({ queries });
+    } else {
+      // TODO: refactor, remove useEffect onQueries
+      // rerun select even if queries not changed
+      await get().onQueries();
     }
   },
 

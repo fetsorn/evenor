@@ -428,7 +428,7 @@ export class BrowserAPI {
       await init({ fs, dir: this.dir });
     }
 
-    await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema), 'utf8');
+    await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
     await this.commit();
   }

@@ -10,7 +10,19 @@ import { Worker } from 'node:worker_threads';
 
 const home = app.getPath('home');
 
+let readWorker;
+
+// we run CSVS functions in workers to offload the main thread
+// but UI only expects results from the last call to CSVS.select
+// so we want only one instance of it running at any time
+// and we terminate the previous instance if it is still running
 async function runWorker(workerData) {
+  if (workerData.msg === 'select' && readWorker !== undefined) {
+    await readWorker.terminate();
+
+    readWorker = undefined;
+  }
+
   return new Promise((resolve, reject) => {
     const worker = new Worker(
       new URL('./electron.worker.js', import.meta.url),
@@ -21,8 +33,11 @@ async function runWorker(workerData) {
 
     worker.on('message', (message) => {
       if (typeof message === 'string' && message.startsWith('log')) {
-        console.log(message);
+        // console.log(message);
       } else {
+        if (workerData.msg === 'select') {
+          readWorker = undefined;
+        }
         resolve(message);
       }
     });
@@ -30,8 +45,15 @@ async function runWorker(workerData) {
     worker.on('error', reject);
 
     worker.on('exit', (code) => {
+      if (workerData.msg === 'select') {
+        readWorker = undefined;
+      }
       if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
     });
+
+    if (workerData.msg === 'select') {
+      readWorker = worker;
+    }
   });
 }
 
@@ -142,7 +164,7 @@ export class ElectronAPI {
 
   async select(searchParams) {
     return runWorker({
-      msg: 'query',
+      msg: 'select',
       dir: this.dir,
       searchParamsString: searchParams.toString(),
     });
@@ -154,7 +176,7 @@ export class ElectronAPI {
     searchParams.set('|', branch);
 
     return runWorker({
-      msg: 'query',
+      msg: 'select',
       dir: this.dir,
       searchParamsString: searchParams.toString(),
     });
@@ -382,7 +404,7 @@ export class ElectronAPI {
       await git.init({ fs, dir });
     }
 
-    await fs.promises.writeFile(`${dir}/metadir.json`, JSON.stringify(schema), 'utf8');
+    await fs.promises.writeFile(`${dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
     await this.commit();
   }

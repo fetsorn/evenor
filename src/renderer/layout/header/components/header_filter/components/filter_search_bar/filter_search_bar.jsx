@@ -19,14 +19,12 @@ export function FilterSearchBar() {
     schema,
     base,
     onQueryAdd,
-    isInitialized,
     repoUUID,
   ] = useStore((state) => [
     state.queries,
     state.schema,
     state.base,
     state.onQueryAdd,
-    state.isInitialized,
     state.repoUUID,
   ]);
 
@@ -51,14 +49,12 @@ export function FilterSearchBar() {
     },
   );
 
-  async function onQueryFieldChange() {
-    if (isInitialized) {
-      const optionsNew = await api.queryOptions(queryField);
+  async function onFocus() {
+    const optionsNew = await api.queryOptions(queryField);
 
-      const optionValues = optionsNew.map((entry) => entry[queryField]);
+    const optionValues = optionsNew.map((entry) => entry[queryField]);
 
-      setOptions(optionValues);
-    }
+    setOptions(optionValues);
   }
 
   useEffect(() => {
@@ -66,10 +62,6 @@ export function FilterSearchBar() {
 
     setQueryValue('');
   }, [schema, queries]);
-
-  useEffect(() => {
-    onQueryFieldChange();
-  }, [queryField]);
 
   return (
     <div className={styles.search}>
@@ -96,6 +88,7 @@ export function FilterSearchBar() {
           type="text"
           list="panel_list"
           value={queryValue}
+          onFocus={onFocus}
           onChange={({ target: { value } }) => {
             setQueryValue(value);
           }}

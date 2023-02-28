@@ -181,6 +181,10 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.set('|', base);
 
+      set({
+        base, schema, overview: [],
+      });
+
       const overview = await api.select(searchParams);
 
       const groupBy = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
@@ -188,7 +192,7 @@ export const createOverviewSlice = (set, get) => ({
         : getDefaultGroupBy(schema, overview, searchParams);
 
       set({
-        overview, base, schema, groupBy,
+        overview, groupBy,
       });
     }
   },

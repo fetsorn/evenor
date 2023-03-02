@@ -5,7 +5,6 @@ import { app, dialog } from 'electron';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node/index.cjs';
 import { exportPDF, generateLatex } from 'lib/latex';
-// import { spawn, Thread, Worker } from 'threads';
 import { Worker } from 'node:worker_threads';
 
 const home = app.getPath('home');

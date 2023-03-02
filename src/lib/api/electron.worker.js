@@ -10,9 +10,15 @@ import { exec } from 'child_process';
 import commandExists from 'command-exists';
 
 async function grepCLI(contentFile, patternFile, isInverted) {
-  const contentFilePath = `/tmp/${crypto.randomUUID()}`;
+  try {
+    await fs.promises.mkdir('/tmp/grep');
+  } catch {
+    // do nothing
+  }
 
-  const patternFilePath = `/tmp/${crypto.randomUUID()}`;
+  const contentFilePath = `/tmp/grep/${crypto.randomUUID()}`;
+
+  const patternFilePath = `/tmp/grep/${crypto.randomUUID()}`;
 
   await fs.promises.writeFile(contentFilePath, contentFile);
 
@@ -125,7 +131,6 @@ async function updateEntry() {
     readFile: (filepath) => readFile(filepath),
     writeFile: (filepath, content) => writeFile(filepath, content),
     randomUUID: crypto.randomUUID,
-    grep,
   }).update(entry);
 
   parentPort.postMessage(entryNew);
@@ -138,7 +143,6 @@ async function deleteEntry() {
     readFile: (filepath) => readFile(filepath),
     writeFile: (filepath, content) => writeFile(filepath, content),
     randomUUID: crypto.randomUUID,
-    grep,
   }).delete(entry);
 
   parentPort.postMessage({});

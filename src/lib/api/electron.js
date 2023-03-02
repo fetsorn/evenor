@@ -373,9 +373,7 @@ export class ElectronAPI {
   }
 
   async ensure(schema, name) {
-    if (schema) {
-      await this.tbn1(schema);
-    }
+    await this.tbn1(schema);
 
     if (name) {
       await this.symlink(name);

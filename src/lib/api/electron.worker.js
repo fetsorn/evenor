@@ -94,6 +94,7 @@ async function writeFile(filepath, content) {
     const files = await fs.promises.readdir(path.join(appdata, root));
 
     if (!files.includes(pathElement)) {
+      // try/catch because csvs can call this in parallel and fail with EEXIST
       try {
         await fs.promises.mkdir(path.join(appdata, root, pathElement));
       } catch {

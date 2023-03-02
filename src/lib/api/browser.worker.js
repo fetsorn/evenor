@@ -1,5 +1,15 @@
 import { CSVS } from '@fetsorn/csvs-js';
 
+async function grep(contentFile, patternFile, isInverted = false) {
+  const wasm = await import('@fetsorn/wasm-grep');
+
+  return wasm.grep(
+    contentFile,
+    patternFile,
+    isInverted,
+  );
+}
+
 const readFile = (filepath) => new Promise((res, rej) => {
   const channel = new MessageChannel();
 
@@ -14,26 +24,6 @@ const readFile = (filepath) => new Promise((res, rej) => {
   };
 
   postMessage({ action: 'readFile', filepath }, [channel.port2]);
-});
-
-const grep = (contentFile, patternFile, isInverted) => new Promise((res, rej) => {
-  const channel = new MessageChannel();
-
-  channel.port1.onmessage = ({ data }) => {
-    channel.port1.close();
-
-    if (data.error) {
-      rej(data.error);
-    } else {
-      res(data.result);
-    }
-  };
-
-  postMessage({
-    action: 'grep', contentFile, patternFile, isInverted,
-  }, [
-    channel.port2,
-  ]);
 });
 
 async function select(message) {

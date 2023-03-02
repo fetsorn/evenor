@@ -2,6 +2,60 @@ import LightningFS from '@isomorphic-git/lightning-fs';
 
 const fs = new LightningFS('fs');
 
+async function runWorker(readFile, searchParams) {
+  const worker = new Worker(new URL('./browser.worker', import.meta.url));
+
+  worker.onmessage = async (message) => {
+    switch (message.data.action) {
+      case 'readFile': {
+        try {
+          const contents = await readFile(message.data.filepath);
+
+          message.ports[0].postMessage({ result: contents });
+        } catch (e) {
+          // safari cannot clone the error object, force to string
+          message.ports[0].postMessage({ error: `${e}` });
+        }
+
+        break;
+      }
+
+      default:
+        // do nothing
+    }
+  };
+
+  // eslint-disable-next-line
+  switch (__BUILD_MODE__) {
+    case 'server': {
+      const response = await fetch(`/query?${searchParams.toString()}`);
+
+      return response.json();
+    }
+
+    default: {
+      return new Promise((res, rej) => {
+        const channel = new MessageChannel();
+
+        channel.port1.onmessage = ({ data }) => {
+          channel.port1.close();
+
+          if (data.error) {
+            rej(data.error);
+          } else {
+            res(data.result);
+          }
+        };
+
+        worker.postMessage(
+          { action: 'select', searchParams: searchParams.toString() },
+          [channel.port2],
+        );
+      });
+    }
+  }
+}
+
 export class BrowserAPI {
   // UUID of repo in the store
   uuid;
@@ -97,12 +151,15 @@ export class BrowserAPI {
 
       const files = await pfs.readdir(root);
 
-      // console.log(files)
-
       if (!files.includes(pathElement)) {
-      // console.log(`writeFileBrowser creating directory ${pathElement} in ${root}`)
+        // console.log(`writeFileBrowser creating directory ${pathElement} in ${root}`);
 
-        await pfs.mkdir(`${root}/${pathElement}`);
+        // try/catch because csvs can call this in parallel and fail with EEXIST
+        try {
+          await pfs.mkdir(`${root}/${pathElement}`);
+        } catch {
+          // do nothing
+        }
       } else {
       // console.log(`writeFileBrowser ${root} has ${pathElement}`)
       }
@@ -164,25 +221,17 @@ export class BrowserAPI {
   }
 
   async select(searchParams) {
-    const { QueryWorker } = await import('./query_worker.js');
-
-    const queryWorker = new QueryWorker(this.readFile.bind(this));
-
-    const overview = await queryWorker.select(searchParams);
+    const overview = await runWorker(this.readFile.bind(this), searchParams);
 
     return overview;
   }
 
   async queryOptions(branch) {
-    const { QueryWorker } = await import('./query_worker.js');
-
     const searchParams = new URLSearchParams();
 
     searchParams.set('|', branch);
 
-    const queryWorker = new QueryWorker(this.readFile.bind(this));
-
-    const overview = await queryWorker.select(searchParams);
+    const overview = await runWorker(this.readFile.bind(this), searchParams);
 
     return overview;
   }

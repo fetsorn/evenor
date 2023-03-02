@@ -31,12 +31,14 @@ async function selectRepo(repoUUID, entry) {
 
   const api = new API(entry.UUID);
 
-  const schema = await api.readSchema();
+  try {
+    const schema = await api.readSchema();
 
-  const schemaEntry = await schemaToEntry(schema);
+    const schemaEntry = await schemaToEntry(schema);
 
-  if (schema) {
     entryNew.schema = schemaEntry;
+  } catch {
+    // do nothing
   }
 
   return entryNew;

@@ -1,7 +1,7 @@
 import path from 'path';
 import url from 'url';
 import {
-  app, BrowserWindow, ipcMain, shell,
+  app, BrowserWindow, ipcMain, shell, Menu,
 } from 'electron';
 import { ElectronAPI as API } from 'lib/api/electron.js';
 
@@ -50,6 +50,44 @@ const createWindow = async () => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
+
+  const isMac = process.platform === 'darwin';
+
+  const macAppMenu = { role: 'appMenu' };
+
+  const template = [
+    ...(isMac ? [macAppMenu] : []),
+    { role: 'fileMenu' },
+    { role: 'editMenu' },
+    { role: 'viewMenu' },
+    { role: 'windowMenu' },
+    {
+      label: 'More',
+      submenu: [
+        {
+          label: 'New Window',
+          click: () => {
+            createWindow();
+          },
+        },
+      ],
+    },
+    {
+      role: 'help',
+      submenu: app.isPackaged ? [] : [
+        {
+          label: 'Learn More',
+          click: async () => {
+            await shell.openExternal('https://github.com/fetsorn/qualia');
+          },
+        },
+      ],
+    },
+  ];
+
+  const menu = Menu.buildFromTemplate(template);
+
+  Menu.setApplicationMenu(menu);
 };
 
 /**

@@ -47,7 +47,7 @@ export function entryToSchema(schemaEntry) {
 
 export async function schemaToEntry(schema) {
   const entry = {
-    '|': 'schema',
+    _: 'schema',
     UUID: await digestMessage(await randomUUID()),
     items: [],
   };
@@ -55,7 +55,7 @@ export async function schemaToEntry(schema) {
   await Promise.all(Object.keys(schema).map(async (key) => {
     const item = {};
 
-    item['|'] = 'schema_branch';
+    item._ = 'schema_branch';
 
     item.UUID = await digestMessage(await randomUUID());
 
@@ -79,7 +79,7 @@ export async function schemaToEntry(schema) {
 
     if (schema[key].description) {
       item.schema_branch_description = {
-        '|': 'schema_branch_description',
+        _: 'schema_branch_description',
         UUID: await digestMessage(await randomUUID()),
       };
 
@@ -102,163 +102,163 @@ export async function schemaToEntry(schema) {
 
 export async function generateDefaultSchemaEntry() {
   return {
-    '|': 'schema',
+    _: 'schema',
     UUID: await digestMessage(await randomUUID()),
     items: [
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filepath',
         schema_branch_trunk: 'datum',
         schema_branch_type: 'string',
         schema_branch_task: 'path',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Path to a digital asset',
           schema_branch_description_ru: 'Путь к файлу',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'actdate',
         schema_branch_trunk: 'datum',
         schema_branch_task: 'date',
         schema_branch_dir: 'date',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Date of the event',
           schema_branch_description_ru: 'Дата события',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'moddate',
         schema_branch_trunk: 'filepath',
         schema_branch_task: 'date',
         schema_branch_dir: 'date',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Date of the file',
           schema_branch_description_ru: 'Дата файла',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'datum',
         schema_branch_type: 'string',
         schema_branch_task: 'text',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Description of the event',
           schema_branch_description_ru: 'Описание события',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'saydate',
         schema_branch_trunk: 'datum',
         schema_branch_task: 'date',
         schema_branch_dir: 'date',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Date of entry',
           schema_branch_description_ru: 'Дата записи',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filehash',
         schema_branch_trunk: 'filepath',
         schema_branch_type: 'hash',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Hashsum of the file',
           schema_branch_description_ru: 'Хэш файла',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'category',
         schema_branch_trunk: 'datum',
         schema_branch_type: 'string',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Category',
           schema_branch_description_ru: 'Категория',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'privacy',
         schema_branch_trunk: 'datum',
         schema_branch_type: 'string',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Privacy',
           schema_branch_description_ru: 'Публичность',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filesize',
         schema_branch_trunk: 'filepath',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Size of the file',
           schema_branch_description_ru: 'Размер файла',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filetype',
         schema_branch_trunk: 'filepath',
         schema_branch_type: 'string',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Type of the file',
           schema_branch_description_ru: 'Тип файла',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'actname',
         schema_branch_trunk: 'datum',
         schema_branch_dir: 'name',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Name of the person in the event',
           schema_branch_description_ru: 'Имя человека участвовавшего в событии',
         },
       },
       {
-        '|': 'schema_branch',
+        _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'sayname',
         schema_branch_trunk: 'datum',
         schema_branch_dir: 'name',
         schema_branch_description: {
-          '|': 'schema_branch_description',
+          _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Name of the person who made the entry',
           schema_branch_description_ru: 'Имя автора записи',

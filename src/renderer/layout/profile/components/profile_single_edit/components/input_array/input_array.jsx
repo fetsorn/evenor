@@ -17,7 +17,7 @@ async function addField(
   if (schema[branch].type === 'object' || schema[branch].type === 'array') {
     const obj = {};
 
-    obj['|'] = branch;
+    obj._ = branch;
 
     const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
 
@@ -33,7 +33,7 @@ async function addField(
   } else {
     value = '';
   }
-  const base = entry['|'];
+  const base = entry._;
 
   const { trunk } = schema[branch];
 
@@ -69,7 +69,7 @@ export function InputArray({
 
   const base = useStore((state) => state.base);
 
-  const branch = entry['|'];
+  const branch = entry._;
 
   const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch);
 
@@ -129,7 +129,7 @@ export function InputArray({
           // sort so that the order of objects remains the same after push
           itemsNew.sort((a, b) => a.UUID?.localeCompare(b.UUID));
 
-          const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };
+          const arrayNew = { _: entry._, UUID: entry.UUID, items: itemsNew };
 
           onFieldChange(branch, arrayNew);
         }
@@ -137,7 +137,7 @@ export function InputArray({
         function onFieldRemoveArrayItem() {
           const itemsNew = entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
 
-          const arrayNew = { '|': entry['|'], UUID: entry.UUID, items: itemsNew };
+          const arrayNew = { _: entry._, UUID: entry.UUID, items: itemsNew };
 
           onFieldChange(branch, arrayNew);
         }

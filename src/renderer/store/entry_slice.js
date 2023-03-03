@@ -12,7 +12,7 @@ async function createEntry(schema, base) {
 
   entry.UUID = await digestMessage(uuid);
 
-  entry['|'] = base;
+  entry._ = base;
 
   if (schema[base].type === 'array') {
     entry.items = [];
@@ -47,7 +47,7 @@ async function selectRepo(repoUUID, entry) {
 async function saveRepo(repoUUID, entry) {
   const api = new API(entry.UUID);
 
-  const remoteTags = entry.tags?.items?.filter((item) => item['|'] === 'remote_tag') ?? [];
+  const remoteTags = entry.tags?.items?.filter((item) => item._ === 'remote_tag') ?? [];
 
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 

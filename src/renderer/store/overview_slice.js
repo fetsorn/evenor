@@ -1,5 +1,5 @@
 import { API, schemaRoot } from 'lib/api';
-import { OverviewType } from './types.js';
+// import { OverviewType } from './types.js';
 
 // pick a param to group data by
 function getDefaultGroupBy(
@@ -8,8 +8,8 @@ function getDefaultGroupBy(
   searchParams,
 ) {
   // fallback to groupBy param from the search query
-  if (searchParams.has('groupBy')) {
-    const groupBy = searchParams.get('groupBy');
+  if (searchParams.has('.')) {
+    const groupBy = searchParams.get('.');
 
     return groupBy;
   }
@@ -67,7 +67,7 @@ function paramsToQueries(searchParams) {
 
   const queries = Object.fromEntries(
     Object.entries(searchParamsObject).filter(
-      ([key]) => key !== 'groupBy' && key !== 'overviewType',
+      ([key]) => key !== '.' && key !== '~' && key !== '-',
     ),
   );
 
@@ -80,6 +80,8 @@ export const createOverviewSlice = (set, get) => ({
   overview: [],
 
   isInitialized: false,
+
+  isView: false,
 
   repoRoute: undefined,
 
@@ -96,20 +98,28 @@ export const createOverviewSlice = (set, get) => ({
 
     let repoName;
 
-    if (searchParams.has('url')) {
-      repoUUID = 'view';
+    let isView = false;
+
+    if (searchParams.has('~')) {
+      // if uri specifies a remote
+      // try to clone remote to store
+      // where repo uuid is a digest of remote
+      // and repo name is uri-encoded remote
+      const remote = searchParams.get('~');
+
+      const token = searchParams.get('-') ?? '';
+
+      const { digestMessage } = await import('@fetsorn/csvs-js');
+
+      repoUUID = digestMessage(remote);
+
+      repoName = encodeURIComponent(remote);
+
+      isView = true;
 
       const api = new API(repoUUID);
 
-      const url = searchParams.get('url');
-
-      const token = searchParams.get('token') ?? '';
-
-      searchParams.delete('url');
-
-      searchParams.delete('token');
-
-      await api.cloneView(url, token);
+      await api.cloneView(remote, token);
     } else if (repoRoute === undefined) {
       repoUUID = 'root';
 
@@ -126,29 +136,44 @@ export const createOverviewSlice = (set, get) => ({
 
       const searchParamsReponame = new URLSearchParams();
 
-      searchParamsReponame.set('|', 'reponame');
+      searchParamsReponame.set('_', 'reponame');
 
       searchParamsReponame.set('reponame', repoName);
 
-      const [{ UUID }] = await apiRoot.select(searchParamsReponame);
+      try {
+        const [{ UUID }] = await apiRoot.select(searchParamsReponame);
 
-      repoUUID = UUID;
+        repoUUID = UUID;
+      } catch {
+        // if repoRoute is not in root database
+        // try to decode repoRoute as a view url
+        // and set uuid to a digest of repoRoute
+        const remote = repoRoute;
+
+        const { digestMessage } = await import('@fetsorn/csvs-js');
+
+        repoUUID = digestMessage(remote);
+
+        repoName = encodeURIComponent(remote);
+
+        isView = true;
+      }
     }
 
     const api = new API(repoUUID);
 
     const queries = paramsToQueries(searchParams);
 
-    const overviewTypeParam = searchParams.get(
-      'overviewType',
-    );
+    // const overviewTypeParam = searchParams.get(
+    //   'overviewType',
+    // );
 
-    const overviewType = overviewTypeParam
-      ? OverviewType[overviewTypeParam]
-      : get().overviewType;
+    // const overviewType = overviewTypeParam
+    //   ? OverviewType[overviewTypeParam]
+    //   : get().overviewType;
 
     const groupBy = searchParams.get(
-      'groupBy',
+      '.',
     ) ?? '';
 
     const schema = await api.readSchema();
@@ -159,8 +184,8 @@ export const createOverviewSlice = (set, get) => ({
       schema,
       base,
       queries,
-      overviewType,
       groupBy,
+      isView,
       isInitialized: true,
       repoUUID,
       repoName,
@@ -179,7 +204,7 @@ export const createOverviewSlice = (set, get) => ({
 
       const searchParams = queriesToParams(get().queries);
 
-      searchParams.set('|', base);
+      searchParams.set('_', base);
 
       set({
         base, schema, overview: [],
@@ -202,7 +227,7 @@ export const createOverviewSlice = (set, get) => ({
 
     set({ base });
 
-    searchParams.set('|', base);
+    searchParams.set('_', base);
 
     const api = new API(get().repoUUID);
 
@@ -214,14 +239,14 @@ export const createOverviewSlice = (set, get) => ({
   setRepoUUID: async (repoUUID) => {
     let repoName;
 
-    if (repoUUID === 'root' || repoUUID === 'view') {
+    if (repoUUID === 'root' || get().isView) {
       // leave repoName as undefined
     } else {
       const api = new API('root');
 
       const searchParams = new URLSearchParams();
 
-      searchParams.set('|', 'reponame');
+      searchParams.set('_', 'reponame');
 
       searchParams.set('reponame', repoUUID);
 
@@ -240,7 +265,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const searchParams = new URLSearchParams();
 
-    searchParams.set('|', 'reponame');
+    searchParams.set('_', 'reponame');
 
     searchParams.set('reponame', repoName);
 

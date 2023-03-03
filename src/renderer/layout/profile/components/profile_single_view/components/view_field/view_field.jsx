@@ -16,7 +16,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
     state.entry,
   ]);
 
-  const branch = entry['|'];
+  const branch = entry._;
 
   const branchType = schema[branch]?.type;
 
@@ -32,12 +32,12 @@ export function ViewField({ entry, schema, isBaseObject }) {
         {entry.UUID}
 
         { Object.keys(entry).map((leaf) => {
-          if (leaf === '|' || leaf === 'UUID') { return; }
+          if (leaf === '_' || leaf === 'UUID') { return; }
 
           const leafEntry = schema[leaf]?.type === 'object'
                                  || schema[leaf]?.type === 'array'
             ? entry[leaf]
-            : { '|': leaf, [leaf]: entry[leaf] };
+            : { _: leaf, [leaf]: entry[leaf] };
 
           return (
             <div key={(entry.UUID ?? '') + leaf}>
@@ -125,12 +125,12 @@ export function ViewField({ entry, schema, isBaseObject }) {
               {entry.UUID}
 
               { Object.keys(entry).map((leaf) => {
-                if (leaf === '|' || leaf === 'UUID') { return; }
+                if (leaf === '_' || leaf === 'UUID') { return; }
 
                 const leafEntry = schema[leaf]?.type === 'object'
                                  || schema[leaf]?.type === 'array'
                   ? entry[leaf]
-                  : { '|': leaf, [leaf]: entry[leaf] };
+                  : { _: leaf, [leaf]: entry[leaf] };
 
                 return (
                   <div key={(entry.UUID ?? '') + leaf}>

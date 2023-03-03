@@ -24,7 +24,7 @@ export function EditInput({
 }) {
   const { i18n, t } = useTranslation();
 
-  const branch = entry['|'];
+  const branch = entry._;
 
   const value = entry[branch];
 

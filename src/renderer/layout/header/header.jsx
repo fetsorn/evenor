@@ -24,6 +24,7 @@ export function Header() {
     overviewType,
     onQueries,
     isInitialized,
+    isView,
     repoUUID,
     repoName,
     setRepoUUID,
@@ -34,6 +35,7 @@ export function Header() {
     state.overviewType,
     state.onQueries,
     state.isInitialized,
+    state.isView,
     state.repoUUID,
     state.repoName,
     state.setRepoUUID,
@@ -46,7 +48,7 @@ export function Header() {
       const searchParams = queriesToParams(queries);
 
       // if (groupBy !== '') {
-      //   searchParams.set('groupBy', groupBy);
+      //   searchParams.set('.', groupBy);
       // }
 
       // searchParams.set('overviewType', overviewType);
@@ -66,7 +68,7 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      { repoUUID !== 'view'
+      { (!isView)
          && repoUUID !== 'root'
         ? (
           <Button
@@ -92,7 +94,7 @@ export function Header() {
 
       <div />
 
-      { repoUUID !== 'root' && repoUUID !== 'view' && (
+      { repoUUID !== 'root' && (!isView) && (
         <Button
           type="button"
           title={t('header.button.back')}

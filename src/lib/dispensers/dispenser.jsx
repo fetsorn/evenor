@@ -4,7 +4,7 @@ import { Remote } from './remote.jsx';
 import { Sync } from './sync.jsx';
 
 export function Dispenser({ baseEntry, branchEntry }) {
-  switch (branchEntry['|']) {
+  switch (branchEntry._) {
     case 'sync_tag':
       return (<Sync {...{ baseEntry, branchEntry }} />);
 

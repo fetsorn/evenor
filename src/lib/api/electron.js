@@ -172,7 +172,7 @@ export class ElectronAPI {
   async queryOptions(branch) {
     const searchParams = new URLSearchParams();
 
-    searchParams.set('|', branch);
+    searchParams.set('_', branch);
 
     return runWorker({
       msg: 'select',

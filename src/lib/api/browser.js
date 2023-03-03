@@ -229,7 +229,7 @@ export class BrowserAPI {
   async queryOptions(branch) {
     const searchParams = new URLSearchParams();
 
-    searchParams.set('|', branch);
+    searchParams.set('_', branch);
 
     const overview = await runWorker(this.readFile.bind(this), searchParams);
 

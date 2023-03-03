@@ -17,7 +17,7 @@ async function addField(
   if (schema[branch].type === 'object' || schema[branch].type === 'array') {
     const obj = {};
 
-    obj['|'] = branch;
+    obj._ = branch;
 
     const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
 
@@ -33,7 +33,7 @@ async function addField(
   } else {
     value = '';
   }
-  const base = entry['|'];
+  const base = entry._;
 
   const { trunk } = schema[branch];
 
@@ -69,9 +69,9 @@ export function InputObject({
 
   const base = useStore((state) => state.base);
 
-  const branch = entry['|'];
+  const branch = entry._;
 
-  const addedLeaves = Object.keys(entry).filter((b) => b !== '|' && b !== 'UUID');
+  const addedLeaves = Object.keys(entry).filter((b) => b !== '_' && b !== 'UUID');
 
   const notAddedLeaves = entry
     ? Object.keys(schema).filter((leaf) => {
@@ -113,7 +113,7 @@ export function InputObject({
 
     const leafEntry = schema[leaf]?.type === 'object' || schema[leaf]?.type === 'array'
       ? entry[leaf]
-      : { '|': leaf, [leaf]: entry[leaf] };
+      : { _: leaf, [leaf]: entry[leaf] };
 
     return (
       <div key={`${entry.UUID ?? ''}${leaf}`}>

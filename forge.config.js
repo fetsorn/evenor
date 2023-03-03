@@ -1,36 +1,47 @@
-// const process = require("process");
+const process = require('process');
 
 module.exports = {
-  // packagerConfig: {
-  //   electronZipDir: process.env.electron_zip_dir,
-  // },
-  // makers: [
-  //   {
-  //     name: "@electron-forge/maker-squirrel",
-  //     config: {},
-  //   },
-  //   {
-  //     name: "@electron-forge/maker-zip",
-  //     platforms: ["darwin", "win32", "linux"],
-  //   },
-  //   {
-  //     name: "@electron-forge/maker-deb",
-  //     config: {},
-  //   },
-  //   {
-  //     name: "@electron-forge/maker-rpm",
-  //     config: {},
-  //   },
-  // ],
+  packagerConfig: {
+    icon: './public/icon',
+    electronZipDir: process.env.electron_zip_dir,
+  },
+  makers: [
+    {
+      name: '@electron-forge/maker-squirrel',
+      config: {
+        icon: './public/icon',
+      },
+    },
+    {
+      name: '@electron-forge/maker-zip',
+      platforms: [
+        'darwin',
+        'win32',
+        'linux',
+      ],
+      icon: './public/icon',
+    },
+    {
+      name: '@electron-forge/maker-deb',
+      config: {
+        icon: './public/icon',
+      },
+    },
+    {
+      name: '@electron-forge/maker-rpm',
+      config: {
+        icon: './public/icon',
+      },
+    },
+  ],
   plugins: [
     {
       name: '@electron-forge/plugin-webpack',
+      devContentSecurityPolicy: "Content-Security-Policy: script-src 'self'; default-src 'self'; style-src 'self'",
       config: {
-        devContentSecurityPolicy:
-          "default-src * self blob: data: gap:; style-src * self 'unsafe-inline' blob: data: gap:; script-src * 'self' 'unsafe-eval' 'unsafe-inline' blob: data: gap:; object-src * 'self' blob: data: gap:; img-src * self 'unsafe-inline' blob: data: gap:; connect-src self * 'unsafe-inline' blob: data: gap:; frame-src * self blob: data: gap:;",
-        mainConfig: './webpack.main.config.cjs',
+        mainConfig: './webpack.main.config.js',
         renderer: {
-          config: './webpack.renderer.config.cjs',
+          config: './webpack.renderer.config.js',
           entryPoints: [
             {
               name: 'main_window',

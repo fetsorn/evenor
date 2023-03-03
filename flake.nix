@@ -115,13 +115,13 @@
             extraBuildInputs = [ pkgs.zip ];
             # DEBUG = "*"; 
             preConfigure = ''
-              substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform darwin --targets @electron-forge/maker-zip"
+              substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
             '';
             buildPhase = ''
               mkdir home
               touch home/.skip-forge-system-check
-              rm ./deps/${name}/${name} 
-              HOME="$(realpath home)" yarn run build:electron
+              rm ./deps/${name}/${name}
+              HOME="$(realpath home)" yarn run electron-forge -- make --arch ${arch} --platform darwin --targets @electron-forge/maker-zip
             '';
             installPhase =
               "cp -r ./deps/${name}/out/make/zip/darwin/${arch} $out";

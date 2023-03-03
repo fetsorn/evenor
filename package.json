@@ -2,12 +2,12 @@
   "name": "qualia",
   "productName": "qualia",
   "version": "1.0.0",
-  "description": "aa",
+  "description": "Tell the story of your data.",
   "main": "./.webpack/main",
   "scripts": {
     "build:webapp": "webpack --config webpack.web.config.mjs --mode='production'",
-    "start:webapp": "webpack serve --config webpack.web.config.mjs --mode='production'",
-    "build:server": "webpack --env buildMode=server --mode='development' --config webpack.web.config.js; ln -sTf $(realpath release/renderer) src/server/build; cd src/server; yarn",
+    "start:webapp": "webpack serve --config webpack.web.config.mjs",
+    "build:server": "webpack --env buildMode=server --mode='development' --config webpack.web.config.mjs; ln -sTf $(realpath release/renderer) src/server/build; cd src/server; yarn",
     "start:server": "node ./src/server/index.js",
     "start:electron": "electron-forge start",
     "build:electron": "electron-forge make",
@@ -22,109 +22,47 @@
     "email": "fetsorn@gmail.com"
   },
   "license": "MIT",
-  "config": {
-    "forge": {
-      "packagerConfig": {
-        "icon": "./public/icon"
-      },
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "icon": "./public/icon"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-zip",
-          "platforms": [
-            "darwin",
-            "win32",
-            "linux"
-          ],
-          "icon": "./public/icon"
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {
-            "icon": "./public/icon"
-          }
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {
-            "icon": "./public/icon"
-          }
-        }
-      ],
-      "plugins": [
-        {
-          "name": "@electron-forge/plugin-webpack",
-          "devContentSecurityPolicy": "Content-Security-Policy: script-src 'self'; default-src 'self'; style-src 'self'",
-          "config": {
-            "mainConfig": "./webpack.main.config.js",
-            "renderer": {
-              "config": "./webpack.renderer.config.js",
-              "entryPoints": [
-                {
-                  "name": "main_window",
-                  "html": "./src/renderer/index.html",
-                  "js": "./src/renderer/app.jsx"
-                }
-              ]
-            }
-          }
-        }
-      ]
-    }
-  },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.5",
+    "@electron-forge/cli": "6.0.5",
     "electron": "23.1.0"
   },
   "dependencies": {
-    "@babel/core": "^7.20.12",
-    "@babel/eslint-parser": "^7.19.1",
-    "@babel/preset-env": "^7.20.2",
-    "@babel/preset-react": "^7.18.6",
-    "@electron-forge/maker-deb": "^6.0.5",
-    "@electron-forge/maker-rpm": "^6.0.5",
-    "@electron-forge/maker-squirrel": "^6.0.5",
-    "@electron-forge/maker-zip": "^6.0.5",
+    "@babel/core": "7.21.0",
+    "@babel/eslint-parser": "7.19.1",
+    "@babel/preset-env": "7.20.2",
+    "@babel/preset-react": "7.18.6",
+    "@electron-forge/maker-deb": "6.0.5",
+    "@electron-forge/maker-rpm": "6.0.5",
+    "@electron-forge/maker-squirrel": "6.0.5",
+    "@electron-forge/maker-zip": "6.0.5",
     "@electron-forge/plugin-webpack": "6.0.5",
-    "@fetsorn/csvs-js": "0.10.4",
+    "@fetsorn/csvs-js": "0.11.0",
     "@fetsorn/ged2dot": "0.2.0",
     "@fetsorn/ppt": "0.0.1",
     "@fetsorn/wasm-grep": "0.3.1",
-    "@hpcc-js/wasm": "^2.8.0",
+    "@hpcc-js/wasm": "2.8.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
-    "@melloware/csp-webpack-plugin": "^6.0.4",
-    "@timfish/forge-externals-plugin": "^0.2.0",
-    "babel-loader": "^9.1.2",
+    "babel-loader": "9.1.2",
     "buffer": "6.0.3",
     "cfb": "^0.10.0",
     "classnames": "2.3.2",
-    "command-exists": "^1.2.9",
+    "command-exists": "1.2.9",
     "copy-webpack-plugin": "11.0.0",
     "crypto-browserify": "3.12.0",
-    "csp-html-webpack-plugin": "^5.1.0",
     "css-loader": "6.7.3",
-    "css-minimizer-webpack-plugin": "4.2.2",
     "docx4js": "3.2.20",
     "electron": "23.1.0",
     "electron-debug": "3.2.0",
-    "electron-log": "5.0.0-beta.16",
-    "electron-squirrel-startup": "^1.0.0",
-    "eslint": "^7.32.0 || ^8.2.0",
-    "eslint-config-airbnb": "^19.0.4",
-    "eslint-plugin-import": "^2.27.5",
-    "eslint-plugin-jsx-a11y": "^6.5.1",
-    "eslint-plugin-react": "^7.28.0",
-    "eslint-plugin-react-hooks": "^4.3.0",
-    "events": "^3.3.0",
+    "electron-squirrel-startup": "1.0.0",
+    "eslint": "8.35.0",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-react": "7.32.2",
+    "eslint-plugin-react-hooks": "4.6.0",
     "express": "4.18.2",
     "file-saver": "2.0.5",
     "html-webpack-plugin": "5.5.0",
-    "https-browserify": "1.0.0",
     "i18next": "22.4.10",
     "i18next-browser-languagedetector": "7.0.1",
     "i18next-http-backend": "2.1.1",
@@ -136,30 +74,18 @@
     "node-git-server": "1.0.0",
     "node-loader": "2.0.0",
     "normalize.css": "8.0.1",
-    "os-browserify": "0.3.0",
-    "path-browserify": "1.0.1",
     "process": "0.11.10",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-draggable": "4.4.5",
-    "react-i18next": "12.1.5",
-    "react-router-dom": "6.8.1",
+    "react-i18next": "12.2.0",
+    "react-router-dom": "6.8.2",
     "rtf.js": "3.0.9",
-    "sass": "1.58.3",
-    "sass-loader": "13.2.0",
     "stream-browserify": "3.0.0",
-    "stream-http": "3.2.0",
-    "strict-csp-html-webpack-plugin": "^1.0.2",
-    "string_decoder": "^1.3.0",
-    "style-loader": "3.3.1",
-    "threads": "^1.7.0",
-    "threads-plugin": "^1.4.0",
-    "util": "0.12.5",
     "webpack": "5.75.0",
     "webpack-cli": "5.0.1",
     "webpack-dev-server": "4.11.1",
-    "yarn": "^1.22.19",
-    "zlib-browserify": "0.0.3",
-    "zustand": "4.3.3"
+    "yarn": "1.22.19",
+    "zustand": "4.3.5"
   }
 }

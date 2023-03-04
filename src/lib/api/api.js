@@ -13,7 +13,25 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
+  async fetchAsset(filepath) {
+    const { tags } = await this.getSettings();
+
+    const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
+
+    const token = firstRemote?.remote_tag_token;
+
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.fetchAsset(this.uuid, filepath, token);
+
+      default:
+        return this.#browser.fetchAsset(filepath, token);
+    }
+  }
+
   async uploadFile(file) {
+    console.log('api-uploadFile');
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':

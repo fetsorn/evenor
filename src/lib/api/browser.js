@@ -68,7 +68,7 @@ export class BrowserAPI {
     this.dir = `/store/${uuid}`;
   }
 
-  async readFile(filepath) {
+  async fetchFile(filepath) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
       return (await fetch(`/api/${filepath}`)).text();
@@ -106,6 +106,12 @@ export class BrowserAPI {
     }
 
     const file = await pfs.readFile(`${this.dir}/${filepath}`);
+
+    return file;
+  }
+
+  async readFile(filepath) {
+    const file = await this.fetchFile(filepath);
 
     const restext = new TextDecoder().decode(file);
 
@@ -182,7 +188,7 @@ export class BrowserAPI {
         body: form,
       });
 
-      return;
+      return `${this.dir}/${file.name}`;
     }
 
     const pfs = new LightningFS('fs').promises;
@@ -218,6 +224,8 @@ export class BrowserAPI {
 
       await pfs.writeFile(filepath, buf);
     }
+
+    return filepath;
   }
 
   async select(searchParams) {
@@ -229,7 +237,7 @@ export class BrowserAPI {
   async queryOptions(branch) {
     const searchParams = new URLSearchParams();
 
-    searchParams.set('_', branch);
+    searchParams.set('|', branch);
 
     const overview = await runWorker(this.readFile.bind(this), searchParams);
 
@@ -604,5 +612,61 @@ export class BrowserAPI {
     }
 
     await this.clone(remote, token);
+  }
+
+  async getRemote() {
+    const { getConfig } = await import('isomorphic-git');
+
+    return getConfig({
+      fs,
+      dir: this.dir,
+      path: 'remote.origin.url',
+    });
+  }
+
+  // returns Blob
+  async fetchAsset(filename, token) {
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ === 'server') {
+      const localpath = `/api/${filename}`;
+
+      const result = await fetch(localpath);
+
+      if (result.ok) {
+        return result.blob();
+      }
+    }
+
+    let content = await this.fetchFile(`local/${filename}`);
+
+    console.log({ content });
+
+    content = Buffer.from(content);
+
+    console.log({ content });
+
+    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+
+    if (pointsToLFS(content)) {
+      console.log('pointsToLFS');
+      const remote = await this.getRemote();
+
+      console.log('remote, token', remote, token);
+
+      const pointer = await readPointer({ dir: this.dir, content });
+
+      console.log('pointer', pointer);
+
+      const http = await import('isomorphic-git/http/web/index.cjs');
+
+      content = await downloadBlobFromPointer(
+        fs,
+        { http, url: remote, auth: token },
+        pointer,
+      );
+      console.log('content from pointer', { content });
+    }
+
+    return content;
   }
 }

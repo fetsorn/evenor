@@ -10,7 +10,7 @@ import {
 } from '..';
 import {
   useEditStore,
-} from '../../profile_single_edit';
+} from '../../profile_single_edit.jsx';
 
 export function EditInput({
   index,
@@ -18,8 +18,6 @@ export function EditInput({
   entry,
   onFieldChange,
   onFieldRemove,
-  onFieldUpload,
-  onFieldUploadElectron,
   isBaseObject,
 }) {
   const { i18n, t } = useTranslation();
@@ -227,8 +225,6 @@ export function EditInput({
                   branch,
                   value,
                   onFieldChange,
-                  onFieldUpload,
-                  onFieldUploadElectron,
                 }}
               />
             </div>

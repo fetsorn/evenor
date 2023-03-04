@@ -79,6 +79,14 @@ export class ElectronAPI {
     return content;
   }
 
+  async fetchFile(filepath) {
+    const file = path.join(this.dir, filepath);
+
+    const content = fs.readFileSync(file);
+
+    return content;
+  }
+
   async writeFile(filepath, content) {
     const appdata = path.join(home, '.qualia');
 
@@ -119,7 +127,8 @@ export class ElectronAPI {
     await fs.promises.writeFile(file, content);
   }
 
-  static async uploadFile() {
+  async uploadFile() {
+    console.log('electron-uploadFile');
     const res = await dialog.showOpenDialog({ properties: ['openFile'] });
 
     if (res.canceled) {
@@ -129,11 +138,9 @@ export class ElectronAPI {
 
       const filename = pathSource.substring(pathSource.lastIndexOf('/') + 1);
 
-      const rootPath = path.join(home, '.qualia');
-
       const localDir = 'local';
 
-      const localPath = path.join(rootPath, this.dir, localDir);
+      const localPath = path.join(this.dir, localDir);
 
       if (!fs.existsSync(localPath)) {
         fs.mkdirSync(localPath);
@@ -401,6 +408,8 @@ export class ElectronAPI {
       await git.init({ fs, dir });
     }
 
+    await fs.promises.writeFile(`${dir}/.gitattributes`, 'lfs/** filter=lfs diff=lfs merge=lfs -text\n', 'utf8');
+
     await fs.promises.writeFile(`${dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
     await this.commit();
@@ -464,6 +473,8 @@ export class ElectronAPI {
     }
   }
 
+  // fails at parseConfig with "cannot split null",
+  // as if it doesn't find the config
   async getRemote() {
     return git.getConfig({
       fs,
@@ -478,23 +489,6 @@ export class ElectronAPI {
     const pdfURL = await exportPDF(text);
 
     return pdfURL;
-  }
-
-  // returns ArrayBuffer
-  async fetchAsset(
-    filepath,
-  ) {
-    const file = path.join(this.dir, filepath);
-
-    const b = fs.readFileSync(file);
-
-    // ArrayBuffer
-    const content = b.buffer.slice(
-      b.byteOffset,
-      b.byteOffset + b.byteLength,
-    );
-
-    return content;
   }
 
   async readSchema() {
@@ -572,5 +566,26 @@ export class ElectronAPI {
     }
 
     await this.clone(remote, token);
+  }
+
+  // returns blob url
+  async fetchAsset(filename, token) {
+    let content = await this.fetchFile(`local/${filename}`);
+
+    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+
+    if (pointsToLFS(content)) {
+      const remote = await this.getRemote();
+
+      const pointer = await readPointer({ dir: this.dir, content });
+
+      content = await downloadBlobFromPointer(
+        fs,
+        { http, url: remote, auth: token },
+        pointer,
+      );
+    }
+
+    return content;
   }
 }

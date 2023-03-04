@@ -67,7 +67,7 @@ module.exports = {
       // string_decoder: require.resolve('string_decoder/'),
       crypto: require.resolve('crypto-browserify'),
       // https: require.resolve('https-browserify'),
-      // path: require.resolve('path-browserify'),
+      path: require.resolve('path-browserify'),
       fs: false,
       buffer: require.resolve('buffer/'),
       // util: require.resolve('util'),

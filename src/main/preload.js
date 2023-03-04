@@ -2,8 +2,6 @@
 const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('electron', {
-  uploadFile: (dir) => ipcRenderer.invoke('uploadFile', dir),
-
   select: (dir, searchParams) => ipcRenderer.invoke('select', dir, searchParams),
 
   queryOptions: (dir, branch) => ipcRenderer.invoke('queryOptions', dir, branch),
@@ -31,4 +29,8 @@ contextBridge.exposeInMainWorld('electron', {
   readIndex: (dir) => ipcRenderer.invoke('readIndex', dir),
 
   cloneView: (dir, remote, token) => ipcRenderer.invoke('cloneView', dir, remote, token),
+
+  fetchAsset: (dir, filename, token) => ipcRenderer.invoke('fetchAsset', dir, filename, token),
+
+  uploadFile: (dir) => ipcRenderer.invoke('uploadFile', dir),
 });

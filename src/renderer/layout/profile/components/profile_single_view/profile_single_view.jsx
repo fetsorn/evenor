@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
 import { schemaRoot } from 'lib/api';
 import {
-  AssetView,
   Button,
   Title,
 } from '@/components/index.js';
@@ -35,6 +34,7 @@ export function ProfileSingleView() {
     onEntryEdit,
     onEntryClose,
     onEntryDelete,
+    onEntryCommit,
     isSettings,
     schemaRepo,
   ] = useStore((state) => [
@@ -46,6 +46,7 @@ export function ProfileSingleView() {
     state.onEntryEdit,
     state.onEntryClose,
     state.onEntryDelete,
+    state.onEntryCommit,
     state.isSettings,
     state.schema,
   ]);
@@ -70,6 +71,12 @@ export function ProfileSingleView() {
                 ✏️
               </Button>
 
+              {(isSettings || repoUUID === 'root') && (
+                <Button type="button" title={t('line.button.commit')} onClick={() => onEntryCommit(entry.UUID)}>
+                  ⬆️
+                </Button>
+              )}
+
               <Button type="button" title={t('line.button.delete')} onClick={onEntryDelete}>
                 🗑️
               </Button>
@@ -90,8 +97,6 @@ export function ProfileSingleView() {
                 isBaseObject: true,
               }}
             />
-
-            <AssetView filepath={entry?.FILE_PATH} />
           </div>
         </div>
       )}

@@ -1,5 +1,6 @@
 import React, { useState, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AssetView } from '@/components/index.js';
 import { useStore } from '@/store/index.js';
 import { FieldText } from '..';
 
@@ -19,6 +20,8 @@ export function ViewField({ entry, schema, isBaseObject }) {
   const branch = entry._;
 
   const branchType = schema[branch]?.type;
+
+  const branchTask = schema[branch]?.task;
 
   const branchDescription = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
@@ -144,6 +147,12 @@ export function ViewField({ entry, schema, isBaseObject }) {
       );
 
     default:
+      if (branchTask === 'path') {
+        return (
+          <AssetView filepath={entry[branch]} />
+        );
+      }
+
       return (
         <div>
           {branchDescription}

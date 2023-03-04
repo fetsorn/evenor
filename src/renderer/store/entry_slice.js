@@ -139,8 +139,6 @@ export const createEntrySlice = (set, get) => ({
 
     const baseOld = get().base;
 
-    const base = 'reponame';
-
     // get current repo settings from root db
     const entryRepo = await apiRepo.getSettings();
 
@@ -188,5 +186,11 @@ export const createEntrySlice = (set, get) => ({
       onEntryDelete: onSettingsDelete,
       isSettings: true,
     });
+  },
+
+  onRepoCommit: async (repoUUID) => {
+    const api = new API(repoUUID);
+
+    await api.commit();
   },
 });

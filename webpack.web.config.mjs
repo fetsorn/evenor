@@ -81,7 +81,7 @@ export default (env) => ({
       // For Ethereum Web3
       crypto: require.resolve('crypto-browserify'),
       fs: false,
-      // path: require.resolve('path-browserify'),
+      path: require.resolve('path-browserify'),
       buffer: require.resolve('buffer/'),
       // util: require.resolve('util'),
       // zlib: require.resolve('zlib-browserify'),

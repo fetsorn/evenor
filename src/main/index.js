@@ -106,11 +106,6 @@ app
   .whenReady()
   .then(() => {
     ipcMain.handle(
-      'uploadFile',
-      async (_event, dir) => (new API(dir)).uploadFile(),
-    );
-
-    ipcMain.handle(
       'select',
       async (_event, dir, searchParams) => (new API(dir)).select(new URLSearchParams(searchParams)),
     );
@@ -178,6 +173,16 @@ app
     ipcMain.handle(
       'cloneView',
       async (_event, dir, remote, token) => (new API(dir)).clone(remote, token),
+    );
+
+    ipcMain.handle(
+      'uploadFile',
+      async (_event, dir) => (new API(dir)).uploadFile(),
+    );
+
+    ipcMain.handle(
+      'fetchAsset',
+      async (_event, dir, filename, token) => (new API(dir)).fetchAsset(filename, token),
     );
 
     createWindow();

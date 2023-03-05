@@ -111,7 +111,6 @@ export class ElectronAPI {
       const files = await fs.promises.readdir(path.join(appdata, root));
 
       if (!files.includes(pathElement)) {
-        // console.log(`creating directory ${pathElement} in ${root}`);
         try {
           await fs.promises.mkdir(path.join(appdata, root, pathElement));
         } catch {
@@ -128,7 +127,6 @@ export class ElectronAPI {
   }
 
   async uploadFile() {
-    console.log('electron-uploadFile');
     const res = await dialog.showOpenDialog({ properties: ['openFile'] });
 
     if (res.canceled) {
@@ -144,8 +142,6 @@ export class ElectronAPI {
 
       if (!fs.existsSync(localPath)) {
         fs.mkdirSync(localPath);
-
-        // console.log(`Directory ${root} is created.`);
       } else {
         // console.log(`Directory ${root} already exists.`);
       }
@@ -153,16 +149,11 @@ export class ElectronAPI {
       const destinationPath = path.join(localPath, filename);
 
       // copy file to local/
-
       if (!fs.existsSync(destinationPath)) {
         await fs.promises.copyFile(pathSource, destinationPath);
-
-        // console.log(`Directory ${root} is created.`);
       } else {
         // throw `file ${destinationPath} already exists`;
       }
-
-      // return the path to local/filename
 
       return filename;
     }
@@ -262,7 +253,7 @@ export class ElectronAPI {
     });
 
     for (let [
-      filePath,
+      filepath,
       HEADStatus,
       workingDirStatus,
       stageStatus,
@@ -271,13 +262,13 @@ export class ElectronAPI {
         await git.resetIndex({
           fs,
           dir,
-          filepath: filePath,
+          filepath,
         });
 
-        [filePath, HEADStatus, workingDirStatus, stageStatus] = await git.statusMatrix({
+        [filepath, HEADStatus, workingDirStatus, stageStatus] = await git.statusMatrix({
           fs,
           dir,
-          filepaths: [filePath],
+          filepaths: [filepath],
         });
 
         if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
@@ -295,14 +286,25 @@ export class ElectronAPI {
           await git.remove({
             fs,
             dir,
-            filepath: filePath,
+            filepath,
           });
         } else {
-          await git.add({
-            fs,
-            dir,
-            filepath: filePath,
-          });
+          // if file in local/ add as LFS
+          if (filepath.startsWith('local/')) {
+            const { addLFS } = await import('./lfs.js');
+
+            await addLFS({
+              fs,
+              dir,
+              filepath,
+            });
+          } else {
+            await git.add({
+              fs,
+              dir,
+              filepath,
+            });
+          }
 
           if (HEADStatus === 1) {
             status = 'modified';
@@ -311,13 +313,11 @@ export class ElectronAPI {
           }
         }
 
-        message.push(`${filePath} ${status}`);
+        message.push(`${filepath} ${status}`);
       }
     }
 
     if (message.length !== 0) {
-      console.log('commit:', message.toString());
-
       await git.commit({
         fs,
         dir,
@@ -447,7 +447,7 @@ export class ElectronAPI {
         await fs.promises.rmdir(file, { recursive: true });
       }
     } catch (e) {
-      console.log(`failed to rimraf ${e}`);
+      // console.log(`failed to rimraf ${e}`);
     }
   }
 

@@ -31,7 +31,6 @@ export class API {
   }
 
   async uploadFile(file) {
-    console.log('api-uploadFile');
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':

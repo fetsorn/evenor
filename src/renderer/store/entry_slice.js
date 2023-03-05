@@ -122,6 +122,12 @@ export const createEntrySlice = (set, get) => ({
     set({ overview, isEdit: false });
   },
 
+  onEntryCommit: async (uuid) => {
+    const api = new API(uuid);
+
+    api.commit();
+  },
+
   onEntryDelete: async () => {
     const api = new API(get().repoUUID);
 

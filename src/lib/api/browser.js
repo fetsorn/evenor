@@ -76,7 +76,6 @@ export class BrowserAPI {
 
     // check if path exists in the repo
     const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
-    // console.log('readFile: pathElements, path', pathElements, filepath);
 
     let root = '';
 
@@ -89,19 +88,16 @@ export class BrowserAPI {
 
       const files = await pfs.readdir(root);
 
-      // console.log('readFile: files', root, files);
       if (files.includes(pathElement)) {
         root += pathElement;
-
-        // console.log(`readFile: ${root} has ${pathElement}`);
       } else {
         // console.log(
         //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`,
         // );
+        // throw Error(
+        //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
+        // );
         return undefined;
-      // throw Error(
-      //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
-      // );
       }
     }
 
@@ -140,8 +136,6 @@ export class BrowserAPI {
     // split path into array of directory names
     const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
 
-    // console.log('writeFileBrowser', dir, path, content);
-
     // remove file name
     pathElements.pop();
 
@@ -151,15 +145,12 @@ export class BrowserAPI {
 
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
-      // console.log('writeFileBrowser-path', pathElement)
 
       root += '/';
 
       const files = await pfs.readdir(root);
 
       if (!files.includes(pathElement)) {
-        // console.log(`writeFileBrowser creating directory ${pathElement} in ${root}`);
-
         // try/catch because csvs can call this in parallel and fail with EEXIST
         try {
           await pfs.mkdir(`${root}/${pathElement}`);
@@ -191,41 +182,13 @@ export class BrowserAPI {
       return `${this.dir}/${file.name}`;
     }
 
-    const pfs = new LightningFS('fs').promises;
+    const filepath = `local/${file.name}`;
 
-    const root = '/';
+    const buf = await file.arrayBuffer();
 
-    const rootFiles = await pfs.readdir('/');
+    await this.writeFile(filepath, buf);
 
-    const repoDir = root + this.uuid;
-
-    if (!rootFiles.includes(this.uuid)) {
-      await pfs.mkdir(repoDir);
-    }
-
-    const repoFiles = await pfs.readdir(repoDir);
-
-    const local = 'local';
-
-    const localDir = `${repoDir}/${local}`;
-
-    if (!repoFiles.includes(local)) {
-      await pfs.mkdir(localDir);
-    }
-
-    const localFiles = await pfs.readdir(localDir);
-
-    const filename = file.name;
-
-    const filepath = `${localDir}/${filename}`;
-
-    if (!localFiles.includes(filename)) {
-      const buf = await file.arrayBuffer();
-
-      await pfs.writeFile(filepath, buf);
-    }
-
-    return filepath;
+    return file.name;
   }
 
   async select(searchParams) {
@@ -336,7 +299,7 @@ export class BrowserAPI {
     });
 
     for (let [
-      filePath,
+      filepath,
       HEADStatus,
       workingDirStatus,
       stageStatus,
@@ -345,13 +308,13 @@ export class BrowserAPI {
         await resetIndex({
           fs,
           dir,
-          filepath: filePath,
+          filepath,
         });
 
-        [filePath, HEADStatus, workingDirStatus, stageStatus] = await statusMatrix({
+        [filepath, HEADStatus, workingDirStatus, stageStatus] = await statusMatrix({
           fs,
           dir,
-          filepaths: [filePath],
+          filepaths: [filepath],
         });
 
         if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
@@ -369,14 +332,24 @@ export class BrowserAPI {
           await remove({
             fs,
             dir,
-            filepath: filePath,
+            filepath,
           });
         } else {
-          await add({
-            fs,
-            dir,
-            filepath: filePath,
-          });
+          if (filepath.startsWith('local/')) {
+            const { addLFS } = await import('./lfs.js');
+
+            await addLFS({
+              fs,
+              dir,
+              filepath,
+            });
+          } else {
+            await add({
+              fs,
+              dir,
+              filepath,
+            });
+          }
 
           if (HEADStatus === 1) {
             status = 'modified';
@@ -385,12 +358,11 @@ export class BrowserAPI {
           }
         }
 
-        message.push(`${filePath} ${status}`);
+        message.push(`${filepath} ${status}`);
       }
     }
 
     if (message.length !== 0) {
-      // console.log("commit:", message.toString());
       await commit({
         fs,
         dir,
@@ -639,23 +611,14 @@ export class BrowserAPI {
 
     let content = await this.fetchFile(`local/${filename}`);
 
-    console.log({ content });
-
     content = Buffer.from(content);
-
-    console.log({ content });
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
     if (pointsToLFS(content)) {
-      console.log('pointsToLFS');
       const remote = await this.getRemote();
 
-      console.log('remote, token', remote, token);
-
       const pointer = await readPointer({ dir: this.dir, content });
-
-      console.log('pointer', pointer);
 
       const http = await import('isomorphic-git/http/web/index.cjs');
 
@@ -664,7 +627,6 @@ export class BrowserAPI {
         { http, url: remote, auth: token },
         pointer,
       );
-      console.log('content from pointer', { content });
     }
 
     return content;

@@ -1353,13 +1353,10 @@
   resolved "https://registry.yarnpkg.com/@fetsorn/ged2dot/-/ged2dot-0.2.0.tgz#78d89484ad9ad9af56f9f75e6f463353fea7a540"
   integrity sha512-kTdB5QAV2ae+Ul3DS/YKRnlHvlwnxPqXZfzMf58gt6fXgFwtIV4mz0IpIE3++UxdJcyJJLS4PBt866FFltnVoA==
 
-"@fetsorn/isogit-lfs@^0.2.8":
-  version "0.2.8"
-  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.2.8.tgz#1f7f9d80cc5b19be573dfd41b40f699063e045ba"
-  integrity sha512-13PLRLVKgNf3fQsifNqmRL0+ieI4jSPMEi8rhkrhhSsRO9LscH+iicBQVeH+Dw7CrbKuFhCw0hzNTwx9Agw7Zg==
-  dependencies:
-    buffer "^6.0.3"
-    path-browserify "^1.0.1"
+"@fetsorn/isogit-lfs@^0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.3.0.tgz#f5451ac43d076091f30107e8d31bda2778bbdd55"
+  integrity sha512-CZhCoHEwSEX6gOJfPhBt/SWxc03dvq9gfw7UW3d9WWde/7cb+Aez0/SjS4MUCqfXx6XSec0qNIJRmci9DeijNw==
 
 "@fetsorn/ppt@0.0.1":
   version "0.0.1"
@@ -2425,7 +2422,7 @@ buffer-xor@^1.0.3:
   resolved "https://registry.yarnpkg.com/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
   integrity sha512-571s0T7nZWK6vB67HI5dyUF7wXiNcfaPPPTl6zYCNApANjIvYJTg7hlud/+cJpdAhS7dVzqMLmfhfHR3rAcOjQ==
 
-buffer@6.0.3, buffer@^6.0.3:
+buffer@6.0.3:
   version "6.0.3"
   resolved "https://registry.yarnpkg.com/buffer/-/buffer-6.0.3.tgz#2ace578459cc8fbe2a70aaa8f52ee63b6a74c6c6"
   integrity sha512-FTiCpNxtwiZZHEZbcbTIcZjERVICn9yq/pDFkTl95/AxzD1naBctN7YO68riM/gLSDY7sdrMby8hofADYuuqOA==
@@ -6379,11 +6376,6 @@ pascal-case@^3.1.2:
   dependencies:
     no-case "^3.0.4"
     tslib "^2.0.3"
-
-path-browserify@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/path-browserify/-/path-browserify-1.0.1.tgz#d98454a9c3753d5790860f16f68867b9e46be1fd"
-  integrity sha512-b7uo2UCUOYZcnF/3ID0lulOJi/bafxa1xPe7ZPsammBSpjSWQkjNxlt635YGS2MiR9GjvuXCtz2emr3jbsz98g==
 
 path-exists@^3.0.0:
   version "3.0.0"

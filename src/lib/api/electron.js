@@ -213,10 +213,16 @@ export class ElectronAPI {
   }
 
   async clone(remote, token, name) {
-    await this.tbn2(remote, token);
+    try {
+      await fs.promises.access(this.dir);
 
-    if (name) {
-      await this.symlink(name);
+      throw Error('could not clone, directory exists');
+    } catch (e) {
+      await this.tbn2(remote, token);
+
+      if (name) {
+        await this.symlink(name);
+      }
     }
   }
 
@@ -330,39 +336,60 @@ export class ElectronAPI {
     }
   }
 
-  async push(remote, token) {
-    await this.addRemote(remote);
+  async uploadBlobs(url, token) {
+    // for every file in local/
+    // if file is not LFS pointer,
+    // upload file to remote
+    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    await this.tbn3(token);
+    const local = `${this.dir}/local/`;
+
+    const filenames = await fs.promises.readdir(local);
+
+    const files = (await Promise.all(
+      filenames.map(async (filename) => {
+        const file = await this.fetchFile(`local/${filename}`);
+
+        if (!pointsToLFS(file)) {
+          return file;
+        }
+
+        return undefined;
+      }),
+    )).filter(Boolean);
+
+    await uploadBlobs({
+      url,
+      auth: {
+        username: token,
+        password: token,
+      },
+    }, files);
   }
 
-  async tbn3(token) {
+  async push(url, token) {
+    await this.uploadBlobs(url, token);
+
     await git.push({
       fs,
       http,
       force: true,
       dir: this.dir,
-      remote: 'upstream',
+      url,
       onAuth: () => ({
         username: token,
       }),
     });
   }
 
-  async pull(remote, token) {
-    await this.addRemote(remote);
-
-    await this.fastForward(token);
-  }
-
-  async fastForward(token) {
+  async pull(url, token) {
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     await git.fastForward({
       fs,
       http,
       dir: this.dir,
-      remote: 'upstream',
+      url,
       onAuth: () => ({
         username: token,
       }),
@@ -408,7 +435,39 @@ export class ElectronAPI {
       await git.init({ fs, dir });
     }
 
-    await fs.promises.writeFile(`${dir}/.gitattributes`, 'lfs/** filter=lfs diff=lfs merge=lfs -text\n', 'utf8');
+    await fs.promises.writeFile(
+      `${dir}/.gitattributes`,
+      'local/** filter=lfs diff=lfs merge=lfs -text\n',
+      'utf8',
+    );
+
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.clean',
+      value: 'git-lfs clean -- %f',
+    });
+
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.smudge',
+      value: 'git-lfs smudge -- %f',
+    });
+
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.process',
+      value: 'git-lfs filter-process',
+    });
+
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.required',
+      value: true,
+    });
 
     await fs.promises.writeFile(`${dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
@@ -581,7 +640,14 @@ export class ElectronAPI {
 
       content = await downloadBlobFromPointer(
         fs,
-        { http, url: remote, auth: token },
+        {
+          http,
+          url: remote,
+          auth: {
+            username: token,
+            password: token,
+          },
+        },
         pointer,
       );
     }

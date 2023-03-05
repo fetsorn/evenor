@@ -115,7 +115,7 @@ export class API {
         return window.electron.clone(this.uuid, url, token, name);
 
       default:
-        return this.#browser.tbn2(url, token, name);
+        return this.#browser.clone(url, token, name);
     }
   }
 

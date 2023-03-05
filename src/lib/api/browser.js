@@ -158,7 +158,7 @@ export class BrowserAPI {
           // do nothing
         }
       } else {
-      // console.log(`writeFileBrowser ${root} has ${pathElement}`)
+        // console.log(`writeFileBrowser ${root} has ${pathElement}`)
       }
 
       root += pathElement;
@@ -243,23 +243,27 @@ export class BrowserAPI {
   }
 
   async clone(remote, token, name) {
-    // TODO add rimraf?
+    try {
+      await fs.promises.stat(this.dir);
 
-    await this.tbn2(remote, token);
+      throw Error('could not clone, directory exists');
+    } catch (e) {
+      await this.tbn2(remote, token);
 
-    if (name) {
-      await this.symlink(name);
+      if (name) {
+        await this.symlink(name);
+      }
     }
   }
 
-  async tbn2(remote, token) {
+  async tbn2(url, token) {
     const http = await import('isomorphic-git/http/web/index.cjs');
 
     const options = {
       fs,
       http,
       dir: this.dir,
-      url: remote,
+      url,
       singleBranch: true,
       depth: 1,
     };
@@ -375,13 +379,40 @@ export class BrowserAPI {
     }
   }
 
-  async push(remote, token) {
-    await this.addRemote(remote);
+  async uploadBlobs(url, token) {
+    // for every file in local/
+    // if file is not LFS pointer,
+    // upload file to remote
+    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    await this.tbn3(token);
+    const local = `${this.dir}/local/`;
+
+    const filenames = await fs.promises.readdir(local);
+
+    const files = (await Promise.all(
+      filenames.map(async (filename) => {
+        const file = await this.fetchFile(`local/${filename}`);
+
+        if (!pointsToLFS(file)) {
+          return file;
+        }
+
+        return undefined;
+      }),
+    )).filter(Boolean);
+
+    await uploadBlobs({
+      url,
+      auth: {
+        username: token,
+        password: token,
+      },
+    }, files);
   }
 
-  async tbn3(token) {
+  async push(url, token) {
+    await this.uploadBlobs(url, token);
+
     const { push } = await import('isomorphic-git');
 
     const http = await import('isomorphic-git/http/web/index.cjs');
@@ -391,20 +422,14 @@ export class BrowserAPI {
       http,
       force: true,
       dir: this.dir,
-      remote: 'upstream',
+      url,
       onAuth: () => ({
         username: token,
       }),
     });
   }
 
-  async pull(remote, token) {
-    await this.addRemote(remote);
-
-    await this.fastForward(token);
-  }
-
-  async fastForward(token) {
+  async pull(url, token) {
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     const { fastForward } = await import('isomorphic-git');
@@ -415,7 +440,7 @@ export class BrowserAPI {
       fs,
       http,
       dir: this.dir,
-      remote: 'upstream',
+      url,
       onAuth: () => ({
         username: token,
       }),
@@ -449,13 +474,49 @@ export class BrowserAPI {
       await pfs.mkdir('/store');
     }
 
+    const { dir } = this;
+
+    const { init, setConfig } = await import('isomorphic-git');
+
     if (!(await pfs.readdir('/store')).includes(this.uuid)) {
-      await pfs.mkdir(this.dir);
+      await pfs.mkdir(dir);
 
-      const { init } = await import('isomorphic-git');
-
-      await init({ fs, dir: this.dir });
+      await init({ fs, dir });
     }
+
+    await fs.promises.writeFile(
+      `${dir}/.gitattributes`,
+      'local/** filter=lfs diff=lfs merge=lfs -text\n',
+      'utf8',
+    );
+
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.clean',
+      value: 'git-lfs clean -- %f',
+    });
+
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.smudge',
+      value: 'git-lfs smudge -- %f',
+    });
+
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.process',
+      value: 'git-lfs filter-process',
+    });
+
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.required',
+      value: true,
+    });
 
     await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
@@ -624,7 +685,14 @@ export class BrowserAPI {
 
       content = await downloadBlobFromPointer(
         fs,
-        { http, url: remote, auth: token },
+        {
+          http,
+          url: remote,
+          auth: {
+            username: token,
+            password: token,
+          },
+        },
         pointer,
       );
     }

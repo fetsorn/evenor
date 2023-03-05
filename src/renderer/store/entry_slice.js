@@ -52,12 +52,15 @@ async function saveRepo(repoUUID, entry) {
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
   if (remoteTags.length === 1) {
-    // TODO: only do if no .git exists yet
-    const [remoteTag] = remoteTags;
+    try {
+      const [remoteTag] = remoteTags;
 
-    await api.clone(remoteTag.remote_tag_target, remoteTag.remote_tag_token);
+      await api.clone(remoteTag.remote_tag_target, remoteTag.remote_tag_token);
 
-    schema = await api.readSchema();
+      schema = await api.readSchema();
+    } catch {
+      // do nothing
+    }
   }
 
   await api.ensure(schema, entry.reponame);

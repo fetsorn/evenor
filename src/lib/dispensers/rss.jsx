@@ -76,7 +76,7 @@ export const schemaRSS = {
   },
   rss_tag_item_pubdate: {
     trunk: 'rss_tag',
-    task: 'date',
+    type: 'string',
     description: {
       en: 'Branch for post pubdate',
       ru: 'Ветка для даты публикации поста',
@@ -121,8 +121,7 @@ xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
 xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
 `;
 
-  // TODO: generate fresh date
-  const date = 'Thu, 15 Dec 2022 16:14:04 +0000';
+  const lastBuildDate = (new Date()).toGMTString();
 
   const channelHeader = `
     <title>${rss_tag_title ?? ''}</title>
@@ -130,9 +129,21 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
     type="application/rss+xml" />
     <link></link>
     <description>${rss_tag_description}</description>
-    <lastBuildDate>${date}</lastBuildDate>
+    <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <language>en-US</language>
 `;
+
+  function foo(mimetype, downloadUrl) {
+    if (mimetype.includes('audio')) {
+      return `<audio controls><source src="${downloadUrl}" type="${mimetype}" /></audio>`;
+    }
+
+    if (mimetype.includes('video')) {
+      return `<video controls><source src="${downloadUrl}" type="${mimetype}" /></video>`;
+    }
+
+    return `<object type="${mimetype}" data="${downloadUrl}" />`;
+  }
 
   function generateItem(entry, mimetype, downloadUrl, size) {
     return `<item>
@@ -144,14 +155,14 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
       <category>
         <![CDATA[${entry[rss_tag_item_category]}]]>
       </category>
-      <guid isPermaLink="false">${entry[rss_tag_item_link]}</guid>
+      <guid isPermaLink="false">${entry.UUID}</guid>
       <description>
         <![CDATA[
-           <p>${entry[rss_tag_item_description]}</p>
-           <object type="${mimetype}" data="${downloadUrl}"/>
+           <div>${entry[rss_tag_item_description]}</div>
+           ${mimetype && downloadUrl ? foo(mimetype, downloadUrl) : ''}
         ]]>
       </description>
-      <enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />
+      ${mimetype && downloadUrl && size ? `<enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />` : ''}
     </item>`;
   }
 
@@ -191,39 +202,52 @@ export function RSS({ baseEntry, branchEntry }) {
 
     const mime = await import('mime');
 
-    const mimetypes = filenames.map((filename) => mime.getType(filename));
-
-    const { buildPointerInfo, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+    const mimetypes = filenames.map((filename) => (
+      filename ? mime.getType(filename) : undefined
+    ));
 
     const files = await Promise.all(filenames.map(async (filename) => {
     // const files = [];
     // for (const filename of filenames) {
-      const content = await baseAPI.fetchAsset(filename);
+      if (filename) {
+        const content = await baseAPI.fetchAsset(filename);
 
-      await rssAPI.putAsset(filename, content);
+        await rssAPI.putAsset(filename, content);
 
-      //   files.push(content);
+        // files.push(content);
+
+        return content;
+      }
+
+      return undefined;
       // }
-      return content;
     }));
 
-    const sizes = files.map((file) => file.length);
+    const sizes = files.map((file) => (file ? file.length : undefined));
 
-    await rssAPI.uploadBlobsLFS(
-      branchEntry.rss_tag_target,
-      branchEntry.rss_tag_token,
-      files,
-    );
+    if (files.filter(Boolean).length > 0) {
+      await rssAPI.uploadBlobsLFS(
+        branchEntry.rss_tag_target,
+        branchEntry.rss_tag_token,
+        files.filter(Boolean),
+      );
+    }
+
+    const { buildPointerInfo } = await import('@fetsorn/isogit-lfs');
 
     // download actions for rssAPI
     const downloadUrls = await Promise.all(files.map(async (file) => {
-      const pointerInfo = await buildPointerInfo(file);
+      if (file) {
+        const pointerInfo = await buildPointerInfo(file);
 
-      return rssAPI.downloadUrlFromPointer(
-        branchEntry.rss_tag_target,
-        branchEntry.rss_tag_token,
-        pointerInfo,
-      );
+        return rssAPI.downloadUrlFromPointer(
+          branchEntry.rss_tag_target,
+          branchEntry.rss_tag_token,
+          pointerInfo,
+        );
+      }
+
+      return undefined;
     }));
 
     // generate xml

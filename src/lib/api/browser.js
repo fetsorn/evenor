@@ -418,7 +418,11 @@ export class BrowserAPI {
   }
 
   async push(url, token) {
-    await this.uploadBlobs(url, token);
+    try {
+      await this.uploadBlobs(url, token);
+    } catch (e) {
+      console.log('uploadBlobs failed', e);
+    }
 
     const { push } = await import('isomorphic-git');
 

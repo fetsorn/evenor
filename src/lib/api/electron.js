@@ -126,6 +126,10 @@ export class ElectronAPI {
     await fs.promises.writeFile(file, content);
   }
 
+  async putAsset(filename, buffer) {
+    this.writeFile(`local/${filename}`, buffer);
+  }
+
   async uploadFile() {
     const res = await dialog.showOpenDialog({ properties: ['openFile'] });
 
@@ -236,7 +240,7 @@ export class ElectronAPI {
       dir: this.dir,
       url: remote,
       singleBranch: true,
-      depth: 1,
+      // depth: 1,
     };
 
     if (token) {
@@ -653,5 +657,37 @@ export class ElectronAPI {
     }
 
     return content;
+  }
+
+  async writeFeed(xml) {
+    await this.writeFile('feed.xml', xml);
+  }
+
+  static async downloadUrlFromPointer(url, token, pointerInfo) {
+    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+
+    return downloadUrlFromPointer(
+      {
+        http,
+        url,
+        auth: {
+          username: token,
+          password: token,
+        },
+      },
+      pointerInfo,
+    );
+  }
+
+  static async uploadBlobsLFS(url, token, files) {
+    const { uploadBlobs } = await import('@fetsorn/isogit-lfs');
+
+    await uploadBlobs({
+      url,
+      auth: {
+        username: token,
+        password: token,
+      },
+    }, files);
   }
 }

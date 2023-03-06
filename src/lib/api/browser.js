@@ -167,6 +167,15 @@ export class BrowserAPI {
     await pfs.writeFile(`${this.dir}/${filepath}`, content, 'utf8');
   }
 
+  async putAsset(filename, buffer) {
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ === 'server') {
+      // TODO
+    }
+
+    this.writeFile(`local/${filename}`, buffer);
+  }
+
   async uploadFile(file) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
@@ -182,11 +191,9 @@ export class BrowserAPI {
       return `${this.dir}/${file.name}`;
     }
 
-    const filepath = `local/${file.name}`;
-
     const buf = await file.arrayBuffer();
 
-    await this.writeFile(filepath, buf);
+    await this.putAsset(file.name, buf);
 
     return file.name;
   }
@@ -265,7 +272,7 @@ export class BrowserAPI {
       dir: this.dir,
       url,
       singleBranch: true,
-      depth: 1,
+      // depth: 1,
     };
 
     if (token) {
@@ -672,14 +679,14 @@ export class BrowserAPI {
 
     let content = await this.fetchFile(`local/${filename}`);
 
-    content = Buffer.from(content);
+    const contentBuf = Buffer.from(content);
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
-    if (pointsToLFS(content)) {
+    if (pointsToLFS(contentBuf)) {
       const remote = await this.getRemote();
 
-      const pointer = await readPointer({ dir: this.dir, content });
+      const pointer = await readPointer({ dir: this.dir, content: contentBuf });
 
       const http = await import('isomorphic-git/http/web/index.cjs');
 
@@ -698,5 +705,39 @@ export class BrowserAPI {
     }
 
     return content;
+  }
+
+  async writeFeed(xml) {
+    await this.writeFile('feed.xml', xml);
+  }
+
+  static async downloadUrlFromPointer(url, token, pointerInfo) {
+    const http = await import('isomorphic-git/http/web/index.cjs');
+
+    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+
+    return downloadUrlFromPointer(
+      {
+        http,
+        url,
+        auth: {
+          username: token,
+          password: token,
+        },
+      },
+      pointerInfo,
+    );
+  }
+
+  static async uploadBlobsLFS(url, token, files) {
+    const { uploadBlobs } = await import('@fetsorn/isogit-lfs');
+
+    await uploadBlobs({
+      url,
+      auth: {
+        username: token,
+        password: token,
+      },
+    }, files);
   }
 }

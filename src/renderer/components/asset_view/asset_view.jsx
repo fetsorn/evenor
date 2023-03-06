@@ -12,7 +12,13 @@ export function AssetView({ filepath }) {
   const api = new API(repoUUID);
 
   async function onView() {
-    let contents = await api.fetchAsset(filepath);
+    const { tags } = await api.getSettings();
+
+    const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
+
+    const token = firstRemote?.remote_tag_token;
+
+    let contents = await api.fetchAsset(filepath, token);
 
     if (!isIFrameable(filepath)) {
       contents = await convert(filepath, contents);
@@ -24,11 +30,7 @@ export function AssetView({ filepath }) {
 
     const blob = new Blob([contents], { type: mimetype });
 
-    console.log(blob);
-
     const blobURLNew = URL.createObjectURL(blob);
-
-    console.log(blobURLNew);
 
     setBlobURL(blobURLNew);
   }

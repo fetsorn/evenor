@@ -185,6 +185,33 @@ app
       async (_event, dir, filename, token) => (new API(dir)).fetchAsset(filename, token),
     );
 
+    ipcMain.handle(
+      'putAsset',
+      async (_event, dir, filename, content) => (new API(dir)).putAsset(filename, content),
+    );
+
+    ipcMain.handle(
+      'writeFeed',
+      async (_event, dir, xml) => (new API(dir)).writeFeed(xml),
+    );
+
+    ipcMain.handle(
+      'downloadUrlFromPointer',
+      async (_event, dir, remote, token, pointerInfo) => API.downloadUrlFromPointer(
+        remote,
+        token,
+        pointerInfo,
+      ),
+    );
+
+    ipcMain.handle(
+      'uploadBlobsLFS',
+      async (_event, dir, remote, token, files) => API.uploadBlobsLFS(
+        remote,
+        token,
+        files,
+      ),
+    );
     createWindow();
   })
   .catch(console.log);

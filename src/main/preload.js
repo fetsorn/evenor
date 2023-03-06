@@ -32,5 +32,13 @@ contextBridge.exposeInMainWorld('electron', {
 
   fetchAsset: (dir, filename, token) => ipcRenderer.invoke('fetchAsset', dir, filename, token),
 
+  putAsset: (dir, filename, content) => ipcRenderer.invoke('putAsset', dir, filename, content),
+
   uploadFile: (dir) => ipcRenderer.invoke('uploadFile', dir),
+
+  writeFeed: (dir, xml) => ipcRenderer.invoke('writeFeed', dir, xml),
+
+  downloadUrlFromPointer: (dir, url, token, pointerInfo) => ipcRenderer.invoke('downloadUrlFromPointer', dir, url, token, pointerInfo),
+
+  uploadBlobsLFS: (dir, url, token, files) => ipcRenderer.invoke('uploadBlobsLFS', dir, url, token, files),
 });

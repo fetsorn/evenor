@@ -13,20 +13,25 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
-  async fetchAsset(filepath) {
-    const { tags } = await this.getSettings();
-
-    const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
-
-    const token = firstRemote?.remote_tag_token;
-
+  async fetchAsset(filename, token) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.fetchAsset(this.uuid, filepath, token);
+        return window.electron.fetchAsset(this.uuid, filename, token);
 
       default:
-        return this.#browser.fetchAsset(filepath, token);
+        return this.#browser.fetchAsset(filename, token);
+    }
+  }
+
+  async putAsset(filename, buffer) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.putAsset(this.uuid, filename, buffer);
+
+      default:
+        return this.#browser.putAsset(filename, buffer);
     }
   }
 
@@ -182,6 +187,39 @@ export class API {
 
       default:
         return this.#browser.cloneView(remote, token);
+    }
+  }
+
+  async writeFeed(xml) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.writeFeed(this.uuid, xml);
+
+      default:
+        return this.#browser.writeFeed(xml);
+    }
+  }
+
+  async downloadUrlFromPointer(url, token, pointerInfo) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.downloadUrlFromPointer(this.uuid, url, token, pointerInfo);
+
+      default:
+        return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);
+    }
+  }
+
+  async uploadBlobsLFS(url, token, files) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.uploadBlobsLFS(this.uuid, url, token, files);
+
+      default:
+        return BrowserAPI.uploadBlobsLFS(url, token, files);
     }
   }
 

@@ -1,3 +1,4 @@
+import React from 'react';
 import { API } from '../api/index.js';
 
 export const schemaRSS = {
@@ -97,51 +98,7 @@ export const schemaRSS = {
   },
 };
 
-export function RSS({ baseEntry, branchEntry }) {
-  const rssAPI = new API('rss');
-
-  const baseAPI = new API(baseEntry.UUID);
-
-  async function onRSSsync() {
-    /* console.log('onRSSsync') */
-
-    const searchParams = new URLSearchParams(branchEntry.rss_tag_search);
-
-    /* console.log('onRSSsync-searchParams', searchParams) */
-
-    // get array of entries from repo
-    const entries = await baseAPI.select(searchParams);
-
-    // clone to ephemeral repo
-    await rssAPI.clone(branchEntry.rss_tag_target, branchEntry.rss_tag_token);
-
-    // generate xml
-    const xml = generateXML(branchEntry, entries);
-
-    // write file
-    await rssAPI.writeFile('feed.xml', xml);
-
-    // commit
-    await rssAPI.commit();
-
-    // push
-    await rssAPI.addRemote(branchEntry.rss_tag_target);
-
-    await rssAPI.push(branchEntry.rss_tag_token);
-  }
-
-  return (
-    <div>
-      <a>{branchEntry.rss_tag_search}</a>
-      <br />
-      <a>{branchEntry.rss_tag_target}</a>
-      <br />
-      <a onClick={onRSSsync}>🔄️</a>
-    </div>
-  );
-}
-
-function generateXML(branchEntry, entries) {
+function generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes) {
   const {
     rss_tag_title,
     rss_tag_description,
@@ -177,26 +134,28 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
     <language>en-US</language>
 `;
 
-  function generateItem(entry) {
+  function generateItem(entry, mimetype, downloadUrl, size) {
     return `<item>
       <title>${entry[rss_tag_item_title]}</title>
-      <link>${entry[rss_tag_item_link]}</link>
       <dc:creator>
         <![CDATA[${entry[rss_tag_item_creator] ?? 'unknown'}]]>
-</dc:creator>
+      </dc:creator>
       <pubDate>${entry[rss_tag_item_pubdate]}</pubDate>
       <category>
         <![CDATA[${entry[rss_tag_item_category]}]]>
-</category>
+      </category>
       <guid isPermaLink="false">${entry[rss_tag_item_link]}</guid>
       <description>
-        <![CDATA[<p>${entry[rss_tag_item_description]}</p>
+        <![CDATA[
+           <p>${entry[rss_tag_item_description]}</p>
+           <object type="${mimetype}" data="${downloadUrl}"/>
         ]]>
-</description>
+      </description>
+      <enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />
     </item>`;
   }
 
-  const items = entries.map(generateItem).join('\n');
+  const items = entries.map((entry, index) => generateItem(entry, mimetypes[index], downloadUrls[index], sizes[index])).join('\n');
 
   const xml = `${header}
 <channel>
@@ -207,4 +166,84 @@ ${items}
 `;
 
   return xml;
+}
+
+export function RSS({ baseEntry, branchEntry }) {
+  async function onRSSsync() {
+    const { digestMessage } = await import('@fetsorn/csvs-js');
+
+    const rssUUID = await digestMessage(branchEntry.rss_tag_target);
+
+    const rssAPI = new API(rssUUID);
+
+    const baseAPI = new API(baseEntry.UUID);
+
+    const searchParams = new URLSearchParams(branchEntry.rss_tag_search);
+
+    // get array of entries from repo
+    const entries = await baseAPI.select(searchParams);
+
+    // clone to ephemeral repo
+    await rssAPI.cloneView(branchEntry.rss_tag_target, branchEntry.rss_tag_token);
+
+    // find all filenames in the entry
+    const filenames = entries.map((entry) => entry[branchEntry.rss_tag_item_link]);
+
+    const mime = await import('mime');
+
+    const mimetypes = filenames.map((filename) => mime.getType(filename));
+
+    const { buildPointerInfo, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+
+    const files = await Promise.all(filenames.map(async (filename) => {
+    // const files = [];
+    // for (const filename of filenames) {
+      const content = await baseAPI.fetchAsset(filename);
+
+      await rssAPI.putAsset(filename, content);
+
+      //   files.push(content);
+      // }
+      return content;
+    }));
+
+    const sizes = files.map((file) => file.length);
+
+    await rssAPI.uploadBlobsLFS(
+      branchEntry.rss_tag_target,
+      branchEntry.rss_tag_token,
+      files,
+    );
+
+    // download actions for rssAPI
+    const downloadUrls = await Promise.all(files.map(async (file) => {
+      const pointerInfo = await buildPointerInfo(file);
+
+      return rssAPI.downloadUrlFromPointer(
+        branchEntry.rss_tag_target,
+        branchEntry.rss_tag_token,
+        pointerInfo,
+      );
+    }));
+
+    // generate xml
+    const xml = generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes);
+
+    // write file
+    await rssAPI.writeFeed(xml);
+
+    await rssAPI.commit();
+
+    await rssAPI.push(branchEntry.rss_tag_target, branchEntry.rss_tag_token);
+  }
+
+  return (
+    <div>
+      <a>{branchEntry.rss_tag_search}</a>
+      <br />
+      <a>{branchEntry.rss_tag_target}</a>
+      <br />
+      <a onClick={onRSSsync}>🔄️</a>
+    </div>
+  );
 }

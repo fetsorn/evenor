@@ -15,7 +15,6 @@ export function InputUpload({
   const repoUUID = useStore((state) => state.repoUUID);
 
   async function onFieldUpload(file) {
-    console.log('onFieldUpload', branch);
     const api = new API(repoUUID);
 
     const filepath = await api.uploadFile(file);

@@ -87,7 +87,7 @@ export function ProfileSingleView() {
             </div>
 
             {repoUUID === 'root' && (
-              <a onClick={() => setRepoName(entry.reponame)}>{entry.reponame}</a>
+              <button type="button" onClick={() => setRepoName(entry.reponame)}>{entry.reponame}</button>
             )}
 
             <ViewField

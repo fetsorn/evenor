@@ -33,7 +33,6 @@
             src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
             preConfigure = ''
               substituteInPlace webpack.web.config.mjs --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.web.config.mjs --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
               substituteInPlace package.json --replace "webpack --config webpack.web.config.mjs" "yarn exec webpack-cli -- --mode=development --config webpack.web.config.mjs --env buildMode=${buildMode}"
             '';
             buildPhase = ''
@@ -138,8 +137,8 @@
               [ pkgs.wineWowPackages.full pkgs.mono pkgs.fontconfig pkgs.zip ];
             # DEBUG = "*";
             preConfigure = ''
+              substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
               # substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform win32 --targets @electron-forge/maker-squirrel"
             '';
             buildPhase = ''
@@ -172,8 +171,8 @@
               [ pkgs.wineWowPackages.full pkgs.mono pkgs.fontconfig pkgs.zip ];
             # DEBUG = "*";
             preConfigure = ''
+              substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
               substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --platform win32 --arch ${arch} --targets @electron-forge/maker-zip"
             '';
             buildPhase = ''
@@ -198,8 +197,8 @@
               extraBuildInputs = [ pkgs.rpm ];
               # DEBUG = "*";
               preConfigure = ''
+                substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
                 substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-                substituteInPlace webpack.renderer.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
                 substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform linux --targets @electron-forge/maker-rpm"
               '';
               buildPhase = ''
@@ -225,8 +224,8 @@
             extraBuildInputs = [ pkgs.dpkg pkgs.fakeroot ];
             # DEBUG = "*"; 
             preConfigure = ''
+              substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@hpcc-js/' "../../node_modules/@hpcc-js/"
               substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform linux --targets @electron-forge/maker-deb"
             '';
             buildPhase = ''
@@ -264,18 +263,18 @@
               name = "linux-x64-deb";
               path = packages.linux.x64.deb;
             }
-            {
-              name = "linux-x64-rpm";
-              path = packages.linux.x64.rpm;
-            }
-            {
-              name = "linux-ia32-deb";
-              path = packages.linux.ia32.deb;
-            }
-            {
-              name = "linux-ia32-rpm";
-              path = packages.linux.ia32.rpm;
-            }
+            # {
+            #   name = "linux-x64-rpm";
+            #   path = packages.linux.x64.rpm;
+            # }
+            # {
+            #   name = "linux-ia32-deb";
+            #   path = packages.linux.ia32.deb;
+            # }
+            # {
+            #   name = "linux-ia32-rpm";
+            # path = packages.linux.ia32.rpm;
+            # }
             {
               name = "windows-x64-exe";
               path = packages.windows.x64.exe;

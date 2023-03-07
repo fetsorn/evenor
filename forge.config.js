@@ -9,7 +9,7 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        icon: './public/icon',
+        icon: './public/icon.png',
       },
     },
     {
@@ -24,13 +24,13 @@ module.exports = {
     {
       name: '@electron-forge/maker-deb',
       config: {
-        icon: './public/icon',
+        icon: './public/icon.png',
       },
     },
     {
       name: '@electron-forge/maker-rpm',
       config: {
-        icon: './public/icon',
+        icon: './public/icon.png',
       },
     },
   ],

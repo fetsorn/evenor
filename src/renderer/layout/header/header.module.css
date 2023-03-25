@@ -3,6 +3,8 @@
   padding-bottom: calc(var(--rem) * 16);
   display: flex;
   justify-content: space-between;
+  position: -webkit-sticky;
+  position: sticky;
 }
 
 .title {

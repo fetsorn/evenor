@@ -47,11 +47,11 @@ export function Header() {
     if (isInitialized && __BUILD_MODE__ !== 'electron') {
       const searchParams = queriesToParams(queries);
 
-      // if (groupBy !== '') {
-      //   searchParams.set('.', groupBy);
-      // }
+      if (groupBy !== '') {
+        searchParams.set('.group', groupBy);
+      }
 
-      // searchParams.set('overviewType', overviewType);
+      searchParams.set('.overview', overviewType);
 
       const pathname = repoName === undefined ? '/' : `/${repoName}`;
 
@@ -77,7 +77,7 @@ export function Header() {
             onClick={() => setRepoUUID('root')}
           >
             {/* &lt;= */}
-            🏠
+            🏠 {repoName}
           </Button>
         )
         : <div />}

@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { API } from 'lib/api';
-import { Button } from '@/components/index.js';
 import { useStore } from '@/store/index.js';
 import { convert, isIFrameable } from './asset_view_controller.js';
 
@@ -37,17 +36,22 @@ export function AssetView({ filepath }) {
 
   return (
     <>
-      <p>{filepath}</p>
-      {blobURL && (
-        <iframe title="iframe" src={blobURL} width="100%" height="800px" />
-      )}
-      {filepath && !blobURL && (
-        <Button
-          type="button"
-          onClick={() => onView()}
-        >
-          View
-        </Button>
+      {!blobURL ? (
+        <div>
+          <button type="button" onClick={() => onView()}>▶️</button>
+
+          {filepath}
+        </div>
+      ) : (
+        <div>
+          <div>
+            <button type="button" onClick={() => setBlobURL(undefined)}>🔽</button>
+
+            {filepath}
+          </div>
+
+          <iframe title="iframe" src={blobURL} width="100%" height="800px" />
+        </div>
       )}
     </>
   );

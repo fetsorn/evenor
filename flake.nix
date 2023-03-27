@@ -188,7 +188,7 @@
         buildRpm = arch:
           let
             builtRpm = pkgs.vmTools.runInLinuxVM (pkgs.mkYarnPackage rec {
-              memSize = 2048; # 2 GiB for the VM
+              memSize = 4096; # 4 GiB for the VM
               name = package.name;
               version = package.version;
               src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
@@ -212,7 +212,7 @@
               dontFixup = true;
             });
           in pkgs.runCommand builtRpm.name { version = builtRpm.version; } ''
-            cp ${builtRpm}/* $out
+            cp -r ${builtRpm}/* $out
           '';
         buildDeb = arch:
           pkgs.mkYarnPackage rec {

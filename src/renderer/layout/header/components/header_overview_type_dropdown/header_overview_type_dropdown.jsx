@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { OverviewType, useStore } from '@/store';
+import { OverviewType, useStore } from '@/store/index.js';
 
 export function HeaderOverviewTypeDropdown() {
   const { t } = useTranslation();
@@ -17,12 +17,12 @@ export function HeaderOverviewTypeDropdown() {
     <select
       name="HeaderOverviewTypeDropdown"
       value={overviewType}
-      title={t('header.dropdown.search', { field: overviewType })}
+      title={t('header.dropdown.overview', { field: overviewType })}
       onChange={({ target: { value } }) => onChangeOverviewType(value)}
     >
       {(Object.keys(OverviewType)).map(
         (field, idx) => (
-          <option key={idx} value={OverviewType[field]}>
+          <option key={`overviewType${Math.random()}`} value={OverviewType[field]}>
             {field}
           </option>
         ),

@@ -8,8 +8,8 @@ function getDefaultGroupBy(
   searchParams,
 ) {
   // fallback to groupBy param from the search query
-  if (searchParams.has('.')) {
-    const groupBy = searchParams.get('.');
+  if (searchParams.has('.group')) {
+    const groupBy = searchParams.get('.group');
 
     return groupBy;
   }
@@ -20,7 +20,7 @@ function getDefaultGroupBy(
 
   // fallback to first date param present in data
   groupBy = Object.keys(schema).find((branch) => (
-    schema[branch].type === 'date'
+    schema[branch].task === 'date'
       && Object.prototype.hasOwnProperty.call(car, branch)
   ));
 
@@ -34,7 +34,7 @@ function getDefaultGroupBy(
   // fallback to first date param present in schema
   if (!groupBy) {
     groupBy = Object.keys(schema).find(
-      (branch) => schema[branch].type === 'date',
+      (branch) => schema[branch].task === 'date',
     );
   }
 
@@ -67,7 +67,7 @@ function paramsToQueries(searchParams) {
 
   const queries = Object.fromEntries(
     Object.entries(searchParamsObject).filter(
-      ([key]) => key !== '.' && key !== '~' && key !== '-',
+      ([key]) => key !== '~' && key !== '-' && !key.startsWith('.'),
     ),
   );
 
@@ -164,17 +164,17 @@ export const createOverviewSlice = (set, get) => ({
 
     const queries = paramsToQueries(searchParams);
 
-    // const overviewTypeParam = searchParams.get(
-    //   'overviewType',
-    // );
+    const overviewTypeParam = searchParams.get(
+      '.overview',
+    );
 
-    // const overviewType = overviewTypeParam
-    //   ? OverviewType[overviewTypeParam]
-    //   : get().overviewType;
+    const overviewType = overviewTypeParam
+      ? OverviewType[overviewTypeParam]
+      : get().overviewType;
 
     const groupBy = searchParams.get(
-      '.',
-    ) ?? '';
+      '.group',
+    ) ?? undefined;
 
     const schema = await api.readSchema();
 
@@ -185,6 +185,7 @@ export const createOverviewSlice = (set, get) => ({
       base,
       queries,
       groupBy,
+      overviewType,
       isView,
       isInitialized: true,
       repoUUID,

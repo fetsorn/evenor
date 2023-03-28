@@ -440,7 +440,7 @@ export class ElectronAPI {
     if (!(await fs.promises.readdir(store)).includes(this.uuid)) {
       await fs.promises.mkdir(dir);
 
-      await git.init({ fs, dir });
+      await git.init({ fs, dir, defaultBranch: "main" });
     }
 
     await fs.promises.writeFile(

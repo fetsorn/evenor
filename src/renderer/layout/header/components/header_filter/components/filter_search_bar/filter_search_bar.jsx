@@ -54,7 +54,7 @@ export function FilterSearchBar() {
 
     const optionValues = optionsNew.map((entry) => entry[queryField]);
 
-    setOptions(optionValues);
+    setOptions([...new Set(optionValues)]);
   }
 
   useEffect(() => {

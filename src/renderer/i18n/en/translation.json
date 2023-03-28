@@ -8,7 +8,9 @@
       "remove": "remove {{ field }} from search"
     },
     "dropdown": {
-      "groupBy": "group events by field {{ field }}",
+      "overview": "show events as {{ field }}",
+      "groupby": "group events by field {{ field }}",
+      "base": "base events on {{ field }}",
       "search": "search for field {{ field }}"
     },
     "label": {

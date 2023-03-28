@@ -5,15 +5,15 @@ import {
 } from 'electron';
 import { ElectronAPI as API } from 'lib/api/electron.js';
 
-// const dirname = path.dirname(url.fileURLToPath(import.meta.url));
+const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 let mainWindow = null;
 
 const createWindow = async () => {
-  // const RESOURCES_PATH = app.isPackaged
-  //   ? path.join(process.resourcesPath, 'app/.webpack/renderer/public')
-  //   : path.join(dirname, '../../.webpack/renderer/public');
-  const RESOURCES_PATH = path.join(process.resourcesPath, 'app/.webpack/renderer/public')
+  const RESOURCES_PATH = app.isPackaged || process.platform === 'win32'
+    ? path.join(process.resourcesPath, 'app/.webpack/renderer/public')
+    : path.join(dirname, '../../.webpack/renderer/public');
+  // const RESOURCES_PATH = path.join(process.resourcesPath, 'app/.webpack/renderer/public');
 
   const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
 

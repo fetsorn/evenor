@@ -1,5 +1,4 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
 import styles from './input_date.module.css';
 
 export function InputDate({
@@ -7,7 +6,6 @@ export function InputDate({
   value,
   onFieldChange,
 }) {
-  const { t } = useTranslation();
   return (
     <div>
       <input

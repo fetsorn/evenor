@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '@/store';
+import { useStore } from '@/store/index.js';
 
 export function HeaderBaseDropdown() {
   const { i18n, t } = useTranslation();
@@ -32,11 +32,11 @@ export function HeaderBaseDropdown() {
     <select
       name="HeaderBaseDropdown"
       value={base}
-      title={t('header.dropdown.search', { field: base })}
+      title={t('header.dropdown.base', { field: base })}
       onChange={({ target: { value } }) => onChangeBase(value)}
     >
-      {roots.map((root, idx) => (
-        <option key={idx} value={root.branch}>
+      {roots.map((root) => (
+        <option key={`base_${Math.random()}`} value={root.branch}>
           {root.label}
         </option>
       ))}

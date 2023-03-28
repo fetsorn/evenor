@@ -20,7 +20,7 @@ function getDefaultGroupBy(
 
   // fallback to first date param present in data
   groupBy = Object.keys(schema).find((branch) => (
-    schema[branch].type === 'date'
+    schema[branch].task === 'date'
       && Object.prototype.hasOwnProperty.call(car, branch)
   ));
 
@@ -34,7 +34,7 @@ function getDefaultGroupBy(
   // fallback to first date param present in schema
   if (!groupBy) {
     groupBy = Object.keys(schema).find(
-      (branch) => schema[branch].type === 'date',
+      (branch) => schema[branch].task === 'date',
     );
   }
 
@@ -174,7 +174,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const groupBy = searchParams.get(
       '.group',
-    ) ?? '';
+    ) ?? undefined;
 
     const schema = await api.readSchema();
 

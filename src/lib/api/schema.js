@@ -426,6 +426,13 @@ export const schemaRoot = {
       ru: 'Название проекта',
     },
   },
+  category: {
+    type: 'string',
+    description: {
+      en: 'Category of the repo',
+      ru: 'Категория проекта',
+    },
+  },
   ...schemaSchema,
   tags: {
     trunk: 'reponame',

@@ -3,7 +3,9 @@ import { useTranslation } from 'react-i18next';
 import styles from './overview_itinerary.module.css';
 import { VirtualScroll } from '@/components/index.js';
 import { useStore } from '@/store/index.js';
-import { ItineraryWaypoint } from './components/index.js';
+import {
+  ItineraryWaypoint,
+} from './components/index.js';
 import { buildItinerary } from './overview_itinerary_controller.js';
 
 export function OverviewItinerary() {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '@/store';
+import { useStore } from '@/store/index.js';
 
 export function HeaderGroupByDropdown() {
   const { i18n, t } = useTranslation();
@@ -18,7 +18,10 @@ export function HeaderGroupByDropdown() {
   ]);
 
   const leaves = Object.keys(schema)
-    .filter((branch) => schema[branch].trunk === base || branch === base)
+    .filter((branch) => (schema[branch].trunk === base
+            || branch === base
+                         || schema[schema[branch]?.trunk]?.trunk === base)
+            && (branch !== 'schema' && branch !== 'schema_branch'))
     .map((branch) => {
       const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
@@ -32,11 +35,11 @@ export function HeaderGroupByDropdown() {
     <select
       name="HeaderGroupByDropdown"
       value={groupBy}
-      title={t('header.dropdown.search', { field: groupBy })}
+      title={t('header.dropdown.groupby', { field: groupBy })}
       onChange={({ target: { value } }) => onChangeGroupBy(value)}
     >
-      {leaves.map((leaf, idx) => (
-        <option key={idx} value={leaf.branch}>
+      {leaves.map((leaf) => (
+        <option key={`groupBy_${Math.random()}`} value={leaf.branch}>
           {leaf.label}
         </option>
       ))}

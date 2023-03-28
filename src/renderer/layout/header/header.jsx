@@ -77,7 +77,8 @@ export function Header() {
             onClick={() => setRepoUUID('root')}
           >
             {/* &lt;= */}
-            🏠 {repoName}
+            🏠
+            {repoName}
           </Button>
         )
         : <div />}
@@ -85,9 +86,11 @@ export function Header() {
       <div className={styles.dropdowns}>
         <HeaderOverviewTypeDropdown />
 
-        <HeaderBaseDropdown />
+        {overviewType === 'itinerary'
+        && <HeaderBaseDropdown />}
 
-        <HeaderGroupByDropdown />
+        {overviewType === 'itinerary'
+         && <HeaderGroupByDropdown />}
       </div>
 
       <HeaderFilter />

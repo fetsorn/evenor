@@ -495,16 +495,22 @@ export class ElectronAPI {
     if (process.platform === 'win32') {
       const sudo = await import('sudo-prompt-alt');
 
-      sudo.exec('echo hello', {}, function(error, stdout, stderr) {
-        if (error) throw error;
+      const { dir } = this;
 
-        try {
-          fs.unlink(`${repos}/${name}`);
-        } catch {
-          // do nothing
-        }
+      await new Promise((res, rej) => {
+        sudo.exec('link new project', {}, function(error, stdout, stderr) {
+          if (error) rej(error);
 
-        fs.symlink(this.dir, `${repos}/${name}`);
+          try {
+            fs.unlink(`${repos}/${name}`);
+          } catch {
+            // do nothing
+          }
+
+          fs.symlink(dir, `${repos}/${name}`);
+
+          res()
+        });
       });
     } else {
       try {

@@ -502,12 +502,12 @@ export class ElectronAPI {
           if (error) rej(error);
 
           try {
-            fs.unlink(`${repos}/${name}`);
+            fs.unlinkSync(`${repos}/${name}`);
           } catch {
             // do nothing
           }
 
-          fs.symlink(dir, `${repos}/${name}`);
+          fs.symlinkSync(dir, `${repos}/${name}`);
 
           res()
         });

@@ -138,7 +138,7 @@ export class ElectronAPI {
     } else {
       const pathSource = res.filePaths[0];
 
-      const filename = pathSource.substring(pathSource.lastIndexOf('/') + 1);
+      const filename = path.basename(pathSource);
 
       const localDir = 'local';
 

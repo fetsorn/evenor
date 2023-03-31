@@ -495,7 +495,7 @@ export class ElectronAPI {
     if (process.platform === 'win32') {
       const sudo = await import('sudo-prompt-alt');
 
-      sudo.exec('echo hello', options, function(error, stdout, stderr) {
+      sudo.exec('echo hello', {}, function(error, stdout, stderr) {
         if (error) throw error;
 
         try {

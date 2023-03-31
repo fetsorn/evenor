@@ -491,13 +491,31 @@ export class ElectronAPI {
       await fs.promises.mkdir(repos);
     }
 
-    try {
-      await fs.promises.unlink(`${repos}/${name}`);
-    } catch {
-      // do nothing
+    // nt requires admin privilege to symlink
+    if (process.platform === 'win32') {
+      const sudo = await import('sudo-prompt-alt');
+
+      sudo.exec('echo hello', options, function(error, stdout, stderr) {
+        if (error) throw error;
+
+        try {
+          fs.unlink(`${repos}/${name}`);
+        } catch {
+          // do nothing
+        }
+
+        fs.symlink(this.dir, `${repos}/${name}`);
+      });
+    } else {
+      try {
+        await fs.promises.unlink(`${repos}/${name}`);
+      } catch {
+        // do nothing
+      }
+
+      await fs.promises.symlink(this.dir, `${repos}/${name}`);
     }
 
-    await fs.promises.symlink(this.dir, `${repos}/${name}`);
   }
 
   static async rimraf(rimrafpath) {

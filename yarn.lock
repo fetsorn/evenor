@@ -7505,6 +7505,11 @@ strip-outer@^1.0.1:
   dependencies:
     escape-string-regexp "^1.0.2"
 
+sudo-prompt-alt@^9.3.0:
+  version "9.3.0"
+  resolved "https://registry.yarnpkg.com/sudo-prompt-alt/-/sudo-prompt-alt-9.3.0.tgz#56510f8b098adbbe8f84da278fc73ee1ce225f63"
+  integrity sha512-n7PjTh429Lmg2OfHp4ZLLY8ZN9RcBa6K4aK53vDRgkSJXDzNYZSAaQPGIDY/r47vvGDJEhgzDAS50TlPQ9GsvQ==
+
 sudo-prompt@^9.1.1:
   version "9.2.1"
   resolved "https://registry.yarnpkg.com/sudo-prompt/-/sudo-prompt-9.2.1.tgz#77efb84309c9ca489527a4e749f287e6bdd52afd"

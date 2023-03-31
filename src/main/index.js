@@ -8,7 +8,7 @@ import { ElectronAPI as API } from 'lib/api/electron.js';
 let mainWindow = null;
 
 const createWindow = async () => {
-  //NOTE: any use of dirname will fail win32
+  // NOTE: any use of dirname will fail nt
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'app/.webpack/renderer/public')
     : path.join(process.resourcesPath, '../../../../../../src/main/');

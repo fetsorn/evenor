@@ -493,21 +493,13 @@ export class ElectronAPI {
 
     // nt requires admin privilege to symlink
     if (process.platform === 'win32') {
-      const sudo = await import('sudo-prompt-alt');
-
       const { dir } = this;
 
+      const sudo = await import('sudo-prompt-alt');
+
       await new Promise((res, rej) => {
-        sudo.exec('link new project', {}, (error) => {
+        sudo.exec(`mklink ${path.join(repos, name)} ${dir}`, {}, (error) => {
           if (error) rej(error);
-
-          try {
-            fs.unlinkSync(path.join(repos, name));
-          } catch {
-            // do nothing
-          }
-
-          fs.symlinkSync(dir, path.join(repos, name));
 
           res();
         });

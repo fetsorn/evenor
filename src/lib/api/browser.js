@@ -28,6 +28,7 @@ async function runWorker(readFile, searchParams) {
   // eslint-disable-next-line
   switch (__BUILD_MODE__) {
     case 'server': {
+      console.log('worker query')
       const response = await fetch(`/query?${searchParams.toString()}`);
 
       return response.json();
@@ -71,7 +72,8 @@ export class BrowserAPI {
   async fetchFile(filepath) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      return (await fetch(`/api/${filepath}`)).text();
+      console.log('fetchFile')
+      return (await fetch(`/api/${filepath}`)).arrayBuffer();
     }
 
     // check if path exists in the repo
@@ -120,6 +122,7 @@ export class BrowserAPI {
   ) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
+      console.log('writeFile')
       await fetch(`/api/${filepath}`, {
         method: 'POST',
         headers: {
@@ -170,6 +173,7 @@ export class BrowserAPI {
   async putAsset(filename, buffer) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
+      console.log('putAsset')
       // TODO
     }
 
@@ -179,6 +183,7 @@ export class BrowserAPI {
   async uploadFile(file) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
+      console.log('uploadFile')
       const form = new FormData();
 
       form.append('file', file);
@@ -289,6 +294,7 @@ export class BrowserAPI {
   async commit() {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
+      console.log('commit')
       await fetch('api/', {
         method: 'PUT',
       });
@@ -672,6 +678,7 @@ export class BrowserAPI {
   async fetchAsset(filename, token) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
+      console.log('fetchAsset')
       const localpath = `/api/${filename}`;
 
       const result = await fetch(localpath);

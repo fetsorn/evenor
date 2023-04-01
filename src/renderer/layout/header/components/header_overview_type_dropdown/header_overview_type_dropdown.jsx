@@ -21,7 +21,7 @@ export function HeaderOverviewTypeDropdown() {
       onChange={({ target: { value } }) => onChangeOverviewType(value)}
     >
       {(Object.keys(OverviewType)).map(
-        (field, idx) => (
+        (field) => (
           <option key={`overviewType${Math.random()}`} value={OverviewType[field]}>
             {field}
           </option>

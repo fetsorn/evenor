@@ -5,11 +5,10 @@
   display: flex;
   justify-content: space-between;
 
-  /* position: -webkit-sticky; */
-  /* position: sticky; */
-  /* top: 0; */
-  /* background-color: white; */
-  /* z-index: 999999; */
+  position: sticky;
+  top: 0;
+  background-color: white;
+  z-index: 999999;
 }
 
 .title {

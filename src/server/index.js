@@ -36,6 +36,7 @@ async function fetchCallback(filepath) {
   }
 }
 
+// TODO: add WASM fallback
 async function grepCallback(contentFile, patternFile, isInverse) {
   // console.log("grepCallback")
 
@@ -74,7 +75,7 @@ async function grepCallback(contentFile, patternFile, isInverse) {
 
 // on POST `/grep` return results of a search
 router.get('/query*', async (req, res) => {
-  console.log('post query', req.path, req.query);
+  // console.log('post query', req.path, req.query);
 
   try {
     const data = await (new CSVS({
@@ -90,7 +91,7 @@ router.get('/query*', async (req, res) => {
 
 // on GET `/api/path` serve `/path` in current directory
 router.get('/api/*', (req, res) => {
-  console.log('get api', req.path);
+  // console.log('get api', req.path);
 
   const filepath = decodeURI(req.path.replace(/^\/api/, ''));
 
@@ -101,7 +102,7 @@ router.get('/api/*', (req, res) => {
 
 // on POST `/api/path` write `/path` in current directory
 router.post('/api/*', async (req, res) => {
-  console.log('post api', req.path);
+  // console.log('post api', req.path);
 
   const { content } = req.body;
 
@@ -116,7 +117,7 @@ router.post('/api/*', async (req, res) => {
 
 // on PUT `/api/path` git commit current directory
 router.put('/api/*', () => {
-  console.log('put api');
+  // console.log('put api');
 
   git.commit({
     fs,
@@ -164,7 +165,7 @@ router.post('/upload', async (req, res) => {
 
 // on `/` serve a react app with hash router
 router.get('/', (req, res) => {
-  console.log(req.path);
+  // console.log(req.path);
 
   res.sendFile(path.join(dirname, 'build', 'index.html'));
 });

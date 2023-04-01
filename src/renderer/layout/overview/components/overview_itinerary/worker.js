@@ -3,7 +3,7 @@ function groupArray(data, branch) {
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   const objectOfArrays = data.reduce((acc, entry) => {
-    const value = entry[branch];
+    const value = entry[branch] ?? '';
 
     acc[value] = acc[value] || [];
 

@@ -34,7 +34,7 @@ export function ProfileSingleView() {
     onEntryEdit,
     onEntryClose,
     onEntryDelete,
-    onEntryCommit,
+    // onEntryCommit,
     isSettings,
     schemaRepo,
   ] = useStore((state) => [
@@ -46,7 +46,7 @@ export function ProfileSingleView() {
     state.onEntryEdit,
     state.onEntryClose,
     state.onEntryDelete,
-    state.onEntryCommit,
+    // state.onEntryCommit,
     state.isSettings,
     state.schema,
   ]);
@@ -71,11 +71,11 @@ export function ProfileSingleView() {
                 ✏️
               </Button>
 
-              {(isSettings || repoUUID === 'root') && (
-                <Button type="button" title={t('line.button.commit')} onClick={() => onEntryCommit(entry.UUID)}>
-                  ⬆️
-                </Button>
-              )}
+              {/* {(isSettings || repoUUID === 'root') && ( */}
+              {/*   <Button type="button" title={t('line.button.commit')} onClick={() => onEntryCommit(entry.UUID)}> */}
+              {/*     ⬆️ */}
+              {/*   </Button> */}
+              {/* )} */}
 
               <Button type="button" title={t('line.button.delete')} onClick={onEntryDelete}>
                 🗑️
@@ -86,7 +86,7 @@ export function ProfileSingleView() {
               </Button>
             </div>
 
-            {repoUUID === 'root' && (
+            {repoUUID === 'root' && __BUILD_MODE__ !== 'server' && (
               <button type="button" onClick={() => setRepoName(entry.reponame)}>{entry.reponame}</button>
             )}
 

@@ -1,5 +1,5 @@
 import { API, schemaRoot } from 'lib/api';
-// import { OverviewType } from './types.js';
+import { OverviewType } from './types.js';
 
 // pick a param to group data by
 function getDefaultGroupBy(

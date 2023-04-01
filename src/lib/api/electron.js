@@ -13,8 +13,8 @@ let readWorker;
 
 // we run CSVS functions in workers to offload the main thread
 // but UI only expects results from the last call to CSVS.select
-// so we want only one instance of it running at any time
-// and we terminate the previous instance if it is still running
+// so we want only one instance of worker running at any time
+// and we terminate the previous instance if worker is still running
 async function runWorker(workerData) {
   if (workerData.msg === 'select' && readWorker !== undefined) {
     await readWorker.terminate();

@@ -51,6 +51,7 @@ async function saveRepo(repoUUID, entry) {
 
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
+  // try to clone project to repo directory if entry has a remote tag
   if (remoteTags.length === 1) {
     try {
       const [remoteTag] = remoteTags;
@@ -63,8 +64,10 @@ async function saveRepo(repoUUID, entry) {
     }
   }
 
+  // create repo directory with a schema
   await api.ensure(schema, entry.reponame);
 
+  // omit to not save schema branch to csvs
   const { schema: omitSchema, ...entryNew } = entry;
 
   return entryNew;
@@ -92,19 +95,27 @@ export const createEntrySlice = (set, get) => ({
   onBatchSelect: () => set({ isBatch: true }),
 
   onEntrySelect: async (entry, index, group) => {
+    console.log('onEntrySelect');
     let entryNew = entry;
 
-    if (get().repoUUID === 'root') {
+    // eslint-disable-next-line
+    if (get().repoUUID === 'root' && __BUILD_MODE__ !== 'server') {
       entryNew = await selectRepo(get().repoUUID, entry);
     }
 
+    console.log('onEntrySelect-finish');
     set({ entry: entryNew, index, group });
   },
 
-  onEntryCreate: async (index) => {
+  onEntryCreate: async () => {
     const entry = await createEntry(get().schema, get().base);
 
-    set({ index, isEdit: true, entry });
+    set({
+      index: '',
+      isEdit: true,
+      title: '',
+      entry,
+    });
   },
 
   onEntryEdit: () => set({ isEdit: true, entryOriginal: get().entry }),
@@ -114,13 +125,20 @@ export const createEntrySlice = (set, get) => ({
   onEntrySave: async () => {
     let { entry } = get();
 
-    if (get().repoUUID === 'root') {
+    if (entry[entry._] === undefined) {
+      entry[entry._] = '';
+    }
+
+    // eslint-disable-next-line
+    if (get().repoUUID === 'root' && __BUILD_MODE__ !== 'server') {
       entry = await saveRepo(get().repoUUID, get().entry);
     }
 
     const api = new API(get().repoUUID);
 
     const overview = await api.updateEntry(entry, get().overview);
+
+    api.commit();
 
     set({ overview, isEdit: false });
   },
@@ -135,6 +153,8 @@ export const createEntrySlice = (set, get) => ({
     const api = new API(get().repoUUID);
 
     const overview = await api.deleteEntry(get().entry, get().overview);
+
+    api.commit();
 
     set({ overview, entry: undefined });
   },

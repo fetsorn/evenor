@@ -32,7 +32,6 @@
             version = package.version;
             src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
             preConfigure = ''
-              substituteInPlace webpack.web.config.mjs --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace package.json --replace "webpack --config webpack.web.config.mjs" "yarn exec webpack-cli -- --mode=development --config webpack.web.config.mjs --env buildMode=${buildMode}"
             '';
             buildPhase = ''
@@ -138,7 +137,6 @@
             # DEBUG = "*";
             preConfigure = ''
               substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               # substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform win32 --targets @electron-forge/maker-squirrel"
             '';
             buildPhase = ''
@@ -172,7 +170,6 @@
             # DEBUG = "*";
             preConfigure = ''
               substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --platform win32 --arch ${arch} --targets @electron-forge/maker-zip"
             '';
             buildPhase = ''
@@ -198,7 +195,6 @@
               # DEBUG = "*";
               preConfigure = ''
                 substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-                substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
                 substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform linux --targets @electron-forge/maker-rpm"
               '';
               buildPhase = ''
@@ -225,7 +221,6 @@
             # DEBUG = "*"; 
             preConfigure = ''
               substituteInPlace webpack.main.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
-              substituteInPlace webpack.renderer.config.js --replace 'node_modules/@fetsorn/' "../../node_modules/@fetsorn/"
               substituteInPlace package.json --replace "electron-forge make" "yarn exec electron-forge -- make --arch ${arch} --platform linux --targets @electron-forge/maker-deb"
             '';
             buildPhase = ''

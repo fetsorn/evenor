@@ -8,6 +8,9 @@
   transition: width 0.3s ease;
 
   white-space: pre-wrap;
+
+  background-color: white;
+  z-index: 999998;
 }
 
 .sidebar.invisible {
@@ -28,13 +31,13 @@
 
 .sticky {
   position: sticky;
-  top: 0;
+  top: calc(var(--rem) * 48);
   padding-left: calc(var(--col) * 2);
   padding-right: calc(var(--col) * 2);
   width: calc(var(--col) * 16);
 
   overflow-y: auto;
-  max-height: 100vh;
+  max-height: 60vh;
 }
 
 .input {

@@ -127,7 +127,7 @@ export class ElectronAPI {
   }
 
   async putAsset(filename, buffer) {
-    this.writeFile(`local/${filename}`, buffer);
+    this.writeFile(path.join('local', filename), buffer);
   }
 
   async uploadFile() {
@@ -346,13 +346,13 @@ export class ElectronAPI {
     // upload file to remote
     const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    const local = `${this.dir}/local/`;
+    const local = path.join(this.dir, 'local/');
 
     const filenames = await fs.promises.readdir(local);
 
     const files = (await Promise.all(
       filenames.map(async (filename) => {
-        const file = await this.fetchFile(`local/${filename}`);
+        const file = await this.fetchFile(path.join('local', filename));
 
         if (!pointsToLFS(file)) {
           return file;
@@ -440,7 +440,7 @@ export class ElectronAPI {
     if (!(await fs.promises.readdir(store)).includes(this.uuid)) {
       await fs.promises.mkdir(dir);
 
-      await git.init({ fs, dir, defaultBranch: "main" });
+      await git.init({ fs, dir, defaultBranch: 'main' });
     }
 
     await fs.promises.writeFile(
@@ -498,30 +498,29 @@ export class ElectronAPI {
       const { dir } = this;
 
       await new Promise((res, rej) => {
-        sudo.exec('link new project', {}, function(error, stdout, stderr) {
+        sudo.exec('link new project', {}, (error) => {
           if (error) rej(error);
 
           try {
-            fs.unlinkSync(`${repos}/${name}`);
+            fs.unlinkSync(path.join(repos, name));
           } catch {
             // do nothing
           }
 
-          fs.symlinkSync(dir, `${repos}/${name}`);
+          fs.symlinkSync(dir, path.join(repos, name));
 
-          res()
+          res();
         });
       });
     } else {
       try {
-        await fs.promises.unlink(`${repos}/${name}`);
+        await fs.promises.unlink(path.join(repos, name));
       } catch {
         // do nothing
       }
 
-      await fs.promises.symlink(this.dir, `${repos}/${name}`);
+      await fs.promises.symlink(this.dir, path.join(repos, name));
     }
-
   }
 
   static async rimraf(rimrafpath) {
@@ -554,7 +553,7 @@ export class ElectronAPI {
     console.log('list ', lspath, ':', files);
 
     for (const file of files) {
-      const filepath = `${lspath}/${file}`;
+      const filepath = path.join(lspath, file);
 
       const { type } = await fs.promises.stat(filepath);
 
@@ -611,7 +610,7 @@ export class ElectronAPI {
       const files = await fs.promises.readdir(dir);
 
       for (const file of files) {
-        const filepath = `${dir}/${file}`;
+        const filepath = path.join(dir, file);
 
         const { type: filetype } = await fs.promises.stat(filepath);
 
@@ -661,7 +660,7 @@ export class ElectronAPI {
 
   // returns blob url
   async fetchAsset(filename, token) {
-    let content = await this.fetchFile(`local/${filename}`);
+    let content = await this.fetchFile(path.join('local', filename));
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 

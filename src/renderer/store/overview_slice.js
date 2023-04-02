@@ -54,7 +54,10 @@ function getDefaultGroupBy(
 export function queriesToParams(queries) {
   const searchParams = new URLSearchParams();
 
-  Object.keys(queries).map((key) => (queries[key] !== '' ? searchParams.set(key, queries[key]) : null));
+  Object.keys(queries).map((key) => (
+    queries[key] === ''
+      ? null
+      : searchParams.set(key, queries[key])));
 
   return searchParams;
 }
@@ -176,9 +179,13 @@ export const createOverviewSlice = (set, get) => ({
       '.group',
     ) ?? undefined;
 
+    queries['.group'] = groupBy;
+
     const schema = await api.readSchema();
 
     const base = Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
+
+    queries._ = base;
 
     set({
       schema,
@@ -195,40 +202,66 @@ export const createOverviewSlice = (set, get) => ({
 
   onQueries: async () => {
     if (get().isInitialized) {
+      // const overviewType = get().queries['.overview']
+      //   ? OverviewType[get().queries['.overview']]
+      //   : get().overviewType;
+
+      const { queries } = get();
+
       const api = new API(get().repoUUID);
 
       const schema = await api.readSchema();
 
-      const base = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
-        ? get().base
+      const base = Object.prototype.hasOwnProperty.call(schema, queries._)
+        ? queries._
         : Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
 
-      const searchParams = queriesToParams(get().queries);
-
-      searchParams.set('_', base);
+      queries._ = base;
 
       set({
         base, schema, overview: [],
       });
 
+      const searchParams = queriesToParams(queries);
+
+      searchParams.set('_', base);
+
+      searchParams.delete('.group');
+
       const overview = await api.select(searchParams);
 
-      const groupBy = Object.prototype.hasOwnProperty.call(schema, get().groupBy)
-        ? get().groupBy
-        : getDefaultGroupBy(schema, overview, searchParams);
+      const schemaBase = Object.fromEntries(Object.entries(schema).filter(
+        ([branch, info]) => branch === base
+          || info.trunk === base
+          || schema[info.trunk]?.trunk === base,
+      ));
+
+      const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
+        ? queries['.group']
+        : getDefaultGroupBy(
+          schemaBase,
+          overview,
+          searchParams,
+        );
+
+      queries['.group'] = groupBy;
 
       set({
-        overview, groupBy,
+        overview, groupBy, queries,
       });
     }
   },
 
   onChangeBase: async (base) => {
+    const { queries } = get();
+
+    queries._ = base;
+
     const searchParams = queriesToParams(get().queries);
 
-    set({ base });
+    set({ base, queries });
 
-    searchParams.set('_', base);
+    searchParams.delete('.group');
 
     const api = new API(get().repoUUID);
 
@@ -251,6 +284,8 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.set('reponame', repoUUID);
 
+      searchParams.delete('.group');
+
       const [entry] = await api.select(searchParams);
 
       repoName = entry.reponame;
@@ -269,6 +304,8 @@ export const createOverviewSlice = (set, get) => ({
     searchParams.set('_', 'reponame');
 
     searchParams.set('reponame', repoName);
+
+    searchParams.delete('.group');
 
     const [entry] = await api.select(searchParams);
 

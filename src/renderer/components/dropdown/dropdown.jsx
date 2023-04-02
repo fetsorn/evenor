@@ -23,13 +23,13 @@ export function Dropdown({
 
   return (
     <div title={title} className={styles.dropdown}>
-      <button className={styles.menuItem} onClick={onOpen}>
+      <button type="button" className={styles.menuItem} onClick={onOpen}>
         {label}
       </button>
 
       <div className={cn(styles.menu, { [styles.opened]: opened })}>
-        {menuItems.map((item, index) => (
-          <div key={index}>
+        {menuItems.map((item) => (
+          <div key={`dropdown_${label}_${title}_${Math.random()}`}>
             <button
               className={cn(styles.dropdownButton, { [styles.opened]: opened })}
               onClick={onSelect(item.onClick)}

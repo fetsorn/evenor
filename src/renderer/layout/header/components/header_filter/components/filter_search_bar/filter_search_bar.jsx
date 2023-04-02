@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API } from 'lib/api';
 import { Button } from '@/components/index.js';
-import { useStore } from '@/store/index.js';
+import { OverviewType, useStore } from '@/store/index.js';
 import styles from './filter_search_bar.module.css';
 
 export function FilterSearchBar() {
@@ -47,14 +47,50 @@ export function FilterSearchBar() {
         label: `${description} (${branch})`,
       };
     },
-  );
+  ).concat([
+    { branch: '_', label: t('header.dropdown.base') },
+    { branch: '.group', label: t('header.dropdown.groupby') },
+  ]);
 
   async function onFocus() {
-    const optionsNew = await api.queryOptions(queryField);
+    if (queryField === '_') {
+      const roots = Object.keys(schema)
+        .filter((branch) => schema[branch].trunk === undefined
+                || schema[branch].type === 'object'
+                || schema[branch].type === 'array')
+        .map((branch) => {
+          const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
-    const optionValues = optionsNew.map((entry) => entry[queryField]);
+          return {
+            branch,
+            label: `${description} (${branch})`,
+          };
+        });
 
-    setOptions([...new Set(optionValues)]);
+      setOptions(roots.map((root) => root.branch));
+    } else if (queryField === '.group') {
+      const leaves = Object.keys(schema)
+        .filter((branch) => (schema[branch].trunk === base
+                             || branch === base
+                             || schema[schema[branch]?.trunk]?.trunk === base)
+                && (branch !== 'schema' && branch !== 'schema_branch'))
+        .map((branch) => {
+          const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+
+          return {
+            branch,
+            label: `${description} (${branch})`,
+          };
+        });
+
+      setOptions(leaves.map((leaf) => leaf.branch));
+    } else {
+      const optionsNew = await api.queryOptions(queryField);
+
+      const optionValues = optionsNew.map((entry) => entry[queryField]);
+
+      setOptions([...new Set(optionValues)]);
+    }
   }
 
   useEffect(() => {

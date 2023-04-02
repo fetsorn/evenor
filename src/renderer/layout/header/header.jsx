@@ -8,9 +8,7 @@ import {
 } from '@/components/index.js';
 import {
   HeaderFilter,
-  HeaderBaseDropdown,
-  HeaderGroupByDropdown,
-  HeaderOverviewTypeDropdown,
+  HeaderOverviewRadio,
 } from './components/index.js';
 
 export function Header() {
@@ -47,11 +45,11 @@ export function Header() {
     if (isInitialized && __BUILD_MODE__ !== 'electron') {
       const searchParams = queriesToParams(queries);
 
-      if (groupBy !== '') {
-        searchParams.set('.group', groupBy);
-      }
+      // if (groupBy !== '') {
+      //   searchParams.set('.group', groupBy);
+      // }
 
-      searchParams.set('.overview', overviewType);
+      // searchParams.set('.overview', overviewType);
 
       const pathname = repoName === undefined ? '/' : `/${repoName}`;
 
@@ -83,15 +81,7 @@ export function Header() {
         )
         : <div />}
 
-      <div className={styles.dropdowns}>
-        <HeaderOverviewTypeDropdown />
-
-        {overviewType === 'itinerary'
-        && <HeaderBaseDropdown />}
-
-        {overviewType === 'itinerary'
-         && <HeaderGroupByDropdown />}
-      </div>
+      <HeaderOverviewRadio />
 
       <HeaderFilter />
 

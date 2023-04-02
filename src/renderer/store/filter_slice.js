@@ -10,10 +10,8 @@ export const createFilterSlice = (set, get) => ({
   onChangeGroupBy: (groupBy) => set({ groupBy }),
 
   onChangeOverviewType: (overviewTypeNew) => {
-    const overviewTypeParam = overviewTypeNew;
-
-    const overviewType = overviewTypeParam
-      ? OverviewType[overviewTypeParam]
+    const overviewType = overviewTypeNew
+      ? OverviewType[overviewTypeNew]
       : get().overviewType;
 
     set({ overviewType });
@@ -32,10 +30,12 @@ export const createFilterSlice = (set, get) => ({
   },
 
   onQueryRemove: async (queryField) => {
-    const queries = { ...get().queries };
+    if (queryField !== '_' && queryField !== '.group') {
+      const queries = { ...get().queries };
 
-    delete queries[queryField];
+      delete queries[queryField];
 
-    set({ queries });
+      set({ queries });
+    }
   },
 });

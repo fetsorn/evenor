@@ -38,7 +38,7 @@ module.exports = {
     {
       name: '@electron-forge/plugin-webpack',
       config: {
-        devContentSecurityPolicy: "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; frame-src 'self' blob:; media-src 'self' blob:; img-src 'self' data: blob:;",
+        devContentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; frame-src 'self' blob:; media-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self' https://ondemand-service-d3ncqg2pmq-uc.a.run.app;",
         mainConfig: './webpack.main.config.js',
         renderer: {
           config: './webpack.renderer.config.js',

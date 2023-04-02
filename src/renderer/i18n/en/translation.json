@@ -5,12 +5,15 @@
       "back": "back",
       "search": "search",
       "export": "export",
-      "remove": "remove {{ field }} from search"
+      "remove": "remove {{ field }} from search",
+      "book": "",
+      "graph": "",
+      "itinerary": ""
     },
     "dropdown": {
       "overview": "show events as {{ field }}",
-      "groupby": "group events by field {{ field }}",
-      "base": "base events on {{ field }}",
+      "groupby": "Group branch",
+      "base": "Base branch",
       "search": "search for field {{ field }}"
     },
     "label": {

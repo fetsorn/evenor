@@ -22,9 +22,10 @@ export function InputUpload({
     onFieldChange(branch, filepath);
   }
 
-  return (
-    <div>
-      {__BUILD_MODE__ === 'electron' ? (
+  // eslint-disable-next-line
+  switch (__BUILD_MODE__) {
+    case 'electron':
+      return (
         <div>
           <input
             className={styles.input}
@@ -36,12 +37,13 @@ export function InputUpload({
             {t('line.button.upload')}
           </Button>
         </div>
-      ) : (
+      );
+    default:
+      return (
         <input
           type="file"
           onChange={(e) => onFieldUpload(e.target.files[0])}
         />
-      )}
-    </div>
-  );
+      );
+  }
 }

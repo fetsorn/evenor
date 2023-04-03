@@ -134,7 +134,7 @@ router.put('/api/*', () => {
 router.post('/upload', async (req, res) => {
   const form = formidable({});
 
-  const uploadDir = path.join(process.cwd(), 'local/');
+  const uploadDir = path.join(process.cwd(), 'local');
 
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
@@ -155,9 +155,20 @@ router.post('/upload', async (req, res) => {
     }
     const { file } = files;
 
-    const uploadPath = path.join(uploadDir, file.originalFilename);
+    const fileArrayBuffer = fs.readFileSync(file.filepath);
 
-    await fs.promises.rename(file.filepath, uploadPath);
+    const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
+      'SHA-256',
+      fileArrayBuffer,
+    );
+
+    const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+
+    const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+    const uploadPath = path.join(uploadDir, hashHexString);
+
+    await fs.promises.copyFile(file.filepath, uploadPath);
 
     res.end();
   });

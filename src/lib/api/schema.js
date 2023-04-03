@@ -137,7 +137,7 @@ export async function generateDefaultSchemaEntry() {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'moddate',
-        schema_branch_trunk: 'filepath',
+        schema_branch_trunk: 'filehash',
         schema_branch_task: 'date',
         schema_branch_dir: 'date',
         schema_branch_description: {
@@ -178,7 +178,7 @@ export async function generateDefaultSchemaEntry() {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filehash',
-        schema_branch_trunk: 'filepath',
+        schema_branch_trunk: 'datum',
         schema_branch_type: 'hash',
         schema_branch_description: {
           _: 'schema_branch_description',
@@ -217,7 +217,7 @@ export async function generateDefaultSchemaEntry() {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filesize',
-        schema_branch_trunk: 'filepath',
+        schema_branch_trunk: 'filehash',
         schema_branch_description: {
           _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
@@ -229,7 +229,7 @@ export async function generateDefaultSchemaEntry() {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filetype',
-        schema_branch_trunk: 'filepath',
+        schema_branch_trunk: 'filehash',
         schema_branch_type: 'string',
         schema_branch_description: {
           _: 'schema_branch_description',
@@ -331,6 +331,14 @@ export const defaultSchema = {
     description: {
       en: 'Path to a digital asset',
       ru: 'Путь к файлу',
+    },
+  },
+  filehash: {
+    trunk: 'datum',
+    type: 'hash',
+    description: {
+      en: 'Hash of a digital asset',
+      ru: 'Хеш файла',
     },
   },
 };

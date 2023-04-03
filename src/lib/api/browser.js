@@ -28,7 +28,6 @@ async function runWorker(readFile, searchParams) {
   // eslint-disable-next-line
   switch (__BUILD_MODE__) {
     case 'server': {
-      console.log('worker query')
       const response = await fetch(`/query?${searchParams.toString()}`);
 
       return response.json();
@@ -72,7 +71,6 @@ export class BrowserAPI {
   async fetchFile(filepath) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      console.log('fetchFile')
       return (await fetch(`/api/${filepath}`)).arrayBuffer();
     }
 
@@ -122,7 +120,6 @@ export class BrowserAPI {
   ) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      console.log('writeFile')
       await fetch(`/api/${filepath}`, {
         method: 'POST',
         headers: {
@@ -171,19 +168,12 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
-      console.log('putAsset')
-      // TODO
-    }
-
     this.writeFile(`local/${filename}`, buffer);
   }
 
   async uploadFile(file) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      console.log('uploadFile')
       const form = new FormData();
 
       form.append('file', file);
@@ -196,11 +186,20 @@ export class BrowserAPI {
       return `${this.dir}/${file.name}`;
     }
 
-    const buf = await file.arrayBuffer();
+    const fileArrayBuffer = await file.arrayBuffer();
 
-    await this.putAsset(file.name, buf);
+    const hashArrayBuffer = await crypto.subtle.digest(
+      'SHA-256',
+      fileArrayBuffer,
+    );
 
-    return file.name;
+    const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+
+    const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+
+    await this.putAsset(hashHexString, fileArrayBuffer);
+
+    return hashHexString;
   }
 
   async select(searchParams) {
@@ -294,7 +293,6 @@ export class BrowserAPI {
   async commit() {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      console.log('commit')
       await fetch('api/', {
         method: 'PUT',
       });
@@ -678,7 +676,6 @@ export class BrowserAPI {
   async fetchAsset(filename, token) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      console.log('fetchAsset')
       const localpath = `/api/${filename}`;
 
       const result = await fetch(localpath);

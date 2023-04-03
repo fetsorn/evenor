@@ -136,30 +136,22 @@ export class ElectronAPI {
     if (res.canceled) {
       throw Error('cancelled');
     } else {
-      const pathSource = res.filePaths[0];
+      const filepath = res.filePaths[0];
 
-      const filename = path.basename(pathSource);
+      const fileArrayBuffer = fs.readFileSync(filepath);
 
-      const localDir = 'local';
+      const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
+        'SHA-256',
+        fileArrayBuffer,
+      );
 
-      const localPath = path.join(this.dir, localDir);
+      const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-      if (!fs.existsSync(localPath)) {
-        fs.mkdirSync(localPath);
-      } else {
-        // console.log(`Directory ${root} already exists.`);
-      }
+      const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-      const destinationPath = path.join(localPath, filename);
+      await this.putAsset(hashHexString, fileArrayBuffer);
 
-      // copy file to local/
-      if (!fs.existsSync(destinationPath)) {
-        await fs.promises.copyFile(pathSource, destinationPath);
-      } else {
-        // throw `file ${destinationPath} already exists`;
-      }
-
-      return filename;
+      return hashHexString;
     }
   }
 

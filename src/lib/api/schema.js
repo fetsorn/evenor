@@ -108,10 +108,24 @@ export async function generateDefaultSchemaEntry() {
       {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: 'filepath',
+        schema_branch_name: 'file',
         schema_branch_trunk: 'datum',
+        schema_branch_type: 'object',
+        schema_branch_task: 'file',
+        schema_branch_description: {
+          _: 'schema_branch_description',
+          UUID: await digestMessage(await randomUUID()),
+          schema_branch_description_en: 'Digital asset',
+          schema_branch_description_ru: 'Файл',
+        },
+      },
+      {
+        _: 'schema_branch',
+        UUID: await digestMessage(await randomUUID()),
+        schema_branch_name: 'filename',
+        schema_branch_trunk: 'file',
+        schema_branch_task: 'filename',
         schema_branch_type: 'string',
-        schema_branch_task: 'path',
         schema_branch_description: {
           _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
@@ -131,20 +145,6 @@ export async function generateDefaultSchemaEntry() {
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Date of the event',
           schema_branch_description_ru: 'Дата события',
-        },
-      },
-      {
-        _: 'schema_branch',
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: 'moddate',
-        schema_branch_trunk: 'filehash',
-        schema_branch_task: 'date',
-        schema_branch_dir: 'date',
-        schema_branch_description: {
-          _: 'schema_branch_description',
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: 'Date of the file',
-          schema_branch_description_ru: 'Дата файла',
         },
       },
       {
@@ -178,8 +178,9 @@ export async function generateDefaultSchemaEntry() {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
         schema_branch_name: 'filehash',
-        schema_branch_trunk: 'datum',
+        schema_branch_trunk: 'file',
         schema_branch_type: 'hash',
+        schema_branch_task: 'filehash',
         schema_branch_description: {
           _: 'schema_branch_description',
           UUID: await digestMessage(await randomUUID()),
@@ -211,31 +212,6 @@ export async function generateDefaultSchemaEntry() {
           UUID: await digestMessage(await randomUUID()),
           schema_branch_description_en: 'Privacy',
           schema_branch_description_ru: 'Публичность',
-        },
-      },
-      {
-        _: 'schema_branch',
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: 'filesize',
-        schema_branch_trunk: 'filehash',
-        schema_branch_description: {
-          _: 'schema_branch_description',
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: 'Size of the file',
-          schema_branch_description_ru: 'Размер файла',
-        },
-      },
-      {
-        _: 'schema_branch',
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: 'filetype',
-        schema_branch_trunk: 'filehash',
-        schema_branch_type: 'string',
-        schema_branch_description: {
-          _: 'schema_branch_description',
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: 'Type of the file',
-          schema_branch_description_ru: 'Тип файла',
         },
       },
       {
@@ -325,17 +301,28 @@ export const defaultSchema = {
       ru: 'Публичность',
     },
   },
-  filepath: {
+  file: {
     trunk: 'datum',
-    type: 'path',
+    type: 'object',
+    task: 'file',
+    description: {
+      en: 'Digital asset',
+      ru: 'Файл',
+    },
+  },
+  filename: {
+    trunk: 'file',
+    type: 'string',
+    task: 'filename',
     description: {
       en: 'Path to a digital asset',
       ru: 'Путь к файлу',
     },
   },
   filehash: {
-    trunk: 'datum',
+    trunk: 'file',
     type: 'hash',
+    task: 'filehash',
     description: {
       en: 'Hash of a digital asset',
       ru: 'Хеш файла',

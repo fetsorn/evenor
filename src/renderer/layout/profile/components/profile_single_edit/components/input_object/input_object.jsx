@@ -91,7 +91,7 @@ export function InputObject({
     onFieldChange(branch, objectNew);
   }
 
-  function generateLeaf(leaf, index) {
+  function generateLeaf(leaf) {
     function onFieldChangeObjectField(
       fieldBranch,
       fieldValue,

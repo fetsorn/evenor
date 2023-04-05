@@ -161,7 +161,10 @@ export const createEntrySlice = (set, get) => ({
 
   onEntryClose: () => set({ entry: undefined }),
 
-  onEntryChange: (_, entry) => set({ entry }),
+  onEntryChange: (_, entry) => {
+    console.log(entry);
+    set({ entry });
+  },
 
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);

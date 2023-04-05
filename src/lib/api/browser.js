@@ -168,7 +168,7 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    this.writeFile(`local/${filename}`, buffer);
+    this.writeFile(`lfs/${filename}`, buffer);
   }
 
   async uploadFile(file) {
@@ -199,7 +199,7 @@ export class BrowserAPI {
 
     await this.putAsset(hashHexString, fileArrayBuffer);
 
-    return hashHexString;
+    return [hashHexString, file.name];
   }
 
   async select(searchParams) {
@@ -350,7 +350,7 @@ export class BrowserAPI {
             filepath,
           });
         } else {
-          if (filepath.startsWith('local/')) {
+          if (filepath.startsWith('lfs/')) {
             const { addLFS } = await import('./lfs.js');
 
             await addLFS({
@@ -391,18 +391,18 @@ export class BrowserAPI {
   }
 
   async uploadBlobs(url, token) {
-    // for every file in local/
+    // for every file in lfs/
     // if file is not LFS pointer,
     // upload file to remote
     const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    const local = `${this.dir}/local/`;
+    const lfs = `${this.dir}/lfs/`;
 
-    const filenames = await fs.promises.readdir(local);
+    const filenames = await fs.promises.readdir(lfs);
 
     const files = (await Promise.all(
       filenames.map(async (filename) => {
-        const file = await this.fetchFile(`local/${filename}`);
+        const file = await this.fetchFile(`lfs/${filename}`);
 
         if (!pointsToLFS(file)) {
           return file;
@@ -501,7 +501,7 @@ export class BrowserAPI {
 
     await fs.promises.writeFile(
       `${dir}/.gitattributes`,
-      'local/** filter=lfs diff=lfs merge=lfs -text\n',
+      'lfs/** filter=lfs diff=lfs merge=lfs -text\n',
       'utf8',
     );
 
@@ -676,16 +676,16 @@ export class BrowserAPI {
   async fetchAsset(filename, token) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      const localpath = `/api/${filename}`;
+      const lfspath = `/api/${filename}`;
 
-      const result = await fetch(localpath);
+      const result = await fetch(lfspath);
 
       if (result.ok) {
         return result.blob();
       }
     }
 
-    let content = await this.fetchFile(`local/${filename}`);
+    let content = await this.fetchFile(`lfs/${filename}`);
 
     const contentBuf = Buffer.from(content);
 

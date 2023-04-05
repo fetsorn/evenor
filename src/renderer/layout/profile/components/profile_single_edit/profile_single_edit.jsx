@@ -90,8 +90,6 @@ export function ProfileSingleEdit() {
                 isBaseObject: true,
               }}
             />
-
-            <AssetView filepath={entry?.FILE_PATH} />
           </div>
         </div>
       )}

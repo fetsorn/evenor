@@ -127,7 +127,7 @@ export class ElectronAPI {
   }
 
   async putAsset(filename, buffer) {
-    this.writeFile(path.join('local', filename), buffer);
+    this.writeFile(path.join('lfs', filename), buffer);
   }
 
   async uploadFile() {
@@ -140,6 +140,8 @@ export class ElectronAPI {
 
       const fileArrayBuffer = fs.readFileSync(filepath);
 
+      const crypto = await import('crypto');
+
       const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
         'SHA-256',
         fileArrayBuffer,
@@ -149,9 +151,11 @@ export class ElectronAPI {
 
       const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
+      console.log(hashHexString, path.basename(filepath));
+
       await this.putAsset(hashHexString, fileArrayBuffer);
 
-      return hashHexString;
+      return [hashHexString, path.basename(filepath)];
     }
   }
 
@@ -291,8 +295,8 @@ export class ElectronAPI {
             filepath,
           });
         } else {
-          // if file in local/ add as LFS
-          if (filepath.startsWith('local/')) {
+          // if file in lfs/ add as LFS
+          if (filepath.startsWith('lfs')) {
             const { addLFS } = await import('./lfs.js');
 
             await addLFS({
@@ -333,18 +337,18 @@ export class ElectronAPI {
   }
 
   async uploadBlobs(url, token) {
-    // for every file in local/
+    // for every file in lfs/
     // if file is not LFS pointer,
     // upload file to remote
     const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    const local = path.join(this.dir, 'local/');
+    const lfs = path.join(this.dir, 'lfs');
 
-    const filenames = await fs.promises.readdir(local);
+    const filenames = await fs.promises.readdir(lfs);
 
     const files = (await Promise.all(
       filenames.map(async (filename) => {
-        const file = await this.fetchFile(path.join('local', filename));
+        const file = await this.fetchFile(path.join('lfs', filename));
 
         if (!pointsToLFS(file)) {
           return file;
@@ -437,7 +441,7 @@ export class ElectronAPI {
 
     await fs.promises.writeFile(
       `${dir}/.gitattributes`,
-      'local/** filter=lfs diff=lfs merge=lfs -text\n',
+      'lfs/** filter=lfs diff=lfs merge=lfs -text\n',
       'utf8',
     );
 
@@ -644,7 +648,7 @@ export class ElectronAPI {
 
   // returns blob url
   async fetchAsset(filename, token) {
-    let content = await this.fetchFile(path.join('local', filename));
+    let content = await this.fetchFile(path.join('lfs', filename));
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 

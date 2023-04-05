@@ -98,8 +98,8 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
               { entry.UUID }
 
-              { entry.items.map((item, index) => (
-                <div key={index}>
+              { entry.items.map((item) => (
+                <div key={`array_item_${Math.random()}`}>
                   <ViewField entry={item} schema={schema} />
                 </div>
               ))}
@@ -109,6 +109,12 @@ export function ViewField({ entry, schema, isBaseObject }) {
       );
 
     case 'object':
+      if (branchTask === 'file') {
+        return (
+          <AssetView {...{ entry, schema }} />
+        );
+      }
+
       return (
         <div>
           {!isOpen ? (
@@ -128,7 +134,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
               {entry.UUID}
 
               { Object.keys(entry).map((leaf) => {
-                if (leaf === '_' || leaf === 'UUID') { return; }
+                if (leaf === '_' || leaf === 'UUID') { return <div />; }
 
                 const leafEntry = schema[leaf]?.type === 'object'
                                  || schema[leaf]?.type === 'array'
@@ -147,12 +153,6 @@ export function ViewField({ entry, schema, isBaseObject }) {
       );
 
     default:
-      if (branchTask === 'path') {
-        return (
-          <AssetView filepath={entry[branch]} />
-        );
-      }
-
       return (
         <div>
           {branchDescription}

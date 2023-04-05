@@ -51,8 +51,8 @@ export function EditInput({
   }
 
   // TODO: find a way to wrap the Spoiler and Label
-  // in a component with a children prop
-  // without losing input focus after onFieldChange
+  // in a component that has a "children" prop
+  // naive implementation loses input focus after onFieldChange
 
   // if non-array root, treat as object
   // if array root, treat as array later
@@ -86,11 +86,12 @@ export function EditInput({
             <div>
               {!isOpen ? (
                 <div>
-                  <a onClick={open}>▶️</a>
+                  <button type="button" onClick={open}>▶️</button>
 
                   {description}
 
                   <button
+                    type="button"
                     title={t('line.button.remove', { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
@@ -99,11 +100,12 @@ export function EditInput({
                 </div>
               ) : (
                 <div>
-                  <a onClick={close}>🔽</a>
+                  <button type="button" onClick={close}>🔽️</button>
 
                   {description}
 
                   <button
+                    type="button"
                     title={t('line.button.remove', { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
@@ -125,58 +127,18 @@ export function EditInput({
       );
 
     case 'object':
-      return (
-        <div>
-          {!isOpen ? (
-            <div>
-              <a onClick={open}>▶️</a>
-
-              {description}
-
-              <button
-                title={t('line.button.remove', { field: branch })}
-                onClick={() => onFieldRemove(branch)}
-              >
-                X
-              </button>
-            </div>
-          ) : (
-            <div>
-              <a onClick={close}>🔽</a>
-
-              {description}
-
-              <button
-                title={t('line.button.remove', { field: branch })}
-                onClick={() => onFieldRemove(branch)}
-              >
-                X
-              </button>
-
-              <InputObject
-                {...{
-                  schema,
-                  entry,
-                  onFieldChange,
-                }}
-              />
-            </div>
-          )}
-        </div>
-      );
-
-    default:
       switch (branchTask) {
-        case 'text':
+        case 'file':
           return (
             <div>
               {!isOpen ? (
                 <div>
-                  <a onClick={open}>▶️</a>
+                  <button type="button" onClick={open}>▶️</button>
 
                   {description}
 
                   <button
+                    type="button"
                     title={t('line.button.remove', { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
@@ -185,11 +147,100 @@ export function EditInput({
                 </div>
               ) : (
                 <div>
-                  <a onClick={close}>🔽</a>
+                  <button type="button" onClick={close}>🔽️</button>
 
                   {description}
 
                   <button
+                    type="button"
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+
+                  <InputUpload
+                    {...{
+                      schema,
+                      entry,
+                      onFieldChange,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        default:
+          return (
+            <div>
+              {!isOpen ? (
+                <div>
+                  <button type="button" onClick={open}>▶️</button>
+
+                  {description}
+
+                  <button
+                    type="button"
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <button type="button" onClick={close}>🔽️</button>
+
+                  {description}
+
+                  <button
+                    type="button"
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+
+                  <InputObject
+                    {...{
+                      schema,
+                      entry,
+                      onFieldChange,
+                    }}
+                  />
+                </div>
+              )}
+            </div>
+          );
+      }
+
+    default:
+      switch (branchTask) {
+        case 'text':
+          return (
+            <div>
+              {!isOpen ? (
+                <div>
+                  <button type="button" onClick={open}>▶️</button>
+
+                  {description}
+
+                  <button
+                    type="button"
+                    title={t('line.button.remove', { field: branch })}
+                    onClick={() => onFieldRemove(branch)}
+                  >
+                    X
+                  </button>
+                </div>
+              ) : (
+                <div>
+                  <button type="button" onClick={close}>🔽️</button>
+
+                  {description}
+
+                  <button
+                    type="button"
                     title={t('line.button.remove', { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
@@ -208,34 +259,13 @@ export function EditInput({
             </div>
           );
 
-        case 'path':
-          return (
-            <div>
-              {description}
-
-              <button
-                title={t('line.button.remove', { field: branch })}
-                onClick={() => onFieldRemove(branch)}
-              >
-                X
-              </button>
-
-              <InputUpload
-                {...{
-                  branch,
-                  value,
-                  onFieldChange,
-                }}
-              />
-            </div>
-          );
-
         case 'date':
           return (
             <div>
               {description}
 
               <button
+                type="button"
                 title={t('line.button.remove', { field: branch })}
                 onClick={() => onFieldRemove(branch)}
               >
@@ -258,6 +288,7 @@ export function EditInput({
               {description}
 
               <button
+                type="button"
                 title={t('line.button.remove', { field: branch })}
                 onClick={() => onFieldRemove(branch)}
               >

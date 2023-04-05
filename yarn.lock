@@ -1343,10 +1343,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.35.0.tgz#b7569632b0b788a0ca0e438235154e45d42813a7"
   integrity sha512-JXdzbRiWclLVoD8sNUjR443VVlYqiYmDVT6rGUEIEHU5YJW0gaVZwV2xgM7D4arkvASqD0IlLUVjHiFuxaftRw==
 
-"@fetsorn/csvs-js@0.11.0":
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.11.0.tgz#ccdf8fd22e0524213a2781f267983f87ca58f26f"
-  integrity sha512-YWlYKdKL/5DFq8X/Mjf6bSSyWcs0Xbeqw+4iTtjRmopFJI7hKrCdoi/fCqHn2/Ra6XckFSiDJt+S1DBwhB7S+A==
+"@fetsorn/csvs-js@0.11.1":
+  version "0.11.1"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.11.1.tgz#4336937ae34a5aa22c187297c0d369e3a06335a6"
+  integrity sha512-O0fDnHRJExrNpJ6+Clz7vIWYUdeW1al8N9QQsfc5sUAGLWSONzIEMGE9g1ZWAt2lWH5jHyTPmHnKlPZ3OUTQbg==
 
 "@fetsorn/ged2dot@0.2.0":
   version "0.2.0"

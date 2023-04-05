@@ -2,48 +2,81 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { API } from 'lib/api';
 import { useStore } from '@/store/index.js';
-import { Button } from '@/components/index.js';
+import { Button, AssetView } from '@/components/index.js';
 import styles from './input_upload.module.css';
+import { InputText } from '..';
 
 export function InputUpload({
-  branch,
-  value,
+  schema,
+  entry,
   onFieldChange,
 }) {
   const { t } = useTranslation();
 
+  const branch = entry._;
+
+  const filehashBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === branch && schema[b].task === 'filehash',
+  );
+
+  const filenameBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === branch && schema[b].task === 'filename',
+  );
+
   const repoUUID = useStore((state) => state.repoUUID);
 
-  async function onFieldUpload(file) {
+  async function onRename(_, filenameValue) {
+    const entryNew = { ...entry };
+
+    entryNew[filenameBranch] = filenameValue;
+
+    onFieldChange(branch, entryNew);
+  }
+
+  async function onUpload(file) {
     const api = new API(repoUUID);
 
-    const filepath = await api.uploadFile(file);
+    const [filehash, filename] = await api.uploadFile(file);
 
-    onFieldChange(branch, filepath);
+    const entryNew = { ...entry };
+
+    entryNew[filehashBranch] = filehash;
+
+    entryNew[filenameBranch] = filename;
+
+    console.log(onUpload, entryNew);
+
+    onFieldChange(branch, entryNew);
   }
 
-  // eslint-disable-next-line
-  switch (__BUILD_MODE__) {
-    case 'electron':
-      return (
-        <div>
-          <input
-            className={styles.input}
-            type="text"
-            value={value}
-            onChange={(e) => onFieldChange(branch, e.target.value)}
-          />
-          <Button type="button" onClick={() => onFieldUpload()}>
-            {t('line.button.upload')}
-          </Button>
-        </div>
-      );
-    default:
-      return (
+  return (
+    <div>
+      <div>{ entry.UUID }</div>
+
+      <InputText
+        {...{
+          branch: filenameBranch,
+          value: entry[filenameBranch] ?? '',
+          onFieldChange: onRename,
+        }}
+      />
+
+      {entry[filehashBranch] ?? ''}
+
+      {__BUILD_MODE__ === 'electron' ? (
+        <Button type="button" onClick={() => onUpload()}>
+          {t('line.button.upload')}
+        </Button>
+      ) : (
         <input
           type="file"
-          onChange={(e) => onFieldUpload(e.target.files[0])}
+          onChange={(e) => onUpload(e.target.files[0])}
         />
-      );
-  }
+      )}
+
+      {entry[filenameBranch] && entry[filehashBranch] && (
+        <AssetView {...{ entry, schema }} />
+      )}
+    </div>
+  );
 }

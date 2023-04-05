@@ -130,11 +130,11 @@ router.put('/api/*', () => {
   }).then((sha) => console.log(sha));
 });
 
-// on POST `/upload` write file to local/
+// on POST `/upload` write file to lfs/
 router.post('/upload', async (req, res) => {
   const form = formidable({});
 
-  const uploadDir = path.join(process.cwd(), 'local');
+  const uploadDir = path.join(process.cwd(), 'lfs');
 
   if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);

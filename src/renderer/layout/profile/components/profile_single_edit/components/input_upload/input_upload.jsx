@@ -44,8 +44,6 @@ export function InputUpload({
 
     entryNew[filenameBranch] = filename;
 
-    console.log(onUpload, entryNew);
-
     onFieldChange(branch, entryNew);
   }
 

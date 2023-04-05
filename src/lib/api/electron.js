@@ -96,7 +96,7 @@ export class ElectronAPI {
 
     // if path doesn't exist, create it
     // split path into array of directory names
-    const pathElements = ['store', this.uuid].concat(filepath.split('/'));
+    const pathElements = ['store', this.uuid].concat(filepath.split(path.sep));
 
     // remove file name
     pathElements.pop();
@@ -106,7 +106,7 @@ export class ElectronAPI {
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
 
-      root += '/';
+      root += path.sep;
 
       const files = await fs.promises.readdir(path.join(appdata, root));
 
@@ -473,7 +473,7 @@ export class ElectronAPI {
       value: true,
     });
 
-    await fs.promises.writeFile(`${dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
+    await fs.promises.writeFile(path.join(dir, 'metadir.json'), JSON.stringify(schema, null, 2), 'utf8');
 
     await this.commit();
   }

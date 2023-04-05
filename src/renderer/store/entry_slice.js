@@ -95,7 +95,6 @@ export const createEntrySlice = (set, get) => ({
   onBatchSelect: () => set({ isBatch: true }),
 
   onEntrySelect: async (entry, index, group) => {
-    console.log('onEntrySelect');
     let entryNew = entry;
 
     // eslint-disable-next-line
@@ -103,7 +102,6 @@ export const createEntrySlice = (set, get) => ({
       entryNew = await selectRepo(get().repoUUID, entry);
     }
 
-    console.log('onEntrySelect-finish');
     set({ entry: entryNew, index, group });
   },
 
@@ -161,10 +159,7 @@ export const createEntrySlice = (set, get) => ({
 
   onEntryClose: () => set({ entry: undefined }),
 
-  onEntryChange: (_, entry) => {
-    console.log(entry);
-    set({ entry });
-  },
+  onEntryChange: (_, entry) => set({ entry }),
 
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);

@@ -4,8 +4,6 @@ import { useStore } from '@/store/index.js';
 import { convert, isIFrameable } from './asset_view_controller.js';
 
 function FileView({ downloadUrl, mimetype }) {
-  console.log('FileView', downloadUrl, mimetype);
-
   if (mimetype.includes('image')) {
     return <img alt="file view" width="100%" src={downloadUrl} type={mimetype} />;
   }

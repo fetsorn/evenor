@@ -49,14 +49,20 @@ export function AssetView({ schema, entry }) {
   const api = new API(repoUUID);
 
   async function onView() {
-    const { tags } = await api.getSettings();
+    let token = '';
 
-    const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
+    // eslint-disable-next-line
+    if (__BUILD_MODE__ !== 'server') {
+      const { tags } = await api.getSettings();
 
-    const token = firstRemote?.remote_tag_token;
+      const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
+
+      token = firstRemote?.remote_tag_token;
+    }
 
     let contents = await api.fetchAsset(entry[filehashBranch], token);
 
+    // if cannot be shown in the browser, try to convert to something that can be shown
     if (!isIFrameable(entry[filenameBranch])) {
       contents = await convert(entry[filehashBranch], contents);
     }
@@ -74,9 +80,9 @@ export function AssetView({ schema, entry }) {
     setBlobURL(blobURLNew);
   }
 
-  return (
-    <>
-      {!blobURL ? entry[filehashBranch] && entry[filenameBranch] && (
+  if (!blobURL) {
+    if (entry[filehashBranch] && entry[filenameBranch]) {
+      return (
         <div>
           <button type="button" onClick={() => onView()}>▶️</button>
 
@@ -84,19 +90,21 @@ export function AssetView({ schema, entry }) {
 
           <p>{entry[filenameBranch]}</p>
         </div>
-      ) : (
+      );
+    }
+  } else {
+    return (
+      <div>
         <div>
-          <div>
-            <button type="button" onClick={() => setBlobURL(undefined)}>🔽</button>
+          <button type="button" onClick={() => setBlobURL(undefined)}>🔽</button>
 
-            <p>{entry[filehashBranch]}</p>
+          <p>{entry[filehashBranch]}</p>
 
-            <p>{entry[filenameBranch]}</p>
-          </div>
-
-          <FileView downloadUrl={blobURL} mimetype={mimetype} />
+          <p>{entry[filenameBranch]}</p>
         </div>
-      )}
-    </>
-  );
+
+        <FileView downloadUrl={blobURL} mimetype={mimetype} />
+      </div>
+    );
+  }
 }

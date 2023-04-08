@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import path from 'path';
 import fs from 'fs';
 import git from 'isomorphic-git';
+import crypto from 'crypto';
 import { promisify } from 'util';
 import { exec } from 'child_process';
 import { CSVS } from '@fetsorn/csvs-js';
@@ -95,7 +96,10 @@ router.get('/api/*', (req, res) => {
 
   const filepath = decodeURI(req.path.replace(/^\/api/, ''));
 
+  // TODO: add try/catch in case file doesn't exist
   const realpath = path.join(process.cwd(), filepath);
+
+  console.log(realpath);
 
   res.sendFile(realpath);
 });
@@ -108,7 +112,10 @@ router.post('/api/*', async (req, res) => {
 
   const filepath = decodeURI(req.path.replace(/^\/api/, ''));
 
+  // TODO: add try/catch and mkdir in case file doesn't exist
   const realpath = path.join(process.cwd(), filepath);
+
+  console.log(realpath);
 
   await fs.promises.writeFile(realpath, content);
 
@@ -116,34 +123,101 @@ router.post('/api/*', async (req, res) => {
 });
 
 // on PUT `/api/path` git commit current directory
-router.put('/api/*', () => {
+router.put('/api/*', async (_, res) => {
   // console.log('put api');
 
-  git.commit({
+  const dir = '.';
+
+  const message = [];
+
+  const statusMatrix = await git.statusMatrix({
     fs,
-    dir: '.',
-    author: {
-      name: 'fetsorn',
-      email: 'fetsorn@gmail.com',
-    },
-    message: 'qualia',
-  }).then((sha) => console.log(sha));
+    dir,
+  });
+
+  for (let [
+    filepath,
+    HEADStatus,
+    workingDirStatus,
+    stageStatus,
+  ] of statusMatrix) {
+    if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
+      await git.resetIndex({
+        fs,
+        dir,
+        filepath,
+      });
+
+      [filepath, HEADStatus, workingDirStatus, stageStatus] = await git.statusMatrix({
+        fs,
+        dir,
+        filepaths: [filepath],
+      });
+
+      if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
+        // eslint-disable-next-line
+          continue;
+      }
+    }
+
+    if (workingDirStatus !== stageStatus) {
+      let status;
+
+      if (workingDirStatus === 0) {
+        status = 'deleted';
+
+        await git.remove({
+          fs,
+          dir,
+          filepath,
+        });
+      } else {
+        // if file in lfs/ add as LFS
+        if (filepath.startsWith('lfs')) {
+          const { addLFS } = await import('qualia/src/lib/api/lfs.js');
+
+          await addLFS({
+            fs,
+            dir,
+            filepath,
+          });
+        } else {
+          await git.add({
+            fs,
+            dir,
+            filepath,
+          });
+        }
+
+        if (HEADStatus === 1) {
+          status = 'modified';
+        } else {
+          status = 'added';
+        }
+      }
+
+      message.push(`${filepath} ${status}`);
+    }
+  }
+
+  if (message.length !== 0) {
+    await git.commit({
+      fs,
+      dir,
+      author: {
+        name: 'name',
+        email: 'name@mail.com',
+      },
+      message: message.toString(),
+    });
+  }
+
+  res.end();
 });
 
 // on POST `/upload` write file to lfs/
 router.post('/upload', async (req, res) => {
   const form = formidable({});
-
-  const uploadDir = path.join(process.cwd(), 'lfs');
-
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
-    // console.log(`Directory ${root} is created.`);
-  } else {
-    // console.log(`Directory ${root} already exists.`);
-  }
-
-  form.uploadDir = uploadDir;
 
   form.keepExtensions = true;
 
@@ -166,11 +240,20 @@ router.post('/upload', async (req, res) => {
 
     const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
+    const uploadDir = path.join(process.cwd(), 'lfs');
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+      // console.log(`Directory ${root} is created.`);
+    } else {
+      // console.log(`Directory ${root} already exists.`);
+    }
+
     const uploadPath = path.join(uploadDir, hashHexString);
 
-    await fs.promises.copyFile(file.filepath, uploadPath);
+    await fs.promises.rename(file.filepath, uploadPath);
 
-    res.end();
+    res.send([hashHexString, file.originalFilename]);
   });
 });
 

@@ -71,18 +71,18 @@ export class ElectronAPI {
     this.dir = path.join(store, uuid);
   }
 
-  async readFile(filepath) {
-    const file = path.join(this.dir, filepath);
-
-    const content = fs.readFileSync(file, { encoding: 'utf8' });
-
-    return content;
-  }
-
   async fetchFile(filepath) {
     const file = path.join(this.dir, filepath);
 
     const content = fs.readFileSync(file);
+
+    return content;
+  }
+
+  async readFile(filepath) {
+    const file = path.join(this.dir, filepath);
+
+    const content = fs.readFileSync(file, { encoding: 'utf8' });
 
     return content;
   }

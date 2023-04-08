@@ -178,12 +178,14 @@ export class BrowserAPI {
 
       form.append('file', file);
 
-      await fetch('/upload', {
+      const response = await fetch('/upload', {
         method: 'POST',
         body: form,
       });
 
-      return `${this.dir}/${file.name}`;
+      const [hashHexString, filename] = JSON.parse(await response.text());
+
+      return [hashHexString, filename];
     }
 
     const fileArrayBuffer = await file.arrayBuffer();

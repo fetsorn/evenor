@@ -205,15 +205,17 @@ export class BrowserAPI {
   }
 
   async select(searchParams) {
+    console.log('select', searchParams)
     const overview = await runWorker(this.readFile.bind(this), searchParams);
 
     return overview;
   }
 
   async queryOptions(branch) {
+    console.log('queryOptions', branch)
     const searchParams = new URLSearchParams();
 
-    searchParams.set('|', branch);
+    searchParams.set('_', branch);
 
     const overview = await runWorker(this.readFile.bind(this), searchParams);
 
@@ -353,7 +355,7 @@ export class BrowserAPI {
           });
         } else {
           if (filepath.startsWith('lfs/')) {
-            const { addLFS } = await import('./lfs.js');
+            const { addLFS } = await import('./lfs.mjs');
 
             await addLFS({
               fs,

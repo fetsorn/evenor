@@ -92,7 +92,7 @@ export class ElectronAPI {
 
     const store = path.join(appdata, 'store');
 
-    const file = path.join(store, this.uuid, filepath);
+    const realpath = path.join(store, this.uuid, filepath);
 
     // if path doesn't exist, create it
     // split path into array of directory names
@@ -123,7 +123,7 @@ export class ElectronAPI {
       root += pathElement;
     }
 
-    await fs.promises.writeFile(file, content);
+    await fs.promises.writeFile(realpath, content);
   }
 
   async putAsset(filename, buffer) {
@@ -297,7 +297,7 @@ export class ElectronAPI {
         } else {
           // if file in lfs/ add as LFS
           if (filepath.startsWith('lfs')) {
-            const { addLFS } = await import('./lfs.js');
+            const { addLFS } = await import('./lfs.mjs');
 
             await addLFS({
               fs,

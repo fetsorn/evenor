@@ -67,17 +67,49 @@ export class ServerAPI {
   async fetchFile(filepath) {
     const realpath = path.join(this.dir, filepath);
 
-    const content = fs.readFileSync(realpath);
+    try {
+      const content = fs.readFileSync(realpath);
 
-    return content;
+      return content;
+    } catch {
+      return new Buffer('')
+    }
   }
 
   async writeFile(
     filepath,
     content,
   ) {
-    // TODO: add try/catch and mkdir in case file doesn't exist
     const realpath = path.join(this.dir, filepath);
+
+    // if path doesn't exist, create it
+    // split path into array of directory names
+    const pathElements = filepath.split(path.sep);
+
+    // remove file name
+    pathElements.pop();
+    
+    let root = '';
+
+    for (let i = 0; i < pathElements.length; i += 1) {
+      const pathElement = pathElements[i];
+
+      root += path.sep;
+
+      const files = await fs.promises.readdir(path.join(this.dir, root));
+
+      if (!files.includes(pathElement)) {
+        try {
+          await fs.promises.mkdir(path.join(this.dir, root, pathElement));
+        } catch {
+          // do nothing
+        }
+      } else {
+        // console.log(`${root} has ${pathElement}`)
+      }
+
+      root += pathElement;
+    }
 
     await fs.promises.writeFile(realpath, content);
   }
@@ -172,7 +204,7 @@ export class ServerAPI {
         } else {
         // if file in lfs/ add as LFS
           if (filepath.startsWith('lfs')) {
-            const { addLFS } = await import('./lfs.js');
+            const { addLFS } = await import('./lfs.mjs');
 
             await addLFS({
               fs,

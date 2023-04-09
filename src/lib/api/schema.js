@@ -108,8 +108,21 @@ export async function generateDefaultSchemaEntry() {
       {
         _: 'schema_branch',
         UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: 'file',
+        schema_branch_name: 'files',
         schema_branch_trunk: 'datum',
+        schema_branch_type: 'array',
+        schema_branch_description: {
+          _: 'schema_branch_description',
+          UUID: await digestMessage(await randomUUID()),
+          schema_branch_description_en: 'Digital assets',
+          schema_branch_description_ru: 'Файлы',
+        },
+      },
+      {
+        _: 'schema_branch',
+        UUID: await digestMessage(await randomUUID()),
+        schema_branch_name: 'file',
+        schema_branch_trunk: 'files',
         schema_branch_type: 'object',
         schema_branch_task: 'file',
         schema_branch_description: {
@@ -301,8 +314,16 @@ export const defaultSchema = {
       ru: 'Публичность',
     },
   },
-  file: {
+  files: {
     trunk: 'datum',
+    type: 'array',
+    description: {
+      en: 'Digital assets',
+      ru: 'Файлы',
+    },
+  },
+  file: {
+    trunk: 'files',
     type: 'object',
     task: 'file',
     description: {

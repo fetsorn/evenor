@@ -678,7 +678,7 @@ export class BrowserAPI {
   async fetchAsset(filename, token) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      const lfspath = `/api/${filename}`;
+      const lfspath = `/api/lfs/${filename}`;
 
       const result = await fetch(lfspath);
 

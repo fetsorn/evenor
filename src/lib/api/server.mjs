@@ -4,20 +4,7 @@ import { promisify } from 'util';
 import { exec } from 'child_process';
 import git from 'isomorphic-git';
 import { CSVS } from '@fetsorn/csvs-js';
-
-async function fetchCallback(filepath) {
-  const realpath = path.join(process.cwd(), filepath);
-
-  let contents;
-
-  try {
-    contents = await fs.promises.readFile(realpath, { encoding: 'utf8' });
-
-    return contents;
-  } catch {
-    throw ("couldn't find file", filepath);
-  }
-}
+import crypto from 'crypto';
 
 // TODO: add WASM fallback
 async function grepCallback(contentFile, patternFile, isInverse) {
@@ -57,25 +44,40 @@ async function grepCallback(contentFile, patternFile, isInverse) {
 }
 
 export class ServerAPI {
-  dir = '.';
+  dir;
 
-  // constructor() {
-  //   //
-  // }
+  constructor(dir) {
+    this.dir = dir;
+  }
+
+  async fetchCallback(filepath) {
+    const realpath = path.join(this.dir, filepath);
+
+    let contents;
+
+    try {
+      contents = await fs.promises.readFile(realpath, { encoding: 'utf8' });
+
+      return contents;
+    } catch {
+      throw ("couldn't find file", filepath);
+    }
+  }
 
   async fetchFile(filepath) {
-    const realpath = path.join(process.cwd(), filepath);
+    const realpath = path.join(this.dir, filepath);
 
-    res.sendFile(realpath);
+    const content = fs.readFileSync(realpath);
+
+    return content;
   }
 
   async writeFile(
     filepath,
     content,
   ) {
-    const realpath = path.join(process.cwd(), filepath);
-
-    console.log(realpath);
+    // TODO: add try/catch and mkdir in case file doesn't exist
+    const realpath = path.join(this.dir, filepath);
 
     await fs.promises.writeFile(realpath, content);
   }
@@ -96,7 +98,7 @@ export class ServerAPI {
 
     const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-    const uploadDir = path.join(process.cwd(), 'lfs');
+    const uploadDir = path.join(this.dir, 'lfs');
 
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
@@ -114,7 +116,7 @@ export class ServerAPI {
 
   async select(searchParams) {
     const overview = await (new CSVS({
-      readFile: fetchCallback,
+      readFile: this.fetchCallback.bind(this),
       grep: grepCallback,
     })).select(searchParams);
 
@@ -122,7 +124,7 @@ export class ServerAPI {
   }
 
   async commit() {
-    const dir = '.';
+    const { dir } = this;
 
     const message = [];
 

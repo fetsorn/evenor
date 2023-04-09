@@ -1,5 +1,5 @@
 {
-  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-22.05"; };
+  inputs = { nixpkgs.url = "github:nixos/nixpkgs/nixos-22.11"; };
   outputs = inputs@{ nixpkgs, ... }:
     let
       eachSystem = systems: f:
@@ -20,12 +20,21 @@
     in eachSystem defaultSystems (system:
       let
         pkgs = import nixpkgs { inherit system; };
-        basename = "qualia";
         src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
         package = (pkgs.lib.importJSON (src + "/package.json"));
         nodeVersion =
           builtins.elemAt (pkgs.lib.versions.splitVersion pkgs.nodejs.version)
           0;
+        library = pkgs.mkYarnPackage rec {
+          name = package.name;
+          version = package.version;
+          src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
+          buildPhase = ''
+            true
+          '';
+          # fixup of libexec hangs for undiscovered reason
+          dontStrip = true;
+        };
         webappDrv = buildMode:
           pkgs.mkYarnPackage rec {
             name = package.name;
@@ -42,14 +51,37 @@
           };
         webapp = webappDrv "webapp";
         server = pkgs.mkYarnPackage rec {
-          name = basename + "-server";
-          version = "1.0.0";
+          name = package.name + "-server";
+          version = package.version;
           src = ./src/server;
+          packageJSON = pkgs.stdenv.mkDerivation {
+            name = package.name + "-server-package-json";
+            inherit src;
+            buildPhase = ''
+              sed -i 's/\.\.\/\.\./${package.version}/' package.json
+            '';
+            installPhase = "cp package.json $out";
+          };
+          yarnLock = pkgs.stdenv.mkDerivation {
+            name = package.name + "-server-yarn-lock";
+            inherit src;
+            preConfigure = ''
+              substituteInPlace yarn.lock --replace "../.." "${package.version}"
+            '';
+            installPhase = "cat ${./.}/yarn.lock yarn.lock > $out";
+          };
+          workspaceDependencies = [ library ];
+          preConfigure = ''
+            substituteInPlace package.json --replace "../.." "${package.version}"
+            substituteInPlace yarn.lock --replace "../.." "${package.version}"
+          '';
           buildPhase = ''
             mkdir -p deps/${name}/build
             cp -r ${webappDrv "server"}/* deps/${name}/build/
             chmod -R 755 deps/${name}/build/*
           '';
+          # fixup of libexec hangs for undiscovered reason
+          dontStrip = true;
         };
         electronBuilds = {
           "23.1.0" = {
@@ -179,7 +211,7 @@
               HOME="$(realpath home)" yarn run build:electron
             '';
             installPhase =
-              "cp -r ./deps/qualia/out/make/zip/win32/${arch} $out";
+              "cp -r ./deps/${package.name}/out/make/zip/win32/${arch} $out";
             distPhase = "true";
           };
         buildRpm = arch:
@@ -234,7 +266,7 @@
           };
       in rec {
         packages = {
-          inherit webapp server;
+          inherit webapp server library;
           linux = {
             x64 = {
               deb = buildDeb "x64";
@@ -253,7 +285,7 @@
             x64 = { zip = buildZip "x64"; };
             arm64 = { zip = buildZip "arm64"; };
           };
-          all = pkgs.linkFarm "electron-qualia" [
+          all = pkgs.linkFarm "electron-link-farm" [
             {
               name = "linux-x64-deb";
               path = packages.linux.x64.deb;

@@ -72,17 +72,17 @@ export class ElectronAPI {
   }
 
   async fetchFile(filepath) {
-    const file = path.join(this.dir, filepath);
+    const realpath = path.join(this.dir, filepath);
 
-    const content = fs.readFileSync(file);
+    const content = fs.readFileSync(realpath);
 
     return content;
   }
 
   async readFile(filepath) {
-    const file = path.join(this.dir, filepath);
+    const realpath = path.join(this.dir, filepath);
 
-    const content = fs.readFileSync(file, { encoding: 'utf8' });
+    const content = fs.readFileSync(realpath, { encoding: 'utf8' });
 
     return content;
   }

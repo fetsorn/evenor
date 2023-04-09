@@ -1353,10 +1353,10 @@
   resolved "https://registry.yarnpkg.com/@fetsorn/ged2dot/-/ged2dot-0.2.0.tgz#78d89484ad9ad9af56f9f75e6f463353fea7a540"
   integrity sha512-kTdB5QAV2ae+Ul3DS/YKRnlHvlwnxPqXZfzMf58gt6fXgFwtIV4mz0IpIE3++UxdJcyJJLS4PBt866FFltnVoA==
 
-"@fetsorn/isogit-lfs@^0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.3.0.tgz#f5451ac43d076091f30107e8d31bda2778bbdd55"
-  integrity sha512-CZhCoHEwSEX6gOJfPhBt/SWxc03dvq9gfw7UW3d9WWde/7cb+Aez0/SjS4MUCqfXx6XSec0qNIJRmci9DeijNw==
+"@fetsorn/isogit-lfs@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.3.3.tgz#8cece4bf4a2dcde7746a8bf40463fc4d35faca80"
+  integrity sha512-I3W2M3yisG18sbTQXTublx6hjSGpCuH8DeRyqeO/gUZACOou8/4Ca9QCuMnn+GBsLXfZMXIdcnmI2OM9RTU+MQ==
 
 "@fetsorn/ppt@0.0.1":
   version "0.0.1"

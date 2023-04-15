@@ -21,7 +21,20 @@ async function addField(
 
     const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
 
-    const uuid = await randomUUID();
+    // pick randomUUID until there's a uuid that follows others in alphabetical order
+    let uuid = await randomUUID()
+
+    const uuids = entry.items
+          ? entry.items
+                 .sort((a, b) => a.UUID?.localeCompare(b.UUID))
+                 .map((i) => i.UUID)
+          : [];
+
+    const uuidLast = uuids[0];
+
+    while (uuidLast && !uuid.localeCompare(uuidLast)) {
+      uuid = await randomUUID();
+    }
 
     obj.UUID = await digestMessage(uuid);
 

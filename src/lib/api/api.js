@@ -24,6 +24,17 @@ export class API {
     }
   }
 
+  async downloadAsset(filename, filehash, token) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.downloadAsset(this.uuid, filename, filehash, token);
+
+      default:
+        return this.#browser.downloadAsset(filename, filehash, token);
+    }
+  }
+
   async putAsset(filename, buffer) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {

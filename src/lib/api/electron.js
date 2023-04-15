@@ -589,6 +589,22 @@ export class ElectronAPI {
     return index;
   }
 
+  async downloadAsset(filename, filehash, token) {
+    let content = await this.fetchAsset(filehash, token)
+
+    const file = await dialog.showSaveDialog({
+      title: 'Select the File Path to save',
+      defaultPath: filename,
+      buttonLabel: 'Save',
+      filters: [],
+      properties: [],
+    });
+
+    if (!file.canceled) {
+      await fs.promises.writeFile(file.filePath.toString(), content);
+    }
+  }
+
   async zip() {
     const { default: JsZip } = await import('jszip');
 

@@ -443,6 +443,7 @@ export const schemaRoot = {
     },
   },
   category: {
+    trunk: 'reponame',
     type: 'string',
     description: {
       en: 'Category of the repo',

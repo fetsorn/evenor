@@ -1,10 +1,9 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { QueryListLabel } from '..';
 import styles from './filter_query_list.module.css';
 import { useStore } from '@/store/index.js';
 
-export function FilterQueryList() {
+export function FilterQueryList({ onQuerySelect }) {
   const { t } = useTranslation();
 
   const [
@@ -19,7 +18,11 @@ export function FilterQueryList() {
     <div className={styles.query}>
       {Object.keys(queries).map((field) => (
         <div key={`querylist-${field ?? Math.random()}`} className={styles.queries}>
-          <QueryListLabel {...{ field }} value={queries[field]} />
+          <button onClick={() => onQuerySelect(field)}>
+            {field}
+            {' '}
+            {queries[field]}
+          </button>
 
           <button
             type="button"

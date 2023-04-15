@@ -17,6 +17,7 @@ export function HeaderOverviewRadio() {
       <label
         htmlFor="radio_itinerary"
         title={t('header.button.itinerary')}
+        className={styles.radiobutton}
       >
         <input
           type="radio"
@@ -33,6 +34,7 @@ export function HeaderOverviewRadio() {
       <label
         htmlFor="radio_graph"
         title={t('header.button.graph')}
+        className={styles.radiobutton}
       >
         <input
           type="radio"
@@ -46,6 +48,7 @@ export function HeaderOverviewRadio() {
       <label
         htmlFor="radio_book"
         title={t('header.button.book')}
+        className={styles.radiobutton}
       >
         <input
           type="radio"

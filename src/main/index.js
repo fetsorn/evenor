@@ -185,6 +185,11 @@ app
     );
 
     ipcMain.handle(
+      'downloadAsset',
+      async (_event, dir, filename, filehash, token) => (new API(dir)).downloadAsset(filename, filehash, token),
+    );
+
+    ipcMain.handle(
       'putAsset',
       async (_event, dir, filename, content) => (new API(dir)).putAsset(filename, content),
     );

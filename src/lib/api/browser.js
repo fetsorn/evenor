@@ -622,12 +622,18 @@ export class BrowserAPI {
     return index;
   }
 
+  async downloadAsset(filename, filehash, token) {
+    let content = this.fetchAsset(filehash, token)
+
+    await saveAs(content, filename);
+  }
+
   async zip() {
     const { default: JsZip } = await import('jszip');
 
     const zip = new JsZip();
 
-    const foo = async (dir, zipDir) => {
+    const addToZip = async (dir, zipDir) => {
       const files = await fs.promises.readdir(dir);
 
       for (const file of files) {
@@ -642,12 +648,12 @@ export class BrowserAPI {
         } else if (filetype === 'dir') {
           const zipDirNew = zipDir.folder(file);
 
-          foo(filepath, zipDirNew);
+          addToZip(filepath, zipDirNew);
         }
       }
     };
 
-    await foo(this.dir, zip);
+    await addToZip(this.dir, zip);
 
     const { saveAs } = await import('file-saver');
 

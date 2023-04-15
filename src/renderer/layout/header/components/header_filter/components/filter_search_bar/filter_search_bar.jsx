@@ -2,15 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { API } from 'lib/api';
 import { Button } from '@/components/index.js';
-import { OverviewType, useStore } from '@/store/index.js';
+import { useStore } from '@/store/index.js';
 import styles from './filter_search_bar.module.css';
 
-export function FilterSearchBar() {
+export function FilterSearchBar({
+  queryBranch,
+  onQuerySelect,
+  queryValue,
+  onQueryInput,
+}) {
   const { i18n, t } = useTranslation();
-
-  const [queryField, setQueryField] = useState('');
-
-  const [queryValue, setQueryValue] = useState('');
 
   const [options, setOptions] = useState([]);
 
@@ -53,7 +54,7 @@ export function FilterSearchBar() {
   ]);
 
   async function onFocus() {
-    if (queryField === '_') {
+    if (queryBranch === '_') {
       const roots = Object.keys(schema)
         .filter((branch) => schema[branch].trunk === undefined
                 || schema[branch].type === 'object'
@@ -68,7 +69,7 @@ export function FilterSearchBar() {
         });
 
       setOptions(roots.map((root) => root.branch));
-    } else if (queryField === '.group') {
+    } else if (queryBranch === '.group') {
       const leaves = Object.keys(schema)
         .filter((branch) => (schema[branch].trunk === base
                              || branch === base
@@ -85,28 +86,26 @@ export function FilterSearchBar() {
 
       setOptions(leaves.map((leaf) => leaf.branch));
     } else {
-      const optionsNew = await api.queryOptions(queryField);
+      const optionsNew = await api.queryOptions(queryBranch);
 
-      const optionValues = optionsNew.map((entry) => entry[queryField]);
+      const optionValues = optionsNew.map((entry) => entry[queryBranch]);
 
       setOptions([...new Set(optionValues)]);
     }
   }
 
   useEffect(() => {
-    setQueryField(queriesToAdd?.[0]?.branch);
-
-    setQueryValue('');
+    onQuerySelect(queriesToAdd?.[0]?.branch);
   }, [schema, queries]);
 
   return (
     <div className={styles.search}>
       <select
         name="searchBarDropdown"
-        value={queryField}
-        title={t('header.dropdown.search', { field: queryField })}
+        value={queryBranch}
+        title={t('header.dropdown.search', { field: queryBranch })}
         onChange={({ target: { value } }) => {
-          setQueryField(value);
+          onQuerySelect(value);
 
           setOptions([]);
         }}
@@ -126,7 +125,7 @@ export function FilterSearchBar() {
           value={queryValue}
           onFocus={onFocus}
           onChange={({ target: { value } }) => {
-            setQueryValue(value);
+            onQueryInput(value);
           }}
         />
 
@@ -140,7 +139,7 @@ export function FilterSearchBar() {
       <Button
         type="button"
         title={t('header.button.search')}
-        onClick={() => onQueryAdd(queryField, queryValue)}
+        onClick={() => onQueryAdd(queryBranch, queryValue)}
       >
         🔎
       </Button>

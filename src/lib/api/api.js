@@ -13,6 +13,17 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
+  async populateLFS(filename, token) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        throw new Error('Not implemented');
+
+      default:
+        return this.#browser.populateLFS(filename, token);
+    }
+  }
+
   async fetchAsset(filename, token) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {

@@ -127,6 +127,11 @@ export function FilterSearchBar({
           onChange={({ target: { value } }) => {
             onQueryInput(value);
           }}
+          onKeyPress={(({ which }) => {
+            if (which === 13) {
+              onQueryAdd(queryBranch, queryValue);
+            }
+          })}
         />
 
         <datalist id="panel_list">

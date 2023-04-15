@@ -494,7 +494,7 @@ export class ElectronAPI {
       const sudo = await import('sudo-prompt-alt');
 
       await new Promise((res, rej) => {
-        sudo.exec(`mklink ${path.join(repos, name)} ${dir}`, {}, (error) => {
+        sudo.exec(`mklink "${path.join(repos, name)}" "${dir}"`, {}, (error) => {
           if (error) rej(error);
 
           res();
@@ -590,7 +590,7 @@ export class ElectronAPI {
   }
 
   async downloadAsset(filename, filehash, token) {
-    let content = await this.fetchAsset(filehash, token)
+    const content = await this.fetchAsset(filehash, token);
 
     const file = await dialog.showSaveDialog({
       title: 'Select the File Path to save',

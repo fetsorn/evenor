@@ -26,6 +26,12 @@ function FileView({ downloadUrl, mimetype }) {
     );
   }
 
+  if (mimetype.includes('pdf')) {
+    return (
+      <iframe title={downloadUrl} width="100%" height="1000" src={downloadUrl} />
+    );
+  }
+
   return <object aria-label="file view" type={mimetype} data={downloadUrl} />;
 }
 
@@ -44,7 +50,7 @@ export function AssetView({ schema, entry }) {
     (b) => schema[b].trunk === branch && schema[b].task === 'filename',
   );
 
-  const repoUUID = useStore((state) => state.repoUUID);
+  const [repoUUID, isView] = useStore((state) => [state.repoUUID, state.isView]);
 
   const api = new API(repoUUID);
 
@@ -52,7 +58,11 @@ export function AssetView({ schema, entry }) {
     let token = '';
 
     // eslint-disable-next-line
-    if (__BUILD_MODE__ !== 'server') {
+    if (isView) {
+      // TODO take token from .git config
+
+      // eslint-disable-next-line
+    } else if (__BUILD_MODE__ !== 'server') {
       const { tags } = await api.getSettings();
 
       const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
@@ -103,9 +113,9 @@ export function AssetView({ schema, entry }) {
 
           <p>{entry[filenameBranch]}</p>
 
-          <button type="button" onClick={() => onDownload()}>⬇️</button>
-
           <button type="button" onClick={() => onView()}>▶️</button>
+
+          <button type="button" onClick={() => onDownload()}>⬇️</button>
         </div>
       );
     }
@@ -117,9 +127,9 @@ export function AssetView({ schema, entry }) {
 
           <p>{entry[filenameBranch]}</p>
 
-          <button type="button" onClick={() => onDownload()}>⬇️</button>
-
           <button type="button" onClick={() => setBlobURL(undefined)}>🔽</button>
+
+          <button type="button" onClick={() => onDownload()}>⬇️</button>
         </div>
 
         <FileView downloadUrl={blobURL} mimetype={mimetype} />

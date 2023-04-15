@@ -20,6 +20,7 @@ export function Header() {
     queries,
     groupBy,
     overviewType,
+    onChangeOverviewType,
     onQueries,
     isInitialized,
     isView,
@@ -31,6 +32,7 @@ export function Header() {
     state.queries,
     state.groupBy,
     state.overviewType,
+    state.onChangeOverviewType,
     state.onQueries,
     state.isInitialized,
     state.isView,
@@ -39,6 +41,12 @@ export function Header() {
     state.setRepoUUID,
     state.onSettingsOpen,
   ]);
+
+  function onHome() {
+    onChangeOverviewType('itinerary');
+
+    setRepoUUID('root');
+  }
 
   useEffect(() => {
     // eslint-disable-next-line
@@ -72,7 +80,7 @@ export function Header() {
           <Button
             type="button"
             title={t('header.button.back')}
-            onClick={() => setRepoUUID('root')}
+            onClick={() => onHome()}
           >
             {/* &lt;= */}
             🏠

@@ -205,14 +205,14 @@ export class BrowserAPI {
   }
 
   async select(searchParams) {
-    console.log('select', searchParams)
+    console.log('select', searchParams);
+
     const overview = await runWorker(this.readFile.bind(this), searchParams);
 
     return overview;
   }
 
   async queryOptions(branch) {
-    console.log('queryOptions', branch)
     const searchParams = new URLSearchParams();
 
     searchParams.set('_', branch);
@@ -623,7 +623,9 @@ export class BrowserAPI {
   }
 
   async downloadAsset(filename, filehash, token) {
-    let content = this.fetchAsset(filehash, token)
+    const content = this.fetchAsset(filehash, token);
+
+    const { saveAs } = await import('file-saver');
 
     await saveAs(content, filename);
   }
@@ -680,6 +682,17 @@ export class BrowserAPI {
       dir: this.dir,
       path: 'remote.origin.url',
     });
+  }
+
+  async populateLFS(remote, token) {
+    const files = await fs.promises.readdir(`${this.dir}/lfs`);
+
+    console.log(files);
+
+    for (const filename of files) {
+      console.log(filename);
+      await this.fetchAsset(filename, token);
+    }
   }
 
   // returns Blob

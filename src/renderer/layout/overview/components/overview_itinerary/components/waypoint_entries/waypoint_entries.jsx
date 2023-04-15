@@ -1,18 +1,68 @@
 import React from 'react';
+import { useStore } from '@/store/index.js';
+import { colorFile } from './waypoint_entries_controller.js';
 import styles from './waypoint_entries.module.css';
+
+function findBranchItem(obj, key) {
+  let i;
+  const ts = Object.prototype.toString;
+  const hasOwn = Object.prototype.hasOwnProperty.bind(obj);
+
+  for (i in obj) {
+    if (hasOwn(i)) {
+      if (obj._ === key) {
+        return obj;
+      }
+      if (ts.call(obj[i]) === '[object Array]' || ts.call(obj[i]) === '[object Object]') {
+        return findBranchItem(obj[i], key);
+      }
+    }
+  }
+
+  return undefined;
+}
 
 export function WaypointEntries({
   entries,
   onEntrySelect,
 }) {
+  const [schema] = useStore((state) => [state.schema]);
+
+  const fileBranch = Object.keys(schema).find(
+    (b) => schema[b].task === 'file',
+  );
+
+  const filenameBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === fileBranch && schema[b].task === 'filename',
+  );
+
+  const filetypeBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === fileBranch && schema[b].task === 'filetype',
+  );
+
+  function colorEntry(entry) {
+    const file = findBranchItem(entry, fileBranch);
+
+    if (file) {
+      return colorFile(
+        file[filenameBranch],
+        file[filetypeBranch],
+      );
+    }
+
+    return 'black';
+  }
+
   return (
     <div className={styles.content}>
       <div className={styles.stars}>
         {entries.map((entry, index) => (
-          <div key={index}>
+          <div key={`waypoint_entry_${Math.random()}`}>
             <button
               className={styles.star}
-              style={{ backgroundColor: colorExtension(entry) }}
+              style={{
+                backgroundColor: colorEntry(entry),
+              }}
               type="button"
               onClick={() => onEntrySelect(entry, index + 1)}
               title={entry?.FILE_PATH}
@@ -25,206 +75,4 @@ export function WaypointEntries({
       </div>
     </div>
   );
-}
-
-export function colorExtension(entry) {
-  const txtcol = 'blue';
-  const imgcol = 'orange';
-  const vidcol = 'red';
-  const pptcol = 'yellow';
-  const srccol = 'brown';
-  const wavcol = 'green';
-  const webcol = 'purple';
-  const defaultcol = 'black';
-
-  if (entry.FILE_TYPE?.includes('text')) {
-    return 'blue';
-  }
-
-  // var re =/(?:\.([^.]+))?$/
-  // var ext = re.exec(entry.FILE_PATH)[1].trim()
-  const ext = entry.FILE_PATH?.split('.').pop().trim();
-
-  const img = [
-    'BMP',
-    'GIF',
-    'ICO',
-    'JPEG',
-    'JPG',
-    'NPO',
-    'PNG',
-    'TIF',
-    'bmp',
-    'eps',
-    'gif',
-    'ico',
-    'jpeg',
-    'jpg',
-    'png',
-    'svg',
-    'tif',
-    'webp',
-    'MPO',
-    'heic',
-    'HEIC',
-  ];
-  const imgM = ['xcf', 'kra', 'ps', 'psd'];
-  const vid = [
-    '3GP',
-    '3gp',
-    'AVI',
-    'BUP',
-    'IFO',
-    'MOV',
-    'MP4',
-    'VOB',
-    'avi',
-    'flv',
-    'm2v',
-    'm4v',
-    'mkv',
-    'mov',
-    'mp4',
-    'mpg',
-    'swf',
-    'webm',
-    'wmv',
-    'VFO',
-  ];
-  const vidM = ['cos2', 'blend', 'mlt', 'scn', 'stx', 'MSWMM', 'wlmp', 'IDS'];
-  const code = [
-    'form',
-    'el',
-    'mk',
-    'PAS',
-    'pas',
-    'java',
-    'H',
-    'c',
-    'cpp',
-    'h',
-    'dcu',
-    'dfm',
-    'dpr',
-    'alp',
-    'vdfx',
-    'MDL',
-    '2mdl',
-    'dproj',
-    'dwf',
-    'identcache',
-    'res',
-    'py',
-    'BAS',
-    'whl',
-    'ipynb',
-    'scm',
-    'sh',
-    'vlb',
-    'ini',
-  ];
-  const txt = ['12', 'TXT', 'log', 'md', 'org', 'txt', 'fountain', 'tex'];
-  const ppt = ['gdslides', 'pps', 'ppt', 'pptx'];
-  const src = [
-    'PDF',
-    'Pdf',
-    'acsm',
-    'chm',
-    'djvu',
-    'epub',
-    'fb2',
-    'mobi',
-    'pdf',
-    'pub',
-    'xps',
-  ];
-  const doc = ['DOC', 'doc', 'docx', 'gddoc', 'odt', 'pages', 'rtf'];
-  const sh = [
-    'bash_history',
-    'zshrc',
-    'bash_profile',
-    'bashrc',
-    'zsh',
-    'profile',
-    'zsh_history',
-  ];
-  const wav = [
-    'caf',
-    'wav',
-    'WAV',
-    'MOD',
-    'WMA',
-    'aac',
-    'aif',
-    'amr',
-    'm3u',
-    'm4a',
-    'mid',
-    'mp3',
-    'ogg',
-    'pk',
-    'wma',
-    'flac',
-    'aiff',
-  ];
-  const wavM = ['ardour', 'mmpz', 'band', 'flm', 'gp5', 'qtr', 'tg', 'vst'];
-  const tbl = ['csv', 'ods', 'XLS', 'xls', 'xlsx'];
-  const web = [
-    'less',
-    'sass',
-    'scss',
-    'css',
-    'htm',
-    'html',
-    'js',
-    'mht',
-    'url',
-    'webloc',
-    'xml',
-  ];
-
-  if (img.includes(ext)) {
-    return imgcol;
-  }
-  if (imgM.includes(ext)) {
-    return imgcol;
-  }
-  if (vid.includes(ext)) {
-    return vidcol;
-  }
-  if (vidM.includes(ext)) {
-    return vidcol;
-  }
-  if (code.includes(ext)) {
-    return txtcol;
-  }
-  if (txt.includes(ext)) {
-    return txtcol;
-  }
-  if (ppt.includes(ext)) {
-    return pptcol;
-  }
-  if (src.includes(ext)) {
-    return srccol;
-  }
-  if (doc.includes(ext)) {
-    return txtcol;
-  }
-  if (sh.includes(ext)) {
-    return txtcol;
-  }
-  if (wav.includes(ext)) {
-    return wavcol;
-  }
-  if (wavM.includes(ext)) {
-    return wavcol;
-  }
-  if (tbl.includes(ext)) {
-    return txtcol;
-  }
-  if (web.includes(ext)) {
-    return webcol;
-  }
-
-  return defaultcol;
 }

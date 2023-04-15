@@ -1,19 +1,5 @@
 import { API } from 'lib/api';
 
-export function setupVars(navigate, setFamily) {
-  window.ged2dot_setFamilyID = (id) => {
-    setFamily(id);
-  };
-
-  window.ged2dot_setPersonREFN = (refn) => {
-    navigate(`?hostname=${refn}&overviewType=itinerary`);
-  };
-
-  window.ged2dot_setPersonUUID = (uuid) => {
-    navigate(`?hostname=${uuid}&overviewType=itinerary`);
-  };
-}
-
 async function renderGed(
   dir,
   depth,

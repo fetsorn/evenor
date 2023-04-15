@@ -477,14 +477,14 @@ export class BrowserAPI {
   }
 
   async ensure(schema, name) {
-    await this.tbn1(schema);
+    await this.setupRepo(schema);
 
     if (name) {
       await this.symlink(name);
     }
   }
 
-  async tbn1(schema) {
+  async setupRepo(schema) {
     const pfs = fs.promises;
 
     if (!(await pfs.readdir('/')).includes('store')) {

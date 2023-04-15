@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/index.js';
-import { setupVars, load } from './overview_graph_controller.js';
+import { load } from './overview_graph_controller.js';
 import { GraphSvg, GraphTextInput, GraphRangeInput } from './components/index.js';
 import styles from './overview_graph.module.css';
 
@@ -16,8 +16,12 @@ export function OverviewGraph() {
 
   const [
     repoUUID,
+    onQueryAdd,
+    onChangeOverviewType,
   ] = useStore((state) => [
     state.repoUUID,
+    state.onQueryAdd,
+    state.onChangeOverviewType,
   ]);
 
   async function onSetDepth(_depth) {
@@ -33,7 +37,21 @@ export function OverviewGraph() {
   }
 
   useEffect(() => {
-    setupVars(navigate, setFamily);
+    window.ged2dot_setFamilyID = (id) => {
+      setFamily(id);
+    };
+
+    window.ged2dot_setPersonREFN = async (refn) => {
+      await onQueryAdd('actname', refn);
+
+      onChangeOverviewType('itinerary');
+    };
+
+    window.ged2dot_setPersonUUID = async (uuid) => {
+      await onQueryAdd('actname', uuid);
+
+      onChangeOverviewType('itinerary');
+    };
   }, []);
 
   useEffect(() => {

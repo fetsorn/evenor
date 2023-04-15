@@ -409,14 +409,14 @@ export class ElectronAPI {
   }
 
   async ensure(schema, name) {
-    await this.tbn1(schema);
+    await this.setupRepo(schema);
 
     if (name) {
       await this.symlink(name);
     }
   }
 
-  async tbn1(schema) {
+  async setupRepo(schema) {
     const root = path.join(home, '.qualia');
 
     if (!(await fs.promises.readdir(home)).includes('.qualia')) {
@@ -471,7 +471,11 @@ export class ElectronAPI {
       value: true,
     });
 
-    await fs.promises.writeFile(path.join(dir, 'metadir.json'), JSON.stringify(schema, null, 2), 'utf8');
+    await fs.promises.writeFile(
+      path.join(dir, 'metadir.json'),
+      JSON.stringify(schema, null, 2),
+      'utf8',
+    );
 
     await this.commit();
   }

@@ -151,8 +151,6 @@ export class ElectronAPI {
 
       const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-      console.log(hashHexString, path.basename(filepath));
-
       await this.putAsset(hashHexString, fileArrayBuffer);
 
       return [hashHexString, path.basename(filepath)];
@@ -610,32 +608,32 @@ export class ElectronAPI {
 
     const zip = new JsZip();
 
-    const foo = async (dir, zipDir) => {
+    const addToZip = async (dir, zipDir) => {
       const files = await fs.promises.readdir(dir);
 
-      for (const file of files) {
-        const filepath = path.join(dir, file);
+      for (const filename of files) {
+        const filepath = path.join(dir, filename);
 
-        const { type: filetype } = await fs.promises.stat(filepath);
+        const stats = await fs.promises.lstat(filepath);
 
-        if (filetype === 'file') {
+        if (stats.isFile()) {
           const content = await fs.promises.readFile(filepath);
 
-          zipDir.file(file, content);
-        } else if (filetype === 'dir') {
-          const zipDirNew = zipDir.folder(file);
+          zipDir.file(filename, content);
+        } else if (stats.isDirectory()) {
+          const zipDirNew = zipDir.folder(filename);
 
-          foo(filepath, zipDirNew);
+          await addToZip(filepath, zipDirNew);
         }
       }
     };
 
-    await foo(this.dir, zip);
+    await addToZip(this.dir, zip);
 
-    zip.generateAsync({ type: 'blob' }).then(async (content) => {
+    zip.generateAsync({ type: 'nodebuffer' }).then(async (content) => {
       const file = await dialog.showSaveDialog({
         title: 'Select the File Path to save',
-        // defaultPath: path.join(__dirname, '../assets/'),
+        defaultPath: this.uuid,
         buttonLabel: 'Save',
         // Restricting the user to only Text Files.
         filters: [

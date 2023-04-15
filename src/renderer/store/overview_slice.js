@@ -147,7 +147,6 @@ export const createOverviewSlice = (set, get) => ({
       searchParamsReponame.set('reponame', repoName);
 
       try {
-        console.log('x', searchParamsReponame)
         const [{ UUID }] = await apiRoot.select(searchParamsReponame);
 
         repoUUID = UUID;
@@ -232,7 +231,6 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.delete('.group');
 
-      console.log('a', searchParams)
       const overview = await api.select(searchParams);
 
       const schemaBase = Object.fromEntries(Object.entries(schema).filter(
@@ -270,7 +268,6 @@ export const createOverviewSlice = (set, get) => ({
 
     const api = new API(get().repoUUID);
 
-      console.log('b', searchParams)
     const overview = await api.select(searchParams);
 
     set({ overview });
@@ -292,7 +289,6 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.delete('.group');
 
-      console.log('c', searchParams)
       const [entry] = await api.select(searchParams);
 
       repoName = entry.reponame;
@@ -314,7 +310,6 @@ export const createOverviewSlice = (set, get) => ({
 
     searchParams.delete('.group');
 
-      console.log('d', searchParams)
     const [entry] = await api.select(searchParams);
 
     if (entry === undefined) {

@@ -245,6 +245,17 @@ export class API {
     }
   }
 
+  async zip() {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.zip(this.uuid);
+
+      default:
+        return BrowserAPI.zip();
+    }
+  }
+
   async getSettings() {
     const searchParams = new URLSearchParams();
 

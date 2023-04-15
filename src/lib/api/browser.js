@@ -205,8 +205,6 @@ export class BrowserAPI {
   }
 
   async select(searchParams) {
-    console.log('select', searchParams);
-
     const overview = await runWorker(this.readFile.bind(this), searchParams);
 
     return overview;
@@ -641,7 +639,7 @@ export class BrowserAPI {
       for (const file of files) {
         const filepath = `${dir}/${file}`;
 
-        const { type: filetype } = await fs.promises.stat(filepath);
+        const { type: filetype } = await fs.promises.lstat(filepath);
 
         if (filetype === 'file') {
           const content = await fs.promises.readFile(filepath);
@@ -650,7 +648,7 @@ export class BrowserAPI {
         } else if (filetype === 'dir') {
           const zipDirNew = zipDir.folder(file);
 
-          addToZip(filepath, zipDirNew);
+          await addToZip(filepath, zipDirNew);
         }
       }
     };
@@ -687,10 +685,7 @@ export class BrowserAPI {
   async populateLFS(remote, token) {
     const files = await fs.promises.readdir(`${this.dir}/lfs`);
 
-    console.log(files);
-
     for (const filename of files) {
-      console.log(filename);
       await this.fetchAsset(filename, token);
     }
   }

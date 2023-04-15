@@ -1,5 +1,11 @@
 import { digestMessage, randomUUID } from '@fetsorn/csvs-js';
-import { schemaSync, schemaRemote, schemaRSS, schemaLocal } from '../dispensers/index.js';
+import {
+  schemaSync,
+  schemaRemote,
+  schemaRSS,
+  schemaLocal,
+  schemaZip,
+} from '../dispensers/index.js';
 
 export function entryToSchema(schemaEntry) {
   const schemaObject = {};
@@ -459,4 +465,5 @@ export const schemaRoot = {
   ...schemaRemote,
   ...schemaRSS,
   ...schemaLocal,
+  ...schemaZip,
 };

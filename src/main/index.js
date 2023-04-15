@@ -186,7 +186,11 @@ app
 
     ipcMain.handle(
       'downloadAsset',
-      async (_event, dir, filename, filehash, token) => (new API(dir)).downloadAsset(filename, filehash, token),
+      async (_event, dir, filename, filehash, token) => (new API(dir)).downloadAsset(
+        filename,
+        filehash,
+        token,
+      ),
     );
 
     ipcMain.handle(
@@ -216,6 +220,9 @@ app
         files,
       ),
     );
+
+    ipcMain.handle('zip', async (_event, dir) => (new API(dir)).zip());
+
     createWindow();
   })
   .catch(console.log);

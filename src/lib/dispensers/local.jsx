@@ -12,6 +12,7 @@ export const schemaLocal = {
   local_tag_target: {
     trunk: 'local_tag',
     type: 'string',
+    task: 'directory',
     description: {
       en: 'Path to asset archive',
       ru: 'Путь к локальному архиву',
@@ -20,5 +21,5 @@ export const schemaLocal = {
 };
 
 export function Local({ branchEntry }) {
-  return (<p>{branchEntry.local_tag_target}</p>)
+  return (<p>{branchEntry.local_tag_target}</p>);
 }

@@ -43,4 +43,6 @@ contextBridge.exposeInMainWorld('electron', {
   downloadUrlFromPointer: (dir, url, token, pointerInfo) => ipcRenderer.invoke('downloadUrlFromPointer', dir, url, token, pointerInfo),
 
   uploadBlobsLFS: (dir, url, token, files) => ipcRenderer.invoke('uploadBlobsLFS', dir, url, token, files),
+
+  zip: (dir) => ipcRenderer.invoke('zip', dir),
 });

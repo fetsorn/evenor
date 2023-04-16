@@ -241,7 +241,7 @@ export class API {
         return window.electron.uploadBlobsLFS(this.uuid, url, token, files);
 
       default:
-        return BrowserAPI.uploadBlobsLFS(url, token, files);
+        return this.#browser.uploadBlobsLFS(url, token, files);
     }
   }
 
@@ -252,7 +252,7 @@ export class API {
         return window.electron.zip(this.uuid);
 
       default:
-        return BrowserAPI.zip();
+        return this.#browser.zip();
     }
   }
 
@@ -264,5 +264,16 @@ export class API {
     const [entry] = await (new API('root')).select(searchParams);
 
     return entry;
+  }
+
+  static pdf(overview) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.pdf(overview);
+
+      default:
+        return BrowserAPI.pdf(overview);
+    }
   }
 }

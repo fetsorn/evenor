@@ -56,8 +56,8 @@ export function EditInput({
 
   // if non-array root, treat as object
   // if array root, treat as array later
-  if (schema[branch].trunk === undefined
-        && schema[branch].type !== 'array'
+  if (schema[branch]?.trunk === undefined
+        && schema[branch]?.type !== 'array'
         && isBaseObject) {
     return (
       <InputObject
@@ -74,7 +74,7 @@ export function EditInput({
     case 'array':
       return (
         <div>
-          {schema[branch].trunk === undefined ? (
+          {schema[branch]?.trunk === undefined ? (
             <InputArray
               {...{
                 schema,

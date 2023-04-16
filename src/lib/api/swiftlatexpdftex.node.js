@@ -13,6 +13,7 @@
  *
  * SPDX-License-Identifier: EPL-2.0 OR GPL-2.0 WITH Classpath-exception-2.0
  ******************************************************************************* */
+import { Worker } from 'node:worker_threads';
 
 export const EngineStatus = {
   Init: 1,
@@ -20,8 +21,6 @@ export const EngineStatus = {
   Busy: 3,
   Error: 4,
 };
-
-const ENGINE_PATH = 'swiftlatexpdftex.js';
 
 const compileResult = {
   pdf: undefined,
@@ -38,22 +37,31 @@ export class PdfTeXEngine {
     if (this.latexWorker !== undefined) {
       throw new Error('Other instance is running, abort()');
     }
+
     this.latexWorkerStatus = EngineStatus.Init;
+
     await new Promise((resolve, reject) => {
-      this.latexWorker = new Worker(ENGINE_PATH);
-      this.latexWorker.onmessage = (ev) => {
-        const { data } = ev;
+      this.latexWorker = new Worker(new URL('./swiftlatexpdftex.node.worker.cjs', import.meta.url));
+
+      this.latexWorker.on('message', (data) => {
         const cmd = data.result;
-        if (cmd === 'ok') {
+
+        if (cmd === 'log') {
+          console.log(data);
+        } else if (cmd === 'ok') {
           this.latexWorkerStatus = EngineStatus.Ready;
+
           resolve();
         } else {
           this.latexWorkerStatus = EngineStatus.Error;
+
           reject();
         }
-      };
+      });
     });
+
     this.latexWorker.onmessage = () => {};
+
     this.latexWorker.onerror = () => {};
   }
 
@@ -69,33 +77,52 @@ export class PdfTeXEngine {
 
   async compileLaTeX() {
     this.checkEngineStatus();
+
     this.latexWorkerStatus = EngineStatus.Busy;
+
     const startCompileTime = performance.now();
+
     const res = await new Promise((resolve) => {
-      this.latexWorker.onmessage = (ev) => {
-        const { data } = ev;
+      this.latexWorker.on('message', (data) => {
         const { cmd } = data;
-        if (cmd !== 'compile') return;
+
+        if (cmd === 'log') {
+          console.log(data);
+        } else if (cmd !== 'compile') return;
+
         const { result } = data;
+
         const { log } = data;
+
         const { status } = data;
+
         this.latexWorkerStatus = EngineStatus.Ready;
+
         console.log(
           `Engine compilation finish ${
             performance.now() - startCompileTime}`,
         );
+
         const niceReport = compileResult;
+
         niceReport.status = status;
+
         niceReport.log = log;
+
         if (result === 'ok') {
           const pdf = new Uint8Array(data.pdf);
+
           niceReport.pdf = pdf;
         }
+
         resolve(niceReport);
-      };
+      });
+
       this.latexWorker.postMessage({ cmd: 'compilelatex' });
+
       console.log('Engine compilation start');
     });
+
     this.latexWorker.onmessage = () => {};
 
     return res;
@@ -104,38 +131,55 @@ export class PdfTeXEngine {
   /* Internal Use */
   async compileFormat() {
     this.checkEngineStatus();
+
     this.latexWorkerStatus = EngineStatus.Busy;
+
     await new Promise((resolve, reject) => {
-      this.latexWorker.onmessage = (ev) => {
-        const { data } = ev;
+      this.latexWorker.on('message', (data) => {
         const { cmd } = data;
-        if (cmd !== 'compile') return;
+
+        if (cmd === 'log') {
+          console.log(data);
+        } else if (cmd !== 'compile') return;
+
         const { result } = data;
+
         const { log } = data;
+
         // const status = data['status'];
+
         this.latexWorkerStatus = EngineStatus.Ready;
+
         if (result === 'ok') {
           const formatArray = data.pdf; /* PDF for result */
+
           const formatBlob = new Blob([formatArray], {
             type: 'application/octet-stream',
           });
+
           const formatURL = URL.createObjectURL(formatBlob);
+
           setTimeout(() => {
             URL.revokeObjectURL(formatURL);
           }, 30000);
+
           console.log(`Download format file via ${formatURL}`);
+
           resolve();
         } else {
           reject(log);
         }
-      };
+      });
+
       this.latexWorker.postMessage({ cmd: 'compileformat' });
     });
+
     this.latexWorker.onmessage = () => {};
   }
 
   setEngineMainFile(filename) {
     this.checkEngineStatus();
+
     if (this.latexWorker !== undefined) {
       this.latexWorker.postMessage({ cmd: 'setmainfile', url: filename });
     }
@@ -143,6 +187,7 @@ export class PdfTeXEngine {
 
   writeMemFSFile(filename, srccode) {
     this.checkEngineStatus();
+
     if (this.latexWorker !== undefined) {
       this.latexWorker.postMessage({
         cmd: 'writefile',
@@ -154,18 +199,22 @@ export class PdfTeXEngine {
 
   makeMemFSFolder(folder) {
     this.checkEngineStatus();
+
     if (this.latexWorker !== undefined) {
       if (folder === '' || folder === '/') {
         return;
       }
+
       this.latexWorker.postMessage({ cmd: 'mkdir', url: folder });
     }
   }
 
   flushCache() {
     this.checkEngineStatus();
+
     if (this.latexWorker !== undefined) {
       // console.warn('Flushing');
+
       this.latexWorker.postMessage({ cmd: 'flushcache' });
     }
   }
@@ -179,7 +228,39 @@ export class PdfTeXEngine {
   closeWorker() {
     if (this.latexWorker !== undefined) {
       this.latexWorker.postMessage({ cmd: 'grace' });
+
       this.latexWorker = undefined;
     }
   }
+}
+
+export async function exportPDF(textext) {
+  const engine = new PdfTeXEngine();
+
+  await engine.loadEngine();
+  console.log('engine loaded')
+
+  if (!engine.isReady()) {
+    console.log('Engine not ready yet');
+
+    return undefined;
+  }
+
+  engine.writeMemFSFile('main.tex', textext);
+
+  engine.setEngineMainFile('main.tex');
+
+  console.log('starting compilation')
+  const r = await engine.compileLaTeX();
+  console.log('compilation complete')
+
+  console.log(r);
+
+  if (r.status === 0) {
+    const blob = new Blob([r.pdf], { type: 'application/pdf' })
+    console.log('AAAA', blob)
+    return blob;
+  }
+
+  return undefined;
 }

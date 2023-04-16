@@ -28,6 +28,7 @@ module.exports = {
           from: '*',
           to: '[name][ext]',
         },
+        { context: 'public/js/', from: '**', to: '[name][ext]' },
       ],
     }),
   ],

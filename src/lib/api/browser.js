@@ -766,4 +766,16 @@ export class BrowserAPI {
       },
     }, files);
   }
+
+  static async pdf(overview) {
+    const { generateLatex } = await import('./latex.js');
+
+    const { exportPDF } = await import('./swiftlatexpdftex.browser.js');
+
+    const text = generateLatex(overview);
+
+    const pdfblob = await exportPDF(text);
+
+    return pdfblob;
+  }
 }

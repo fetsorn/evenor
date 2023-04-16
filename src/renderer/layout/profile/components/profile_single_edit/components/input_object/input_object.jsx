@@ -14,7 +14,7 @@ async function addField(
 
   let value;
 
-  if (schema[branch].type === 'object' || schema[branch].type === 'array') {
+  if (schema[branch]?.type === 'object' || schema[branch]?.type === 'array') {
     const obj = {};
 
     obj._ = branch;
@@ -25,7 +25,7 @@ async function addField(
 
     obj.UUID = await digestMessage(uuid);
 
-    if (schema[branch].type === 'array') {
+    if (schema[branch]?.type === 'array') {
       obj.items = [];
     }
 
@@ -35,7 +35,7 @@ async function addField(
   }
   const base = entry._;
 
-  const { trunk } = schema[branch];
+  const trunk = schema[branch]?.trunk;
 
   if (trunk !== base && branch !== base) {
     return undefined;
@@ -63,9 +63,15 @@ export function InputObject({
 
   const [options, setOptions] = useState([]);
 
-  const repoUUID = useStore((state) => state.repoUUID);
+  const [
+    repoUUID,
+    isSettings,
+  ] = useStore((state) => [
+    state.repoUUID,
+    state.isSettings,
+  ]);
 
-  const api = new API(repoUUID);
+  const api = isSettings ? new API('root') : new API(repoUUID);
 
   const base = useStore((state) => state.base);
 
@@ -77,7 +83,7 @@ export function InputObject({
     ? Object.keys(schema).filter((leaf) => {
       const isAdded = Object.prototype.hasOwnProperty.call(entry, leaf);
 
-      const isNonObjectRoot = leaf === branch && schema[branch].trunk === undefined && schema[branch].type !== 'object';
+      const isNonObjectRoot = leaf === branch && schema[branch]?.trunk === undefined && schema[branch]?.type !== 'object';
 
       const isLeaf = schema[leaf]?.trunk === branch;
 

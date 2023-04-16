@@ -14,7 +14,7 @@ async function addField(
 
   let value;
 
-  if (schema[branch].type === 'object' || schema[branch].type === 'array') {
+  if (schema[branch]?.type === 'object' || schema[branch]?.type === 'array') {
     const obj = {};
 
     obj._ = branch;
@@ -22,13 +22,11 @@ async function addField(
     const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
 
     // pick randomUUID until there's a uuid that follows others in alphabetical order
-    let uuid = await randomUUID()
+    let uuid = await randomUUID();
 
-    const uuids = entry.items
-          ? entry.items
-                 .sort((a, b) => a.UUID?.localeCompare(b.UUID))
-                 .map((i) => i.UUID)
-          : [];
+    const uuids = entry.items ? entry.items.sort(
+      (a, b) => a.UUID?.localeCompare(b.UUID),
+    ).map((i) => i.UUID) : [];
 
     const uuidLast = uuids[0];
 
@@ -38,7 +36,7 @@ async function addField(
 
     obj.UUID = await digestMessage(uuid);
 
-    if (schema[branch].type === 'array') {
+    if (schema[branch]?.type === 'array') {
       obj.items = [];
     }
 
@@ -48,7 +46,7 @@ async function addField(
   }
   const base = entry._;
 
-  const { trunk } = schema[branch];
+  const trunk = schema[branch]?.trunk;
 
   if (trunk !== base && branch !== base) {
     return undefined;
@@ -76,9 +74,15 @@ export function InputArray({
 
   const [options, setOptions] = useState([]);
 
-  const repoUUID = useStore((state) => state.repoUUID);
+  const [
+    repoUUID,
+    isSettings,
+  ] = useStore((state) => [
+    state.repoUUID,
+    state.isSettings,
+  ]);
 
-  const api = new API(repoUUID);
+  const api = isSettings ? new API('root') : new API(repoUUID);
 
   const base = useStore((state) => state.base);
 

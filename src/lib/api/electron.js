@@ -4,7 +4,6 @@ import { URLSearchParams } from 'url';
 import { app, dialog } from 'electron';
 import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node/index.cjs';
-import { exportPDF, generateLatex } from 'lib/latex';
 import { Worker } from 'node:worker_threads';
 
 const home = app.getPath('home');
@@ -37,6 +36,7 @@ async function runWorker(workerData) {
         if (workerData.msg === 'select') {
           readWorker = undefined;
         }
+
         resolve(message);
       }
     });
@@ -47,6 +47,7 @@ async function runWorker(workerData) {
       if (workerData.msg === 'select') {
         readWorker = undefined;
       }
+
       if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
     });
 
@@ -563,14 +564,6 @@ export class ElectronAPI {
     });
   }
 
-  static async latex() {
-    const text = generateLatex([]);
-
-    const pdfURL = await exportPDF(text);
-
-    return pdfURL;
-  }
-
   async readSchema() {
     const schemaString = await this.readFile('metadir.json');
 
@@ -722,5 +715,17 @@ export class ElectronAPI {
         password: token,
       },
     }, files);
+  }
+
+  static async pdf(overview) {
+    const { generateLatex } = await import('./latex.js');
+
+    const { exportPDF } = await import('./swiftlatexpdftex.node.js');
+
+    const text = generateLatex(overview);
+
+    const pdfblob = await exportPDF(text);
+
+    return pdfblob;
   }
 }

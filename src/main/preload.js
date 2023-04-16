@@ -45,4 +45,6 @@ contextBridge.exposeInMainWorld('electron', {
   uploadBlobsLFS: (dir, url, token, files) => ipcRenderer.invoke('uploadBlobsLFS', dir, url, token, files),
 
   zip: (dir) => ipcRenderer.invoke('zip', dir),
+
+  pdf: (overview) => ipcRenderer.invoke('pdf', overview),
 });

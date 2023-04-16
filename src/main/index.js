@@ -223,6 +223,8 @@ app
 
     ipcMain.handle('zip', async (_event, dir) => (new API(dir)).zip());
 
+    ipcMain.handle('pdf', async (_event, overview) => API.pdf(overview));
+
     createWindow();
   })
   .catch(console.log);

@@ -1,8 +1,6 @@
 const nodefs = require('fs');
 const path = require('path');
-const https = require('https');
-const { parentPort } = require('node:worker_threads');
-var request = require('sync-request');
+const { parentPort, receiveMessageOnPort } = require('node:worker_threads');
 
 function postMessage(args) {
   parentPort.postMessage(args);
@@ -354,54 +352,62 @@ async function kpse_find_file_impl(nameptr, format, _mustexist) {
 
     // xhr.responseType = "arraybuffer";
 
-    parentPort.postMessage({
-        "result": "AAAAA",
-        "cmd": "log"
-    });
-
     console.log("Start downloading texlive file " + remote_url);
 
     try {
         // xhr.send()
-        // var res = request('GET', remote_url)
+        // const res = await fetch(remote_url);
+        const res = await new Promise((res, rej) => {
+            parentPort.postMessage({
+                remote_url,
+                cmd: "fetch"
+            });
+
+            parentPort.on('message', (data) => {
+                console.log(data)
+                res(data)
+            })
+        })
+        parentPort.postMessage({
+            res,
+            remote_url,
+            cmd: "log"
+        });
     } catch (err) {
-        console.log("TexLive Download Failed " + remote_url);
+        console.log("TexLive Download Failed 1" + remote_url + err);
 
         return 0
     }
 
     // if (xhr.status === 200) {
-    if (res.statusCode === 200) {
-        // let arraybuffer = xhr.response;
-        let arraybuffer = res.body;
+    //     let arraybuffer = xhr.response;
 
-        // const fileid = xhr.getResponseHeader("fileid");
-        const fileid = res.headers["fileid"];
+    //     const fileid = xhr.getResponseHeader("fileid");
 
-        const savepath = TEXCACHEROOT + "/" + fileid;
+    //     const savepath = TEXCACHEROOT + "/" + fileid;
 
-        FS.writeFile(savepath, new Uint8Array(arraybuffer));
+    //     FS.writeFile(savepath, new Uint8Array(arraybuffer));
 
-        texlive200_cache[cacheKey] = savepath;
+    //     texlive200_cache[cacheKey] = savepath;
 
-        return allocate(intArrayFromString(savepath), "i8", ALLOC_NORMAL)
+    //     return allocate(intArrayFromString(savepath), "i8", ALLOC_NORMAL)
     // } else if (xhr.status === 301) {
-    } else if (res.statusCode === 301) {
-        console.log("TexLive File not exists " + remote_url);
+    //     console.log("TexLive File not exists " + remote_url);
 
-        texlive404_cache[cacheKey] = 1;
+    //     texlive404_cache[cacheKey] = 1;
 
-        return 0
-    }
+    //     return 0
+    // }
 
-    return 0
+    // return 0
+    return allocate(intArrayFromString(""), "i8", ALLOC_NORMAL)
 }
 
 let pk404_cache = {};
 
 let pk200_cache = {};
 
-function kpse_find_pk_impl(nameptr, dpi) {
+async function kpse_find_pk_impl(nameptr, dpi) {
     const reqname = UTF8ToString(nameptr);
 
     if (reqname.includes("/")) {
@@ -422,46 +428,63 @@ function kpse_find_pk_impl(nameptr, dpi) {
 
     const remote_url = texlive_endpoint + "pdftex/pk/" + cacheKey;
 
-    let xhr = new XMLHttpRequest();
+    // let xhr = new XMLHttpRequest();
 
-    xhr.open("GET", remote_url, false);
+    // xhr.open("GET", remote_url, false);
 
-    xhr.timeout = 15e4;
+    // xhr.timeout = 15e4;
 
-    xhr.responseType = "arraybuffer";
+    // xhr.responseType = "arraybuffer";
 
     console.log("Start downloading texlive file " + remote_url);
 
     try {
-        xhr.send()
+        // xhr.send()
+        const res = await new Promise((res, rej) => {
+            parentPort.postMessage({
+                remote_url,
+                cmd: "fetch"
+            });
+
+            const msg = receiveMessageOnPort(parentPort)
+
+            res(msg.res)
+        })
+        parentPort.postMessage({
+            res,
+            remote_url,
+            cmd: "log"
+        });
     } catch (err) {
-        console.log("TexLive Download Failed " + remote_url);
+        console.log("TexLive Download Failed 2" + remote_url + err);
 
         return 0
     }
 
-    if (xhr.status === 200) {
-        let arraybuffer = xhr.response;
+    // if (xhr.status === 200) {
+    //     let arraybuffer = xhr.response;
 
-        const pkid = xhr.getResponseHeader("pkid");
+    //     const pkid = xhr.getResponseHeader("pkid");
 
-        const savepath = TEXCACHEROOT + "/" + pkid;
+    //     const savepath = TEXCACHEROOT + "/" + pkid;
 
-        FS.writeFile(savepath, new Uint8Array(arraybuffer));
+    //     FS.writeFile(savepath, new Uint8Array(arraybuffer));
 
-        pk200_cache[cacheKey] = savepath;
+    //     pk200_cache[cacheKey] = savepath;
 
-        return allocate(intArrayFromString(savepath), "i8", ALLOC_NORMAL)
-    } else if (xhr.status === 301) {
-        console.log("TexLive File not exists " + remote_url);
+    //     return allocate(intArrayFromString(savepath), "i8", ALLOC_NORMAL)
+    // } else if (xhr.status === 301) {
+    //     console.log("TexLive File not exists " + remote_url);
 
-        pk404_cache[cacheKey] = 1;
+    //     pk404_cache[cacheKey] = 1;
 
-        return 0
-    }
+    //     return 0
+    // }
 
-    return 0
+    // return 0
+    return allocate(intArrayFromString(""), "i8", ALLOC_NORMAL)
 }
+
 
 var moduleOverrides = Object.assign({}, Module);
 
@@ -596,49 +619,61 @@ if (ENVIRONMENT_IS_NODE) {
         scriptDirectory = ""
     } {
         read_ = (url => {
-            var xhr = new XMLHttpRequest();
+            // var xhr = new XMLHttpRequest();
 
-            xhr.open("GET", url, false);
+            // xhr.open("GET", url, false);
 
-            xhr.send(null);
+            // xhr.send(null);
+            parentPort.postMessage({
+                "result": "AAAAA2",
+                "cmd": "log"
+            });
 
             return xhr.responseText
         });
 
         if (ENVIRONMENT_IS_WORKER) {
             readBinary = (url => {
-                var xhr = new XMLHttpRequest();
+                // var xhr = new XMLHttpRequest();
 
-                xhr.open("GET", url, false);
+                // xhr.open("GET", url, false);
 
-                xhr.responseType = "arraybuffer";
+                // xhr.responseType = "arraybuffer";
 
-                xhr.send(null);
+                // xhr.send(null);
+                parentPort.postMessage({
+                    "result": "AAAAA3",
+                    "cmd": "log"
+                });
 
                 return new Uint8Array(xhr.response)
             })
         }
 
         readAsync = ((url, onload, onerror) => {
-            var xhr = new XMLHttpRequest();
+            // var xhr = new XMLHttpRequest();
 
-            xhr.open("GET", url, true);
+            // xhr.open("GET", url, true);
 
-            xhr.responseType = "arraybuffer";
+            // xhr.responseType = "arraybuffer";
 
-            xhr.onload = (() => {
-                if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
-                    onload(xhr.response);
+            // xhr.onload = (() => {
+            //     if (xhr.status == 200 || xhr.status == 0 && xhr.response) {
+            //         onload(xhr.response);
 
-                    return
-                }
+            //         return
+            //     }
 
-                onerror()
+            //     onerror()
+            // });
+
+            // xhr.onerror = onerror;
+
+            // xhr.send(null)
+            parentPort.postMessage({
+                "result": "AAAAA4",
+                "cmd": "log"
             });
-
-            xhr.onerror = onerror;
-
-            xhr.send(null)
         })
     }
 
@@ -3162,9 +3197,13 @@ var FS = {
             this.getter = getter
         };
         LazyUint8Array.prototype.cacheLength = function LazyUint8Array_cacheLength() {
-            var xhr = new XMLHttpRequest();
-            xhr.open("HEAD", url, false);
-            xhr.send(null);
+            // var xhr = new XMLHttpRequest();
+            // xhr.open("HEAD", url, false);
+            // xhr.send(null);
+            parentPort.postMessage({
+                "result": "AAAAA5",
+                "cmd": "log"
+            });
             if (!(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304)) throw new Error("Couldn't load " + url + ". Status: " + xhr.status);
             var datalength = Number(xhr.getResponseHeader("Content-length"));
             var header;
@@ -3175,20 +3214,24 @@ var FS = {
             var doXHR = (from, to) => {
                 if (from > to) throw new Error("invalid range (" + from + ", " + to + ") or no bytes requested!");
                 if (to > datalength - 1) throw new Error("only " + datalength + " bytes available! programmer error!");
-                var xhr = new XMLHttpRequest();
-                xhr.open("GET", url, false);
-                if (datalength !== chunkSize) xhr.setRequestHeader("Range", "bytes=" + from + "-" + to);
-                xhr.responseType = "arraybuffer";
-                if (xhr.overrideMimeType) {
-                    xhr.overrideMimeType("text/plain; charset=x-user-defined")
-                }
-                xhr.send(null);
-                if (!(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304)) throw new Error("Couldn't load " + url + ". Status: " + xhr.status);
-                if (xhr.response !== undefined) {
-                    return new Uint8Array(xhr.response || [])
-                } else {
-                    return intArrayFromString(xhr.responseText || "", true)
-                }
+                // var xhr = new XMLHttpRequest();
+                // xhr.open("GET", url, false);
+                // if (datalength !== chunkSize) xhr.setRequestHeader("Range", "bytes=" + from + "-" + to);
+                // xhr.responseType = "arraybuffer";
+                // if (xhr.overrideMimeType) {
+                //     xhr.overrideMimeType("text/plain; charset=x-user-defined")
+                // }
+                // xhr.send(null);
+                parentPort.postMessage({
+                    "result": "AAAAA6",
+                    "cmd": "log"
+                });
+                // if (!(xhr.status >= 200 && xhr.status < 300 || xhr.status === 304)) throw new Error("Couldn't load " + url + ". Status: " + xhr.status);
+                // if (xhr.response !== undefined) {
+                //     return new Uint8Array(xhr.response || [])
+                // } else {
+                //     return intArrayFromString(xhr.responseText || "", true)
+                // }
             };
             var lazyArray = this;
             lazyArray.setDataGetter(chunkNum => {
@@ -3970,7 +4013,7 @@ async function _kpse_find_file_js(nameptr, format, mustexist) {
     return kpse_find_file_impl(nameptr, format, mustexist)
 }
 
-function _kpse_find_pk_js(nameptr, dpi) {
+async function _kpse_find_pk_js(nameptr, dpi) {
     return kpse_find_pk_impl(nameptr, dpi)
 }
 

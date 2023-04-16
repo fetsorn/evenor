@@ -83,11 +83,24 @@ export class PdfTeXEngine {
     const startCompileTime = performance.now();
 
     const res = await new Promise((resolve) => {
-      this.latexWorker.on('message', (data) => {
+      this.latexWorker.on('message', async (data) => {
         const { cmd } = data;
 
         if (cmd === 'log') {
           console.log(data);
+        } else if (cmd === 'fetch') {
+          console.log('fetch callback', data);
+
+          try {
+            const fetchres = await fetch(data.remote_url, { timeout: 15e4 });
+            // const fetchres = await fetch("https://example.com/page-not-found");
+
+            console.log(fetchres);
+
+            this.latexWorker.postMessage(fetchres);
+          } catch (err) {
+            console.log(`BBB ${err}`);
+          }
         } else if (cmd !== 'compile') return;
 
         const { result } = data;
@@ -135,11 +148,17 @@ export class PdfTeXEngine {
     this.latexWorkerStatus = EngineStatus.Busy;
 
     await new Promise((resolve, reject) => {
-      this.latexWorker.on('message', (data) => {
+      this.latexWorker.on('message', async (data) => {
         const { cmd } = data;
 
         if (cmd === 'log') {
           console.log(data);
+        } else if (cmd === 'fetch') {
+          console.log('fetch callback', data);
+
+          const fetchres = await fetch(data.remote_url);
+
+          this.latexWorker.postMessage(fetchres);
         } else if (cmd !== 'compile') return;
 
         const { result } = data;
@@ -238,7 +257,8 @@ export async function exportPDF(textext) {
   const engine = new PdfTeXEngine();
 
   await engine.loadEngine();
-  console.log('engine loaded')
+
+  console.log('engine loaded');
 
   if (!engine.isReady()) {
     console.log('Engine not ready yet');
@@ -250,15 +270,19 @@ export async function exportPDF(textext) {
 
   engine.setEngineMainFile('main.tex');
 
-  console.log('starting compilation')
+  console.log('starting compilation');
+
   const r = await engine.compileLaTeX();
-  console.log('compilation complete')
+
+  console.log('compilation complete');
 
   console.log(r);
 
   if (r.status === 0) {
-    const blob = new Blob([r.pdf], { type: 'application/pdf' })
-    console.log('AAAA', blob)
+    const blob = new Blob([r.pdf], { type: 'application/pdf' });
+
+    console.log('AAAA', blob);
+
     return blob;
   }
 

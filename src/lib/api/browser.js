@@ -683,10 +683,14 @@ export class BrowserAPI {
   }
 
   async populateLFS(remote, token) {
-    const files = await fs.promises.readdir(`${this.dir}/lfs`);
+    try {
+      const files = await fs.promises.readdir(`${this.dir}/lfs`);
 
-    for (const filename of files) {
-      await this.fetchAsset(filename, token);
+      for (const filename of files) {
+        await this.fetchAsset(filename, token);
+      }
+    } catch {
+      // do nothing
     }
   }
 

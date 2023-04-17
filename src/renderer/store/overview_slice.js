@@ -114,7 +114,7 @@ export const createOverviewSlice = (set, get) => ({
 
       const { digestMessage } = await import('@fetsorn/csvs-js');
 
-      repoUUID = digestMessage(remote);
+      repoUUID = await digestMessage(remote);
 
       repoName = encodeURIComponent(remote);
 

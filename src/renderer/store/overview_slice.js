@@ -287,8 +287,6 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.set('reponame', repoUUID);
 
-      searchParams.delete('.group');
-
       const [entry] = await api.select(searchParams);
 
       repoName = entry.reponame;
@@ -307,8 +305,6 @@ export const createOverviewSlice = (set, get) => ({
     searchParams.set('_', 'reponame');
 
     searchParams.set('reponame', repoName);
-
-    searchParams.delete('.group');
 
     const [entry] = await api.select(searchParams);
 

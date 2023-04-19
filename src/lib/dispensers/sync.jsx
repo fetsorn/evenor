@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { API } from '../api/index.js';
 
 export const schemaSync = {
@@ -29,51 +29,42 @@ export const schemaSync = {
 };
 
 export function Sync({ baseEntry, branchEntry }) {
-  const [entries, setEntries] = useState([]);
-
-  const sourceAPI = new API(baseEntry.UUID);
-
-  // TODO detect UUID of target
-  const target = branchEntry.sync_tag_target;
-
-  const targetAPI = new API(target);
-
-  async function onCheckRepo() {
-    const searchParams = new URLSearchParams(branchEntry.sync_tag_search);
-
-    // get array of events by search from source
-    const sourceEntries = await sourceAPI.select(searchParams);
-
-    // get array of events by search from target
-    const targetEntries = await targetAPI.select(searchParams);
-
-    // TODO: resolve diff between sourceEntries and targetEntries
-    const entriesDiff = sourceEntries.concat(targetEntries);
-
-    setEntries(entriesDiff);
-  }
-
   async function onSyncRepo() {
-    for (const entry of entries) {
-      // write events to sourceDir
-      await sourceAPI.updateEntry(entry);
+    // find UUID of repo to sync from
+    const searchParams = new URLSearchParams();
 
-      // write events to targetDir
-      await targetAPI.updateEntry(entry);
+    searchParams.set('_', 'reponame');
+
+    searchParams.set('reponame', branchEntry.sync_tag_target);
+
+    const rootAPI = new API('root');
+
+    const [{ UUID: subsetUUID }] = await rootAPI.select(searchParams);
+
+    const subsetAPI = new API(subsetUUID);
+
+    // find entries to sync from subset
+    const entries = await subsetAPI.select(
+      new URLSearchParams(branchEntry.sync_tag_search),
+    );
+
+    const supersetAPI = new API(baseEntry.UUID);
+
+    // sync entries to superset
+    for (const entry of entries) {
+      await supersetAPI.updateEntry(entry);
     }
+
+    await supersetAPI.commit();
   }
 
   return (
     <div>
-      <p>{branchEntry.sync_tag_search}</p>
-      <br />
       <p>{branchEntry.sync_tag_target}</p>
       <br />
-      <button type="button" onClick={onCheckRepo}>🔄</button>
+      <p>{branchEntry.sync_tag_search}</p>
       <br />
-      <p>{JSON.stringify(entries)}</p>
-      <br />
-      <button type="button" onClick={onSyncRepo}>==V==</button>
+      <button type="button" onClick={onSyncRepo}>🔄</button>
     </div>
   );
 }

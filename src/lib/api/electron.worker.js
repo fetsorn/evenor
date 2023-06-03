@@ -71,7 +71,7 @@ async function readFile(filepath) {
 async function writeFile(filepath, content) {
   const { home, uuid } = workerData;
 
-  const appdata = path.join(home, '.qualia');
+  const appdata = path.join(home, '.evenor');
 
   const store = path.join(appdata, 'store');
 

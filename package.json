@@ -1,6 +1,6 @@
 {
-  "name": "qualia",
-  "productName": "qualia",
+  "name": "evenor",
+  "productName": "evenor",
   "version": "1.0.0",
   "description": "Tell the story of your data.",
   "main": "./.webpack/main",

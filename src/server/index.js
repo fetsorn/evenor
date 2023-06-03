@@ -4,7 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import formidable from 'formidable';
-import { ServerAPI } from 'qualia/src/lib/api/server.mjs';
+import { ServerAPI } from 'evenor/src/lib/api/server.mjs';
 
 const dirname = path.dirname(new URL(import.meta.url).pathname);
 

@@ -77,7 +77,7 @@ const createWindow = async () => {
         {
           label: 'Learn More',
           click: async () => {
-            await shell.openExternal('https://github.com/fetsorn/qualia');
+            await shell.openExternal('https://github.com/fetsorn/evenor');
           },
         },
       ],

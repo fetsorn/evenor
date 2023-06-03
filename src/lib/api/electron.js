@@ -9,6 +9,8 @@ import { Worker } from 'node:worker_threads';
 
 const home = app.getPath('home');
 
+const appdir = ".evenor";
+
 let readWorker;
 
 // we run CSVS functions in workers to offload the main thread
@@ -64,7 +66,7 @@ export class ElectronAPI {
   constructor(uuid) {
     this.uuid = uuid;
 
-    const root = path.join(home, '.qualia');
+    const root = path.join(home, appdir);
 
     const store = path.join(root, 'store');
 
@@ -88,7 +90,7 @@ export class ElectronAPI {
   }
 
   async writeFile(filepath, content) {
-    const appdata = path.join(home, '.qualia');
+    const appdata = path.join(home, appdir);
 
     const store = path.join(appdata, 'store');
 
@@ -417,9 +419,9 @@ export class ElectronAPI {
   }
 
   async setupRepo(schema) {
-    const root = path.join(home, '.qualia');
+    const root = path.join(home, appdir);
 
-    if (!(await fs.promises.readdir(home)).includes('.qualia')) {
+    if (!(await fs.promises.readdir(home)).includes(appdir)) {
       await fs.promises.mkdir(root);
     }
 
@@ -481,7 +483,7 @@ export class ElectronAPI {
   }
 
   async symlink(name) {
-    const root = path.join(home, '.qualia');
+    const root = path.join(home, appdir);
 
     const repos = path.join(root, 'repos');
 
@@ -514,7 +516,7 @@ export class ElectronAPI {
   }
 
   static async rimraf(rimrafpath) {
-    const root = path.join(home, '.qualia');
+    const root = path.join(home, appdir);
 
     const file = path.join(root, rimrafpath);
 

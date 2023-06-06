@@ -678,6 +678,23 @@ export class ElectronAPI {
     await this.clone(remote, token);
   }
 
+  async populateLFS(remote, token) {
+    try {
+      // TODO: list all files in assetEndpoint
+      // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
+
+      // try to fetch every asset
+      // for (const filename of files) {
+      //   await this.fetchAsset(filename, token);
+      // }
+      console.log("api/electron/populateLFS: not implemented");
+    } catch(e) {
+      // do nothing
+      console.log("api/electron/populateLFS", e)
+    }
+  }
+
+
   // returns blob url
   async fetchAsset(filename, token) {
     // TODO: get file from assetEndpoint

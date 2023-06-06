@@ -185,6 +185,11 @@ app
     );
 
     ipcMain.handle(
+      'populateLFS',
+      async (_event, dir, filename, token) => (new API(dir)).populateLFS(filename, token),
+    );
+
+    ipcMain.handle(
       'downloadAsset',
       async (_event, dir, filename, filehash, token) => (new API(dir)).downloadAsset(
         filename,

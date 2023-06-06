@@ -17,7 +17,7 @@ export class API {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        throw new Error('Not implemented');
+        return window.electron.populateLFS(this.uuid, filename, token);
 
       default:
         return this.#browser.populateLFS(filename, token);

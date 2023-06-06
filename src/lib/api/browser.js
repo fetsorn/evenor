@@ -701,6 +701,7 @@ export class BrowserAPI {
       // TODO: list all files in assetEndpoint
       // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
 
+      // try to fetch every asset
       // for (const filename of files) {
       //   await this.fetchAsset(filename, token);
       // }

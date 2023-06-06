@@ -223,6 +223,7 @@ export class API {
     }
   }
 
+  // wrapper of static method, needs different http client in node and web
   async downloadUrlFromPointer(url, token, pointerInfo) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
@@ -241,7 +242,7 @@ export class API {
         return window.electron.uploadBlobsLFS(this.uuid, url, token, files);
 
       default:
-        return BrowserAPI.uploadBlobsLFS(url, token, files);
+        return this.#browser.uploadBlobsLFS(url, token, files);
     }
   }
 

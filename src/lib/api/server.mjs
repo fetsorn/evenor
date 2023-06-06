@@ -114,10 +114,6 @@ export class ServerAPI {
     await fs.promises.writeFile(realpath, content);
   }
 
-  async putAsset(filename, buffer) {
-    this.writeFile(`lfs/${filename}`, buffer);
-  }
-
   async uploadFile(file) {
     const fileArrayBuffer = fs.readFileSync(file.filepath);
 
@@ -130,18 +126,20 @@ export class ServerAPI {
 
     const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-    const uploadDir = path.join(this.dir, 'lfs');
+    // TODO: write file to assetEndpoint, if assetEnpoint is writeable
+    // const uploadDir = path.join(this.dir, undefined);
 
-    if (!fs.existsSync(uploadDir)) {
-      fs.mkdirSync(uploadDir);
+    // if (!fs.existsSync(uploadDir)) {
+      // fs.mkdirSync(uploadDir);
       // console.log(`Directory ${root} is created.`);
-    } else {
+    // } else {
       // console.log(`Directory ${root} already exists.`);
-    }
+    // }
 
-    const uploadPath = path.join(uploadDir, hashHexString);
+    // const uploadPath = path.join(uploadDir, hashHexString);
 
-    await fs.promises.rename(file.filepath, uploadPath);
+    // await fs.promises.rename(file.filepath, uploadPath);
+    console.log("api/server/uploadFile: not implemented");
 
     return [hashHexString, file.originalFilename];
   }
@@ -202,22 +200,22 @@ export class ServerAPI {
             filepath,
           });
         } else {
-        // if file in lfs/ add as LFS
-          if (filepath.startsWith('lfs')) {
-            const { addLFS } = await import('./lfs.mjs');
+          // TODO: stage files in remoteEndpoint as LFS pointers
+          // if (filepath.startsWith(remoteEndpoint)) {
+          //   const { addLFS } = await import('./lfs.mjs');
 
-            await addLFS({
-              fs,
-              dir,
-              filepath,
-            });
-          } else {
+          //   await addLFS({
+          //     fs,
+          //     dir,
+          //     filepath,
+          //   });
+          // } else {
             await git.add({
               fs,
               dir,
               filepath,
             });
-          }
+          // }
 
           if (HEADStatus === 1) {
             status = 'modified';

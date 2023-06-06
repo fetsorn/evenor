@@ -168,7 +168,9 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    this.writeFile(`lfs/${filename}`, buffer);
+    // TODO: write buffer to assetEndpoint/filename, if assetEnpoint is writeable
+    // this.writeFile(path.join(undefined, filename), buffer);
+    console.log("api/browser/putAsset: not implemented");
   }
 
   async uploadFile(file) {
@@ -352,21 +354,22 @@ export class BrowserAPI {
             filepath,
           });
         } else {
-          if (filepath.startsWith('lfs/')) {
-            const { addLFS } = await import('./lfs.mjs');
+          // TODO: stage files in remoteEndpoint as LFS pointers
+          // if (filepath.startsWith(remoteEndpoint)) {
+          //   const { addLFS } = await import('./lfs.mjs');
 
-            await addLFS({
-              fs,
-              dir,
-              filepath,
-            });
-          } else {
+          //   await addLFS({
+          //     fs,
+          //     dir,
+          //     filepath,
+          //   });
+          // } else {
             await add({
               fs,
               dir,
               filepath,
             });
-          }
+          // }
 
           if (HEADStatus === 1) {
             status = 'modified';
@@ -392,42 +395,52 @@ export class BrowserAPI {
     }
   }
 
-  async uploadBlobs(url, token) {
-    // for every file in lfs/
-    // if file is not LFS pointer,
-    // upload file to remote
+  // called with "files" by dispensers which need to check download acitons
+  // called without "files" on push
+  async uploadBlobsLFS(url, token, files) {
+
     const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    const lfs = `${this.dir}/lfs/`;
+    let assets;
 
-    const filenames = await fs.promises.readdir(lfs);
+    // TODO
+    // if no files are specified
+    // for every file in remoteEndpoint/
+    // if file is not LFS pointer,
+    // upload file to remote
+    // if (files === undefined) {
+    //   const filenames = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}/`);
 
-    const files = (await Promise.all(
-      filenames.map(async (filename) => {
-        const file = await this.fetchFile(`lfs/${filename}`);
+    //   assets = (await Promise.all(
+    //     filenames.map(async (filename) => {
+    //       const file = await this.fetchFile(`${remoteEndpoint}/${filename}`);
 
-        if (!pointsToLFS(file)) {
-          return file;
-        }
+    //       if (!pointsToLFS(file)) {
+    //         return file;
+    //       }
 
-        return undefined;
-      }),
-    )).filter(Boolean);
+    //       return undefined;
+    //     }),
+    //   )).filter(Boolean);
+    // } else {
+    //   assets = files;
+    // }
 
-    await uploadBlobs({
-      url,
-      auth: {
-        username: token,
-        password: token,
-      },
-    }, files);
+    // await uploadBlobs({
+    //   url,
+    //   auth: {
+    //     username: token,
+    //     password: token,
+    //   },
+    // }, assets);
+    console.log("api/browser/uploadBlobsLFS: not implemented");
   }
 
   async push(url, token) {
     try {
-      await this.uploadBlobs(url, token);
+      await this.uploadBlobsLFS(url, token);
     } catch (e) {
-      console.log('uploadBlobs failed', e);
+      console.log('api/browser/uploadBlobsLFS failed', e);
     }
 
     const { push } = await import('isomorphic-git');
@@ -501,39 +514,40 @@ export class BrowserAPI {
       await init({ fs, dir });
     }
 
-    await fs.promises.writeFile(
-      `${dir}/.gitattributes`,
-      'lfs/** filter=lfs diff=lfs merge=lfs -text\n',
-      'utf8',
-    );
+    // TODO: ignore remoteEndpoint
+    // await fs.promises.writeFile(
+    //   `${dir}/.gitattributes`,
+    //   '${remoteEndpoint}/** filter=lfs diff=lfs merge=lfs -text\n',
+    //   'utf8',
+    // );
 
-    await setConfig({
-      fs,
-      dir,
-      path: 'filter.lfs.clean',
-      value: 'git-lfs clean -- %f',
-    });
+    // await setConfig({
+    //   fs,
+    //   dir,
+    //   path: 'filter.lfs.clean',
+    //   value: 'git-lfs clean -- %f',
+    // });
 
-    await setConfig({
-      fs,
-      dir,
-      path: 'filter.lfs.smudge',
-      value: 'git-lfs smudge -- %f',
-    });
+    // await setConfig({
+    //   fs,
+    //   dir,
+    //   path: 'filter.lfs.smudge',
+    //   value: 'git-lfs smudge -- %f',
+    // });
 
-    await setConfig({
-      fs,
-      dir,
-      path: 'filter.lfs.process',
-      value: 'git-lfs filter-process',
-    });
+    // await setConfig({
+    //   fs,
+    //   dir,
+    //   path: 'filter.lfs.process',
+    //   value: 'git-lfs filter-process',
+    // });
 
-    await setConfig({
-      fs,
-      dir,
-      path: 'filter.lfs.required',
-      value: true,
-    });
+    // await setConfig({
+    //   fs,
+    //   dir,
+    //   path: 'filter.lfs.required',
+    //   value: true,
+    // });
 
     await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
@@ -684,13 +698,16 @@ export class BrowserAPI {
 
   async populateLFS(remote, token) {
     try {
-      const files = await fs.promises.readdir(`${this.dir}/lfs`);
+      // TODO: list all files in assetEndpoint
+      // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
 
-      for (const filename of files) {
-        await this.fetchAsset(filename, token);
-      }
-    } catch {
+      // for (const filename of files) {
+      //   await this.fetchAsset(filename, token);
+      // }
+      console.log("api/browser/populateLFS: not implemented");
+    } catch(e) {
       // do nothing
+      console.log("api/browser/populateLFS", e)
     }
   }
 
@@ -698,43 +715,47 @@ export class BrowserAPI {
   async fetchAsset(filename, token) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {
-      const lfspath = `/api/lfs/${filename}`;
+      // TODO: get file from assetEndpoint
+      // const assetpath = `/api/${remoteEndpoint}/${filename}`;
 
-      const result = await fetch(lfspath);
+      // const result = await fetch(asetpath);
 
-      if (result.ok) {
-        return result.blob();
-      }
+      // if (result.ok) {
+      //   return result.blob();
+      // }
+      console.log("api/browser/fetchAsset: not implemented");
     }
 
-    let content = await this.fetchFile(`lfs/${filename}`);
+    // TODO: get file from assetEndpoint
+    // let content = await this.fetchFile(`${remoteEndpoint}/${filename}`);
 
-    const contentBuf = Buffer.from(content);
+    // const contentBuf = Buffer.from(content);
 
-    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+    // const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
-    if (pointsToLFS(contentBuf)) {
-      const remote = await this.getRemote();
+    // if (pointsToLFS(contentBuf)) {
+    //   const remote = await this.getRemote();
 
-      const pointer = await readPointer({ dir: this.dir, content: contentBuf });
+    //   const pointer = await readPointer({ dir: this.dir, content: contentBuf });
 
-      const http = await import('isomorphic-git/http/web/index.cjs');
+    //   const http = await import('isomorphic-git/http/web/index.cjs');
 
-      content = await downloadBlobFromPointer(
-        fs,
-        {
-          http,
-          url: remote,
-          auth: {
-            username: token,
-            password: token,
-          },
-        },
-        pointer,
-      );
-    }
+    //   content = await downloadBlobFromPointer(
+    //     fs,
+    //     {
+    //       http,
+    //       url: remote,
+    //       auth: {
+    //         username: token,
+    //         password: token,
+    //       },
+    //     },
+    //     pointer,
+    //   );
+    // }
 
-    return content;
+    // return content;
+    console.log("api/browser/fetchAsset: not implemented");
   }
 
   async writeFeed(xml) {
@@ -757,17 +778,5 @@ export class BrowserAPI {
       },
       pointerInfo,
     );
-  }
-
-  static async uploadBlobsLFS(url, token, files) {
-    const { uploadBlobs } = await import('@fetsorn/isogit-lfs');
-
-    await uploadBlobs({
-      url,
-      auth: {
-        username: token,
-        password: token,
-      },
-    }, files);
   }
 }

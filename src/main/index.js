@@ -214,11 +214,11 @@ app
 
     ipcMain.handle(
       'uploadBlobsLFS',
-      async (_event, dir, remote, token, files) => API.uploadBlobsLFS(
+      async (_event, dir, remote, token, files) => (new API(dir).uploadBlobsLFS(
         remote,
         token,
         files,
-      ),
+      )),
     );
 
     ipcMain.handle('zip', async (_event, dir) => (new API(dir)).zip());

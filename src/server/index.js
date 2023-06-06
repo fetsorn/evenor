@@ -63,24 +63,25 @@ router.put('/api/*', async (_, res) => {
   res.end();
 });
 
-// on POST `/upload` write file to lfs/
+// TODO on POST `/upload` write file to remoteEndpoint/
 router.post('/upload', async (req, res) => {
-  const form = formidable({});
+  // const form = formidable({});
 
-  form.keepExtensions = true;
+  // form.keepExtensions = true;
 
-  form.parse(req, async (err, fields, files) => {
-    if (err) {
-      console.log(err);
-      // next(err);
-      return;
-    }
-    const { file } = files;
+  // form.parse(req, async (err, fields, files) => {
+  //   if (err) {
+  //     console.log(err);
+  //     // next(err);
+  //     return;
+  //   }
+  //   const { file } = files;
 
-    const [filehash, filename] = await api.uploadFile(file);
+  //   const [filehash, filename] = await api.uploadFile(file);
 
-    res.send([filehash, filename]);
-  });
+  //   res.send([filehash, filename]);
+  // });
+  console.log("server/upload: not implemented");
 });
 
 // on `/` serve a react app with hash router

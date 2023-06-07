@@ -272,7 +272,7 @@ export function EditInput({
                 X
               </button>
 
-              <InputDate
+              <InputText
                 {...{
                   branch,
                   value,

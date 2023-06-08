@@ -54,7 +54,6 @@ export function ProfileSingleView() {
   const title = formatDate(group);
 
   const schema = isSettings ? schemaRoot : schemaRepo;
-  console.log(entry);
   return (
     <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
       {entry && (
@@ -87,7 +86,7 @@ export function ProfileSingleView() {
             </div>
 
             {repoUUID === 'root' && __BUILD_MODE__ !== 'server' && (
-              <button type="button" title={t('line.button.edit')} onClick={() => setRepoName(entry.reponame)}>{t('line.button.open')}</button>
+              <button type="button" title={t('line.button.open')} onClick={() => setRepoName(entry.reponame)}>{t('line.button.open')}</button>
             )}
             <ViewField
               {...{

@@ -131,9 +131,10 @@ export class ElectronAPI {
   }
 
   async putAsset(filename, buffer) {
-    // TODO: write buffer to assetEndpoint/filename, if assetEnpoint is writeable
-    // this.writeFile(path.join(undefined, filename), buffer);
-    console.log("api/electron/putAsset: not implemented");
+    // write buffer to assetEndpoint/filename
+    const assetEndpoint = path.join(this.dir, lfsDir);
+
+    this.writeFile(assetEndpoint, buffer);
   }
 
   async uploadFile() {
@@ -317,22 +318,22 @@ export class ElectronAPI {
             filepath,
           });
         } else {
-          // TODO: stage files in remoteEndpoint as LFS pointers
-          // if (filepath.startsWith(remoteEndpoint)) {
-          //   const { addLFS } = await import('./lfs.mjs');
+          // stage files in remoteEndpoint as LFS pointers
+          if (filepath.startsWith(lfsDir)) {
+            const { addLFS } = await import('./lfs.mjs');
 
-          //   await addLFS({
-          //     fs,
-          //     dir,
-          //     filepath,
-          //   });
-          // } else {
+            await addLFS({
+              fs,
+              dir,
+              filepath,
+            });
+          } else {
             await git.add({
               fs,
               dir,
               filepath,
             });
-          // }
+          }
 
           if (HEADStatus === 1) {
             status = 'modified';
@@ -361,43 +362,41 @@ export class ElectronAPI {
   // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
   async uploadBlobsLFS(remote, files) {
-    // TODO
-    // const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    // const [remoteUrl, remoteToken] = await this.getRemote(remote);
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
-    // let assets;
+    let assets;
 
+    // if no files are specified
     // for every file in remoteEndpoint/
     // if file is not LFS pointer,
     // upload file to remote
-    // if (files === undefined) {
-    //   const filenames = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}/`);
+    if (files === undefined) {
+      const filenames = await fs.promises.readdir(`${this.dir}/${lfsDir}/`);
 
-    //   assets = (await Promise.all(
-    //     filenames.map(async (filename) => {
-    //       const file = await this.fetchFile(path.join(remoteEndpoint, filename));
+      assets = (await Promise.all(
+        filenames.map(async (filename) => {
+          const file = await this.fetchFile(path.join(lfsDir, filename));
 
-    //       if (!pointsToLFS(file)) {
-    //         return file;
-    //       }
+          if (!pointsToLFS(file)) {
+            return file;
+          }
 
-    //       return undefined;
-    //     }),
-    //   )).filter(Boolean);
-    // } else {
-    //   assets = files;
-    // }
+          return undefined;
+        }),
+      )).filter(Boolean);
+    } else {
+      assets = files;
+    }
 
-    // await uploadBlobs({
-    //   url: remoteUrl,
-    //   auth: {
-    //     username: remoteToken,
-    //     password: remoteToken,
-    //   },
-    // }, assets);
-
-    console.log("api/electron/uploadBlobsLFS: not implemented");
+    await uploadBlobs({
+      url: remoteUrl,
+      auth: {
+        username: remoteToken,
+        password: remoteToken,
+      },
+    }, assets);
   }
 
   async push(remote) {
@@ -476,40 +475,39 @@ export class ElectronAPI {
       await git.init({ fs, dir, defaultBranch: 'main' });
     }
 
-    // TODO: ignore remoteEndpoint
-    // await fs.promises.writeFile(
-    //   `${dir}/.gitattributes`,
-    //   '${remoteEndpoint}/** filter=lfs diff=lfs merge=lfs -text\n',
-    //   'utf8',
-    // );
+    await fs.promises.writeFile(
+      `${dir}/.gitattributes`,
+      '${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n',
+      'utf8',
+    );
 
-    // await git.setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.clean',
-    //   value: 'git-lfs clean -- %f',
-    // });
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.clean',
+      value: 'git-lfs clean -- %f',
+    });
 
-    // await git.setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.smudge',
-    //   value: 'git-lfs smudge -- %f',
-    // });
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.smudge',
+      value: 'git-lfs smudge -- %f',
+    });
 
-    // await git.setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.process',
-    //   value: 'git-lfs filter-process',
-    // });
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.process',
+      value: 'git-lfs filter-process',
+    });
 
-    // await git.setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.required',
-    //   value: true,
-    // });
+    await git.setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.required',
+      value: true,
+    });
 
     await fs.promises.writeFile(
       path.join(dir, 'metadir.json'),
@@ -692,22 +690,6 @@ export class ElectronAPI {
         await fs.promises.writeFile(file.filePath.toString(), content);
       }
     });
-  }
-
-  async populateLFS(remote) {
-    try {
-      // TODO: list all files in assetEndpoint
-      // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
-
-      // try to fetch every asset
-      // for (const filename of files) {
-      //   await this.fetchAsset(filename);
-      // }
-      console.log("api/electron/populateLFS: not implemented");
-    } catch(e) {
-      // do nothing
-      console.log("api/electron/populateLFS", e)
-    }
   }
 
   // returns blob url

@@ -42,23 +42,23 @@ export function Remote({ baseEntry, branchEntry }) {
   async function onPullRepo() {
     await api.commit();
 
-    await api.pull(branchEntry.remote_url, branchEntry.remote_token);
+    await api.pull(branchEntry.remote_name);
   }
 
   async function onPushRepo() {
     await api.commit();
 
-    await api.push(branchEntry.remote_url, branchEntry.remote_token);
+    await api.push(branchEntry.remote_name);
   }
 
   async function onRemoteSync() {
     await api.commit();
 
-    await api.addRemote(branchEntry.remote_url);
+    await api.addRemote(branchEntry.remote_name, branchEntry.remote_url, branchEntry.remote_token);
 
-    await api.pull(branchEntry.remote_url, branchEntry.remote_token);
+    await api.pull(branchEntry.remote_name);
 
-    await api.push(branchEntry.remote_url, branchEntry.remote_token);
+    await api.push(branchEntry.remote_name);
   }
 
   return (

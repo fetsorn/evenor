@@ -229,8 +229,7 @@ export function RSS({ baseEntry, branchEntry }) {
     // manually here first to get download actions for the template
     if (files.filter(Boolean).length > 0) {
       await rssAPI.uploadBlobsLFS(
-        branchEntry.rss_tag_target,
-        branchEntry.rss_tag_token,
+        'origin',
         files.filter(Boolean),
       );
     }
@@ -260,7 +259,7 @@ export function RSS({ baseEntry, branchEntry }) {
 
     await rssAPI.commit();
 
-    await rssAPI.push(branchEntry.rss_tag_target, branchEntry.rss_tag_token);
+    await rssAPI.push('origin');
   }
 
   return (

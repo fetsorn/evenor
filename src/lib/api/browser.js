@@ -2,6 +2,8 @@ import LightningFS from '@isomorphic-git/lightning-fs';
 
 const fs = new LightningFS('fs');
 
+const lfsDir = "lfs";
+
 async function runWorker(readFile, searchParams) {
   const worker = new Worker(new URL('./browser.worker', import.meta.url));
 
@@ -168,9 +170,10 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    // TODO: write buffer to assetEndpoint/filename, if assetEnpoint is writeable
-    // this.writeFile(path.join(undefined, filename), buffer);
-    console.log("api/browser/putAsset: not implemented");
+    // write buffer to assetEndpoint/filename
+    const assetEndpoint = path.join(this.dir, lfsDir);
+
+    this.writeFile(assetEndpoint, buffer);
   }
 
   async uploadFile(file) {
@@ -367,22 +370,22 @@ export class BrowserAPI {
             filepath,
           });
         } else {
-          // TODO: stage files in remoteEndpoint as LFS pointers
-          // if (filepath.startsWith(remoteEndpoint)) {
-          //   const { addLFS } = await import('./lfs.mjs');
+          // stage files in remoteEndpoint as LFS pointers
+          if (filepath.startsWith(lfsDir)) {
+            const { addLFS } = await import('./lfs.mjs');
 
-          //   await addLFS({
-          //     fs,
-          //     dir,
-          //     filepath,
-          //   });
-          // } else {
-          await add({
-            fs,
-            dir,
-            filepath,
-          });
-          // }
+            await addLFS({
+              fs,
+              dir,
+              filepath,
+            });
+          } else {
+            await add({
+              fs,
+              dir,
+              filepath,
+            });
+          }
 
           if (HEADStatus === 1) {
             status = 'modified';
@@ -411,43 +414,41 @@ export class BrowserAPI {
   // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
   async uploadBlobsLFS(remote, files) {
-    // TODO
-    // const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    // const [remoteUrl, remoteToken] = await this.getRemote(remote);
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
-    // let assets;
+    let assets;
 
     // if no files are specified
     // for every file in remoteEndpoint/
     // if file is not LFS pointer,
     // upload file to remote
-    // if (files === undefined) {
-    //   const filenames = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}/`);
+    if (files === undefined) {
+      const filenames = await fs.promises.readdir(`${this.dir}/${lfsDir}/`);
 
-    //   assets = (await Promise.all(
-    //     filenames.map(async (filename) => {
-    //       const file = await this.fetchFile(`${remoteEndpoint}/${filename}`);
+      assets = (await Promise.all(
+        filenames.map(async (filename) => {
+          const file = await this.fetchFile(`${lfsDir}/${filename}`);
 
-    //       if (!pointsToLFS(file)) {
-    //         return file;
-    //       }
+          if (!pointsToLFS(file)) {
+            return file;
+          }
 
-    //       return undefined;
-    //     }),
-    //   )).filter(Boolean);
-    // } else {
-    //   assets = files;
-    // }
+          return undefined;
+        }),
+      )).filter(Boolean);
+    } else {
+      assets = files;
+    }
 
-    // await uploadBlobs({
-    //   url: remoteUrl,
-    //   auth: {
-    //     username: remoteToken,
-    //     password: remoteToken,
-    //   },
-    // }, assets);
-    console.log("api/browser/uploadBlobsLFS: not implemented");
+    await uploadBlobs({
+      url: remoteUrl,
+      auth: {
+        username: remoteToken,
+        password: remoteToken,
+      },
+    }, assets);
   }
 
   async push(remote) {
@@ -532,40 +533,39 @@ export class BrowserAPI {
       await init({ fs, dir });
     }
 
-    // TODO: ignore remoteEndpoint
-    // await fs.promises.writeFile(
-    //   `${dir}/.gitattributes`,
-    //   '${remoteEndpoint}/** filter=lfs diff=lfs merge=lfs -text\n',
-    //   'utf8',
-    // );
+    await fs.promises.writeFile(
+      `${dir}/.gitattributes`,
+      '${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n',
+      'utf8',
+    );
 
-    // await setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.clean',
-    //   value: 'git-lfs clean -- %f',
-    // });
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.clean',
+      value: 'git-lfs clean -- %f',
+    });
 
-    // await setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.smudge',
-    //   value: 'git-lfs smudge -- %f',
-    // });
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.smudge',
+      value: 'git-lfs smudge -- %f',
+    });
 
-    // await setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.process',
-    //   value: 'git-lfs filter-process',
-    // });
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.process',
+      value: 'git-lfs filter-process',
+    });
 
-    // await setConfig({
-    //   fs,
-    //   dir,
-    //   path: 'filter.lfs.required',
-    //   value: true,
-    // });
+    await setConfig({
+      fs,
+      dir,
+      path: 'filter.lfs.required',
+      value: true,
+    });
 
     await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
 
@@ -714,22 +714,6 @@ export class BrowserAPI {
     });
   }
 
-  async populateLFS(remote) {
-    try {
-      // TODO: list all files in assetEndpoint
-      // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
-
-      // try to fetch every asset
-      // for (const filename of files) {
-      //   await this.fetchAsset(filename);
-      // }
-      console.log("api/browser/populateLFS: not implemented");
-    } catch(e) {
-      // do nothing
-      console.log("api/browser/populateLFS", e)
-    }
-  }
-
   // returns blob url
   async fetchAsset(filename) {
     let assetEndpoint;
@@ -767,8 +751,6 @@ export class BrowserAPI {
     } catch(e) {
       // do nothing
     }
-
-    const lfsDir = "lfs";
 
     assetEndpoint = path.join(this.dir, lfsDir);
 

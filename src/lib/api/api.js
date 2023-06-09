@@ -13,17 +13,6 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
-  async populateLFS(filename) {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case 'electron':
-        return window.electron.populateLFS(this.uuid, filename);
-
-      default:
-        return this.#browser.populateLFS(filename);
-    }
-  }
-
   async fetchAsset(filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {

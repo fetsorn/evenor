@@ -6,6 +6,8 @@ import git from 'isomorphic-git';
 import { CSVS } from '@fetsorn/csvs-js';
 import crypto from 'crypto';
 
+const lfsDir = "lfs";
+
 // TODO: add WASM fallback
 async function grepCallback(contentFile, patternFile, isInverse) {
   // console.log("grepCallback")
@@ -126,20 +128,18 @@ export class ServerAPI {
 
     const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-    // TODO: write file to assetEndpoint, if assetEnpoint is writeable
-    // const uploadDir = path.join(this.dir, undefined);
+    const uploadDir = path.join(this.dir, lfsDir);
 
-    // if (!fs.existsSync(uploadDir)) {
-      // fs.mkdirSync(uploadDir);
-      // console.log(`Directory ${root} is created.`);
-    // } else {
-      // console.log(`Directory ${root} already exists.`);
-    // }
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir);
+      console.log(`Directory ${root} is created.`);
+    } else {
+      console.log(`Directory ${root} already exists.`);
+    }
 
-    // const uploadPath = path.join(uploadDir, hashHexString);
+    const uploadPath = path.join(uploadDir, hashHexString);
 
-    // await fs.promises.rename(file.filepath, uploadPath);
-    console.log("api/server/uploadFile: not implemented");
+    await fs.promises.rename(file.filepath, uploadPath);
 
     return [hashHexString, file.originalFilename];
   }
@@ -200,22 +200,22 @@ export class ServerAPI {
             filepath,
           });
         } else {
-          // TODO: stage files in remoteEndpoint as LFS pointers
-          // if (filepath.startsWith(remoteEndpoint)) {
-          //   const { addLFS } = await import('./lfs.mjs');
+          // stage files in remoteEndpoint as LFS pointers
+          if (filepath.startsWith(lfsDir)) {
+            const { addLFS } = await import('./lfs.mjs');
 
-          //   await addLFS({
-          //     fs,
-          //     dir,
-          //     filepath,
-          //   });
-          // } else {
+            await addLFS({
+              fs,
+              dir,
+              filepath,
+            });
+          } else {
             await git.add({
               fs,
               dir,
               filepath,
             });
-          // }
+          }
 
           if (HEADStatus === 1) {
             status = 'modified';

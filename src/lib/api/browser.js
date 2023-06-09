@@ -257,41 +257,54 @@ export class BrowserAPI {
     return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
-  async clone(remote, token, name) {
+  async clone(remoteUrl, remoteToken, name) {
     try {
       await fs.promises.stat(this.dir);
 
       throw Error('could not clone, directory exists');
     } catch (e) {
-      await this.tbn2(remote, token);
-
-      if (name) {
-        await this.symlink(name);
-      }
+      // do nothing
     }
-  }
-
-  async tbn2(url, token) {
-    const http = await import('isomorphic-git/http/web/index.cjs');
 
     const options = {
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       singleBranch: true,
-      // depth: 1,
     };
 
-    if (token) {
+    if (remoteToken) {
       options.onAuth = () => ({
-        username: token,
+        username: remoteToken,
       });
     }
 
-    const { clone } = await import('isomorphic-git');
+    const {
+      clone, setConfig
+    } = await import('isomorphic-git');
 
     await clone(options);
+
+    await setConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.origin.url`,
+      value: remoteUrl
+    });
+
+    if (remoteToken) {
+      await setConfig({
+        fs,
+        dir: this.dir,
+        path: `remote.origin.token`,
+        value: remoteToken
+      });
+    }
+
+    if (name) {
+      await this.symlink(name);
+    }
   }
 
   async commit() {
@@ -364,11 +377,11 @@ export class BrowserAPI {
           //     filepath,
           //   });
           // } else {
-            await add({
-              fs,
-              dir,
-              filepath,
-            });
+          await add({
+            fs,
+            dir,
+            filepath,
+          });
           // }
 
           if (HEADStatus === 1) {
@@ -397,13 +410,14 @@ export class BrowserAPI {
 
   // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
-  async uploadBlobsLFS(url, token, files) {
-
-    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
-
-    let assets;
-
+  async uploadBlobsLFS(remote, files) {
     // TODO
+    // const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+
+    // const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
+    // let assets;
+
     // if no files are specified
     // for every file in remoteEndpoint/
     // if file is not LFS pointer,
@@ -427,18 +441,20 @@ export class BrowserAPI {
     // }
 
     // await uploadBlobs({
-    //   url,
+    //   url: remoteUrl,
     //   auth: {
-    //     username: token,
-    //     password: token,
+    //     username: remoteToken,
+    //     password: remoteToken,
     //   },
     // }, assets);
     console.log("api/browser/uploadBlobsLFS: not implemented");
   }
 
-  async push(url, token) {
+  async push(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     try {
-      await this.uploadBlobsLFS(url, token);
+      await this.uploadBlobsLFS(remote);
     } catch (e) {
       console.log('api/browser/uploadBlobsLFS failed', e);
     }
@@ -452,14 +468,16 @@ export class BrowserAPI {
       http,
       force: true,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
 
-  async pull(url, token) {
+  async pull(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     const { fastForward } = await import('isomorphic-git');
@@ -470,9 +488,9 @@ export class BrowserAPI {
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
@@ -634,8 +652,8 @@ export class BrowserAPI {
     return index;
   }
 
-  async downloadAsset(filename, filehash, token) {
-    const content = this.fetchAsset(filehash, token);
+  async downloadAsset(filename, filehash) {
+    const content = this.fetchAsset(filehash);
 
     const { saveAs } = await import('file-saver');
 
@@ -676,14 +694,14 @@ export class BrowserAPI {
     });
   }
 
-  async cloneView(remote, token) {
+  async cloneView(remoteUrl, remoteToken) {
     try {
       await this.rimraf(this.dir);
     } catch {
       // do nothing
     }
 
-    await this.clone(remote, token);
+    await this.clone(remoteUrl, remoteToken);
   }
 
   async getRemote() {
@@ -696,14 +714,14 @@ export class BrowserAPI {
     });
   }
 
-  async populateLFS(remote, token) {
+  async populateLFS(remote) {
     try {
       // TODO: list all files in assetEndpoint
       // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
 
       // try to fetch every asset
       // for (const filename of files) {
-      //   await this.fetchAsset(filename, token);
+      //   await this.fetchAsset(filename);
       // }
       console.log("api/browser/populateLFS: not implemented");
     } catch(e) {
@@ -712,72 +730,165 @@ export class BrowserAPI {
     }
   }
 
-  // returns Blob
-  async fetchAsset(filename, token) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
-      // TODO: get file from assetEndpoint
-      // const assetpath = `/api/${remoteEndpoint}/${filename}`;
+  // returns blob url
+  async fetchAsset(filename) {
+    let assetEndpoint;
 
-      // const result = await fetch(asetpath);
+    let content;
 
-      // if (result.ok) {
-      //   return result.blob();
-      // }
-      console.log("api/browser/fetchAsset: not implemented");
+    try {
+      const {
+        getConfig
+      } = await import('isomorphic-git');
+
+      assetEndpoint = await getConfig({
+        fs,
+        dir: this.dir,
+        path: 'asset.path',
+      });
+
+      const assetPath = path.join(assetEndpoint, filename);
+
+      // if URL, try to fetch
+      try {
+        new URL(assetPath);
+
+        content = await fetch(assetPath);
+
+        return content;
+      } catch(e) {
+        // do nothing
+      }
+
+      // otherwise try to read from fs
+      content = await fs.readFileSync(assetPath);
+
+      return content
+    } catch(e) {
+      // do nothing
     }
 
-    // TODO: get file from assetEndpoint
-    // let content = await this.fetchFile(`${remoteEndpoint}/${filename}`);
+    const lfsDir = "lfs";
 
-    // const contentBuf = Buffer.from(content);
+    assetEndpoint = path.join(this.dir, lfsDir);
 
-    // const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+    const assetPath = path.join(assetEndpoint, filename);
 
-    // if (pointsToLFS(contentBuf)) {
-    //   const remote = await this.getRemote();
+    content = await fs.readFileSync(assetPath);
 
-    //   const pointer = await readPointer({ dir: this.dir, content: contentBuf });
+    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
-    //   const http = await import('isomorphic-git/http/web/index.cjs');
+    if (pointsToLFS(content)) {
+      const pointer = await readPointer({ dir: this.dir, content });
 
-    //   content = await downloadBlobFromPointer(
-    //     fs,
-    //     {
-    //       http,
-    //       url: remote,
-    //       auth: {
-    //         username: token,
-    //         password: token,
-    //       },
-    //     },
-    //     pointer,
-    //   );
-    // }
+      const remotes = await this.listRemotes();
+      // loop over remotes trying to resolve LFS
+      for (const remote of remotes) {
+        const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
-    // return content;
-    console.log("api/browser/fetchAsset: not implemented");
+        try {
+          content = await downloadBlobFromPointer(
+            fs,
+            {
+              http,
+              url: remoteUrl,
+              auth: {
+                username: remoteToken,
+                password: remoteToken,
+              },
+            },
+            pointer,
+          );
+
+          return content;
+        } catch(e) {
+          // do nothing
+        }
+      }
+    }
+
+    return content;
   }
 
   async writeFeed(xml) {
     await this.writeFile('feed.xml', xml);
   }
 
-  static async downloadUrlFromPointer(url, token, pointerInfo) {
-    const http = await import('isomorphic-git/http/web/index.cjs');
+  async listRemotes() {
+    const { listRemotes } = await import('isomorphic-git');
 
-    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+    const remotes = await listRemotes({
+      fs,
+      dir: this.dir,
+    });
 
-    return downloadUrlFromPointer(
-      {
-        http,
-        url,
-        auth: {
-          username: token,
-          password: token,
-        },
-      },
-      pointerInfo,
-    );
+    return remotes.map((r) => r.remote)
+  }
+
+  async addRemote(remoteName, remoteUrl, remoteToken) {
+    const {
+      addRemote, setConfig
+    } = await import('isomorphic-git');
+
+    await addRemote({
+      fs,
+      dir: this.dir,
+      remote: remoteName,
+      url: remoteUrl
+    })
+
+    if (remoteToken) {
+      await setConfig({
+        fs,
+        dir: this.dir,
+        path: `remote.${remoteName}.token`,
+        value: remoteToken
+      });
+    }
+  }
+
+  async getRemote(remoteName) {
+    const {
+      getConfig
+    } = await import('isomorphic-git');
+
+    const remoteUrl = await getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.url`,
+    });
+
+    const remoteToken = await getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.token`,
+    });
+
+    return [remoteUrl, remoteToken]
+  }
+
+  async addAssetPath(assetPath) {
+    const {
+      setConfig
+    } = await import('isomorphic-git');
+
+    await setConfig({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+      value: assetPath,
+    });
+  }
+
+  async listAssetPaths() {
+    const {
+      getConfigAll
+    } = await import('isomorphic-git');
+
+    await getConfigAll({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+    });
   }
 }

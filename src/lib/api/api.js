@@ -13,36 +13,36 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
-  async populateLFS(filename, token) {
+  async populateLFS(filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.populateLFS(this.uuid, filename, token);
+        return window.electron.populateLFS(this.uuid, filename);
 
       default:
-        return this.#browser.populateLFS(filename, token);
+        return this.#browser.populateLFS(filename);
     }
   }
 
-  async fetchAsset(filename, token) {
+  async fetchAsset(filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.fetchAsset(this.uuid, filename, token);
+        return window.electron.fetchAsset(this.uuid, filename);
 
       default:
-        return this.#browser.fetchAsset(filename, token);
+        return this.#browser.fetchAsset(filename);
     }
   }
 
-  async downloadAsset(filename, filehash, token) {
+  async downloadAsset(filename, filehash) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.downloadAsset(this.uuid, filename, filehash, token);
+        return window.electron.downloadAsset(this.uuid, filename, filehash);
 
       default:
-        return this.#browser.downloadAsset(filename, filehash, token);
+        return this.#browser.downloadAsset(filename, filehash);
     }
   }
 
@@ -135,36 +135,36 @@ export class API {
   }
 
   // fresh clone from url to uuid dir, symlink to name
-  async clone(url, token, name) {
+  async clone(remoteUrl, remoteToken, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.clone(this.uuid, url, token, name);
+        return window.electron.clone(this.uuid, remoteUrl, remoteToken, name);
 
       default:
-        return this.#browser.clone(url, token, name);
+        return this.#browser.clone(remoteUrl, remoteToken, name);
     }
   }
 
-  async push(url, token) {
+  async push(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.push(this.uuid, url, token);
+        return window.electron.push(this.uuid, remote);
 
       default:
-        return this.#browser.push(url, token);
+        return this.#browser.push(remote);
     }
   }
 
-  async pull(url, token) {
+  async pull(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.pull(this.uuid, url, token);
+        return window.electron.pull(this.uuid, remote);
 
       default:
-        return this.#browser.pull(url, token);
+        return this.#browser.pull(remote);
     }
   }
 
@@ -201,14 +201,14 @@ export class API {
     }
   }
 
-  async cloneView(remote, token) {
+  async cloneView(remoteUrl, remoteToken) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.cloneView(this.uuid, remote, token);
+        return window.electron.cloneView(this.uuid, remoteUrl, remoteToken);
 
       default:
-        return this.#browser.cloneView(remote, token);
+        return this.#browser.cloneView(remoteUrl, remoteToken);
     }
   }
 
@@ -223,26 +223,14 @@ export class API {
     }
   }
 
-  // wrapper of static method, needs different http client in node and web
-  async downloadUrlFromPointer(url, token, pointerInfo) {
+  async uploadBlobsLFS(remote, files) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.downloadUrlFromPointer(this.uuid, url, token, pointerInfo);
+        return window.electron.uploadBlobsLFS(this.uuid, remote, files);
 
       default:
-        return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);
-    }
-  }
-
-  async uploadBlobsLFS(url, token, files) {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case 'electron':
-        return window.electron.uploadBlobsLFS(this.uuid, url, token, files);
-
-      default:
-        return this.#browser.uploadBlobsLFS(url, token, files);
+        return this.#browser.uploadBlobsLFS(remote, files);
     }
   }
 
@@ -254,6 +242,61 @@ export class API {
 
       default:
         return BrowserAPI.zip();
+    }
+  }
+
+  async listRemotes() {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.listRemotes(this.uuid);
+
+      default:
+        return this.#browser.listRemotes();
+    }
+  }
+
+  async addRemote(remoteName, remoteUrl, remoteToken) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.addRemote(this.uuid, remoteName, remoteUrl, remoteToken);
+
+      default:
+        return this.#browser.addRemote(remoteName, remoteUrl, remoteToken);
+    }
+  }
+
+  async getRemote(remote) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.getRemote(this.uuid, remote);
+
+      default:
+        return this.#browser.getRemote(remote);
+    }
+  }
+
+  async addAssetPath(assetPath) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.addAssetPath(this.uuid, assetPath);
+
+      default:
+        return this.#browser.addAssetPath(assetPath);
+    }
+  }
+
+  async listAssetPaths() {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.listAssetPaths(this.uuid);
+
+      default:
+        return this.#browser.listAssetPaths();
     }
   }
 

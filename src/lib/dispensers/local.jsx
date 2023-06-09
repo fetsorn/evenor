@@ -9,7 +9,7 @@ export const schemaLocal = {
       ru: 'Тег локального архива',
     },
   },
-  local_tag_target: {
+  local_path: {
     trunk: 'local_tag',
     type: 'string',
     task: 'directory',
@@ -21,5 +21,6 @@ export const schemaLocal = {
 };
 
 export function Local({ branchEntry }) {
-  return (<p>{branchEntry.local_tag_target}</p>);
+  // TODO: add path picker
+  return (<p>{branchEntry.local_path}</p>);
 }

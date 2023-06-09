@@ -11,6 +11,8 @@ const home = app.getPath('home');
 
 const appdir = ".evenor";
 
+const lfsDir = "lfs";
+
 let readWorker;
 
 // we run CSVS functions in workers to offload the main thread
@@ -214,40 +216,58 @@ export class ElectronAPI {
     return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
-  async clone(remote, token, name) {
+  async clone(remoteUrl, remoteToken, name) {
     try {
       await fs.promises.access(this.dir);
 
       throw Error('could not clone, directory exists');
     } catch (e) {
-      await this.tbn2(remote, token);
-
-      if (name) {
-        await this.symlink(name);
-      }
+      // do nothing
     }
-  }
 
-  async tbn2(
-    remote,
-    token,
-  ) {
     const options = {
       fs,
       http,
       dir: this.dir,
-      url: remote,
+      url: remoteUrl,
       singleBranch: true,
-      // depth: 1,
     };
 
-    if (token) {
+    if (remoteToken) {
       options.onAuth = () => ({
-        username: token,
+        username: remoteToken,
       });
     }
 
     await git.clone(options);
+
+    await git.setConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.origin.url`,
+      value: remoteUrl
+    });
+
+    await git.setConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.origin.token`,
+      value: remoteToken
+    });
+
+    if (name) {
+      await this.symlink(name);
+    }
+  }
+
+  async cloneView(remoteUrl, remoteToken) {
+    try {
+      await this.rimraf(this.dir);
+    } catch {
+      // do nothing
+    }
+
+    await this.clone(remoteUrl, remoteToken);
   }
 
   async commit() {
@@ -340,12 +360,14 @@ export class ElectronAPI {
 
   // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
-  async uploadBlobsLFS(url, token, files) {
-    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
-
-    let assets;
-
+  async uploadBlobsLFS(remote, files) {
     // TODO
+    // const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+
+    // const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
+    // let assets;
+
     // for every file in remoteEndpoint/
     // if file is not LFS pointer,
     // upload file to remote
@@ -368,19 +390,21 @@ export class ElectronAPI {
     // }
 
     // await uploadBlobs({
-    //   url,
+    //   url: remoteUrl,
     //   auth: {
-    //     username: token,
-    //     password: token,
+    //     username: remoteToken,
+    //     password: remoteToken,
     //   },
     // }, assets);
 
     console.log("api/electron/uploadBlobsLFS: not implemented");
   }
 
-  async push(url, token) {
+  async push(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     try {
-      await this.uploadBlobsLFS(url, token);
+      await this.uploadBlobsLFS(remote);
     } catch (e) {
       console.log('uploadBlobs failed', e);
     }
@@ -390,23 +414,25 @@ export class ElectronAPI {
       http,
       force: true,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
 
-  async pull(url, token) {
+  async pull(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     await git.fastForward({
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
@@ -605,8 +631,8 @@ export class ElectronAPI {
     return index;
   }
 
-  async downloadAsset(filename, filehash, token) {
-    const content = await this.fetchAsset(filehash, token);
+  async downloadAsset(filename, filehash) {
+    const content = await this.fetchAsset(filehash);
 
     const file = await dialog.showSaveDialog({
       title: 'Select the File Path to save',
@@ -668,24 +694,14 @@ export class ElectronAPI {
     });
   }
 
-  async cloneView(remote, token) {
-    try {
-      await this.rimraf(this.dir);
-    } catch {
-      // do nothing
-    }
-
-    await this.clone(remote, token);
-  }
-
-  async populateLFS(remote, token) {
+  async populateLFS(remote) {
     try {
       // TODO: list all files in assetEndpoint
       // const files = await fs.promises.readdir(`${this.dir}/${remoteEndpoint}`);
 
       // try to fetch every asset
       // for (const filename of files) {
-      //   await this.fetchAsset(filename, token);
+      //   await this.fetchAsset(filename);
       // }
       console.log("api/electron/populateLFS: not implemented");
     } catch(e) {
@@ -694,54 +710,141 @@ export class ElectronAPI {
     }
   }
 
-
   // returns blob url
-  async fetchAsset(filename, token) {
-    // TODO: get file from assetEndpoint
-    // let content = await this.fetchFile(path.join(undefined, filename));
+  async fetchAsset(filename) {
+    let assetEndpoint;
 
-    // const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+    let content;
 
-    // if (pointsToLFS(content)) {
-    //   const remote = await this.getRemote();
+    try {
+      assetEndpoint = await git.getConfig({
+        fs,
+        dir: this.dir,
+        path: 'asset.path',
+      });
 
-    //   const pointer = await readPointer({ dir: this.dir, content });
+      const assetPath = path.join(assetEndpoint, filename);
 
-    //   content = await downloadBlobFromPointer(
-    //     fs,
-    //     {
-    //       http,
-    //       url: remote,
-    //       auth: {
-    //         username: token,
-    //         password: token,
-    //       },
-    //     },
-    //     pointer,
-    //   );
-    // }
+      // if URL, try to fetch
+      try {
+        new URL(assetPath);
 
-    // return content;
-    console.log("api/electron/fetchAsset: not implemented");
+        content = await fetch(assetPath);
+
+        return content;
+      } catch(e) {
+        // do nothing
+      }
+
+      // otherwise try to read from fs
+      content = await fs.readFileSync(assetPath);
+
+      return content
+    } catch(e) {
+      // do nothing
+    }
+
+    assetEndpoint = path.join(this.dir, lfsDir);
+
+    const assetPath = path.join(assetEndpoint, filename);
+
+    content = await fs.readFileSync(assetPath);
+
+    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+
+    if (pointsToLFS(content)) {
+      const pointer = await readPointer({ dir: this.dir, content });
+
+      const remotes = await this.listRemotes();
+      // loop over remotes trying to resolve LFS
+      for (const remote of remotes) {
+        const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
+        try {
+          content = await downloadBlobFromPointer(
+            fs,
+            {
+              http,
+              url: remoteUrl,
+              auth: {
+                username: remoteToken,
+                password: remoteToken,
+              },
+            },
+            pointer,
+          );
+
+          return content;
+        } catch(e) {
+          // do nothing
+        }
+      }
+    }
+
+    return content;
   }
 
   async writeFeed(xml) {
     await this.writeFile('feed.xml', xml);
   }
 
-  static async downloadUrlFromPointer(url, token, pointerInfo) {
-    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+  async listRemotes() {
+    const remotes = await git.listRemotes({
+      fs,
+      dir: this.dir,
+    });
 
-    return downloadUrlFromPointer(
-      {
-        http,
-        url,
-        auth: {
-          username: token,
-          password: token,
-        },
-      },
-      pointerInfo,
-    );
+    return remotes.map((r) => r.remote)
+  }
+
+  async addRemote(remoteName, remoteUrl, remoteToken) {
+    await git.addRemote({
+      fs,
+      dir: this.dir,
+      remote: remoteName,
+      url: remoteUrl
+    })
+
+    if (remoteToken) {
+      await git.setConfig({
+        fs,
+        dir: this.dir,
+        path: `remote.${remoteName}.token`,
+        value: remoteToken
+      });
+    }
+  }
+
+  async getRemote(remoteName) {
+    const remoteUrl = await git.getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.url`,
+    });
+
+    const remoteToken = await git.getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.token`,
+    });
+
+    return [remoteUrl, remoteToken]
+  }
+
+  async addAssetPath(assetPath) {
+    await git.setConfig({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+      value: assetPath,
+    });
+  }
+
+  async listAssetPaths() {
+    await git.getConfigAll({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+    });
   }
 }

@@ -225,6 +225,8 @@ export function RSS({ baseEntry, branchEntry }) {
 
     const sizes = files.map((file) => (file ? file.length : undefined));
 
+    // push will try to upload blobs, but we upload them
+    // manually here first to get download actions for the template
     if (files.filter(Boolean).length > 0) {
       await rssAPI.uploadBlobsLFS(
         branchEntry.rss_tag_target,
@@ -233,14 +235,14 @@ export function RSS({ baseEntry, branchEntry }) {
       );
     }
 
-    const { buildPointerInfo } = await import('@fetsorn/isogit-lfs');
+    const { buildPointerInfo, downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
 
     // download actions for rssAPI
     const downloadUrls = await Promise.all(files.map(async (file) => {
       if (file) {
         const pointerInfo = await buildPointerInfo(file);
 
-        return rssAPI.downloadUrlFromPointer(
+        return downloadUrlFromPointer(
           branchEntry.rss_tag_target,
           branchEntry.rss_tag_token,
           pointerInfo,

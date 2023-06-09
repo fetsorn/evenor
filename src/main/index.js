@@ -136,17 +136,22 @@ app
 
     ipcMain.handle(
       'clone',
-      async (_event, dir, remote, token, name) => (new API(dir)).clone(remote, token, name),
+      async (_event, dir, remoteUrl, remoteToken, name) => (new API(dir)).clone(remoteUrl, remoteToken, name),
+    );
+
+    ipcMain.handle(
+      'cloneView',
+      async (_event, dir, remoteUrl, remoteToken) => (new API(dir)).clone(remoteUrl, remoteToken),
     );
 
     ipcMain.handle(
       'push',
-      async (_event, dir, remote, token) => (new API(dir)).push(remote, token),
+      async (_event, dir, remote) => (new API(dir)).push(remote),
     );
 
     ipcMain.handle(
       'pull',
-      async (_event, dir, remote, token) => (new API(dir)).pull(remote, token),
+      async (_event, dir, remote) => (new API(dir)).pull(remote),
     );
 
     ipcMain.handle(
@@ -170,31 +175,25 @@ app
     );
 
     ipcMain.handle(
-      'cloneView',
-      async (_event, dir, remote, token) => (new API(dir)).clone(remote, token),
-    );
-
-    ipcMain.handle(
       'uploadFile',
       async (_event, dir) => (new API(dir)).uploadFile(),
     );
 
     ipcMain.handle(
       'fetchAsset',
-      async (_event, dir, filename, token) => (new API(dir)).fetchAsset(filename, token),
+      async (_event, dir, filename) => (new API(dir)).fetchAsset(filename),
     );
 
     ipcMain.handle(
       'populateLFS',
-      async (_event, dir, filename, token) => (new API(dir)).populateLFS(filename, token),
+      async (_event, dir, filename) => (new API(dir)).populateLFS(filename),
     );
 
     ipcMain.handle(
       'downloadAsset',
-      async (_event, dir, filename, filehash, token) => (new API(dir)).downloadAsset(
+      async (_event, dir, filename, filehash) => (new API(dir)).downloadAsset(
         filename,
         filehash,
-        token,
       ),
     );
 
@@ -209,24 +208,24 @@ app
     );
 
     ipcMain.handle(
-      'downloadUrlFromPointer',
-      async (_event, dir, remote, token, pointerInfo) => API.downloadUrlFromPointer(
-        remote,
-        token,
-        pointerInfo,
-      ),
-    );
-
-    ipcMain.handle(
       'uploadBlobsLFS',
-      async (_event, dir, remote, token, files) => (new API(dir).uploadBlobsLFS(
+      async (_event, dir, remote, files) => (new API(dir).uploadBlobsLFS(
         remote,
-        token,
         files,
       )),
     );
 
     ipcMain.handle('zip', async (_event, dir) => (new API(dir)).zip());
+
+    ipcMain.handle('listRemotes', async (_event, dir) => (new API(dir)).listRemotes());
+
+    ipcMain.handle('getRemote', async (_event, dir, remote) => (new API(dir)).getRemote(remote));
+
+    ipcMain.handle('addRemote', async (_event, dir, remoteName, remoteUrl, remoteToken) => (new API(dir)).addRemote(remoteName, remoteUrl, remoteToken));
+
+    ipcMain.handle('addAssetPath', async (_event, dir, assetPath) => (new API(dir)).addAssetPath(assetPath));
+
+    ipcMain.handle('listAssetPaths', async (_event, dir) => (new API(dir)).listAssetPaths());
 
     createWindow();
   })

@@ -55,22 +55,28 @@ export function AssetView({ schema, entry }) {
   const api = new API(repoUUID);
 
   async function onView() {
-    let token = '';
+    let contents;
 
-    // eslint-disable-next-line
-    if (isView) {
-      // TODO take token from .git config
-
-      // eslint-disable-next-line
-    } else if (__BUILD_MODE__ !== 'server') {
-      const { tags } = await api.getSettings();
-
-      const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
-
-      token = firstRemote?.remote_tag_token;
+    try {
+      contents = await api.fetchAsset(entry[filehashBranch]);
+    } catch(e) {
+      console.log(e)
     }
 
-    let contents = await api.fetchAsset(entry[filehashBranch], token);
+    // if no contents, try to fetch entry[filenameBranch]
+    if (contents === undefined) {
+      try {
+        contents = await api.fetchAsset(entry[filenameBranch])
+      } catch(e) {
+        console.log(e)
+      }
+    }
+
+    if (contents === undefined) {
+      console.log("assetView failed", entry);
+
+      return;
+    }
 
     // if cannot be shown in the browser, try to convert to something that can be shown
     if (!isIFrameable(entry[filenameBranch])) {
@@ -106,7 +112,7 @@ export function AssetView({ schema, entry }) {
   }
 
   if (!blobURL) {
-    if (entry[filehashBranch] && entry[filenameBranch]) {
+    if (entry[filehashBranch] || entry[filenameBranch]) {
       return (
         <div>
           <p>{entry[filehashBranch]}</p>

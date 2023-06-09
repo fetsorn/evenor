@@ -41,6 +41,56 @@ async function selectRepo(repoUUID, entry) {
     // do nothing
   }
 
+  try {
+    const remotes = await api.listRemotes();
+
+    for (const remoteName of remotes) {
+      const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
+
+      if (entryNew.tags === undefined) {
+        entryNew.tags = {
+          UUID: await digestMessage(await randomUUID()),
+          items: [],
+        }
+      }
+
+      if (entryNew.tags.items === undefined) {
+        entryNew.tags.items = [];
+      }
+
+      entryNew.tags.items.push({
+        _: "remote_tag",
+        UUID: await digestMessage(await randomUUID()),
+        remote_name: remoteName,
+        remote_url: remoteUrl,
+        remote_token: remoteToken,
+      })
+    }
+  }
+
+  try {
+    const assetPaths = await api.listAssetPaths();
+
+    for (const assetPath of assetPaths) {
+      if (entryNew.tags === undefined) {
+        entryNew.tags = {
+          UUID: await digestMessage(await randomUUID()),
+          items: [],
+        }
+      }
+
+      if (entryNew.tags.items === undefined) {
+        entryNew.tags.items = [];
+      }
+
+      entryNew.tags.items.push({
+        _: "local_tag",
+        UUID: await digestMessage(await randomUUID()),
+        local_path: assetPath,
+      })
+    }
+  }
+
   return entryNew;
 }
 
@@ -51,12 +101,12 @@ async function saveRepo(repoUUID, entry) {
 
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
-  // try to clone project to repo directory if entry has a remote tag
-  if (remoteTags.length === 1) {
+  for (const remoteTag of remoteTags) {
+    // try to clone project to repo directory if entry has a remote tag, will fail if repo exists
     try {
       const [remoteTag] = remoteTags;
 
-      await api.clone(remoteTag.remote_tag_target, remoteTag.remote_tag_token);
+      await api.clone(remoteTag.remote_url, remoteTag.remote_token);
 
       schema = await api.readSchema();
     } catch {
@@ -67,8 +117,31 @@ async function saveRepo(repoUUID, entry) {
   // create repo directory with a schema
   await api.ensure(schema, entry.reponame);
 
+  for (const remoteTag of remoteTags) {
+    try {
+      api.addRemote(remoteTag.remote_name, remoteTag.remote_url, remoteTag.remote_token);
+    } catch {
+      // do nothing
+    }
+  }
+
+  const localTags = entry.tags?.items?.filter((item) => item._ === 'local_tag') ?? [];
+
+  for (const local of localTags) {
+    try {
+      api.addAssetPath(localTag.local_path);
+    } catch {
+      // do nothing
+    }
+  }
+
   // omit to not save schema branch to csvs
   const { schema: omitSchema, ...entryNew } = entry;
+
+  // omit to not save remote tags to csvs
+  const filteredTags = entryNew.tags?.items?.filter((item) => item._ !== 'remote_tag' && item._ !== 'local_tag') ?? [];
+
+  entryNew.tags = filteredTags;
 
   return entryNew;
 }

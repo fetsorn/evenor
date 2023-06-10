@@ -66,6 +66,8 @@ async function selectRepo(repoUUID, entry) {
         remote_token: remoteToken,
       })
     }
+  } catch {
+    // do nothing
   }
 
   try {
@@ -89,6 +91,8 @@ async function selectRepo(repoUUID, entry) {
         local_path: assetPath,
       })
     }
+  } catch {
+    // do nothing
   }
 
   return entryNew;
@@ -138,10 +142,14 @@ async function saveRepo(repoUUID, entry) {
   // omit to not save schema branch to csvs
   const { schema: omitSchema, ...entryNew } = entry;
 
-  // omit to not save remote tags to csvs
-  const filteredTags = entryNew.tags?.items?.filter((item) => item._ !== 'remote_tag' && item._ !== 'local_tag') ?? [];
+  if (entryNew.tags?.items) {
+    // omit to not save remote tags to csvs
+    const filteredTags = entryNew.tags.items.filter(
+      (item) => item._ !== 'remote_tag' && item._ !== 'local_tag'
+    );
 
-  entryNew.tags = filteredTags;
+    entryNew.tags.items = filteredTags;
+  }
 
   return entryNew;
 }

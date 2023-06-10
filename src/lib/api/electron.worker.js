@@ -129,8 +129,8 @@ async function updateEntry() {
   const { entry } = workerData;
 
   const entryNew = await new CSVS({
-    readFile: (filepath) => readFile(filepath),
-    writeFile: (filepath, content) => writeFile(filepath, content),
+    readFile,
+    writeFile,
     randomUUID: crypto.randomUUID,
   }).update(entry);
 
@@ -141,8 +141,8 @@ async function deleteEntry() {
   const { entry } = workerData;
 
   await new CSVS({
-    readFile: (filepath) => readFile(filepath),
-    writeFile: (filepath, content) => writeFile(filepath, content),
+    readFile,
+    writeFile,
     randomUUID: crypto.randomUUID,
   }).delete(entry);
 

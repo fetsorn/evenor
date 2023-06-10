@@ -2,6 +2,8 @@ import LightningFS from '@isomorphic-git/lightning-fs';
 
 const fs = new LightningFS('fs');
 
+const pfs = fs.promises;
+
 const lfsDir = "lfs";
 
 async function runWorker(readFile, searchParams) {
@@ -59,7 +61,6 @@ async function runWorker(readFile, searchParams) {
 }
 
 export class BrowserAPI {
-  // UUID of repo in the store
   uuid;
 
   dir;
@@ -67,7 +68,18 @@ export class BrowserAPI {
   constructor(uuid) {
     this.uuid = uuid;
 
-    this.dir = `/store/${uuid}`;
+    try {
+      // find repo with uuid
+      const repoDir = (fs.readdirSync("/"))
+            .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
+
+      if (repoDir) {
+        this.dir = path.join("/", repoDir);
+      }
+    } catch(e) {
+      // do nothing
+      console.log(e)
+    }
   }
 
   async fetchFile(filepath) {
@@ -80,8 +92,6 @@ export class BrowserAPI {
     const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
 
     let root = '';
-
-    const pfs = fs.promises;
 
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
@@ -142,8 +152,6 @@ export class BrowserAPI {
     pathElements.pop();
 
     let root = '';
-
-    const pfs = fs.promises;
 
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
@@ -261,13 +269,11 @@ export class BrowserAPI {
   }
 
   async clone(remoteUrl, remoteToken, name) {
-    try {
-      await fs.promises.stat(this.dir);
-
-      throw Error('could not clone, directory exists');
-    } catch (e) {
-      // do nothing
+    if ((await pfs.readdir('/')).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+      throw Error(`could not clone, directory ${this.uuid} exists`);
     }
+
+    this.dir = `/${this.uuid}-${name}`;
 
     const options = {
       fs,
@@ -303,10 +309,6 @@ export class BrowserAPI {
         path: `remote.origin.token`,
         value: remoteToken
       });
-    }
-
-    if (name) {
-      await this.symlink(name);
     }
   }
 
@@ -425,7 +427,7 @@ export class BrowserAPI {
     // if file is not LFS pointer,
     // upload file to remote
     if (files === undefined) {
-      const filenames = await fs.promises.readdir(`${this.dir}/${lfsDir}/`);
+      const filenames = await pfs.readdir(`${this.dir}/${lfsDir}/`);
 
       assets = (await Promise.all(
         filenames.map(async (filename) => {
@@ -509,33 +511,26 @@ export class BrowserAPI {
   }
 
   async ensure(schema, name) {
-    await this.setupRepo(schema);
-
-    if (name) {
-      await this.symlink(name);
-    }
-  }
-
-  async setupRepo(schema) {
-    const pfs = fs.promises;
-
-    if (!(await pfs.readdir('/')).includes('store')) {
-      await pfs.mkdir('/store');
-    }
+    this.dir = `/${this.uuid}-${name}`;
 
     const { dir } = this;
 
     const { init, setConfig } = await import('isomorphic-git');
 
-    if (!(await pfs.readdir('/store')).includes(this.uuid)) {
+    const existingRepo = (await pfs.readdir('/'))
+          .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+
+    if (existingRepo === undefined) {
       await pfs.mkdir(dir);
 
-      await init({ fs, dir });
+      await init({ fs, dir, defaultBranch: 'main' });
+    } else {
+      await pfs.rename(`/${existingRepo}`, dir);
     }
 
-    await fs.promises.writeFile(
+    await pfs.writeFile(
       `${dir}/.gitattributes`,
-      '${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n',
+      `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
       'utf8',
     );
 
@@ -567,24 +562,16 @@ export class BrowserAPI {
       value: true,
     });
 
-    await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
+    await pfs.writeFile(
+      `${this.dir}/metadir.json`,
+      JSON.stringify(schema, null, 2),
+      'utf8'
+    );
 
     await this.commit();
   }
 
-  async symlink(name) {
-    const pfs = fs.promises;
-
-    if (!(await pfs.readdir('/')).includes('repos')) {
-      await pfs.mkdir('/repos');
-    }
-
-    await pfs.symlink(this.dir, `/repos/${name}`);
-  }
-
   async rimraf(rimrafpath) {
-    const pfs = fs.promises;
-
     let files;
 
     try {
@@ -609,8 +596,6 @@ export class BrowserAPI {
   }
 
   async ls(lspath) {
-    const pfs = fs.promises;
-
     let files;
 
     try {
@@ -666,15 +651,15 @@ export class BrowserAPI {
     const zip = new JsZip();
 
     const addToZip = async (dir, zipDir) => {
-      const files = await fs.promises.readdir(dir);
+      const files = await pfs.readdir(dir);
 
       for (const file of files) {
         const filepath = `${dir}/${file}`;
 
-        const { type: filetype } = await fs.promises.lstat(filepath);
+        const { type: filetype } = await pfs.lstat(filepath);
 
         if (filetype === 'file') {
-          const content = await fs.promises.readFile(filepath);
+          const content = await pfs.readFile(filepath);
 
           zipDir.file(file, content);
         } else if (filetype === 'dir') {

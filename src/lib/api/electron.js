@@ -7,9 +7,17 @@ import http from 'isomorphic-git/http/node/index.cjs';
 import { exportPDF, generateLatex } from 'lib/latex';
 import { Worker } from 'node:worker_threads';
 
-const home = app.getPath('home');
+const pfs = fs.promises;
 
-const appdir = ".evenor";
+if (process.platform === 'linux') {
+  app.setPath("appData", process.env.XDG_DATA_HOME)
+}
+
+let appPath = app.getPath("userData")
+
+if (process.platform === 'darwin') {
+  appPath = path.join(appPath, 'store');
+}
 
 const lfsDir = "lfs";
 
@@ -68,11 +76,18 @@ export class ElectronAPI {
   constructor(uuid) {
     this.uuid = uuid;
 
-    const root = path.join(home, appdir);
+    try {
+      // find repo with uuid
+      const repoDir = (fs.readdirSync(appPath))
+            .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
 
-    const store = path.join(root, 'store');
-
-    this.dir = path.join(store, uuid);
+      if (repoDir) {
+        this.dir = path.join(appPath, repoDir);
+      }
+    } catch(e) {
+      // do nothing
+      console.log(e)
+    }
   }
 
   async fetchFile(filepath) {
@@ -92,15 +107,11 @@ export class ElectronAPI {
   }
 
   async writeFile(filepath, content) {
-    const appdata = path.join(home, appdir);
-
-    const store = path.join(appdata, 'store');
-
-    const realpath = path.join(store, this.uuid, filepath);
+    const realpath = path.join(this.dir, filepath);
 
     // if path doesn't exist, create it
     // split path into array of directory names
-    const pathElements = ['store', this.uuid].concat(filepath.split(path.sep));
+    const pathElements = filepath.split(path.sep);
 
     // remove file name
     pathElements.pop();
@@ -112,11 +123,11 @@ export class ElectronAPI {
 
       root += path.sep;
 
-      const files = await fs.promises.readdir(path.join(appdata, root));
+      const files = await pfs.readdir(path.join(appPath, root));
 
       if (!files.includes(pathElement)) {
         try {
-          await fs.promises.mkdir(path.join(appdata, root, pathElement));
+          await pfs.mkdir(path.join(appPath, root, pathElement));
         } catch {
           // do nothing
         }
@@ -127,7 +138,7 @@ export class ElectronAPI {
       root += pathElement;
     }
 
-    await fs.promises.writeFile(realpath, content);
+    await pfs.writeFile(realpath, content);
   }
 
   async putAsset(filename, buffer) {
@@ -187,9 +198,7 @@ export class ElectronAPI {
   async updateEntry(entry, overview) {
     const entryNew = await runWorker({
       msg: 'update',
-      uuid: this.uuid,
       dir: this.dir,
-      home,
       entry,
     });
 
@@ -208,9 +217,7 @@ export class ElectronAPI {
   async deleteEntry(entry, overview) {
     await runWorker({
       msg: 'delete',
-      uuid: this.uuid,
       dir: this.dir,
-      home,
       entry,
     });
 
@@ -219,12 +226,16 @@ export class ElectronAPI {
 
   async clone(remoteUrl, remoteToken, name) {
     try {
-      await fs.promises.access(this.dir);
+      await pfs.stat(appPath);
 
-      throw Error('could not clone, directory exists');
-    } catch (e) {
-      // do nothing
+      if ((await pfs.readdir(appPath)).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+        throw Error(`could not clone, directory ${this.uuid} exists`);
+      }
+    } catch {
+      await pfs.mkdir(appPath);
     }
+
+    this.dir = path.join(appPath, `${this.uuid}-${name}`);
 
     const options = {
       fs,
@@ -255,10 +266,6 @@ export class ElectronAPI {
       path: `remote.origin.token`,
       value: remoteToken
     });
-
-    if (name) {
-      await this.symlink(name);
-    }
   }
 
   async cloneView(remoteUrl, remoteToken) {
@@ -373,7 +380,7 @@ export class ElectronAPI {
     // if file is not LFS pointer,
     // upload file to remote
     if (files === undefined) {
-      const filenames = await fs.promises.readdir(`${this.dir}/${lfsDir}/`);
+      const filenames = await pfs.readdir(`${this.dir}/${lfsDir}/`);
 
       assets = (await Promise.all(
         filenames.map(async (filename) => {
@@ -447,37 +454,34 @@ export class ElectronAPI {
   }
 
   async ensure(schema, name) {
-    await this.setupRepo(schema);
+    try {
+      await pfs.stat(appPath);
+    } catch {
+      await pfs.mkdir(appPath);
+    }
 
     if (name) {
-      await this.symlink(name);
-    }
-  }
-
-  async setupRepo(schema) {
-    const root = path.join(home, appdir);
-
-    if (!(await fs.promises.readdir(home)).includes(appdir)) {
-      await fs.promises.mkdir(root);
-    }
-
-    const store = path.join(root, 'store');
-
-    if (!(await fs.promises.readdir(root)).includes('store')) {
-      await fs.promises.mkdir(store);
+      this.dir = path.join(appPath, `${this.uuid}-${name}`);
+    } else {
+      this.dir = path.join(appPath, `${this.uuid}`);
     }
 
     const { dir } = this;
 
-    if (!(await fs.promises.readdir(store)).includes(this.uuid)) {
-      await fs.promises.mkdir(dir);
+    const existingRepo = (await pfs.readdir(appPath))
+          .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+
+    if (existingRepo === undefined) {
+      await pfs.mkdir(dir);
 
       await git.init({ fs, dir, defaultBranch: 'main' });
+    } else {
+      await pfs.rename(path.join(appPath, existingRepo), dir);
     }
 
-    await fs.promises.writeFile(
+    await pfs.writeFile(
       `${dir}/.gitattributes`,
-      '${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n',
+      `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
       'utf8',
     );
 
@@ -509,7 +513,7 @@ export class ElectronAPI {
       value: true,
     });
 
-    await fs.promises.writeFile(
+    await pfs.writeFile(
       path.join(dir, 'metadir.json'),
       JSON.stringify(schema, null, 2),
       'utf8',
@@ -518,51 +522,17 @@ export class ElectronAPI {
     await this.commit();
   }
 
-  async symlink(name) {
-    const root = path.join(home, appdir);
-
-    const repos = path.join(root, 'repos');
-
-    if (!(await fs.promises.readdir(root)).includes('repos')) {
-      await fs.promises.mkdir(repos);
-    }
-
-    // nt requires admin privilege to symlink
-    if (process.platform === 'win32') {
-      const { dir } = this;
-
-      const sudo = await import('sudo-prompt-alt');
-
-      await new Promise((res, rej) => {
-        sudo.exec(`mklink "${path.join(repos, name)}" "${dir}"`, {}, (error) => {
-          if (error) rej(error);
-
-          res();
-        });
-      });
-    } else {
-      try {
-        await fs.promises.unlink(path.join(repos, name));
-      } catch {
-        // do nothing
-      }
-
-      await fs.promises.symlink(this.dir, path.join(repos, name));
-    }
-  }
-
   static async rimraf(rimrafpath) {
-    const root = path.join(home, appdir);
-
-    const file = path.join(root, rimrafpath);
+    // TODO: check that rimrafpath has no ".."
+    const file = path.join(appPath, rimrafpath);
 
     try {
-      const stats = await fs.promises.stat(file);
+      const stats = await pfs.stat(file);
 
       if (stats.isFile()) {
-        await fs.promises.unlink(file);
+        await pfs.unlink(file);
       } else if (stats.isDirectory()) {
-        await fs.promises.rmdir(file, { recursive: true });
+        await pfs.rmdir(file, { recursive: true });
       }
     } catch (e) {
       // console.log(`failed to rimraf ${e}`);
@@ -573,7 +543,7 @@ export class ElectronAPI {
     let files;
 
     try {
-      files = await fs.promises.readdir(lspath);
+      files = await pfs.readdir(lspath);
     } catch {
       throw Error(`can't read ${lspath} to list it`);
     }
@@ -583,7 +553,7 @@ export class ElectronAPI {
     for (const file of files) {
       const filepath = path.join(lspath, file);
 
-      const { type } = await fs.promises.stat(filepath);
+      const { type } = await pfs.stat(filepath);
 
       if (type === 'dir') {
         await this.ls(filepath);
@@ -641,7 +611,7 @@ export class ElectronAPI {
     });
 
     if (!file.canceled) {
-      await fs.promises.writeFile(file.filePath.toString(), content);
+      await pfs.writeFile(file.filePath.toString(), content);
     }
   }
 
@@ -651,15 +621,15 @@ export class ElectronAPI {
     const zip = new JsZip();
 
     const addToZip = async (dir, zipDir) => {
-      const files = await fs.promises.readdir(dir);
+      const files = await pfs.readdir(dir);
 
       for (const filename of files) {
         const filepath = path.join(dir, filename);
 
-        const stats = await fs.promises.lstat(filepath);
+        const stats = await pfs.lstat(filepath);
 
         if (stats.isFile()) {
-          const content = await fs.promises.readFile(filepath);
+          const content = await pfs.readFile(filepath);
 
           zipDir.file(filename, content);
         } else if (stats.isDirectory()) {
@@ -687,7 +657,7 @@ export class ElectronAPI {
       });
 
       if (!file.canceled) {
-        await fs.promises.writeFile(file.filePath.toString(), content);
+        await pfs.writeFile(file.filePath.toString(), content);
       }
     });
   }

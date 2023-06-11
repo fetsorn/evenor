@@ -123,9 +123,6 @@ export const createOverviewSlice = (set, get) => ({
       const api = new API(repoUUID);
 
       await api.cloneView(remote, token);
-
-      // TODO replace with async fetch using token from .git config
-      await api.populateLFS(remote, token);
     } else if (repoRoute === undefined) {
       repoUUID = 'root';
 

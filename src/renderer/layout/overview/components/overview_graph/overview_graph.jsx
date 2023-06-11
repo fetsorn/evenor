@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useStore } from '@/store/index.js';
 import { load } from './overview_graph_controller.js';
 import { GraphSvg, GraphTextInput, GraphRangeInput } from './components/index.js';
 import styles from './overview_graph.module.css';
 
 export function OverviewGraph() {
-  const navigate = useNavigate();
-
   const [depth, setDepth] = useState(4);
 
   const [family, setFamily] = useState(undefined);

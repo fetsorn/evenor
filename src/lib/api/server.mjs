@@ -6,6 +6,8 @@ import git from 'isomorphic-git';
 import { CSVS } from '@fetsorn/csvs-js';
 import crypto from 'crypto';
 
+const lfsDir = "lfs";
+
 // TODO: add WASM fallback
 async function grepCallback(contentFile, patternFile, isInverse) {
   // console.log("grepCallback")
@@ -114,10 +116,6 @@ export class ServerAPI {
     await fs.promises.writeFile(realpath, content);
   }
 
-  async putAsset(filename, buffer) {
-    this.writeFile(`lfs/${filename}`, buffer);
-  }
-
   async uploadFile(file) {
     const fileArrayBuffer = fs.readFileSync(file.filepath);
 
@@ -130,13 +128,13 @@ export class ServerAPI {
 
     const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
 
-    const uploadDir = path.join(this.dir, 'lfs');
+    const uploadDir = path.join(this.dir, lfsDir);
 
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
-      // console.log(`Directory ${root} is created.`);
+      console.log(`Directory ${root} is created.`);
     } else {
-      // console.log(`Directory ${root} already exists.`);
+      console.log(`Directory ${root} already exists.`);
     }
 
     const uploadPath = path.join(uploadDir, hashHexString);
@@ -202,8 +200,8 @@ export class ServerAPI {
             filepath,
           });
         } else {
-        // if file in lfs/ add as LFS
-          if (filepath.startsWith('lfs')) {
+          // stage files in remoteEndpoint as LFS pointers
+          if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import('./lfs.mjs');
 
             await addLFS({

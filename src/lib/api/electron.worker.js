@@ -69,17 +69,14 @@ async function readFile(filepath) {
 }
 
 async function writeFile(filepath, content) {
-  const { home, uuid } = workerData;
 
-  const appdata = path.join(home, '.qualia');
+  const { dir } = workerData;
 
-  const store = path.join(appdata, 'store');
-
-  const file = path.join(store, uuid, filepath);
+  const file = path.join(dir, filepath);
 
   // if path doesn't exist, create it
   // split path into array of directory names
-  const pathElements = ['store', uuid].concat(filepath.split('/'));
+  const pathElements = filepath.split('/');
 
   // remove file name
   pathElements.pop();
@@ -91,12 +88,12 @@ async function writeFile(filepath, content) {
 
     root += '/';
 
-    const files = await fs.promises.readdir(path.join(appdata, root));
+    const files = await fs.promises.readdir(path.join(dir, root));
 
     if (!files.includes(pathElement)) {
       // try/catch because csvs can call this in parallel and fail with EEXIST
       try {
-        await fs.promises.mkdir(path.join(appdata, root, pathElement));
+        await fs.promises.mkdir(path.join(dir, root, pathElement));
       } catch {
         // do nothing
       }
@@ -120,17 +117,21 @@ async function select() {
     grep,
   });
 
-  const entries = await query.select(searchParams);
+  try {
+    const entries = await query.select(searchParams);
 
-  parentPort.postMessage(entries);
+    parentPort.postMessage(entries);
+  } catch(e) {
+    console.log(e)
+  }
 }
 
 async function updateEntry() {
   const { entry } = workerData;
 
   const entryNew = await new CSVS({
-    readFile: (filepath) => readFile(filepath),
-    writeFile: (filepath, content) => writeFile(filepath, content),
+    readFile,
+    writeFile,
     randomUUID: crypto.randomUUID,
   }).update(entry);
 
@@ -141,8 +142,8 @@ async function deleteEntry() {
   const { entry } = workerData;
 
   await new CSVS({
-    readFile: (filepath) => readFile(filepath),
-    writeFile: (filepath, content) => writeFile(filepath, content),
+    readFile,
+    writeFile,
     randomUUID: crypto.randomUUID,
   }).delete(entry);
 

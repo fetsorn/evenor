@@ -14,11 +14,13 @@ contextBridge.exposeInMainWorld('electron', {
 
   commit: (dir) => ipcRenderer.invoke('commit', dir),
 
-  clone: (dir, remote, token, name) => ipcRenderer.invoke('clone', dir, remote, token, name),
+  clone: (dir, remoteUrl, remoteToken, name) => ipcRenderer.invoke('clone', dir, remoteUrl, remoteToken, name),
 
-  push: (dir, remote, token) => ipcRenderer.invoke('push', dir, remote, token),
+  cloneView: (dir, remoteUrl, remoteToken) => ipcRenderer.invoke('cloneView', dir, remoteUrl, remoteToken),
 
-  pull: (dir, remote, token) => ipcRenderer.invoke('pull', dir, remote, token),
+  push: (dir, remote) => ipcRenderer.invoke('push', dir, remote),
+
+  pull: (dir, remote) => ipcRenderer.invoke('pull', dir, remote),
 
   getSettings: (dir) => ipcRenderer.invoke('getSettings', dir),
 
@@ -28,11 +30,9 @@ contextBridge.exposeInMainWorld('electron', {
 
   readIndex: (dir) => ipcRenderer.invoke('readIndex', dir),
 
-  cloneView: (dir, remote, token) => ipcRenderer.invoke('cloneView', dir, remote, token),
+  fetchAsset: (dir, filename) => ipcRenderer.invoke('fetchAsset', dir, filename),
 
-  fetchAsset: (dir, filename, token) => ipcRenderer.invoke('fetchAsset', dir, filename, token),
-
-  downloadAsset: (dir, filename, filehash, token) => ipcRenderer.invoke('downloadAsset', dir, filename, filehash, token),
+  downloadAsset: (dir, filename, filehash) => ipcRenderer.invoke('downloadAsset', dir, filename, filehash),
 
   putAsset: (dir, filename, content) => ipcRenderer.invoke('putAsset', dir, filename, content),
 
@@ -40,9 +40,17 @@ contextBridge.exposeInMainWorld('electron', {
 
   writeFeed: (dir, xml) => ipcRenderer.invoke('writeFeed', dir, xml),
 
-  downloadUrlFromPointer: (dir, url, token, pointerInfo) => ipcRenderer.invoke('downloadUrlFromPointer', dir, url, token, pointerInfo),
-
-  uploadBlobsLFS: (dir, url, token, files) => ipcRenderer.invoke('uploadBlobsLFS', dir, url, token, files),
+  uploadBlobsLFS: (dir, remote, files) => ipcRenderer.invoke('uploadBlobsLFS', dir, remote, files),
 
   zip: (dir) => ipcRenderer.invoke('zip', dir),
+
+  listRemotes: (dir) => ipcRenderer.invoke('listRemotes', dir),
+
+  addRemote: (dir, remoteName, remoteUrl, remoteToken) => ipcRenderer.invoke('addRemote', dir, remoteName, remoteUrl, remoteToken),
+
+  getRemote: (dir, remote) => ipcRenderer.invoke('getRemote', dir, remote),
+
+  addAssetPath: (dir, assetPath) => ipcRenderer.invoke('addAssetPath', dir, assetPath),
+
+  listAssetPaths: (dir) => ipcRenderer.invoke('listAssetPaths', dir),
 });

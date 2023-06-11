@@ -10,15 +10,15 @@ export const schemaRemote = {
       ru: 'Тег удаленного git репозитория',
     },
   },
-  remote_tag_search: {
+  remote_name: {
     trunk: 'remote_tag',
     type: 'string',
     description: {
-      en: 'Search query',
-      ru: 'Поисковый запрос',
+      en: 'Name of git remote',
+      ru: 'Название remote .git',
     },
   },
-  remote_tag_target: {
+  remote_url: {
     trunk: 'remote_tag',
     type: 'string',
     description: {
@@ -26,7 +26,7 @@ export const schemaRemote = {
       ru: 'Название базы данных для синхронизации',
     },
   },
-  remote_tag_token: {
+  remote_token: {
     trunk: 'remote_tag',
     type: 'string',
     description: {
@@ -42,30 +42,28 @@ export function Remote({ baseEntry, branchEntry }) {
   async function onPullRepo() {
     await api.commit();
 
-    await api.pull(branchEntry.remote_tag_target, branchEntry.remote_tag_token);
+    await api.pull(branchEntry.remote_name);
   }
 
   async function onPushRepo() {
     await api.commit();
 
-    await api.push(branchEntry.remote_tag_target, branchEntry.remote_tag_token);
+    await api.push(branchEntry.remote_name);
   }
 
   async function onRemoteSync() {
     await api.commit();
 
-    await api.addRemote(branchEntry.remote_tag_target);
+    await api.addRemote(branchEntry.remote_name, branchEntry.remote_url, branchEntry.remote_token);
 
-    await api.pull(branchEntry.remote_tag_target, branchEntry.remote_tag_token);
+    await api.pull(branchEntry.remote_name);
 
-    await api.push(branchEntry.remote_tag_target, branchEntry.remote_tag_token);
+    await api.push(branchEntry.remote_name);
   }
 
   return (
     <div>
-      <p>{branchEntry.remote_tag_search}</p>
-      <br />
-      <p>{branchEntry.remote_tag_target}</p>
+      <p>{branchEntry.remote_url}</p>
       <br />
       <button type="button" onClick={onPullRepo}>⬇️</button>
       <button type="button" onClick={onPushRepo}>⬆️</button>

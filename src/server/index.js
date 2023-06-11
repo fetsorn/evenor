@@ -4,7 +4,7 @@ import express from 'express';
 import bodyParser from 'body-parser';
 import path from 'path';
 import formidable from 'formidable';
-import { ServerAPI } from 'qualia/src/lib/api/server.mjs';
+import { ServerAPI } from 'evenor/src/lib/api/server.mjs';
 
 const dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -63,7 +63,7 @@ router.put('/api/*', async (_, res) => {
   res.end();
 });
 
-// on POST `/upload` write file to lfs/
+// on POST `/upload` upload file
 router.post('/upload', async (req, res) => {
   const form = formidable({});
 

@@ -7,7 +7,19 @@ import http from 'isomorphic-git/http/node/index.cjs';
 import { exportPDF, generateLatex } from 'lib/latex';
 import { Worker } from 'node:worker_threads';
 
-const home = app.getPath('home');
+const pfs = fs.promises;
+
+if (process.platform === 'linux') {
+  app.setPath("appData", process.env.XDG_DATA_HOME)
+}
+
+let appPath = app.getPath("userData")
+
+if (process.platform === 'darwin') {
+  appPath = path.join(appPath, 'store');
+}
+
+const lfsDir = "lfs";
 
 let readWorker;
 
@@ -17,6 +29,7 @@ let readWorker;
 // and we terminate the previous instance if worker is still running
 async function runWorker(workerData) {
   if (workerData.msg === 'select' && readWorker !== undefined) {
+    console.log("read worker terminated");
     await readWorker.terminate();
 
     readWorker = undefined;
@@ -64,11 +77,18 @@ export class ElectronAPI {
   constructor(uuid) {
     this.uuid = uuid;
 
-    const root = path.join(home, '.qualia');
+    try {
+      // find repo with uuid
+      const repoDir = (fs.readdirSync(appPath))
+            .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
 
-    const store = path.join(root, 'store');
-
-    this.dir = path.join(store, uuid);
+      if (repoDir) {
+        this.dir = path.join(appPath, repoDir);
+      }
+    } catch(e) {
+      // do nothing
+      console.log(e)
+    }
   }
 
   async fetchFile(filepath) {
@@ -88,15 +108,11 @@ export class ElectronAPI {
   }
 
   async writeFile(filepath, content) {
-    const appdata = path.join(home, '.qualia');
-
-    const store = path.join(appdata, 'store');
-
-    const realpath = path.join(store, this.uuid, filepath);
+    const realpath = path.join(this.dir, filepath);
 
     // if path doesn't exist, create it
     // split path into array of directory names
-    const pathElements = ['store', this.uuid].concat(filepath.split(path.sep));
+    const pathElements = filepath.split(path.sep);
 
     // remove file name
     pathElements.pop();
@@ -108,11 +124,11 @@ export class ElectronAPI {
 
       root += path.sep;
 
-      const files = await fs.promises.readdir(path.join(appdata, root));
+      const files = await pfs.readdir(path.join(appPath, root));
 
       if (!files.includes(pathElement)) {
         try {
-          await fs.promises.mkdir(path.join(appdata, root, pathElement));
+          await pfs.mkdir(path.join(appPath, root, pathElement));
         } catch {
           // do nothing
         }
@@ -123,11 +139,14 @@ export class ElectronAPI {
       root += pathElement;
     }
 
-    await fs.promises.writeFile(realpath, content);
+    await pfs.writeFile(realpath, content);
   }
 
   async putAsset(filename, buffer) {
-    this.writeFile(path.join('lfs', filename), buffer);
+    // write buffer to assetEndpoint/filename
+    const assetEndpoint = path.join(this.dir, lfsDir);
+
+    this.writeFile(assetEndpoint, buffer);
   }
 
   async uploadFile() {
@@ -180,9 +199,7 @@ export class ElectronAPI {
   async updateEntry(entry, overview) {
     const entryNew = await runWorker({
       msg: 'update',
-      uuid: this.uuid,
       dir: this.dir,
-      home,
       entry,
     });
 
@@ -201,49 +218,65 @@ export class ElectronAPI {
   async deleteEntry(entry, overview) {
     await runWorker({
       msg: 'delete',
-      uuid: this.uuid,
       dir: this.dir,
-      home,
       entry,
     });
 
     return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
-  async clone(remote, token, name) {
+  async clone(remoteUrl, remoteToken, name) {
     try {
-      await fs.promises.access(this.dir);
+      await pfs.stat(appPath);
 
-      throw Error('could not clone, directory exists');
-    } catch (e) {
-      await this.tbn2(remote, token);
-
-      if (name) {
-        await this.symlink(name);
+      if ((await pfs.readdir(appPath)).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+        throw Error(`could not clone, directory ${this.uuid} exists`);
       }
+    } catch {
+      await pfs.mkdir(appPath);
     }
-  }
 
-  async tbn2(
-    remote,
-    token,
-  ) {
+    this.dir = path.join(appPath, `${this.uuid}-${name}`);
+
     const options = {
       fs,
       http,
       dir: this.dir,
-      url: remote,
+      url: remoteUrl,
       singleBranch: true,
-      // depth: 1,
     };
 
-    if (token) {
+    if (remoteToken) {
       options.onAuth = () => ({
-        username: token,
+        username: remoteToken,
       });
     }
 
     await git.clone(options);
+
+    await git.setConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.origin.url`,
+      value: remoteUrl
+    });
+
+    await git.setConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.origin.token`,
+      value: remoteToken
+    });
+  }
+
+  async cloneView(remoteUrl, remoteToken) {
+    try {
+      await this.rimraf(this.dir);
+    } catch {
+      // do nothing
+    }
+
+    await this.clone(remoteUrl, remoteToken);
   }
 
   async commit() {
@@ -293,8 +326,8 @@ export class ElectronAPI {
             filepath,
           });
         } else {
-          // if file in lfs/ add as LFS
-          if (filepath.startsWith('lfs')) {
+          // stage files in remoteEndpoint as LFS pointers
+          if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import('./lfs.mjs');
 
             await addLFS({
@@ -334,40 +367,51 @@ export class ElectronAPI {
     }
   }
 
-  async uploadBlobs(url, token) {
-    // for every file in lfs/
-    // if file is not LFS pointer,
-    // upload file to remote
+  // called with "files" by dispensers which need to check download acitons
+  // called without "files" on push
+  async uploadBlobsLFS(remote, files) {
     const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    const lfs = path.join(this.dir, 'lfs');
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
-    const filenames = await fs.promises.readdir(lfs);
+    let assets;
 
-    const files = (await Promise.all(
-      filenames.map(async (filename) => {
-        const file = await this.fetchFile(path.join('lfs', filename));
+    // if no files are specified
+    // for every file in remoteEndpoint/
+    // if file is not LFS pointer,
+    // upload file to remote
+    if (files === undefined) {
+      const filenames = await pfs.readdir(`${this.dir}/${lfsDir}/`);
 
-        if (!pointsToLFS(file)) {
-          return file;
-        }
+      assets = (await Promise.all(
+        filenames.map(async (filename) => {
+          const file = await this.fetchFile(path.join(lfsDir, filename));
 
-        return undefined;
-      }),
-    )).filter(Boolean);
+          if (!pointsToLFS(file)) {
+            return file;
+          }
+
+          return undefined;
+        }),
+      )).filter(Boolean);
+    } else {
+      assets = files;
+    }
 
     await uploadBlobs({
-      url,
+      url: remoteUrl,
       auth: {
-        username: token,
-        password: token,
+        username: remoteToken,
+        password: remoteToken,
       },
-    }, files);
+    }, assets);
   }
 
-  async push(url, token) {
+  async push(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     try {
-      await this.uploadBlobs(url, token);
+      await this.uploadBlobsLFS(remote);
     } catch (e) {
       console.log('uploadBlobs failed', e);
     }
@@ -377,23 +421,25 @@ export class ElectronAPI {
       http,
       force: true,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
 
-  async pull(url, token) {
+  async pull(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     await git.fastForward({
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
@@ -409,37 +455,34 @@ export class ElectronAPI {
   }
 
   async ensure(schema, name) {
-    await this.setupRepo(schema);
+    try {
+      await pfs.stat(appPath);
+    } catch {
+      await pfs.mkdir(appPath);
+    }
 
     if (name) {
-      await this.symlink(name);
-    }
-  }
-
-  async setupRepo(schema) {
-    const root = path.join(home, '.qualia');
-
-    if (!(await fs.promises.readdir(home)).includes('.qualia')) {
-      await fs.promises.mkdir(root);
-    }
-
-    const store = path.join(root, 'store');
-
-    if (!(await fs.promises.readdir(root)).includes('store')) {
-      await fs.promises.mkdir(store);
+      this.dir = path.join(appPath, `${this.uuid}-${name}`);
+    } else {
+      this.dir = path.join(appPath, `${this.uuid}`);
     }
 
     const { dir } = this;
 
-    if (!(await fs.promises.readdir(store)).includes(this.uuid)) {
-      await fs.promises.mkdir(dir);
+    const existingRepo = (await pfs.readdir(appPath))
+          .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+
+    if (existingRepo === undefined) {
+      await pfs.mkdir(dir);
 
       await git.init({ fs, dir, defaultBranch: 'main' });
+    } else {
+      await pfs.rename(path.join(appPath, existingRepo), dir);
     }
 
-    await fs.promises.writeFile(
+    await pfs.writeFile(
       `${dir}/.gitattributes`,
-      'lfs/** filter=lfs diff=lfs merge=lfs -text\n',
+      `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
       'utf8',
     );
 
@@ -471,7 +514,7 @@ export class ElectronAPI {
       value: true,
     });
 
-    await fs.promises.writeFile(
+    await pfs.writeFile(
       path.join(dir, 'metadir.json'),
       JSON.stringify(schema, null, 2),
       'utf8',
@@ -480,51 +523,17 @@ export class ElectronAPI {
     await this.commit();
   }
 
-  async symlink(name) {
-    const root = path.join(home, '.qualia');
-
-    const repos = path.join(root, 'repos');
-
-    if (!(await fs.promises.readdir(root)).includes('repos')) {
-      await fs.promises.mkdir(repos);
-    }
-
-    // nt requires admin privilege to symlink
-    if (process.platform === 'win32') {
-      const { dir } = this;
-
-      const sudo = await import('sudo-prompt-alt');
-
-      await new Promise((res, rej) => {
-        sudo.exec(`mklink "${path.join(repos, name)}" "${dir}"`, {}, (error) => {
-          if (error) rej(error);
-
-          res();
-        });
-      });
-    } else {
-      try {
-        await fs.promises.unlink(path.join(repos, name));
-      } catch {
-        // do nothing
-      }
-
-      await fs.promises.symlink(this.dir, path.join(repos, name));
-    }
-  }
-
   static async rimraf(rimrafpath) {
-    const root = path.join(home, '.qualia');
-
-    const file = path.join(root, rimrafpath);
+    // TODO: check that rimrafpath has no ".."
+    const file = path.join(appPath, rimrafpath);
 
     try {
-      const stats = await fs.promises.stat(file);
+      const stats = await pfs.stat(file);
 
       if (stats.isFile()) {
-        await fs.promises.unlink(file);
+        await pfs.unlink(file);
       } else if (stats.isDirectory()) {
-        await fs.promises.rmdir(file, { recursive: true });
+        await pfs.rmdir(file, { recursive: true });
       }
     } catch (e) {
       // console.log(`failed to rimraf ${e}`);
@@ -535,7 +544,7 @@ export class ElectronAPI {
     let files;
 
     try {
-      files = await fs.promises.readdir(lspath);
+      files = await pfs.readdir(lspath);
     } catch {
       throw Error(`can't read ${lspath} to list it`);
     }
@@ -545,7 +554,7 @@ export class ElectronAPI {
     for (const file of files) {
       const filepath = path.join(lspath, file);
 
-      const { type } = await fs.promises.stat(filepath);
+      const { type } = await pfs.stat(filepath);
 
       if (type === 'dir') {
         await this.ls(filepath);
@@ -591,8 +600,8 @@ export class ElectronAPI {
     return index;
   }
 
-  async downloadAsset(filename, filehash, token) {
-    const content = await this.fetchAsset(filehash, token);
+  async downloadAsset(filename, filehash) {
+    const content = await this.fetchAsset(filehash);
 
     const file = await dialog.showSaveDialog({
       title: 'Select the File Path to save',
@@ -603,7 +612,7 @@ export class ElectronAPI {
     });
 
     if (!file.canceled) {
-      await fs.promises.writeFile(file.filePath.toString(), content);
+      await pfs.writeFile(file.filePath.toString(), content);
     }
   }
 
@@ -613,15 +622,15 @@ export class ElectronAPI {
     const zip = new JsZip();
 
     const addToZip = async (dir, zipDir) => {
-      const files = await fs.promises.readdir(dir);
+      const files = await pfs.readdir(dir);
 
       for (const filename of files) {
         const filepath = path.join(dir, filename);
 
-        const stats = await fs.promises.lstat(filepath);
+        const stats = await pfs.lstat(filepath);
 
         if (stats.isFile()) {
-          const content = await fs.promises.readFile(filepath);
+          const content = await pfs.readFile(filepath);
 
           zipDir.file(filename, content);
         } else if (stats.isDirectory()) {
@@ -649,44 +658,81 @@ export class ElectronAPI {
       });
 
       if (!file.canceled) {
-        await fs.promises.writeFile(file.filePath.toString(), content);
+        await pfs.writeFile(file.filePath.toString(), content);
       }
     });
   }
 
-  async cloneView(remote, token) {
+  // returns blob url
+  async fetchAsset(filename) {
+    let assetEndpoint;
+
+    let content;
+
     try {
-      await this.rimraf(this.dir);
-    } catch {
+      assetEndpoint = await git.getConfig({
+        fs,
+        dir: this.dir,
+        path: 'asset.path',
+      });
+
+      const assetPath = path.join(assetEndpoint, filename);
+
+      // if URL, try to fetch
+      try {
+        new URL(assetPath);
+
+        content = await fetch(assetPath);
+
+        return content;
+      } catch(e) {
+        // do nothing
+      }
+
+      // otherwise try to read from fs
+      content = await fs.readFileSync(assetPath);
+
+      return content
+    } catch(e) {
+      console.log(e)
       // do nothing
     }
 
-    await this.clone(remote, token);
-  }
+    assetEndpoint = path.join(this.dir, lfsDir);
 
-  // returns blob url
-  async fetchAsset(filename, token) {
-    let content = await this.fetchFile(path.join('lfs', filename));
+    const assetPath = path.join(assetEndpoint, filename);
+
+    content = await fs.readFileSync(assetPath);
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
     if (pointsToLFS(content)) {
-      const remote = await this.getRemote();
-
       const pointer = await readPointer({ dir: this.dir, content });
 
-      content = await downloadBlobFromPointer(
-        fs,
-        {
-          http,
-          url: remote,
-          auth: {
-            username: token,
-            password: token,
-          },
-        },
-        pointer,
-      );
+      const remotes = await this.listRemotes();
+      // loop over remotes trying to resolve LFS
+      for (const remote of remotes) {
+        const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
+        try {
+          content = await downloadBlobFromPointer(
+            fs,
+            {
+              http,
+              url: remoteUrl,
+              auth: {
+                username: remoteToken,
+                password: remoteToken,
+              },
+            },
+            pointer,
+          );
+
+          return content;
+        } catch(e) {
+          // do nothing
+        }
+      }
     }
 
     return content;
@@ -696,31 +742,63 @@ export class ElectronAPI {
     await this.writeFile('feed.xml', xml);
   }
 
-  static async downloadUrlFromPointer(url, token, pointerInfo) {
-    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+  async listRemotes() {
+    const remotes = await git.listRemotes({
+      fs,
+      dir: this.dir,
+    });
 
-    return downloadUrlFromPointer(
-      {
-        http,
-        url,
-        auth: {
-          username: token,
-          password: token,
-        },
-      },
-      pointerInfo,
-    );
+    return remotes.map((r) => r.remote)
   }
 
-  static async uploadBlobsLFS(url, token, files) {
-    const { uploadBlobs } = await import('@fetsorn/isogit-lfs');
+  async addRemote(remoteName, remoteUrl, remoteToken) {
+    await git.addRemote({
+      fs,
+      dir: this.dir,
+      remote: remoteName,
+      url: remoteUrl
+    })
 
-    await uploadBlobs({
-      url,
-      auth: {
-        username: token,
-        password: token,
-      },
-    }, files);
+    if (remoteToken) {
+      await git.setConfig({
+        fs,
+        dir: this.dir,
+        path: `remote.${remoteName}.token`,
+        value: remoteToken
+      });
+    }
+  }
+
+  async getRemote(remoteName) {
+    const remoteUrl = await git.getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.url`,
+    });
+
+    const remoteToken = await git.getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.token`,
+    });
+
+    return [remoteUrl, remoteToken]
+  }
+
+  async addAssetPath(assetPath) {
+    await git.setConfig({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+      value: assetPath,
+    });
+  }
+
+  async listAssetPaths() {
+    await git.getConfigAll({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+    });
   }
 }

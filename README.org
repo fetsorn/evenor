@@ -1,81 +1,69 @@
-#+TITLE: qualia
+#+TITLE: evenor
 #+OPTIONS: toc:nil
 
-Qualia ("QUAlitatum temporaLIA") - query and edit timelines. Tell the story of your own data.
+Evenor - query and edit timelines. Tell the story of your own data.
 
-* Setup
-** browser
-a React webapp
+* Developer Information and Tools
+** Install dependencies
+#+begin_quote
+If you use [[https://nixos.org/][nix]], run `nix develop` to install all dependencies in PATH
+#+end_quote
+
+You'll need to install nodejs >= 18.15.0. We use yarn but npm should work too. Assuming that's done, run `yarn` with no args:
+
 #+begin_src sh
-## build with nix
-nix build https://github.com/fetsorn/qualia#webapp
+yarn
+#+end_src
+** Build for desktop
+#+begin_quote
+If you use [[https://nixos.org/][nix]], run `nix build git+https://github.com/fetsorn/evenor#all`
+#+end_quote
 
-## or build with yarn
-git clone https://github.com/fetsorn/qualia
-cd ~/qualia
+A desktop Electron app that stores data in a system folder.
+
+#+begin_src sh
+yarn start:electron
+
+yarn build:electron
+#+end_src
+** Build for browser
+#+begin_quote
+If you use [[https://nixos.org/][nix]], run `nix build git+https://github.com/fetsorn/evenor#webapp`
+#+end_quote
+
+A React webapp that stores data in browser memory.
+
+#+begin_src sh
 yarn build:webapp
 #+end_src
-** desktop
-a desktop Electron app
+** Build for command-line
+#+begin_quote
+If you use [[https://nixos.org/][nix]], run `nix run git+https://github.com/fetsorn/evenor`
+#+end_quote
+
+A React webapp that stores data in current working directory.
+
 #+begin_src sh
-## with nix
-nix build https://github.com/fetsorn/qualia#macos.arm64.zip
-## supported architectures:
-### linux.x64.deb
-### linux.x64.rpm
-### linux.ia32.deb
-### linux.ia32.rpm
-### windows.x64.exe
-### windows.ia32.exe
-### macos.x64.zip
-### macos.arm64.zip
-
-## or install nodejs-16_x, yarn
-git clone https://github.com/fetsorn/qualia
-cd ~/qualia
-yarn build:electron
-### electron-forge make  --platform darwin --arch x64   --targets @electron-forge/maker-zip;
-### electron-forge make  --platform darwin --arch arm64 --targets @electron-forge/maker-zip;
-### electron-forge make  --platform win32  --arch x64   --targets @electron-forge/maker-squirrel;
-### electron-forge make  --platform win32  --arch x64   --targets @electron-forge/maker-zip;
-### electron-forge make  --platform linux  --arch x64   --targets @electron-forge/maker-rpm;
-### electron-forge make  --platform linux  --arch x64   --targets @electron-forge/maker-deb;
-#+end_src
-** server
-a local ExpressJS server
-#+begin_src sh
-## get a sample csvs project
-git clone https://github.com/fetsorn/csvs-init.git
-cd csvs-init/
-
-## run with nix
-nix run https://github.com/fetsorn/qualia#server
-
-## or build with yarn
-git clone https://github.com/fetsorn/qualia
-cd ~/qualia
+## build command-line service
 yarn build:server
-## and run with node
+
+## get a sample csvs project
+## from https://github.com/fetsorn/csvs-init.git
 cd ~/csvs-init
-node ~/qualia/src/server/index.js
+
+## launch command-line
+node path/to/evenor/src/server/index.js
 #+end_src
-* Structure of the repo
+* Documentation
+Evenor stands for "EVENt editOR". In Greek, Evenor is the ancestor of the people of Atlantis. In tokien's elvish, evenor can be loosely translated as "common ground".
+** Structure of the repo
 [[src/renderer][renderer]] - a React app, packaged both as a webapp and as an Electron renderer
 
 [[src/main][main]] - main Electron thread
 
-[[src/server][server]] - a local ExpressJS server
-* More csvs projects
-[[https://github.com/fetsorn/csvs-spec][csvs-spec]] - specification
+[[src/server][server]] - a local ExpressJS server that serves the React app
 
-[[https://github.com/fetsorn/csvs-js][csvs-js]] - WASM/JS implementation
-
-[[https://github.com/fetsorn/csvs-sh][csvs-sh]] - Borne shell implementation
-
-[[https://github.com/fetsorn/ged2dot.js][ged2dot.js]] - GEDCOM to Graphviz converter
-
-[[https://github.com/fetsorn/wasm-grep][wasm-grep]] - ripgrep compiled to WASM
-
+[[src/lib][lib]] - common APIs
 * Thanks
 [[https://github.com/isomorphic-git/isomorphic-git][isomorphic-git]] - A pure JavaScript implementation of git for node and browsers
 

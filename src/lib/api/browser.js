@@ -2,6 +2,10 @@ import LightningFS from '@isomorphic-git/lightning-fs';
 
 const fs = new LightningFS('fs');
 
+const pfs = fs.promises;
+
+const lfsDir = "lfs";
+
 async function runWorker(readFile, searchParams) {
   const worker = new Worker(new URL('./browser.worker', import.meta.url));
 
@@ -57,7 +61,6 @@ async function runWorker(readFile, searchParams) {
 }
 
 export class BrowserAPI {
-  // UUID of repo in the store
   uuid;
 
   dir;
@@ -65,7 +68,20 @@ export class BrowserAPI {
   constructor(uuid) {
     this.uuid = uuid;
 
-    this.dir = `/store/${uuid}`;
+    if (__BUILD_MODE__ !== 'server' && __BUILD_MODE__ !== 'electron') {
+      try {
+        // find repo with uuid
+        const repoDir = (fs.readdir("/"))
+              .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
+
+        if (repoDir) {
+          this.dir = path.join("/", repoDir);
+        }
+      } catch(e) {
+        // do nothing
+        console.log(e)
+      }
+    }
   }
 
   async fetchFile(filepath) {
@@ -78,8 +94,6 @@ export class BrowserAPI {
     const pathElements = this.dir.replace(/^\//, '').split('/').concat(filepath.split('/'));
 
     let root = '';
-
-    const pfs = fs.promises;
 
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
@@ -141,8 +155,6 @@ export class BrowserAPI {
 
     let root = '';
 
-    const pfs = fs.promises;
-
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
 
@@ -168,7 +180,10 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    this.writeFile(`lfs/${filename}`, buffer);
+    // write buffer to assetEndpoint/filename
+    const assetEndpoint = path.join(this.dir, lfsDir);
+
+    this.writeFile(assetEndpoint, buffer);
   }
 
   async uploadFile(file) {
@@ -255,41 +270,48 @@ export class BrowserAPI {
     return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
-  async clone(remote, token, name) {
-    try {
-      await fs.promises.stat(this.dir);
-
-      throw Error('could not clone, directory exists');
-    } catch (e) {
-      await this.tbn2(remote, token);
-
-      if (name) {
-        await this.symlink(name);
-      }
+  async clone(remoteUrl, remoteToken, name) {
+    if ((await pfs.readdir('/')).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+      throw Error(`could not clone, directory ${this.uuid} exists`);
     }
-  }
 
-  async tbn2(url, token) {
-    const http = await import('isomorphic-git/http/web/index.cjs');
+    this.dir = `/${this.uuid}-${name}`;
 
     const options = {
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       singleBranch: true,
-      // depth: 1,
     };
 
-    if (token) {
+    if (remoteToken) {
       options.onAuth = () => ({
-        username: token,
+        username: remoteToken,
       });
     }
 
-    const { clone } = await import('isomorphic-git');
+    const {
+      clone, setConfig
+    } = await import('isomorphic-git');
 
     await clone(options);
+
+    await setConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.origin.url`,
+      value: remoteUrl
+    });
+
+    if (remoteToken) {
+      await setConfig({
+        fs,
+        dir: this.dir,
+        path: `remote.origin.token`,
+        value: remoteToken
+      });
+    }
   }
 
   async commit() {
@@ -352,7 +374,8 @@ export class BrowserAPI {
             filepath,
           });
         } else {
-          if (filepath.startsWith('lfs/')) {
+          // stage files in remoteEndpoint as LFS pointers
+          if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import('./lfs.mjs');
 
             await addLFS({
@@ -392,42 +415,53 @@ export class BrowserAPI {
     }
   }
 
-  async uploadBlobs(url, token) {
-    // for every file in lfs/
-    // if file is not LFS pointer,
-    // upload file to remote
+  // called with "files" by dispensers which need to check download acitons
+  // called without "files" on push
+  async uploadBlobsLFS(remote, files) {
     const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
 
-    const lfs = `${this.dir}/lfs/`;
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
-    const filenames = await fs.promises.readdir(lfs);
+    let assets;
 
-    const files = (await Promise.all(
-      filenames.map(async (filename) => {
-        const file = await this.fetchFile(`lfs/${filename}`);
+    // if no files are specified
+    // for every file in remoteEndpoint/
+    // if file is not LFS pointer,
+    // upload file to remote
+    if (files === undefined) {
+      const filenames = await pfs.readdir(`${this.dir}/${lfsDir}/`);
 
-        if (!pointsToLFS(file)) {
-          return file;
-        }
+      assets = (await Promise.all(
+        filenames.map(async (filename) => {
+          const file = await this.fetchFile(`${lfsDir}/${filename}`);
 
-        return undefined;
-      }),
-    )).filter(Boolean);
+          if (!pointsToLFS(file)) {
+            return file;
+          }
+
+          return undefined;
+        }),
+      )).filter(Boolean);
+    } else {
+      assets = files;
+    }
 
     await uploadBlobs({
-      url,
+      url: remoteUrl,
       auth: {
-        username: token,
-        password: token,
+        username: remoteToken,
+        password: remoteToken,
       },
-    }, files);
+    }, assets);
   }
 
-  async push(url, token) {
+  async push(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     try {
-      await this.uploadBlobs(url, token);
+      await this.uploadBlobsLFS(remote);
     } catch (e) {
-      console.log('uploadBlobs failed', e);
+      console.log('api/browser/uploadBlobsLFS failed', e);
     }
 
     const { push } = await import('isomorphic-git');
@@ -439,14 +473,16 @@ export class BrowserAPI {
       http,
       force: true,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
 
-  async pull(url, token) {
+  async pull(remote) {
+    const [remoteUrl, remoteToken] = await this.getRemote(remote);
+
     // fastForward instead of pull
     // https://github.com/isomorphic-git/isomorphic-git/issues/1073
     const { fastForward } = await import('isomorphic-git');
@@ -457,9 +493,9 @@ export class BrowserAPI {
       fs,
       http,
       dir: this.dir,
-      url,
+      url: remoteUrl,
       onAuth: () => ({
-        username: token,
+        username: remoteToken,
       }),
     });
   }
@@ -477,33 +513,26 @@ export class BrowserAPI {
   }
 
   async ensure(schema, name) {
-    await this.setupRepo(schema);
-
-    if (name) {
-      await this.symlink(name);
-    }
-  }
-
-  async setupRepo(schema) {
-    const pfs = fs.promises;
-
-    if (!(await pfs.readdir('/')).includes('store')) {
-      await pfs.mkdir('/store');
-    }
+    this.dir = `/${this.uuid}-${name}`;
 
     const { dir } = this;
 
     const { init, setConfig } = await import('isomorphic-git');
 
-    if (!(await pfs.readdir('/store')).includes(this.uuid)) {
+    const existingRepo = (await pfs.readdir('/'))
+          .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+
+    if (existingRepo === undefined) {
       await pfs.mkdir(dir);
 
-      await init({ fs, dir });
+      await init({ fs, dir, defaultBranch: 'main' });
+    } else {
+      await pfs.rename(`/${existingRepo}`, dir);
     }
 
-    await fs.promises.writeFile(
+    await pfs.writeFile(
       `${dir}/.gitattributes`,
-      'lfs/** filter=lfs diff=lfs merge=lfs -text\n',
+      `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
       'utf8',
     );
 
@@ -535,24 +564,16 @@ export class BrowserAPI {
       value: true,
     });
 
-    await pfs.writeFile(`${this.dir}/metadir.json`, JSON.stringify(schema, null, 2), 'utf8');
+    await pfs.writeFile(
+      `${this.dir}/metadir.json`,
+      JSON.stringify(schema, null, 2),
+      'utf8'
+    );
 
     await this.commit();
   }
 
-  async symlink(name) {
-    const pfs = fs.promises;
-
-    if (!(await pfs.readdir('/')).includes('repos')) {
-      await pfs.mkdir('/repos');
-    }
-
-    await pfs.symlink(this.dir, `/repos/${name}`);
-  }
-
   async rimraf(rimrafpath) {
-    const pfs = fs.promises;
-
     let files;
 
     try {
@@ -577,8 +598,6 @@ export class BrowserAPI {
   }
 
   async ls(lspath) {
-    const pfs = fs.promises;
-
     let files;
 
     try {
@@ -620,8 +639,8 @@ export class BrowserAPI {
     return index;
   }
 
-  async downloadAsset(filename, filehash, token) {
-    const content = this.fetchAsset(filehash, token);
+  async downloadAsset(filename, filehash) {
+    const content = this.fetchAsset(filehash);
 
     const { saveAs } = await import('file-saver');
 
@@ -634,15 +653,15 @@ export class BrowserAPI {
     const zip = new JsZip();
 
     const addToZip = async (dir, zipDir) => {
-      const files = await fs.promises.readdir(dir);
+      const files = await pfs.readdir(dir);
 
       for (const file of files) {
         const filepath = `${dir}/${file}`;
 
-        const { type: filetype } = await fs.promises.lstat(filepath);
+        const { type: filetype } = await pfs.lstat(filepath);
 
         if (filetype === 'file') {
-          const content = await fs.promises.readFile(filepath);
+          const content = await pfs.readFile(filepath);
 
           zipDir.file(file, content);
         } else if (filetype === 'dir') {
@@ -662,14 +681,14 @@ export class BrowserAPI {
     });
   }
 
-  async cloneView(remote, token) {
+  async cloneView(remoteUrl, remoteToken) {
     try {
       await this.rimraf(this.dir);
     } catch {
       // do nothing
     }
 
-    await this.clone(remote, token);
+    await this.clone(remoteUrl, remoteToken);
   }
 
   async getRemote() {
@@ -682,56 +701,79 @@ export class BrowserAPI {
     });
   }
 
-  async populateLFS(remote, token) {
-    try {
-      const files = await fs.promises.readdir(`${this.dir}/lfs`);
+  // returns blob url
+  async fetchAsset(filename) {
+    let assetEndpoint;
 
-      for (const filename of files) {
-        await this.fetchAsset(filename, token);
+    let content;
+
+    try {
+      const {
+        getConfig
+      } = await import('isomorphic-git');
+
+      assetEndpoint = await getConfig({
+        fs,
+        dir: this.dir,
+        path: 'asset.path',
+      });
+
+      const assetPath = path.join(assetEndpoint, filename);
+
+      // if URL, try to fetch
+      try {
+        new URL(assetPath);
+
+        content = await fetch(assetPath);
+
+        return content;
+      } catch(e) {
+        // do nothing
       }
-    } catch {
+
+      // otherwise try to read from fs
+      content = await fs.readFileSync(assetPath);
+
+      return content
+    } catch(e) {
       // do nothing
     }
-  }
 
-  // returns Blob
-  async fetchAsset(filename, token) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
-      const lfspath = `/api/lfs/${filename}`;
+    assetEndpoint = path.join(this.dir, lfsDir);
 
-      const result = await fetch(lfspath);
+    const assetPath = path.join(assetEndpoint, filename);
 
-      if (result.ok) {
-        return result.blob();
-      }
-    }
-
-    let content = await this.fetchFile(`lfs/${filename}`);
-
-    const contentBuf = Buffer.from(content);
+    content = await fs.readFileSync(assetPath);
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
-    if (pointsToLFS(contentBuf)) {
-      const remote = await this.getRemote();
+    if (pointsToLFS(content)) {
+      const pointer = await readPointer({ dir: this.dir, content });
 
-      const pointer = await readPointer({ dir: this.dir, content: contentBuf });
+      const remotes = await this.listRemotes();
+      // loop over remotes trying to resolve LFS
+      for (const remote of remotes) {
+        const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
-      const http = await import('isomorphic-git/http/web/index.cjs');
+        try {
+          content = await downloadBlobFromPointer(
+            fs,
+            {
+              http,
+              url: remoteUrl,
+              auth: {
+                username: remoteToken,
+                password: remoteToken,
+              },
+            },
+            pointer,
+          );
 
-      content = await downloadBlobFromPointer(
-        fs,
-        {
-          http,
-          url: remote,
-          auth: {
-            username: token,
-            password: token,
-          },
-        },
-        pointer,
-      );
+          return content;
+        } catch(e) {
+          // do nothing
+        }
+      }
     }
 
     return content;
@@ -741,33 +783,81 @@ export class BrowserAPI {
     await this.writeFile('feed.xml', xml);
   }
 
-  static async downloadUrlFromPointer(url, token, pointerInfo) {
-    const http = await import('isomorphic-git/http/web/index.cjs');
+  async listRemotes() {
+    const { listRemotes } = await import('isomorphic-git');
 
-    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+    const remotes = await listRemotes({
+      fs,
+      dir: this.dir,
+    });
 
-    return downloadUrlFromPointer(
-      {
-        http,
-        url,
-        auth: {
-          username: token,
-          password: token,
-        },
-      },
-      pointerInfo,
-    );
+    return remotes.map((r) => r.remote)
   }
 
-  static async uploadBlobsLFS(url, token, files) {
-    const { uploadBlobs } = await import('@fetsorn/isogit-lfs');
+  async addRemote(remoteName, remoteUrl, remoteToken) {
+    const {
+      addRemote, setConfig
+    } = await import('isomorphic-git');
 
-    await uploadBlobs({
-      url,
-      auth: {
-        username: token,
-        password: token,
-      },
-    }, files);
+    await addRemote({
+      fs,
+      dir: this.dir,
+      remote: remoteName,
+      url: remoteUrl
+    })
+
+    if (remoteToken) {
+      await setConfig({
+        fs,
+        dir: this.dir,
+        path: `remote.${remoteName}.token`,
+        value: remoteToken
+      });
+    }
+  }
+
+  async getRemote(remoteName) {
+    const {
+      getConfig
+    } = await import('isomorphic-git');
+
+    const remoteUrl = await getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.url`,
+    });
+
+    const remoteToken = await getConfig({
+      fs,
+      dir: this.dir,
+      path: `remote.${remoteName}.token`,
+    });
+
+    return [remoteUrl, remoteToken]
+  }
+
+  async addAssetPath(assetPath) {
+    const {
+      setConfig
+    } = await import('isomorphic-git');
+
+    await setConfig({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+      value: assetPath,
+    });
+  }
+
+  async listAssetPaths() {
+    const {
+      getConfigAll
+    } = await import('isomorphic-git');
+
+    await getConfigAll({
+      fs,
+      dir: this.dir,
+      path: `asset.path`,
+    });
   }
 }

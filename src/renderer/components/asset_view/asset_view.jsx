@@ -43,11 +43,13 @@ export function AssetView({ schema, entry }) {
   const branch = entry._;
 
   const filehashBranch = Object.keys(schema).find(
-    (b) => schema[b].trunk === branch && schema[b].task === 'filehash',
+    (b) => (schema[b].trunk === branch || b === branch) && schema[b].task === 'filehash',
   );
 
   const filenameBranch = Object.keys(schema).find(
-    (b) => schema[b].trunk === branch && schema[b].task === 'filename',
+    // when file is object, filename is a leaf
+    // when file is a string, it is also a filename
+    (b) => (schema[b].trunk === branch || b === branch) && schema[b].task === 'filename',
   );
 
   const [repoUUID, isView] = useStore((state) => [state.repoUUID, state.isView]);

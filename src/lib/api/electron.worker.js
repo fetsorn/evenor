@@ -117,9 +117,13 @@ async function select() {
     grep,
   });
 
-  const entries = await query.select(searchParams);
+  try {
+    const entries = await query.select(searchParams);
 
-  parentPort.postMessage(entries);
+    parentPort.postMessage(entries);
+  } catch(e) {
+    console.log(e)
+  }
 }
 
 async function updateEntry() {

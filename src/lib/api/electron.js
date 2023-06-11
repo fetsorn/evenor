@@ -29,6 +29,7 @@ let readWorker;
 // and we terminate the previous instance if worker is still running
 async function runWorker(workerData) {
   if (workerData.msg === 'select' && readWorker !== undefined) {
+    console.log("read worker terminated");
     await readWorker.terminate();
 
     readWorker = undefined;
@@ -693,6 +694,7 @@ export class ElectronAPI {
 
       return content
     } catch(e) {
+      console.log(e)
       // do nothing
     }
 

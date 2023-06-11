@@ -68,17 +68,19 @@ export class BrowserAPI {
   constructor(uuid) {
     this.uuid = uuid;
 
-    try {
-      // find repo with uuid
-      const repoDir = (fs.readdirSync("/"))
-            .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
+    if (__BUILD_MODE__ !== 'server' && __BUILD_MODE__ !== 'electron') {
+      try {
+        // find repo with uuid
+        const repoDir = (fs.readdir("/"))
+              .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
 
-      if (repoDir) {
-        this.dir = path.join("/", repoDir);
+        if (repoDir) {
+          this.dir = path.join("/", repoDir);
+        }
+      } catch(e) {
+        // do nothing
+        console.log(e)
       }
-    } catch(e) {
-      // do nothing
-      console.log(e)
     }
   }
 

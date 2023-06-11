@@ -3,18 +3,18 @@ import { useStore } from '@/store/index.js';
 import { colorFile } from './waypoint_entries_controller.js';
 import styles from './waypoint_entries.module.css';
 
-function findBranchItem(obj, key) {
-  let i;
-  const ts = Object.prototype.toString;
+function findBranchItem(obj, itemKey) {
+  const toString = Object.prototype.toString;
   const hasOwn = Object.prototype.hasOwnProperty.bind(obj);
 
-  for (i in obj) {
-    if (hasOwn(i)) {
-      if (obj._ === key) {
+  for (const key in obj) {
+    if (hasOwn(key)) {
+      if (obj._ === itemKey) {
         return obj;
       }
-      if (ts.call(obj[i]) === '[object Array]' || ts.call(obj[i]) === '[object Object]') {
-        return findBranchItem(obj[i], key);
+      if (toString.call(obj[key]) === '[object Array]'
+          || toString.call(obj[key]) === '[object Object]') {
+        return findBranchItem(obj[key], itemKey);
       }
     }
   }
@@ -30,24 +30,30 @@ export function WaypointEntries({
 
   const fileBranch = Object.keys(schema).find(
     (b) => schema[b].task === 'file',
-  );
+  ) ?? Object.keys(schema).find(
+    (b) => schema[b].task === 'filename',
+  ) ;
 
   const filenameBranch = Object.keys(schema).find(
-    (b) => schema[b].trunk === fileBranch && schema[b].task === 'filename',
+    // when file is object, filename is a leaf
+    // when file is a string, it is also a filename
+    (b) => (schema[b].trunk === fileBranch || b === fileBranch) && schema[b].task === 'filename',
   );
 
   const filetypeBranch = Object.keys(schema).find(
-    (b) => schema[b].trunk === fileBranch && schema[b].task === 'filetype',
+    (b) => (schema[b].trunk === fileBranch || b === fileBranch) && schema[b].task === 'filetype',
   );
 
   function colorEntry(entry) {
-    const file = findBranchItem(entry, fileBranch);
+    if (filenameBranch || filetypeBranch) {
+      const file = findBranchItem(entry, fileBranch);
 
-    if (file) {
-      return colorFile(
-        file[filenameBranch],
-        file[filetypeBranch],
-      );
+      if (file) {
+        return colorFile(
+          file[filenameBranch],
+          file[filetypeBranch],
+        );
+      }
     }
 
     return 'black';

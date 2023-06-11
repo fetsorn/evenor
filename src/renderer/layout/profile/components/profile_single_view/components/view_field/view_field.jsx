@@ -153,6 +153,12 @@ export function ViewField({ entry, schema, isBaseObject }) {
       );
 
     default:
+      if (branchTask === 'filename') {
+        return (
+          <AssetView {...{ entry, schema }} />
+        );
+      }
+
       return (
         <div>
           {branchDescription}

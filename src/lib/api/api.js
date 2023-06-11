@@ -10,6 +10,7 @@ export class API {
   constructor(uuid) {
     this.uuid = uuid;
 
+    // TODO is unnecessarily created in electron
     this.#browser = new BrowserAPI(uuid);
   }
 

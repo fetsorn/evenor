@@ -22,7 +22,7 @@ export function Dropdown({
   }
 
   return (
-    <div title={title} className={styles.dropdown}>
+    <div title={title} className={cn(styles.dropdown, "dropdown")}>
       <button type="button" className={styles.menuItem} onClick={onOpen}>
         {label}
       </button>

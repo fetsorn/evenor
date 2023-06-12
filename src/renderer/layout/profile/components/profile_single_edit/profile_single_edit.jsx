@@ -61,22 +61,22 @@ export function ProfileSingleEdit() {
   const title = formatDate(group);
 
   return (
-    <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
+    <div className={cn(styles.sidebar, { [styles.invisible]: !entry }, "profile-edit__sidebar edit-sidebar" )}>
       {entry && schema && (
-        <div className={styles.container}>
-          <div id="scrollcontainer" className={styles.sticky}>
+        <div className={cn(styles.container, "edit-sidebar__container")}>
+          <div id="scrollcontainer" className={cn(styles.sticky, "edit-sidebar__sticky")}>
             <Title>
               {title}
               {' '}
               {index}
             </Title>
 
-            <div className={styles.buttonbar}>
+            <div className={cn( styles.buttonbar,'edit-sidebar__btn-bar')}>
               <Button type="button" title={t('line.button.save')} onClick={() => onEntrySave()}>
                 💾
               </Button>
 
-              <Button type="button" title={t('line.button.revert')} onClick={onEntryRevert}>
+              <Button  type="button" title={t('line.button.revert')} onClick={onEntryRevert}>
                 ↩
               </Button>
             </div>

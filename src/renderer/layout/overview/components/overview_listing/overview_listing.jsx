@@ -8,6 +8,14 @@ import {
 } from '/src/renderer/layout/overview/components/overview_itinerary/components/index';
 import { buildItinerary } from '/src/renderer/layout/overview/components/overview_itinerary/overview_itinerary_controller.js';
 
+export function Empty() {
+
+  return (
+    <div>aaa</div>
+  );
+
+}
+
 export function OverviewListing() {
   const [itinerary, setItinerary] = useState([]);
 
@@ -59,7 +67,7 @@ export function OverviewListing() {
         <VirtualScroll
           {...{ onEntrySelect, onEntryCreate, onBatchSelect }}
           data={itinerary}
-          rowComponent={<div>aaa</div>}
+          rowComponent={Empty}
         />
       )}
     </div>

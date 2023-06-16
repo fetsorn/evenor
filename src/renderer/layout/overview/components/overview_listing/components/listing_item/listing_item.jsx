@@ -3,18 +3,8 @@ import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import styles from './itinerary_waypoint.module.css';
 
-// TODO: replace with Day.js
-function isDate(title) {
-  return true;
-}
-
-// TODO: replace with Day.js
-function formatDate(title) {
-  return title;
-}
-
 export function listingItem({
-  data: waypoint,
+  data: listing,
   onEntrySelect,
   onEntryCreate,
   isLast,

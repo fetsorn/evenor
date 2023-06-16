@@ -42,11 +42,9 @@ export function OverviewItinerary() {
   useEffect(() => {
     onUseEffect();
   }, [overview, groupBy]);
-  console.log(overview);
 
   return (
     <div className={styles.timeline}>
-      AAAa
       {!itinerary.length ? (
         <button
           className={styles.star}

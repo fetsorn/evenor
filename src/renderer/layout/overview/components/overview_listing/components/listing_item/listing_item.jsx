@@ -2,7 +2,6 @@ import React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import styles from './itinerary_waypoint.module.css';
-import { WaypointEntries } from '..';
 
 // TODO: replace with Day.js
 function isDate(title) {
@@ -14,7 +13,7 @@ function formatDate(title) {
   return title;
 }
 
-export function ItineraryWaypoint({
+export function listingItem({
   data: waypoint,
   onEntrySelect,
   onEntryCreate,
@@ -26,17 +25,17 @@ export function ItineraryWaypoint({
     <section className={cn(styles.row, { [styles.last]: isLast })} {...others}>
       <div>
         {isDate(waypoint.date) ? ( // try to parse as date, otherwise render as is
-          <time className={styles.date} dateTime={waypoint.date.slice(1, -1)}>
-            {formatDate(waypoint.date)}
+          <time className={styles.date} dateTime={listing.date.slice(1, -1)}>
+            {formatDate(listing.date)}
           </time>
         ) : (
-          <div className={styles.date}>{waypoint.date}</div>
+          <div className={styles.date}>{listing.date}</div>
         )}
 
         <button
           className={styles.add}
           type="button"
-          onClick={() => onEntryCreate(waypoint.date, waypoint.events.length + 1)}
+          onClick={() => onEntryCreate(listing.date, listing.events.length + 1)}
           title={t('line.button.add')}
           key="addevent"
         >
@@ -44,7 +43,6 @@ export function ItineraryWaypoint({
         </button>
       </div>
 
-      <WaypointEntries {...{ onEntrySelect }} entries={waypoint.events} />
     </section>
   );
 }

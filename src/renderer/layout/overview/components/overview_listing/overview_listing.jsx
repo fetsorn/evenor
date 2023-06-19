@@ -4,17 +4,9 @@ import styles from '/src/renderer/layout/overview/components/overview_itinerary/
 import { VirtualScroll } from '/src/renderer/components/virtual_scroll/virtual_scroll';
 import { useStore } from '/src/renderer/store/store';
 import {
-  ItineraryWaypoint,
-} from '/src/renderer/layout/overview/components/overview_itinerary/components/index';
+  listingItem
+} from './components/listing_item/index';
 import { buildItinerary } from '/src/renderer/layout/overview/components/overview_itinerary/overview_itinerary_controller.js';
-
-export function Empty() {
-
-  return (
-    <div>aaa</div>
-  );
-
-}
 
 export function OverviewListing() {
   const [itinerary, setItinerary] = useState([]);
@@ -66,8 +58,8 @@ export function OverviewListing() {
       ) : (
         <VirtualScroll
           {...{ onEntrySelect, onEntryCreate, onBatchSelect }}
-          data={itinerary}
-          rowComponent={Empty}
+          data={overview}
+          rowComponent={listingItem}
         />
       )}
     </div>

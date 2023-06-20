@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import styles from '/src/renderer/layout/overview/components/overview_itinerary/overview_itinerary.module.css';
+import styles from './overview_listing.module.css';
 import { VirtualScroll } from '/src/renderer/components/virtual_scroll/virtual_scroll';
 import { useStore } from '/src/renderer/store/store';
 import {
-  listingItem
+  ListingItem
 } from './components/listing_item/index';
-import { buildItinerary } from '/src/renderer/layout/overview/components/overview_itinerary/overview_itinerary_controller.js';
 
 export function OverviewListing() {
   const [itinerary, setItinerary] = useState([]);
@@ -16,7 +15,6 @@ export function OverviewListing() {
   const [
     entry,
     overview,
-    groupBy,
     onEntrySelect,
     onEntryCreate,
     onBatchSelect,
@@ -29,23 +27,11 @@ export function OverviewListing() {
     state.onBatchSelect,
   ]);
 
-  async function onUseEffect() {
-    const itineraryNew = await buildItinerary(overview, groupBy);
 
-    setItinerary(itineraryNew);
-
-    if (entry?.UUID) {
-      document.getElementById(entry.UUID).scrollIntoView();
-    }
-  }
-
-  useEffect(() => {
-    onUseEffect();
-  }, [overview, groupBy]);
 
   return (
     <div className={styles.timeline}>
-      {!itinerary.length ? (
+      {!overview.length ? (
         <button
           className={styles.star}
           type="button"
@@ -59,7 +45,7 @@ export function OverviewListing() {
         <VirtualScroll
           {...{ onEntrySelect, onEntryCreate, onBatchSelect }}
           data={overview}
-          rowComponent={listingItem}
+          rowComponent={ListingItem}
         />
       )}
     </div>

@@ -1,9 +1,8 @@
 import React from 'react';
-import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
-import styles from './itinerary_waypoint.module.css';
+import styles from './listing_item.module.css';
 
-export function listingItem({
+export function ListingItem({
   data: listing,
   onEntrySelect,
   onEntryCreate,

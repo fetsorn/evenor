@@ -1,1 +1,1 @@
-export { listingItem } from './listing_item/index.js';
+export { ListingItem } from './listing_item/index.js';

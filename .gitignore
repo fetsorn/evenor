@@ -85,3 +85,6 @@ out/
 /release/
 /src/server/build
 /dist/
+
+# add .idea to .gitignore
+.idea

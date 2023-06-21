@@ -22,6 +22,7 @@ export function ItineraryWaypoint({
   ...others
 }) {
   const { t } = useTranslation();
+
   return (
     <section className={cn(styles.row, { [styles.last]: isLast })} {...others}>
       <div>

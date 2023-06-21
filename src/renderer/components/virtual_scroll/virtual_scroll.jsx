@@ -70,6 +70,7 @@ export function VirtualScroll({
       window.removeEventListener('scroll', onScroll);
     };
   }, [dataWithKeys, visibleRowCount, rowHeight, tolerance]);
+
   return (
     <>
       <div style={{ height: getTopHeight() }} ref={topSpacer} />

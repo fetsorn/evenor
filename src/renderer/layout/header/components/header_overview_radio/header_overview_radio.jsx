@@ -8,9 +8,11 @@ export function HeaderOverviewRadio() {
 
   const [
     onChangeOverviewType,
-  ] = useStore((state) => [
-    state.onChangeOverviewType,
-  ]);
+  ] = useStore((state) => {
+    return [
+      state.onChangeOverviewType,
+    ]
+  });
 
   return (
     <div className={styles.container}>
@@ -22,7 +24,7 @@ export function HeaderOverviewRadio() {
         <input
           type="radio"
           id="radio_itinerary"
-          name="overview_typs"
+          name="overview_type"
           value="itinerary"
           onChange={({ target: { value } }) => onChangeOverviewType(value)}
         />
@@ -39,27 +41,27 @@ export function HeaderOverviewRadio() {
         <input
           type="radio"
           id="radio_graph"
-          name="overview_typs"
+          name="overview_type"
           value="graph"
           onChange={({ target: { value } }) => onChangeOverviewType(value)}
         />
         🌳
       </label>
-      {/* <label */}
-      {/*   htmlFor="radio_book" */}
-      {/*   title={t('header.button.book')} */}
-      {/*   className={styles.radiobutton} */}
-      {/* > */}
-      {/*   <input */}
-      {/*     type="radio" */}
-      {/*     id="radio_book" */}
-      {/*     name="overview_typs" */}
-      {/*     value="book" */}
-      {/*     onChange={({ target: { value } }) => onChangeOverviewType(value)} */}
-      {/*   /> */}
-      {/*   {/\* open book 📖 closed book 📕 green book 📗 blue book 📘 orange book 📙 books 📚 *\/} */}
-      {/*   📗 */}
-      {/* </label> */}
+      <label
+        htmlFor="radio_book"
+        title={t('header.button.book')}
+        className={styles.radiobutton}
+      >
+        <input
+          type="radio"
+          id="radio_book"
+          name="overview_type"
+          value="listing"
+          onChange={({ target: { value } }) => onChangeOverviewType(value)}
+        />
+        {/* open book 📖 closed book 📕 green book 📗 blue book 📘 orange book 📙 books 📚 */}
+        📗
+      </label>
     </div>
   );
 }

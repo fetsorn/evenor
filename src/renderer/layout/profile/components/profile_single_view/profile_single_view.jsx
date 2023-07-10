@@ -55,17 +55,17 @@ export function ProfileSingleView() {
 
   const schema = isSettings ? schemaRoot : schemaRepo;
   return (
-    <div className={cn(styles.sidebar, { [styles.invisible]: !entry })}>
+    <div className={cn(styles.sidebar, { [styles.invisible]: !entry }, "profile-view__sidebar view__sidebar")}>
       {entry && (
-        <div className={styles.container}>
-          <div id="scrollcontainer" className={styles.sticky}>
+        <div className={cn(styles.container,'view-sidebar__container')}>
+          <div id="scrollcontainer" className={cn(styles.sticky,'view-sidebar__sticky')}>
             <Title>
               {title}
               {' '}
               {index}
             </Title>
 
-            <div className={styles.buttonbar}>
+            <div className={cn(styles.buttonbar,'view-sidebar__btn-bar')}>
               <Button type="button" title={t('line.button.edit')} onClick={onEntryEdit}>
                 ✏️
               </Button>

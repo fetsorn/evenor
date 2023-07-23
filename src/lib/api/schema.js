@@ -5,6 +5,7 @@ import {
   schemaRSS,
   schemaLocal,
   schemaZip,
+  schemaTG,
 } from '../dispensers/index.js';
 
 export function entryToSchema(schemaEntry) {
@@ -466,4 +467,5 @@ export const schemaRoot = {
   ...schemaRSS,
   ...schemaLocal,
   ...schemaZip,
+  ...schemaTG,
 };

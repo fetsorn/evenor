@@ -711,7 +711,7 @@ export class BrowserAPI {
     });
   }
 
-  // returns blob url
+  // returns Uint8Array file contents
   async fetchAsset(filename) {
     let assetEndpoint;
 

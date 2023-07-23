@@ -663,7 +663,7 @@ export class ElectronAPI {
     });
   }
 
-  // returns blob url
+  // returns Uint8Array file contents
   async fetchAsset(filename) {
     let assetEndpoint;
 

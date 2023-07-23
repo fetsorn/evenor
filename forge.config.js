@@ -38,7 +38,7 @@ module.exports = {
     {
       name: '@electron-forge/plugin-webpack',
       config: {
-        devContentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-src 'self' blob:; media-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self' https://ondemand-service-d3ncqg2pmq-uc.a.run.app; object-src 'self' blob:;",
+        devContentSecurityPolicy: "default-src 'self'; script-src 'self' 'unsafe-eval' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-src 'self' blob:; media-src 'self' blob:; img-src 'self' data: blob:; connect-src 'self' https://*.telegram.org https://t.me ws://vesta.web.telegram.org wss://venus.web.telegram.org/apiws wss://venus-1.web.telegram.org/apiws; object-src 'self' blob:;",
         mainConfig: './webpack.main.config.js',
         renderer: {
           config: './webpack.renderer.config.js',

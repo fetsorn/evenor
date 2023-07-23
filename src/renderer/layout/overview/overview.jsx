@@ -5,6 +5,7 @@ const OverviewItinerary = React.lazy(() => import('./components/overview_itinera
 const OverviewBook = React.lazy(() => import('./components/overview_book/index.js'));
 const OverviewGraph = React.lazy(() => import('./components/overview_graph/index.js'));
 const OverviewListing = React.lazy(() => import('./components/overview_listing/index'))
+const OverviewChat = React.lazy(() => import('./components/overview_chat/index'))
 export function Overview() {
   const overviewType = useStore((state) => state.overviewType);
 
@@ -30,10 +31,15 @@ export function Overview() {
         </Suspense>
       );
 
-      case OverviewType.listing:
-        return (<Suspense>
-          <OverviewListing />
-        </Suspense>);
+    case OverviewType.listing:
+      return (<Suspense>
+                <OverviewListing />
+              </Suspense>);
+
+    case OverviewType.chat:
+      return (<Suspense>
+                <OverviewChat />
+              </Suspense>);
 
       /* case OverviewType.gallery:
      *   return <OverviewGallery />; */

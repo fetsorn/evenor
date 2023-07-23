@@ -3,4 +3,5 @@ export const OverviewType = Object.freeze({
   graph: 'graph',
   book: 'book',
   listing: 'listing',
+  chat: 'chat',
 });

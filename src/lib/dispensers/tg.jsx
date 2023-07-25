@@ -135,11 +135,17 @@ export function TG({ baseEntry, branchEntry }) {
 
     return Promise.all(
       entries.map(async (entry) => {
-        // TODO support multiple files
-        const fileEntry = entry.files.items[0]
+        let fileHandle
 
-        // send text for each unpublished entry
-        if (!isPublished.get(fileEntry.filehash)) {
+        let entryID = entry.UUID;
+
+        if (entry.files?.items) {
+          // TODO support multiple files
+          const fileEntry = entry.files.items[0];
+
+          entryID = fileEntry.filehash;
+
+          // send text for each unpublished entry
           const contents = await baseAPI.fetchAsset(fileEntry.filehash);
 
           const mime = await import('mime');
@@ -150,11 +156,17 @@ export function TG({ baseEntry, branchEntry }) {
 
           const file = new File([blob], fileEntry.filename)
 
-          const fileHandle = await client.uploadFile({file})
+          fileHandle = await client.uploadFile({file})
+        }
+
+        if (!isPublished.get(entryID)) {
+          const params = { message: `${entryID}\n${entry.datum}\n${entry.actdate}`, silent: true };
+
+          if (fileHandle) { params.file = fileHandle };
 
           await client.sendMessage(
             `@${branchEntry.tg_tag_channel_id}`,
-            { message: `${entry.UUID}\n${entry.datum}\n${entry.actdate}`, file: fileHandle }
+            params
           );
         }
       })

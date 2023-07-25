@@ -38,7 +38,7 @@
     "@electron-forge/plugin-webpack": "6.0.5",
     "@fetsorn/csvs-js": "0.11.1",
     "@fetsorn/ged2dot": "0.2.0",
-    "@fetsorn/isogit-lfs": "^0.3.3",
+    "@fetsorn/isogit-lfs": "^0.4.0",
     "@fetsorn/ppt": "0.0.1",
     "@fetsorn/wasm-grep": "0.3.1",
     "@hpcc-js/wasm": "2.8.0",

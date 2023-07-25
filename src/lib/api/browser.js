@@ -178,7 +178,7 @@ export class BrowserAPI {
     // write buffer to assetEndpoint/filename
     const assetEndpoint = path.join(dir, lfsDir);
 
-    this.writeFile(assetEndpoint, buffer);
+    await this.writeFile(assetEndpoint, buffer);
   }
 
   async uploadFile(file) {
@@ -881,5 +881,23 @@ export class BrowserAPI {
       dir,
       path: `asset.path`,
     });
+  }
+
+  static async downloadUrlFromPointer(url, token, pointerInfo) {
+    const http = await import('isomorphic-git/http/web/index.cjs');
+
+    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+
+    return downloadUrlFromPointer(
+      {
+        http,
+        url,
+        auth: {
+          username: token,
+          password: token,
+        },
+        info: pointerInfo,
+      }
+    );
   }
 }

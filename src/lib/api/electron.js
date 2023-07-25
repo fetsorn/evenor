@@ -108,8 +108,6 @@ export class ElectronAPI {
   }
 
   async writeFile(filepath, content) {
-    const realpath = path.join(this.dir, filepath);
-
     // if path doesn't exist, create it
     // split path into array of directory names
     const pathElements = filepath.split(path.sep);
@@ -124,12 +122,12 @@ export class ElectronAPI {
 
       root += path.sep;
 
-      const files = await pfs.readdir(path.join(appPath, root));
+      const files = await pfs.readdir(path.join(this.dir, root));
 
       if (!files.includes(pathElement)) {
         try {
-          await pfs.mkdir(path.join(appPath, root, pathElement));
-        } catch {
+          await pfs.mkdir(path.join(this.dir, root, pathElement));
+        } catch(e) {
           // do nothing
         }
       } else {
@@ -139,14 +137,16 @@ export class ElectronAPI {
       root += pathElement;
     }
 
+    const realpath = path.join(this.dir, filepath);
+
     await pfs.writeFile(realpath, content);
   }
 
   async putAsset(filename, buffer) {
     // write buffer to assetEndpoint/filename
-    const assetEndpoint = path.join(this.dir, lfsDir);
+    const filePath = path.join(lfsDir, filename);
 
-    this.writeFile(assetEndpoint, buffer);
+    await this.writeFile(filePath, buffer);
   }
 
   async uploadFile() {
@@ -228,12 +228,12 @@ export class ElectronAPI {
   async clone(remoteUrl, remoteToken, name) {
     try {
       await pfs.stat(appPath);
-
-      if ((await pfs.readdir(appPath)).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
-        throw Error(`could not clone, directory ${this.uuid} exists`);
-      }
-    } catch {
+    } catch(e) {
       await pfs.mkdir(appPath);
+    }
+
+    if ((await pfs.readdir(appPath)).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+      throw Error(`could not clone, directory ${this.uuid} exists`);
     }
 
     this.dir = path.join(appPath, `${this.uuid}-${name}`);
@@ -271,7 +271,7 @@ export class ElectronAPI {
 
   async cloneView(remoteUrl, remoteToken) {
     try {
-      await this.rimraf(this.dir);
+      await ElectronAPI.rimraf(this.dir);
     } catch {
       // do nothing
     }
@@ -525,15 +525,14 @@ export class ElectronAPI {
 
   static async rimraf(rimrafpath) {
     // TODO: check that rimrafpath has no ".."
-    const file = path.join(appPath, rimrafpath);
 
     try {
-      const stats = await pfs.stat(file);
+      const stats = await pfs.stat(rimrafpath);
 
       if (stats.isFile()) {
-        await pfs.unlink(file);
+        await pfs.unlink(rimrafpath);
       } else if (stats.isDirectory()) {
-        await pfs.rmdir(file, { recursive: true });
+        await pfs.rm(rimrafpath, { recursive: true });
       }
     } catch (e) {
       // console.log(`failed to rimraf ${e}`);
@@ -800,5 +799,21 @@ export class ElectronAPI {
       dir: this.dir,
       path: `asset.path`,
     });
+  }
+
+  static async downloadUrlFromPointer(url, token, pointerInfo) {
+    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+
+    return downloadUrlFromPointer(
+      {
+        http,
+        url,
+        auth: {
+          username: token,
+          password: token,
+        },
+        info: pointerInfo,
+      },
+    );
   }
 }

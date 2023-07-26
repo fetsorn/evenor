@@ -290,6 +290,17 @@ export class API {
     }
   }
 
+  async downloadUrlFromPointer(url, token, pointerInfo) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        return window.electron.downloadUrlFromPointer(this.uuid, url, token, pointerInfo);
+
+      default:
+        return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);
+    }
+  }
+
   async getSettings() {
     const searchParams = new URLSearchParams();
 

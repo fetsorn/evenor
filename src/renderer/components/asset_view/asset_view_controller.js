@@ -191,7 +191,7 @@ async function toHtml(path, buf) {
 }
 
 export async function convert(filepath, blob) {
-  const abuf = await blob.arrayBuffer();
+  const abuf = blob instanceof Blob ? await blob.arrayBuffer() : blob;
 
   // try to convert to html
   try {
@@ -300,6 +300,7 @@ export function isIFrameable(path) {
     'mht',
     'url',
     'xml',
+    'txt'
   ];
 
   const iframeable = img.concat(vid, src, wav, web);

@@ -4,6 +4,7 @@ import { Remote } from './remote.jsx';
 import { Sync } from './sync.jsx';
 import { Zip } from './zip.jsx';
 import { Local } from './local.jsx';
+import { TG } from './tg.jsx';
 
 export function Dispenser({ baseEntry, branchEntry }) {
   switch (branchEntry._) {
@@ -21,6 +22,9 @@ export function Dispenser({ baseEntry, branchEntry }) {
 
     case 'local_tag':
       return (<Local {...{ baseEntry, branchEntry }} />);
+
+    case 'tg_tag':
+      return (<TG {...{ baseEntry, branchEntry }} />);
 
     default:
   }

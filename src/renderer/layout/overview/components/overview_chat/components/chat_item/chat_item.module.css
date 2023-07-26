@@ -1,0 +1,11 @@
+.row {
+  position: relative;
+}
+
+.content {
+  padding-left: calc(var(--rem) * 10);
+}
+
+.right {
+  padding-left: calc(var(--rem) * 30);
+}

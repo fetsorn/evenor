@@ -141,7 +141,7 @@ app
 
     ipcMain.handle(
       'cloneView',
-      async (_event, dir, remoteUrl, remoteToken) => (new API(dir)).clone(remoteUrl, remoteToken),
+      async (_event, dir, remoteUrl, remoteToken) => (new API(dir)).cloneView(remoteUrl, remoteToken),
     );
 
     ipcMain.handle(
@@ -221,6 +221,15 @@ app
     ipcMain.handle('addAssetPath', async (_event, dir, assetPath) => (new API(dir)).addAssetPath(assetPath));
 
     ipcMain.handle('listAssetPaths', async (_event, dir) => (new API(dir)).listAssetPaths());
+
+    ipcMain.handle(
+      'downloadUrlFromPointer',
+      async (_event, dir, remote, token, pointerInfo) => API.downloadUrlFromPointer(
+        remote,
+        token,
+        pointerInfo,
+      ),
+    );
 
     createWindow();
   })

@@ -198,21 +198,29 @@ export function RSS({ baseEntry, branchEntry }) {
     await rssAPI.cloneView(branchEntry.rss_tag_target, branchEntry.rss_tag_token);
 
     // find all filenames in the entry
-    const filenames = entries.map((entry) => entry[branchEntry.rss_tag_item_link]);
+    const fileEntries = entries.map((entry) => {
+      if (entry[branchEntry.rss_tag_item_link]?.items) {
+        return entry[branchEntry.rss_tag_item_link].items[0]
+      }
+    });
 
     const mime = await import('mime');
 
-    const mimetypes = filenames.map((filename) => (
-      filename ? mime.getType(filename) : undefined
-    ));
+    const mimetypes = fileEntries.map((fileEntry) => {
+      if (fileEntry?.filename) {
+        const mimetype = mime.getType(fileEntry.filename)
 
-    const files = await Promise.all(filenames.map(async (filename) => {
+        return mimetype
+      }
+    });
+
+    const files = await Promise.all(fileEntries.map(async (fileEntry) => {
     // const files = [];
-    // for (const filename of filenames) {
-      if (filename) {
-        const content = await baseAPI.fetchAsset(filename);
+    // for (const fileEntry of fileEntries) {
+      if (fileEntry?.filehash) {
+        const content = await baseAPI.fetchAsset(fileEntry.filehash);
 
-        await rssAPI.putAsset(filename, content);
+        await rssAPI.putAsset(fileEntry.filehash, content);
 
         // files.push(content);
 
@@ -236,12 +244,14 @@ export function RSS({ baseEntry, branchEntry }) {
 
     const { buildPointerInfo, downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
 
+    const http = await import('isomorphic-git/http/web/index.cjs');
+
     // download actions for rssAPI
     const downloadUrls = await Promise.all(files.map(async (file) => {
       if (file) {
         const pointerInfo = await buildPointerInfo(file);
 
-        return downloadUrlFromPointer(
+        return rssAPI.downloadUrlFromPointer(
           branchEntry.rss_tag_target,
           branchEntry.rss_tag_token,
           pointerInfo,

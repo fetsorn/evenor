@@ -48,20 +48,48 @@ export function HeaderOverviewRadio() {
         🌳
       </label>
       <label
-        htmlFor="radio_book"
-        title={t('header.button.book')}
+        htmlFor="radio_listing"
+        title={t('header.button.listing')}
         className={styles.radiobutton}
       >
         <input
           type="radio"
-          id="radio_book"
+          id="radio_listing"
           name="overview_type"
           value="listing"
           onChange={({ target: { value } }) => onChangeOverviewType(value)}
         />
-        {/* open book 📖 closed book 📕 green book 📗 blue book 📘 orange book 📙 books 📚 */}
-        📗
+        ✔️
       </label>
+      <label
+        htmlFor="radio_chat"
+        title={t('header.button.chat')}
+        className={styles.radiobutton}
+      >
+        <input
+          type="radio"
+          id="radio_chat"
+          name="overview_type"
+          value="chat"
+          onChange={({ target: { value } }) => onChangeOverviewType(value)}
+        />
+        💬️
+      </label>
+      {/* <label */}
+      {/*   htmlFor="radio_book" */}
+      {/*   title={t('header.button.book')} */}
+      {/*   className={styles.radiobutton} */}
+      {/* > */}
+      {/*   <input */}
+      {/*     type="radio" */}
+      {/*     id="radio_book" */}
+      {/*     name="overview_type" */}
+      {/*     value="book" */}
+      {/*     onChange={({ target: { value } }) => onChangeOverviewType(value)} */}
+      {/*   /> */}
+      {/*   {/\* open book 📖 closed book 📕 green book 📗 blue book 📘 orange book 📙 books 📚 *\/} */}
+      {/*   📗 */}
+      {/* </label> */}
     </div>
   );
 }

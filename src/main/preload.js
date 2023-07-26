@@ -53,4 +53,6 @@ contextBridge.exposeInMainWorld('electron', {
   addAssetPath: (dir, assetPath) => ipcRenderer.invoke('addAssetPath', dir, assetPath),
 
   listAssetPaths: (dir) => ipcRenderer.invoke('listAssetPaths', dir),
+
+  downloadUrlFromPointer: (dir, url, token, pointerInfo) => ipcRenderer.invoke('downloadUrlFromPointer', dir, url, token, pointerInfo),
 });

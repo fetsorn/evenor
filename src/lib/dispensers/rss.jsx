@@ -202,12 +202,12 @@ export function RSS({ baseEntry, branchEntry }) {
       if (entry[branchEntry.rss_tag_item_link]?.items) {
         return entry[branchEntry.rss_tag_item_link].items[0]
       }
-    }).filter(Boolean);
+    });
 
     const mime = await import('mime');
 
     const mimetypes = fileEntries.map((fileEntry) => {
-      if (fileEntry.filename) {
+      if (fileEntry?.filename) {
         const mimetype = mime.getType(fileEntry.filename)
 
         return mimetype
@@ -217,7 +217,7 @@ export function RSS({ baseEntry, branchEntry }) {
     const files = await Promise.all(fileEntries.map(async (fileEntry) => {
     // const files = [];
     // for (const fileEntry of fileEntries) {
-      if (fileEntry.filehash) {
+      if (fileEntry?.filehash) {
         const content = await baseAPI.fetchAsset(fileEntry.filehash);
 
         await rssAPI.putAsset(fileEntry.filehash, content);

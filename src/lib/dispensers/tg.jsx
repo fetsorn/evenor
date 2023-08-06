@@ -1,8 +1,9 @@
 import React from 'react';
-import { API } from '../api/index.js';
-import { Api as TGAPI, TelegramClient } from "telegram";
-import { StringSession } from "telegram/sessions";
 import smalltalk from 'smalltalk';
+import { TelegramClient } from "telegram";
+import { StringSession } from "telegram/sessions";
+import MP3Tag from "mp3tag.js"
+import { API } from '../api/index.js';
 
 export const schemaTG = {
   tg_tag: {
@@ -79,6 +80,68 @@ export const schemaTG = {
   },
 };
 
+async function postEntry(client, baseAPI, isPublished, channelID, entry) {
+  // TODO read entryID from datum hash
+  let entryID;
+
+  let fileHandle;
+
+  if (entry.files?.items) {
+    // TODO support multiple files
+    const fileEntry = entry.files.items[0];
+
+    entryID = fileEntry.filehash;
+
+    // send text for each unpublished entry
+    let contents = await baseAPI.fetchAsset(fileEntry.filehash);
+
+    const mime = await import('mime');
+
+    const mimetypeNew = mime.getType(fileEntry.filename);
+
+    const ext = fileEntry.filename.split('.').pop().trim();
+
+    if (ext == "mp3") {
+      const mp3tag = new MP3Tag(contents.buffer, false)
+
+      mp3tag.read()
+
+      if (mp3tag.error !== '') throw new Error(mp3tag.error)
+
+      mp3tag.remove()
+
+      mp3tag.tags.title = entryID
+      mp3tag.tags.artist = entry.actname ?? undefined
+
+      contents = mp3tag.save()
+    }
+
+    const blob = new Blob([contents], { type: mimetypeNew });
+
+    const file = new File([blob], `${entryID}.${ext}`)
+
+    fileHandle = await client.uploadFile({file})
+  } else {
+    const { digestMessage } = await import('@fetsorn/csvs-js');
+
+    entryID = await digestMessage(entry.datum);
+  }
+
+  if (!isPublished.get(entryID)) {
+    const params = {
+      message: `${entry.datum}\n${entry.actdate ?? "0000-00-00"}`,
+      silent: true
+    };
+
+    if (fileHandle) { params.file = fileHandle };
+
+    await client.sendMessage(
+      `@${channelID}`,
+      params
+    );
+  }
+}
+
 export function TG({ baseEntry, branchEntry }) {
   async function onTGsync() {
     const stringSession = new StringSession(branchEntry.tg_tag_session ?? "");
@@ -96,7 +159,7 @@ export function TG({ baseEntry, branchEntry }) {
       await client.start({
         phoneNumber: branchEntry.tg_tag_phone,
         password: async () => branchEntry.tg_tag_password,
-        phoneCode: async () => smalltalk.prompt("Please enter the code you received: ", "AA", 1),
+        phoneCode: async () => smalltalk.prompt("Please enter the code you received: ", "OTP code", 1),
         onError: (err) => console.log(err),
       });
 
@@ -122,9 +185,22 @@ export function TG({ baseEntry, branchEntry }) {
     const chat = await client.getEntity(`@${branchEntry.tg_tag_channel_id}`);
 
     for await (const message of client.iterMessages(chat,{})) {
-      const uuid = message.text.slice(0,64)
+      let entryID;
 
-      isPublished.set(uuid, true)
+      // read entryID from attachment name or text hash
+      if (message.file) {
+        entryID = message.file.name
+
+        entryID = entryID.replace(/\.[^/.]+$/, "")
+      } else {
+        const { digestMessage } = await import('@fetsorn/csvs-js');
+
+        const datum = message.text.substring(0, message.text.length - 11)
+
+        entryID = await digestMessage(datum);
+      }
+
+      isPublished.set(entryID, true)
     }
 
     const searchParams = new URLSearchParams(branchEntry.tg_tag_search);
@@ -134,42 +210,13 @@ export function TG({ baseEntry, branchEntry }) {
     const entries = await baseAPI.select(searchParams);
 
     return Promise.all(
-      entries.map(async (entry) => {
-        let fileHandle
-
-        let entryID = entry.UUID;
-
-        if (entry.files?.items) {
-          // TODO support multiple files
-          const fileEntry = entry.files.items[0];
-
-          entryID = fileEntry.filehash;
-
-          // send text for each unpublished entry
-          const contents = await baseAPI.fetchAsset(fileEntry.filehash);
-
-          const mime = await import('mime');
-
-          const mimetypeNew = mime.getType(fileEntry.filename);
-
-          const blob = new Blob([contents], { type: mimetypeNew });
-
-          const file = new File([blob], fileEntry.filename)
-
-          fileHandle = await client.uploadFile({file})
-        }
-
-        if (!isPublished.get(entryID)) {
-          const params = { message: `${entryID}\n${entry.datum}\n${entry.actdate}`, silent: true };
-
-          if (fileHandle) { params.file = fileHandle };
-
-          await client.sendMessage(
-            `@${branchEntry.tg_tag_channel_id}`,
-            params
-          );
-        }
-      })
+      entries.map(async (entry) => postEntry(
+        client,
+        baseAPI,
+        isPublished,
+        branchEntry.tg_tag_channel_id,
+        entry
+      ))
     )
   }
 

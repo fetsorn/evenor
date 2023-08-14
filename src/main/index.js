@@ -186,9 +186,9 @@ app
 
     ipcMain.handle(
       'downloadAsset',
-      async (_event, dir, filename, filehash) => (new API(dir)).downloadAsset(
+      async (_event, dir, content, filename) => (new API(dir)).downloadAsset(
+        content,
         filename,
-        filehash,
       ),
     );
 

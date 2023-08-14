@@ -56,7 +56,7 @@ export function AssetView({ schema, entry }) {
 
   const api = new API(repoUUID);
 
-  async function onView() {
+  async function fetchAsset() {
     let contents;
 
     try {
@@ -80,6 +80,12 @@ export function AssetView({ schema, entry }) {
       return;
     }
 
+    return contents
+  }
+
+  async function onView() {
+    let contents = await fetchAsset();
+
     // if cannot be shown in the browser, try to convert to something that can be shown
     if (!isIFrameable(entry[filenameBranch])) {
       contents = await convert(entry[filehashBranch], contents);
@@ -99,18 +105,9 @@ export function AssetView({ schema, entry }) {
   }
 
   async function onDownload() {
-    let token = '';
+    let contents = await fetchAsset();
 
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ !== 'server') {
-      const { tags } = await api.getSettings();
-
-      const firstRemote = tags?.items?.find((item) => item._ === 'remote_tag');
-
-      token = firstRemote?.remote_tag_token;
-    }
-
-    api.downloadAsset(entry[filenameBranch], entry[filehashBranch], token)
+    api.downloadAsset(contents, entry[filenameBranch] ?? entry[filehashBranch])
   }
 
   if (!blobURL) {

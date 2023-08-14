@@ -599,9 +599,7 @@ export class ElectronAPI {
     return index;
   }
 
-  async downloadAsset(filename, filehash) {
-    const content = await this.fetchAsset(filehash);
-
+  async downloadAsset(content, filename) {
     const file = await dialog.showSaveDialog({
       title: 'Select the File Path to save',
       defaultPath: filename,

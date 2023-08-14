@@ -32,7 +32,7 @@ contextBridge.exposeInMainWorld('electron', {
 
   fetchAsset: (dir, filename) => ipcRenderer.invoke('fetchAsset', dir, filename),
 
-  downloadAsset: (dir, filename, filehash) => ipcRenderer.invoke('downloadAsset', dir, filename, filehash),
+  downloadAsset: (dir, content, filename) => ipcRenderer.invoke('downloadAsset', dir, content, filename),
 
   putAsset: (dir, filename, content) => ipcRenderer.invoke('putAsset', dir, filename, content),
 

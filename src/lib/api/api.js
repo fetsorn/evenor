@@ -25,14 +25,14 @@ export class API {
     }
   }
 
-  async downloadAsset(filename, filehash) {
+  async downloadAsset(content, filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
-        return window.electron.downloadAsset(this.uuid, filename, filehash);
+        return window.electron.downloadAsset(this.uuid, content, filename);
 
       default:
-        return this.#browser.downloadAsset(filename, filehash);
+        return this.#browser.downloadAsset(content, filename);
     }
   }
 

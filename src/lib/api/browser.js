@@ -643,9 +643,7 @@ export class BrowserAPI {
     return index;
   }
 
-  async downloadAsset(filename, filehash) {
-    const content = this.fetchAsset(filehash);
-
+  async downloadAsset(content, filename) {
     const { saveAs } = await import('file-saver');
 
     await saveAs(content, filename);

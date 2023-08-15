@@ -81,7 +81,6 @@ export const schemaTG = {
 };
 
 async function postEntry(client, baseAPI, isPublished, channelID, entry) {
-  // TODO read entryID from datum hash
   let entryID;
 
   let fileHandle;
@@ -91,36 +90,6 @@ async function postEntry(client, baseAPI, isPublished, channelID, entry) {
     const fileEntry = entry.files.items[0];
 
     entryID = fileEntry.filehash;
-
-    // send text for each unpublished entry
-    let contents = await baseAPI.fetchAsset(fileEntry.filehash);
-
-    const mime = await import('mime');
-
-    const mimetypeNew = mime.getType(fileEntry.filename);
-
-    const ext = fileEntry.filename.split('.').pop().trim();
-
-    if (ext == "mp3") {
-      const mp3tag = new MP3Tag(contents.buffer, false)
-
-      mp3tag.read()
-
-      if (mp3tag.error !== '') throw new Error(mp3tag.error)
-
-      mp3tag.remove()
-
-      mp3tag.tags.title = entryID
-      mp3tag.tags.artist = entry.actname ?? undefined
-
-      contents = mp3tag.save()
-    }
-
-    const blob = new Blob([contents], { type: mimetypeNew });
-
-    const file = new File([blob], `${entryID}.${ext}`)
-
-    fileHandle = await client.uploadFile({file})
   } else {
     const { digestMessage } = await import('@fetsorn/csvs-js');
 
@@ -128,12 +97,45 @@ async function postEntry(client, baseAPI, isPublished, channelID, entry) {
   }
 
   if (!isPublished.get(entryID)) {
-    const params = {
-      message: `${entry.datum}\n${entry.actdate ?? "0000-00-00"}`,
-      silent: true
-    };
+    let params = { silent: true };
 
-    if (fileHandle) { params.file = fileHandle };
+    if (entry.files?.items) {
+      // send text for each unpublished entry
+      let contents = await baseAPI.fetchAsset(fileEntry.filehash);
+
+      const mime = await import('mime');
+
+      const mimetypeNew = mime.getType(fileEntry.filename);
+
+      const ext = fileEntry.filename.split('.').pop().trim();
+
+      if (ext == "mp3") {
+        const mp3tag = new MP3Tag(contents.buffer, false)
+
+        mp3tag.read()
+
+        if (mp3tag.error !== '') throw new Error(mp3tag.error)
+
+        mp3tag.remove()
+
+        mp3tag.tags.title = entryID
+        mp3tag.tags.artist = entry.actname ?? undefined
+
+        contents = mp3tag.save()
+      }
+
+      const blob = new Blob([contents], { type: mimetypeNew });
+
+      const file = new File([blob], `${entryID}.${ext}`)
+
+      fileHandle = await client.uploadFile({file})
+
+      if (fileHandle) { params.file = fileHandle };
+
+      params.message = `${entry.attribution}\n${entry.actdate ?? "0000-00-00"}`;
+    } else {
+      params.message = `${entry.datum}\n${entry.actdate ?? "0000-00-00"}`;
+    }
 
     await client.sendMessage(
       `@${channelID}`,

@@ -66,6 +66,14 @@ export const schemaRSS = {
       ru: 'Ветка для названия поста',
     },
   },
+  rss_tag_item_attribution: {
+    trunk: 'rss_tag',
+    type: 'string',
+    description: {
+      en: 'Branch for post attribution',
+      ru: 'Ветка для авторов поста',
+    },
+  },
   rss_tag_item_description: {
     trunk: 'rss_tag',
     type: 'string',
@@ -106,6 +114,7 @@ function generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes) {
     rss_tag_item_title,
     rss_tag_item_creator,
     rss_tag_item_description,
+    rss_tag_item_attribution,
     rss_tag_item_pubdate,
     rss_tag_item_category,
     rss_tag_item_link,
@@ -133,7 +142,7 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
     <language>en-US</language>
 `;
 
-  function foo(mimetype, downloadUrl) {
+  function generateAttachment(mimetype, downloadUrl) {
     if (mimetype.includes('audio')) {
       return `<audio controls><source src="${downloadUrl}" type="${mimetype}" /></audio>`;
     }
@@ -158,8 +167,9 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
       <guid isPermaLink="false">${entry.UUID}</guid>
       <description>
         <![CDATA[
+           <div>${entry[rss_tag_item_attribution]}</div>
+           ${mimetype && downloadUrl ? generateAttachment(mimetype, downloadUrl) : ''}
            <div>${entry[rss_tag_item_description]}</div>
-           ${mimetype && downloadUrl ? foo(mimetype, downloadUrl) : ''}
         ]]>
       </description>
       ${mimetype && downloadUrl && size ? `<enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />` : ''}

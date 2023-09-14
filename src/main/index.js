@@ -110,6 +110,27 @@ app
     );
 
     ipcMain.handle(
+      'selectStream',
+      async (_event, dir, searchParams) => {
+        // console.log('main/index: selectStream', dir);
+        function enqueueHandler(entry) {
+          // console.log('main/index: enqueueHandler');
+          mainWindow.webContents.send('selectStream:enqueue', entry);
+        }
+        function closeHandler() {
+          // console.log('main/index: closeHandler');
+          mainWindow.webContents.send('selectStream:close');
+        }
+
+        return (new API(dir)).selectStream(
+          new URLSearchParams(searchParams),
+          enqueueHandler,
+          closeHandler
+        );
+      }
+    );
+
+    ipcMain.handle(
       'queryOptions',
       async (_event, dir, branch) => (new API(dir)).queryOptions(branch),
     );

@@ -6,6 +6,7 @@ import git from 'isomorphic-git';
 import http from 'isomorphic-git/http/node/index.cjs';
 import { exportPDF, generateLatex } from 'lib/latex';
 import { Worker } from 'node:worker_threads';
+import { ReadableStream } from 'node:stream/web';
 
 const pfs = fs.promises;
 
@@ -182,6 +183,53 @@ export class ElectronAPI {
       dir: this.dir,
       searchParamsString: searchParams.toString(),
     });
+  }
+
+  async selectStream(searchParams, enqueueHandler, closeHandler) {
+    // console.log('api/electron: selectStream', this.dir)
+    // if (readWorker !== undefined) {
+    //   console.log("read worker terminated");
+    //   await readWorker.terminate();
+
+    //   readWorker = undefined;
+    // }
+
+    const worker = new Worker(
+      new URL('./electron.worker.js', import.meta.url),
+      {
+        workerData: {
+          msg: 'selectStream',
+          dir: this.dir,
+          searchParamsString: searchParams.toString()
+        },
+      },
+    );
+
+    worker.on('message', (message) => {
+      // console.log('api/electron: worker got message', message)
+      if (typeof message === 'string' && message.startsWith('log')) {
+        // console.log(message);
+      } else if (message.msg === 'selectStream:enqueue') {
+        enqueueHandler(message.entry)
+      } else if (message.msg === 'selectStream:close') {
+        closeHandler()
+      }
+    });
+
+    // worker.on('error', (e) => {
+    //
+    // });
+
+    worker.on('exit', (code) => {
+      // if (workerData.msg === 'select') {
+        readWorker = undefined;
+      // }
+      // if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
+    });
+
+    // if (workerData.msg === 'select') {
+      readWorker = worker;
+    // }
   }
 
   async queryOptions(branch) {

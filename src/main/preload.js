@@ -4,6 +4,17 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('electron', {
   select: (dir, searchParams) => ipcRenderer.invoke('select', dir, searchParams),
 
+  selectStream: (dir, searchParams, handlerEnqueue, handlerClose) => {
+    // console.log('main/preload: selectStream', dir);
+    ipcRenderer.on('selectStream:enqueue', handlerEnqueue)
+    ipcRenderer.on('selectStream:close', () => {
+      ipcRenderer.removeAllListeners('selectStream:enqueue')
+      ipcRenderer.removeAllListeners('selectStream:close')
+      handlerClose()
+    })
+    ipcRenderer.invoke('selectStream', dir, searchParams);
+  },
+
   queryOptions: (dir, branch) => ipcRenderer.invoke('queryOptions', dir, branch),
 
   updateEntry: (dir, entry, overview) => ipcRenderer.invoke('updateEntry', dir, entry, overview),

@@ -228,27 +228,71 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.delete('.group');
 
-      const overview = await api.select(searchParams);
+      // const overview = await api.select(searchParams);
 
-      const schemaBase = Object.fromEntries(Object.entries(schema).filter(
-        ([branch, info]) => branch === base
-          || info.trunk === base
-          || schema[info.trunk]?.trunk === base,
-      ));
+      // console.log(overview)
 
-      const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
-        ? queries['.group']
-        : getDefaultGroupBy(
-          schemaBase,
-          overview,
-          searchParams,
-        );
+      // const schemaBase = Object.fromEntries(Object.entries(schema).filter(
+      //   ([branch, info]) => branch === base
+      //     || info.trunk === base
+      //     || schema[info.trunk]?.trunk === base,
+      // ));
 
-      queries['.group'] = groupBy;
+      // const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
+      //   ? queries['.group']
+      //   : getDefaultGroupBy(
+      //     schemaBase,
+      //     overview,
+      //     searchParams,
+      //   );
 
-      set({
-        overview, groupBy, queries,
+      // queries['.group'] = groupBy;
+
+      // set({
+      //   overview, groupBy, queries,
+      // })
+
+      const fromStrm = await api.selectStream(searchParams);
+
+      const toStrm = new WritableStream({
+        write(chunk) {
+          const { overview } = get();
+
+          set({
+            overview: [...overview, chunk]
+          });
+        },
+
+        close() {
+          const { overview } = get();
+
+          const schemaBase = Object.fromEntries(Object.entries(schema).filter(
+            ([branch, info]) => branch === base
+              || info.trunk === base
+              || schema[info.trunk]?.trunk === base,
+          ));
+
+          const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
+                ? queries['.group']
+                : getDefaultGroupBy(
+                  schemaBase,
+                  overview,
+                  searchParams,
+                );
+
+          queries['.group'] = groupBy;
+
+          set({
+            groupBy, queries,
+          });
+        },
+
+        abort(err) {
+          console.error("Sink error:", err);
+        },
       });
+
+      await fromStrm.pipeTo(toStrm);
     }
   },
 
@@ -265,9 +309,50 @@ export const createOverviewSlice = (set, get) => ({
 
     const api = new API(get().repoUUID);
 
-    const overview = await api.select(searchParams);
+    // const overview = await api.select(searchParams);
 
-    set({ overview });
+    // deduplicate code
+    const fromStrm = await api.selectStream(searchParams);
+
+    const toStrm = new WritableStream({
+      write(chunk) {
+        const { overview } = get();
+
+        set({
+          overview: [...overview, chunk]
+        });
+      },
+
+      close() {
+        const { overview } = get();
+
+        const schemaBase = Object.fromEntries(Object.entries(schema).filter(
+          ([branch, info]) => branch === base
+            || info.trunk === base
+            || schema[info.trunk]?.trunk === base,
+        ));
+
+        const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
+              ? queries['.group']
+              : getDefaultGroupBy(
+                schemaBase,
+                overview,
+                searchParams,
+              );
+
+        queries['.group'] = groupBy;
+
+        set({
+          groupBy, queries,
+        });
+      },
+
+      abort(err) {
+        console.error("Sink error:", err);
+      },
+    });
+
+    await fromStrm.pipeTo(toStrm);
   },
 
   setRepoUUID: async (repoUUID) => {

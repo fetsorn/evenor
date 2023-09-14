@@ -69,6 +69,34 @@ export class API {
     }
   }
 
+  async selectStream(searchParams) {
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'electron':
+        const { uuid } = this;
+        return new ReadableStream({
+          start(controller) {
+            // console.log('api/api: stream started');
+            function enqueueHandler(event, entry) {
+              // console.log('api/api:handler called', entry);
+              controller.enqueue(entry)
+            }
+            function closeHandler(event, value) {
+              controller.close()
+            }
+            return window.electron.selectStream(
+              uuid,
+              searchParams.toString(),
+              enqueueHandler,
+              closeHandler
+            );
+          },
+        });
+      default:
+        return this.#browser.selectStream(searchParams);
+    }
+  }
+
   async queryOptions(branch) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {

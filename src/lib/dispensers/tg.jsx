@@ -100,6 +100,8 @@ async function postEntry(client, baseAPI, isPublished, channelID, entry) {
     let params = { silent: true };
 
     if (entry.files?.items) {
+      const fileEntry = entry.files.items[0];
+
       // send text for each unpublished entry
       let contents = await baseAPI.fetchAsset(fileEntry.filehash);
 

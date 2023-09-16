@@ -256,15 +256,7 @@ export const createOverviewSlice = (set, get) => ({
 
       const toStrm = new WritableStream({
         write(chunk) {
-          const { overview } = get();
-
-          set({
-            overview: [...overview, chunk]
-          });
-        },
-
-        close() {
-          const { overview } = get();
+          const overview = [...get().overview, chunk]
 
           const schemaBase = Object.fromEntries(Object.entries(schema).filter(
             ([branch, info]) => branch === base
@@ -283,9 +275,12 @@ export const createOverviewSlice = (set, get) => ({
           queries['.group'] = groupBy;
 
           set({
-            groupBy, queries,
+            groupBy, queries, overview
           });
         },
+
+        // close() {
+        // },
 
         abort(err) {
           console.error("Sink error:", err);

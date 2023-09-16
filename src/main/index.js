@@ -5,7 +5,7 @@ import {
 } from 'electron';
 import { ElectronAPI as API } from 'lib/api/electron.js';
 
-let mainWindow = null;
+let windows = {};
 
 const createWindow = async () => {
   // NOTE: any use of dirname will fail nt
@@ -15,7 +15,7 @@ const createWindow = async () => {
 
   const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
 
-  mainWindow = new BrowserWindow({
+  const window = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
@@ -26,26 +26,30 @@ const createWindow = async () => {
     },
   });
 
-  // eslint-disable-next-line
-  mainWindow.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  const windowID = window.id;
 
-  mainWindow.on('ready-to-show', () => {
-    if (!mainWindow) {
+  windows[windowID] = window;
+
+  // eslint-disable-next-line
+  window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+
+  window.on('ready-to-show', () => {
+    if (!windows[windowID]) {
       throw new Error('"mainWindow" is not defined');
     }
     if (process.env.START_MINIMIZED) {
-      mainWindow.minimize();
+      windows[windowID].minimize();
     } else {
-      mainWindow.show();
+      windows[windowID].show();
     }
   });
 
-  mainWindow.on('closed', () => {
-    mainWindow = null;
+  window.on('closed', () => {
+    windows[windowID] = null;
   });
 
   // Open urls in the user's browser
-  mainWindow.webContents.setWindowOpenHandler((edata) => {
+  window.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: 'deny' };
   });
@@ -112,14 +116,16 @@ app
     ipcMain.handle(
       'selectStream',
       async (_event, dir, searchParams) => {
+        const windowID = _event.sender.id;
+
         // console.log('main/index: selectStream', dir);
         function enqueueHandler(entry) {
           // console.log('main/index: enqueueHandler');
-          mainWindow.webContents.send('selectStream:enqueue', entry);
+          windows[windowID].send('selectStream:enqueue', entry);
         }
         function closeHandler() {
           // console.log('main/index: closeHandler');
-          mainWindow.webContents.send('selectStream:close');
+          windows[windowID].send('selectStream:close');
         }
 
         return (new API(dir)).selectStream(

@@ -94,6 +94,8 @@ export const createOverviewSlice = (set, get) => ({
 
   base: undefined,
 
+  closeHandler: () => {},
+
   initialize: async (repoRoute, search) => {
     const searchParams = new URLSearchParams(search);
 
@@ -200,12 +202,67 @@ export const createOverviewSlice = (set, get) => ({
     });
   },
 
+  updateOverview: async () => {
+    // close select stream if already running
+    try {
+      get().closeHandler();
+    } catch {
+      // do nothing
+    }
+
+    set({ closeHandler: () => {} })
+
+    const { base, queries, repoUUID } = get();
+
+    const api = new API(repoUUID);
+
+    const schema = await api.readSchema();
+
+    const searchParams = queriesToParams(queries);
+
+    searchParams.delete('.group');
+
+    const { strm: fromStrm, closeHandler } = await api.selectStream(searchParams);
+
+    set({ closeHandler });
+
+    const toStrm = new WritableStream({
+      write(chunk) {
+        const overview = [...get().overview, chunk]
+
+        const schemaBase = Object.fromEntries(Object.entries(schema).filter(
+          ([branch, info]) => branch === base
+            || info.trunk === base
+            || schema[info.trunk]?.trunk === base,
+        ));
+
+        const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
+              ? queries['.group']
+              : getDefaultGroupBy(
+                schemaBase,
+                overview,
+                searchParams,
+              );
+
+        queries['.group'] = groupBy;
+
+        set({
+          groupBy, queries, overview
+        });
+      },
+
+      abort(err) {
+        console.error("Sink error:", err);
+      },
+    });
+
+    await fromStrm.pipeTo(toStrm);
+
+    set({ closeHandler: () => {} });
+  },
+
   onQueries: async () => {
     if (get().isInitialized) {
-      // const overviewType = get().queries['.overview']
-      //   ? OverviewType[get().queries['.overview']]
-      //   : get().overviewType;
-
       const { queries } = get();
 
       const api = new API(get().repoUUID);
@@ -219,36 +276,10 @@ export const createOverviewSlice = (set, get) => ({
       queries._ = base;
 
       set({
-        base, schema, overview: [],
+        base, schema, overview: [], queries
       });
 
-      const searchParams = queriesToParams(queries);
-
-      searchParams.set('_', base);
-
-      searchParams.delete('.group');
-
-      const overview = await api.select(searchParams);
-
-      const schemaBase = Object.fromEntries(Object.entries(schema).filter(
-        ([branch, info]) => branch === base
-          || info.trunk === base
-          || schema[info.trunk]?.trunk === base,
-      ));
-
-      const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
-        ? queries['.group']
-        : getDefaultGroupBy(
-          schemaBase,
-          overview,
-          searchParams,
-        );
-
-      queries['.group'] = groupBy;
-
-      set({
-        overview, groupBy, queries,
-      });
+      await get().updateOverview();
     }
   },
 
@@ -257,20 +288,21 @@ export const createOverviewSlice = (set, get) => ({
 
     queries._ = base;
 
-    const searchParams = queriesToParams(get().queries);
-
     set({ base, queries });
 
-    searchParams.delete('.group');
-
-    const api = new API(get().repoUUID);
-
-    const overview = await api.select(searchParams);
-
-    set({ overview });
+    await get().updateOverview();
   },
 
   setRepoUUID: async (repoUUID) => {
+    // close select stream if already running
+    try {
+      get().closeHandler();
+    } catch {
+      // do nothing
+    }
+
+    set({ closeHandler: () => {} })
+
     let repoName;
 
     if (repoUUID === 'root' || get().isView) {
@@ -295,6 +327,15 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoName: async (repoName) => {
+    // close select stream if already running
+    try {
+      get().closeHandler();
+    } catch {
+      // do nothing
+    }
+
+    set({ closeHandler: () => {} })
+
     const api = new API('root');
 
     const searchParams = new URLSearchParams();

@@ -126,6 +126,31 @@ async function select() {
   }
 }
 
+async function selectStream() {
+  const { searchParamsString } = workerData;
+
+  const searchParams = new URLSearchParams(searchParamsString);
+
+  const query = await new CSVS({
+    readFile,
+    grep,
+  });
+
+  try {
+    const { base, baseUUIDs } = await query.selectBaseUUIDs(searchParams);
+
+    for (const baseUUID of baseUUIDs) {
+      const entry = await query.buildEntry(base, baseUUID);
+
+      parentPort.postMessage({ msg: 'selectStream:enqueue', entry });
+    }
+
+    parentPort.postMessage({ msg: 'selectStream:close' });
+  } catch(e) {
+    console.log(e)
+  }
+}
+
 async function updateEntry() {
   const { entry } = workerData;
 
@@ -156,6 +181,9 @@ async function run() {
   switch (msg) {
     case 'select':
       return select();
+
+    case 'selectStream':
+      return selectStream();
 
     case 'update':
       return updateEntry();

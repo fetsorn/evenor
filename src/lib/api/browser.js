@@ -220,6 +220,57 @@ export class BrowserAPI {
     return overview;
   }
 
+  async selectStream(searchParams) {
+    const br = this;
+
+    let closeHandler;
+
+    let strm = new ReadableStream({
+      start(controller) {
+        const worker = new Worker(new URL('./browser.worker', import.meta.url));
+
+        closeHandler = controller.close()
+
+        worker.onmessage = async (message) => {
+          switch (message.data.action) {
+            case 'readFile': {
+              try {
+                const contents = await br.readFile(message.data.filepath);
+
+                message.ports[0].postMessage({ result: contents });
+              } catch (e) {
+                // safari cannot clone the error object, force to string
+                message.ports[0].postMessage({ error: `${e}` });
+              }
+
+              break;
+            }
+            case 'write': {
+              controller.enqueue(message.data.entry)
+            }
+            case 'close': {
+              controller.close()
+            }
+            case 'error': {
+              controller.error(message.data.error)
+            }
+            default:
+              // do nothing
+          }
+        };
+
+        const channel = new MessageChannel();
+
+        worker.postMessage(
+          { action: 'selectStream', searchParams: searchParams.toString() },
+          [channel.port2],
+        );
+      },
+    });
+
+    return { strm, closeHandler }
+  }
+
   async queryOptions(branch) {
     const searchParams = new URLSearchParams();
 
@@ -533,10 +584,21 @@ export class BrowserAPI {
       }
     }
 
-    console.log('ensure write', dir, lfsDir)
     await pfs.writeFile(
       `${dir}/.gitattributes`,
       `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
+      'utf8',
+    );
+
+    try {
+      await pfs.mkdir(`${dir}/.git`);
+    } catch {
+      // do nothing
+    }
+
+    await pfs.writeFile(
+      `${dir}/.git/config`,
+      `\n`,
       'utf8',
     );
 

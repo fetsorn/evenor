@@ -44,8 +44,30 @@ async function select(message) {
   }
 }
 
+async function selectStream(message) {
+  const channel = new MessageChannel();
+
+  try {
+    const searchParams = new URLSearchParams(message.data.searchParams);
+
+    const {base, baseUUIDs} = await (new CSVS({ readFile, grep })).selectBaseUUIDs(searchParams);
+
+    for (const baseUUID of baseUUIDs) {
+      const entry = await (new CSVS({ readFile, grep })).buildEntry(base, baseUUID);
+
+      postMessage({ action: 'write', entry }, [channel.port2]);
+    }
+
+    postMessage({ action: 'close', entry }, [channel.port2]);
+  } catch(e) {
+    postMessage({ action: 'error', error: e }, [channel.port2]);
+  }
+}
+
 onmessage = async (message) => {
   if (message.data.action === 'select') {
     await select(message);
+  } else if (message.data.action === 'selectStream') {
+    await selectStream(message);
   }
 };

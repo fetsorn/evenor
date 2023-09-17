@@ -22,10 +22,35 @@ function queryWorkerInit() {
   return { buildLine };
 }
 
-export async function buildItinerary(overview, groupBy) {
-  const queryWorker = queryWorkerInit();
+function groupArray(data, branch) {
+  // [event1, event, event3]
 
-  const itinerary = await queryWorker.buildLine(overview, groupBy);
+  // { "YYYY-MM-DD": [event1, event2, event3] }
+  const objectOfArrays = data.filter(Boolean).reduce((acc, entry) => {
+    const value = entry[branch] ?? '';
+
+    acc[value] = acc[value] || [];
+
+    acc[value].push(entry);
+
+    return acc;
+  }, {});
+
+  // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
+  const arrayOfObjects = Object.keys(objectOfArrays)
+    .sort()
+    .map((key) => ({ date: key, events: objectOfArrays[key] }));
+
+  return arrayOfObjects;
+}
+
+export async function buildItinerary(overview, groupBy) {
+  // disable worker to avoid spawning too much threads on stream updates
+  // TODO: replace with worker cancellation strategy
+  // const queryWorker = queryWorkerInit();
+
+  // const itinerary = await queryWorker.buildLine(overview, groupBy);
+  const itinerary = groupArray(overview, groupBy)
 
   return itinerary;
 }

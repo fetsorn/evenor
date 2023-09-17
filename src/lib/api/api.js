@@ -79,15 +79,14 @@ export class API {
 
         let strm = new ReadableStream({
           start(controller) {
-            // console.log('api/api: stream started');
             function enqueueHandler(event, entry) {
-              // console.log('api/api:handler called', entry);
               try {
                 controller.enqueue(entry)
               } catch {
                 // do nothing
               }
             }
+
             closeHandler = (event, value) => {
               window.electron.closeStream(uuid);
 
@@ -97,6 +96,7 @@ export class API {
                 // do nothing
               }
             }
+
             return window.electron.selectStream(
               uuid,
               searchParams.toString(),
@@ -106,7 +106,7 @@ export class API {
           },
         });
 
-        return {strm, closeHandler}
+        return { strm, closeHandler }
       default:
         return this.#browser.selectStream(searchParams);
     }

@@ -58,7 +58,7 @@ async function selectStream(message) {
       postMessage({ action: 'write', entry }, [channel.port2]);
     }
 
-    // postMessage({ action: 'close' }, [channel.port2]);
+    postMessage({ action: 'close', entry }, [channel.port2]);
   } catch(e) {
     postMessage({ action: 'error', error: e }, [channel.port2]);
   }

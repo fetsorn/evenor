@@ -5,7 +5,6 @@ contextBridge.exposeInMainWorld('electron', {
   select: (dir, searchParams) => ipcRenderer.invoke('select', dir, searchParams),
 
   selectStream: (dir, searchParams, handlerEnqueue, handlerClose) => {
-    // console.log('main/preload: selectStream', dir);
     ipcRenderer.on('selectStream:enqueue', handlerEnqueue)
     ipcRenderer.on('selectStream:close', () => {
       ipcRenderer.removeAllListeners('selectStream:enqueue')

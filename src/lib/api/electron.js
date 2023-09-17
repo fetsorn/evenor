@@ -186,14 +186,6 @@ export class ElectronAPI {
   }
 
   async selectStream(searchParams, enqueueHandler, closeHandler) {
-    // console.log('api/electron: selectStream', this.dir)
-    // if (readWorker !== undefined) {
-    //   console.log("read worker terminated");
-    //   await readWorker.terminate();
-
-    //   readWorker = undefined;
-    // }
-
     const worker = new Worker(
       new URL('./electron.worker.js', import.meta.url),
       {
@@ -206,9 +198,7 @@ export class ElectronAPI {
     );
 
     worker.on('message', (message) => {
-      // console.log('api/electron: worker got message', message)
       if (typeof message === 'string' && message.startsWith('log')) {
-        // console.log(message);
       } else if (message.msg === 'selectStream:enqueue') {
         enqueueHandler(message.entry)
       } else if (message.msg === 'selectStream:close') {
@@ -216,20 +206,11 @@ export class ElectronAPI {
       }
     });
 
-    // worker.on('error', (e) => {
-    //
-    // });
-
     worker.on('exit', (code) => {
-      // if (workerData.msg === 'select') {
         readWorker = undefined;
-      // }
-      // if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
     });
 
-    // if (workerData.msg === 'select') {
-      readWorker = worker;
-    // }
+    readWorker = worker;
   }
 
   async closeStream() {

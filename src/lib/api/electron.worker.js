@@ -127,7 +127,6 @@ async function select() {
 }
 
 async function selectStream() {
-  // console.log('api/electron.worker: selectStream')
   const { searchParamsString } = workerData;
 
   const searchParams = new URLSearchParams(searchParamsString);
@@ -138,9 +137,7 @@ async function selectStream() {
   });
 
   try {
-    const {base, baseUUIDs} = await query.selectBaseUUIDs(searchParams);
-
-    // console.log('api/electron.worker: selectBaseUUIDs', base, baseUUIDs)
+    const { base, baseUUIDs } = await query.selectBaseUUIDs(searchParams);
 
     for (const baseUUID of baseUUIDs) {
       const entry = await query.buildEntry(base, baseUUID);

@@ -118,14 +118,20 @@ app
       async (_event, dir, searchParams) => {
         const windowID = _event.sender.id;
 
-        // console.log('main/index: selectStream', dir);
         function enqueueHandler(entry) {
-          // console.log('main/index: enqueueHandler');
-          windows[windowID].send('selectStream:enqueue', entry);
+          try {
+            windows[windowID].send('selectStream:enqueue', entry);
+          } catch {
+            // do nothing
+          }
         }
+
         function closeHandler() {
-          // console.log('main/index: closeHandler');
-          windows[windowID].send('selectStream:close');
+          try {
+            windows[windowID].send('selectStream:close');
+          } catch {
+            // do nothing
+          }
         }
 
         return (new API(dir)).selectStream(

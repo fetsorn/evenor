@@ -74,15 +74,28 @@ export class API {
     switch (__BUILD_MODE__) {
       case 'electron':
         const { uuid } = this;
-        return new ReadableStream({
+
+        let closeHandler;
+
+        let strm = new ReadableStream({
           start(controller) {
             // console.log('api/api: stream started');
             function enqueueHandler(event, entry) {
               // console.log('api/api:handler called', entry);
-              controller.enqueue(entry)
+              try {
+                controller.enqueue(entry)
+              } catch {
+                // do nothing
+              }
             }
-            function closeHandler(event, value) {
-              controller.close()
+            closeHandler = (event, value) => {
+              window.electron.closeStream(uuid);
+
+              try {
+                controller.close()
+              } catch {
+                // do nothing
+              }
             }
             return window.electron.selectStream(
               uuid,
@@ -92,6 +105,8 @@ export class API {
             );
           },
         });
+
+        return {strm, closeHandler}
       default:
         return this.#browser.selectStream(searchParams);
     }

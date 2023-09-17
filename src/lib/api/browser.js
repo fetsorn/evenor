@@ -223,9 +223,13 @@ export class BrowserAPI {
   async selectStream(searchParams) {
     const br = this;
 
-    return new ReadableStream({
+    let closeHandler;
+
+    let strm = new ReadableStream({
       start(controller) {
         const worker = new Worker(new URL('./browser.worker', import.meta.url));
+
+        closeHandler = controller.close()
 
         worker.onmessage = async (message) => {
           switch (message.data.action) {
@@ -263,6 +267,8 @@ export class BrowserAPI {
         );
       },
     });
+
+    return { strm, closeHandler }
   }
 
   async queryOptions(branch) {

@@ -15,6 +15,8 @@ contextBridge.exposeInMainWorld('electron', {
     ipcRenderer.invoke('selectStream', dir, searchParams);
   },
 
+  closeStream: (dir) => ipcRenderer.invoke('closeStream', dir),
+
   queryOptions: (dir, branch) => ipcRenderer.invoke('queryOptions', dir, branch),
 
   updateEntry: (dir, entry, overview) => ipcRenderer.invoke('updateEntry', dir, entry, overview),

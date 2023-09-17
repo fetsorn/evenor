@@ -94,6 +94,8 @@ export const createOverviewSlice = (set, get) => ({
 
   base: undefined,
 
+  closeHandler: () => {},
+
   initialize: async (repoRoute, search) => {
     const searchParams = new URLSearchParams(search);
 
@@ -200,126 +202,33 @@ export const createOverviewSlice = (set, get) => ({
     });
   },
 
-  onQueries: async () => {
-    if (get().isInitialized) {
-      // const overviewType = get().queries['.overview']
-      //   ? OverviewType[get().queries['.overview']]
-      //   : get().overviewType;
-
-      const { queries } = get();
-
-      const api = new API(get().repoUUID);
-
-      const schema = await api.readSchema();
-
-      const base = Object.prototype.hasOwnProperty.call(schema, queries._)
-        ? queries._
-        : Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
-
-      queries._ = base;
-
-      set({
-        base, schema, overview: [],
-      });
-
-      const searchParams = queriesToParams(queries);
-
-      searchParams.set('_', base);
-
-      searchParams.delete('.group');
-
-      // const overview = await api.select(searchParams);
-
-      // console.log(overview)
-
-      // const schemaBase = Object.fromEntries(Object.entries(schema).filter(
-      //   ([branch, info]) => branch === base
-      //     || info.trunk === base
-      //     || schema[info.trunk]?.trunk === base,
-      // ));
-
-      // const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
-      //   ? queries['.group']
-      //   : getDefaultGroupBy(
-      //     schemaBase,
-      //     overview,
-      //     searchParams,
-      //   );
-
-      // queries['.group'] = groupBy;
-
-      // set({
-      //   overview, groupBy, queries,
-      // })
-
-      const fromStrm = await api.selectStream(searchParams);
-
-      const toStrm = new WritableStream({
-        write(chunk) {
-          const overview = [...get().overview, chunk]
-
-          const schemaBase = Object.fromEntries(Object.entries(schema).filter(
-            ([branch, info]) => branch === base
-              || info.trunk === base
-              || schema[info.trunk]?.trunk === base,
-          ));
-
-          const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
-                ? queries['.group']
-                : getDefaultGroupBy(
-                  schemaBase,
-                  overview,
-                  searchParams,
-                );
-
-          queries['.group'] = groupBy;
-
-          set({
-            groupBy, queries, overview
-          });
-        },
-
-        // close() {
-        // },
-
-        abort(err) {
-          console.error("Sink error:", err);
-        },
-      });
-
-      await fromStrm.pipeTo(toStrm);
+  updateOverview: async () => {
+    // close select stream if already running
+    try {
+      get().closeHandler();
+    } catch {
+      // do nothing
     }
-  },
 
-  onChangeBase: async (base) => {
-    const { queries } = get();
+    set({ closeHandler: () => {} })
 
-    queries._ = base;
+    const { base, queries, repoUUID } = get();
 
-    const searchParams = queriesToParams(get().queries);
+    const api = new API(repoUUID);
 
-    set({ base, queries });
+    const schema = await api.readSchema();
+
+    const searchParams = queriesToParams(queries);
 
     searchParams.delete('.group');
 
-    const api = new API(get().repoUUID);
+    const { strm: fromStrm, closeHandler } = await api.selectStream(searchParams);
 
-    // const overview = await api.select(searchParams);
-
-    // deduplicate code
-    const fromStrm = await api.selectStream(searchParams);
+    set({ closeHandler });
 
     const toStrm = new WritableStream({
       write(chunk) {
-        const { overview } = get();
-
-        set({
-          overview: [...overview, chunk]
-        });
-      },
-
-      close() {
-        const { overview } = get();
+        const overview = [...get().overview, chunk]
 
         const schemaBase = Object.fromEntries(Object.entries(schema).filter(
           ([branch, info]) => branch === base
@@ -338,7 +247,7 @@ export const createOverviewSlice = (set, get) => ({
         queries['.group'] = groupBy;
 
         set({
-          groupBy, queries,
+          groupBy, queries, overview
         });
       },
 
@@ -348,9 +257,52 @@ export const createOverviewSlice = (set, get) => ({
     });
 
     await fromStrm.pipeTo(toStrm);
+
+    set({ closeHandler: () => {} });
+  },
+
+  onQueries: async () => {
+    if (get().isInitialized) {
+      const { queries } = get();
+
+      const api = new API(get().repoUUID);
+
+      const schema = await api.readSchema();
+
+      const base = Object.prototype.hasOwnProperty.call(schema, queries._)
+        ? queries._
+        : Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
+
+      queries._ = base;
+
+      set({
+        base, schema, overview: [], queries
+      });
+
+      await get().updateOverview();
+    }
+  },
+
+  onChangeBase: async (base) => {
+    const { queries } = get();
+
+    queries._ = base;
+
+    set({ base, queries });
+
+    await get().updateOverview();
   },
 
   setRepoUUID: async (repoUUID) => {
+    // close select stream if already running
+    try {
+      get().closeHandler();
+    } catch {
+      // do nothing
+    }
+
+    set({ closeHandler: () => {} })
+
     let repoName;
 
     if (repoUUID === 'root' || get().isView) {
@@ -375,6 +327,15 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoName: async (repoName) => {
+    // close select stream if already running
+    try {
+      get().closeHandler();
+    } catch {
+      // do nothing
+    }
+
+    set({ closeHandler: () => {} })
+
     const api = new API('root');
 
     const searchParams = new URLSearchParams();

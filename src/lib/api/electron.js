@@ -232,6 +232,14 @@ export class ElectronAPI {
     // }
   }
 
+  async closeStream() {
+    try {
+      await readWorker.terminate();
+    } catch {
+      // do nothing
+    }
+  }
+
   async queryOptions(branch) {
     const searchParams = new URLSearchParams();
 

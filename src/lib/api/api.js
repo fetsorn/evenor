@@ -70,6 +70,8 @@ export class API {
   }
 
   async selectStream(searchParams) {
+    // console.log('api/selectStream', searchParams.toString());
+
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case 'electron':
@@ -88,8 +90,6 @@ export class API {
             }
 
             closeHandler = (event, value) => {
-              window.electron.closeStream(uuid);
-
               try {
                 controller.close()
               } catch {

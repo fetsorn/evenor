@@ -140,6 +140,8 @@ async function selectStream() {
     const { base, baseUUIDs } = await query.selectBaseUUIDs(searchParams);
 
     for (const baseUUID of baseUUIDs) {
+      // parentPort.postMessage(`logapi/electron.worker/selectStream, ${searchParams.toString()}, ${baseUUID}`);
+
       const entry = await query.buildEntry(base, baseUUID);
 
       parentPort.postMessage({ msg: 'selectStream:enqueue', entry });

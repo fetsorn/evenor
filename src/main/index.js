@@ -143,15 +143,6 @@ app
     );
 
     ipcMain.handle(
-      'closeStream',
-      (_event, dir) => {
-        const windowID = _event.sender.id;
-
-        return (new API(dir)).closeStream();
-      }
-    )
-
-    ipcMain.handle(
       'queryOptions',
       async (_event, dir, branch) => (new API(dir)).queryOptions(branch),
     );

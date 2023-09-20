@@ -23,6 +23,7 @@ if (process.platform === 'darwin') {
 const lfsDir = "lfs";
 
 let readWorker;
+let streamWorker;
 
 // we run CSVS functions in workers to offload the main thread
 // but UI only expects results from the last call to CSVS.select
@@ -186,6 +187,14 @@ export class ElectronAPI {
   }
 
   async selectStream(searchParams, enqueueHandler, closeHandler) {
+    // console.log('api/electron/selectStream', searchParams.toString());
+
+    try {
+      await streamWorker.terminate();
+    } catch {
+      // do nothing
+    }
+
     const worker = new Worker(
       new URL('./electron.worker.js', import.meta.url),
       {
@@ -199,6 +208,7 @@ export class ElectronAPI {
 
     worker.on('message', (message) => {
       if (typeof message === 'string' && message.startsWith('log')) {
+        console.log(message);
       } else if (message.msg === 'selectStream:enqueue') {
         enqueueHandler(message.entry)
       } else if (message.msg === 'selectStream:close') {
@@ -207,18 +217,10 @@ export class ElectronAPI {
     });
 
     worker.on('exit', (code) => {
-        readWorker = undefined;
+        streamWorker = undefined;
     });
 
-    readWorker = worker;
-  }
-
-  async closeStream() {
-    try {
-      await readWorker.terminate();
-    } catch {
-      // do nothing
-    }
+    streamWorker = worker;
   }
 
   async queryOptions(branch) {

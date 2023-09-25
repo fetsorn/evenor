@@ -210,7 +210,7 @@ export const createOverviewSlice = (set, get) => ({
       // do nothing
     }
 
-    set({ closeHandler: () => {} })
+    set({ closeHandler: () => {} });
 
     const { base, queries, repoUUID } = get();
 
@@ -228,7 +228,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const toStrm = new WritableStream({
       write(chunk) {
-        const overview = [...get().overview, chunk]
+        const overview = [...get().overview, chunk];
 
         const schemaBase = Object.fromEntries(Object.entries(schema).filter(
           ([branch, info]) => branch === base
@@ -237,22 +237,22 @@ export const createOverviewSlice = (set, get) => ({
         ));
 
         const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
-              ? queries['.group']
-              : getDefaultGroupBy(
-                schemaBase,
-                overview,
-                searchParams,
-              );
+          ? queries['.group']
+          : getDefaultGroupBy(
+            schemaBase,
+            overview,
+            searchParams,
+          );
 
         queries['.group'] = groupBy;
 
         set({
-          groupBy, queries, overview
+          groupBy, queries, overview,
         });
       },
 
       abort(err) {
-        console.error("Sink error:", err);
+        console.error('Sink error:', err);
       },
     });
 
@@ -276,7 +276,7 @@ export const createOverviewSlice = (set, get) => ({
       queries._ = base;
 
       set({
-        base, schema, overview: [], queries
+        base, schema, overview: [], queries,
       });
 
       await get().updateOverview();
@@ -301,7 +301,7 @@ export const createOverviewSlice = (set, get) => ({
       // do nothing
     }
 
-    set({ closeHandler: () => {} })
+    set({ closeHandler: () => {} });
 
     let repoName;
 
@@ -334,7 +334,7 @@ export const createOverviewSlice = (set, get) => ({
       // do nothing
     }
 
-    set({ closeHandler: () => {} })
+    set({ closeHandler: () => {} });
 
     const api = new API('root');
 

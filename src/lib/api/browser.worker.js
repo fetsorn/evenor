@@ -50,16 +50,19 @@ async function selectStream(message) {
   try {
     const searchParams = new URLSearchParams(message.data.searchParams);
 
-    const {base, baseUUIDs} = await (new CSVS({ readFile, grep })).selectBaseUUIDs(searchParams);
+    const { base, baseUUIDs } = await (new CSVS({ readFile, grep })).selectBaseUUIDs(searchParams);
 
     for (const baseUUID of baseUUIDs) {
       const entry = await (new CSVS({ readFile, grep })).buildEntry(base, baseUUID);
 
-      postMessage({ action: 'write', entry }, [channel.port2]);
+      postMessage({
+        action: 'write',
+        entry,
+      });
     }
 
-    postMessage({ action: 'close', entry }, [channel.port2]);
-  } catch(e) {
+    postMessage({ action: 'close' }, [channel.port2]);
+  } catch (e) {
     postMessage({ action: 'error', error: e }, [channel.port2]);
   }
 }

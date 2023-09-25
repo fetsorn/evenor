@@ -210,7 +210,7 @@ export function RSS({ baseEntry, branchEntry }) {
     // find all filenames in the entry
     const fileEntries = entries.map((entry) => {
       if (entry[branchEntry.rss_tag_item_link]?.items) {
-        return entry[branchEntry.rss_tag_item_link].items[0]
+        return entry[branchEntry.rss_tag_item_link].items[0];
       }
     });
 
@@ -218,9 +218,9 @@ export function RSS({ baseEntry, branchEntry }) {
 
     const mimetypes = fileEntries.map((fileEntry) => {
       if (fileEntry?.filename) {
-        const mimetype = mime.getType(fileEntry.filename)
+        const mimetype = mime.getType(fileEntry.filename);
 
-        return mimetype
+        return mimetype;
       }
     });
 

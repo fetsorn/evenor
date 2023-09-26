@@ -108,16 +108,16 @@ export const schemaRSS = {
 
 function generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes) {
   const {
-    rss_tag_title,
-    rss_tag_description,
-    rss_tag_creator,
-    rss_tag_item_title,
-    rss_tag_item_creator,
-    rss_tag_item_description,
-    rss_tag_item_attribution,
-    rss_tag_item_pubdate,
-    rss_tag_item_category,
-    rss_tag_item_link,
+    rss_tag_title: feedTitle,
+    rss_tag_description: feedDescription,
+    // rss_tag_creator: creator,
+    rss_tag_item_title: itemTitle,
+    rss_tag_item_creator: itemCreator,
+    rss_tag_item_description: itemDescription,
+    rss_tag_item_attribution: itemAttribution,
+    rss_tag_item_pubdate: itemPubdate,
+    rss_tag_item_category: itemCategory,
+    // rss_tag_item_link: itemLink,
   } = branchEntry;
 
   const header = `<?xml version="1.0" encoding="utf-8"?>
@@ -133,11 +133,11 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
   const lastBuildDate = (new Date()).toGMTString();
 
   const channelHeader = `
-    <title>${rss_tag_title ?? ''}</title>
+    <title>${feedTitle ?? ''}</title>
     <atom:link href="" rel="self"
     type="application/rss+xml" />
     <link></link>
-    <description>${rss_tag_description}</description>
+    <description>${feedDescription}</description>
     <lastBuildDate>${lastBuildDate}</lastBuildDate>
     <language>en-US</language>
 `;
@@ -155,21 +155,22 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
   }
 
   function generateItem(entry, mimetype, downloadUrl, size) {
-    return `<item>
-      <title>${entry[rss_tag_item_title]}</title>
+    return `
+    <item>
+      <title>${entry[itemTitle]}</title>
       <dc:creator>
-        <![CDATA[${entry[rss_tag_item_creator] ?? 'unknown'}]]>
+        <![CDATA[${entry[itemCreator] ?? 'unknown'}]]>
       </dc:creator>
-      <pubDate>${entry[rss_tag_item_pubdate]}</pubDate>
+      <pubDate>${entry[itemPubdate]}</pubDate>
       <category>
-        <![CDATA[${entry[rss_tag_item_category]}]]>
+        <![CDATA[${entry[itemCategory]}]]>
       </category>
       <guid isPermaLink="false">${entry.UUID}</guid>
       <description>
         <![CDATA[
-           <div>${entry[rss_tag_item_attribution]}</div>
+           <div>${entry[itemAttribution] ?? ''}</div>
            ${mimetype && downloadUrl ? generateAttachment(mimetype, downloadUrl) : ''}
-           <div>${entry[rss_tag_item_description]}</div>
+           <div>${entry[itemDescription] ?? ''}</div>
         ]]>
       </description>
       ${mimetype && downloadUrl && size ? `<enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />` : ''}
@@ -252,9 +253,7 @@ export function RSS({ baseEntry, branchEntry }) {
       );
     }
 
-    const { buildPointerInfo, downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
-
-    const http = await import('isomorphic-git/http/web/index.cjs');
+    const { buildPointerInfo } = await import('@fetsorn/isogit-lfs');
 
     // download actions for rssAPI
     const downloadUrls = await Promise.all(files.map(async (file) => {
@@ -284,11 +283,11 @@ export function RSS({ baseEntry, branchEntry }) {
 
   return (
     <div>
-      <a>{branchEntry.rss_tag_search}</a>
+      <p>{branchEntry.rss_tag_search}</p>
       <br />
-      <a>{branchEntry.rss_tag_target}</a>
+      <p>{branchEntry.rss_tag_target}</p>
       <br />
-      <a onClick={onRSSsync}>🔄️</a>
+      <button type="button" onClick={onRSSsync}>🔄️</button>
     </div>
   );
 }

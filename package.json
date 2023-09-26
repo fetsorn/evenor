@@ -1,7 +1,7 @@
 {
   "name": "evenor",
   "productName": "evenor",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Tell the story of your data.",
   "main": "./.webpack/main",
   "scripts": {

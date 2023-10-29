@@ -16,7 +16,7 @@ async function renderGed(
   const { ged2dot, ged2dot_ } = await import('@fetsorn/ged2dot');
 
   if (familyID) {
-    dot = ged2dot(index, depth, familyID);
+    dot = ged2dot(index, familyID, depth);
   } else {
     dot = ged2dot_(index);
   }

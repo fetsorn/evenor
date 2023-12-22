@@ -1,15 +1,11 @@
-import { API, schemaRoot } from 'lib/api';
-import { OverviewType } from './types.js';
+import { API, schemaRoot } from "lib/api";
+import { OverviewType } from "./types.js";
 
 // pick a param to group data by
-function getDefaultGroupBy(
-  schema,
-  data,
-  searchParams,
-) {
+function getDefaultGroupBy(schema, data, searchParams) {
   // fallback to groupBy param from the search query
-  if (searchParams.has('.group')) {
-    const groupBy = searchParams.get('.group');
+  if (searchParams.has(".group")) {
+    const groupBy = searchParams.get(".group");
 
     return groupBy;
   }
@@ -19,22 +15,23 @@ function getDefaultGroupBy(
   const car = data[0] ?? {};
 
   // fallback to first date param present in data
-  groupBy = Object.keys(schema).find((branch) => (
-    schema[branch].task === 'date'
-      && Object.prototype.hasOwnProperty.call(car, branch)
-  ));
+  groupBy = Object.keys(schema).find(
+    (branch) =>
+      schema[branch].task === "date" &&
+      Object.prototype.hasOwnProperty.call(car, branch)
+  );
 
   // fallback to first param present in data
   if (!groupBy) {
-    groupBy = Object.keys(schema).find((branch) => (
+    groupBy = Object.keys(schema).find((branch) =>
       Object.prototype.hasOwnProperty.call(car, branch)
-    ));
+    );
   }
 
   // fallback to first date param present in schema
   if (!groupBy) {
     groupBy = Object.keys(schema).find(
-      (branch) => schema[branch].task === 'date',
+      (branch) => schema[branch].task === "date"
     );
   }
 
@@ -45,7 +42,7 @@ function getDefaultGroupBy(
 
   // unreachable with a valid scheme
   if (!groupBy) {
-    throw Error('failed to find default groupBy in the schema');
+    throw Error("failed to find default groupBy in the schema");
   }
 
   return groupBy;
@@ -54,10 +51,9 @@ function getDefaultGroupBy(
 export function queriesToParams(queries) {
   const searchParams = new URLSearchParams();
 
-  Object.keys(queries).map((key) => (
-    queries[key] === ''
-      ? null
-      : searchParams.set(key, queries[key])));
+  Object.keys(queries).map((key) =>
+    queries[key] === "" ? null : searchParams.set(key, queries[key])
+  );
 
   return searchParams;
 }
@@ -65,13 +61,13 @@ export function queriesToParams(queries) {
 function paramsToQueries(searchParams) {
   const searchParamsObject = Array.from(searchParams).reduce(
     (acc, [key, value]) => ({ ...acc, [key]: value }),
-    {},
+    {}
   );
 
   const queries = Object.fromEntries(
     Object.entries(searchParamsObject).filter(
-      ([key]) => key !== '~' && key !== '-' && !key.startsWith('.'),
-    ),
+      ([key]) => key !== "~" && key !== "-" && !key.startsWith(".")
+    )
   );
 
   return queries;
@@ -105,16 +101,16 @@ export const createOverviewSlice = (set, get) => ({
 
     let isView = false;
 
-    if (searchParams.has('~')) {
+    if (searchParams.has("~")) {
       // if uri specifies a remote
       // try to clone remote to store
       // where repo uuid is a digest of remote
       // and repo name is uri-encoded remote
-      const remote = searchParams.get('~');
+      const remote = searchParams.get("~");
 
-      const token = searchParams.get('-') ?? '';
+      const token = searchParams.get("-") ?? "";
 
-      const { digestMessage } = await import('@fetsorn/csvs-js');
+      const { digestMessage } = await import("@fetsorn/csvs-js");
 
       repoUUID = await digestMessage(remote);
 
@@ -126,24 +122,24 @@ export const createOverviewSlice = (set, get) => ({
 
       await api.cloneView(remote, token);
     } else if (repoRoute === undefined) {
-      repoUUID = 'root';
+      repoUUID = "root";
 
       // eslint-disable-next-line
-      if (__BUILD_MODE__ !== 'server') {
-        const apiRoot = new API('root');
+      if (__BUILD_MODE__ !== "server") {
+        const apiRoot = new API("root");
 
         await apiRoot.ensure(schemaRoot);
       }
     } else {
       repoName = repoRoute;
 
-      const apiRoot = new API('root');
+      const apiRoot = new API("root");
 
       const searchParamsReponame = new URLSearchParams();
 
-      searchParamsReponame.set('_', 'reponame');
+      searchParamsReponame.set("_", "reponame");
 
-      searchParamsReponame.set('reponame', repoName);
+      searchParamsReponame.set("reponame", repoName);
 
       try {
         const [{ UUID }] = await apiRoot.select(searchParamsReponame);
@@ -155,7 +151,7 @@ export const createOverviewSlice = (set, get) => ({
         // and set uuid to a digest of repoRoute
         const remote = repoRoute;
 
-        const { digestMessage } = await import('@fetsorn/csvs-js');
+        const { digestMessage } = await import("@fetsorn/csvs-js");
 
         repoUUID = digestMessage(remote);
 
@@ -169,25 +165,25 @@ export const createOverviewSlice = (set, get) => ({
 
     const queries = paramsToQueries(searchParams);
 
-    const overviewTypeParam = searchParams.get(
-      '.overview',
-    );
+    const overviewTypeParam = searchParams.get(".overview");
 
     const overviewType = overviewTypeParam
       ? OverviewType[overviewTypeParam]
       : get().overviewType;
 
-    const groupBy = searchParams.get(
-      '.group',
-    ) ?? undefined;
+    const groupBy = searchParams.get(".group") ?? undefined;
 
-    queries['.group'] = groupBy;
+    queries[".group"] = groupBy;
 
     const schema = await api.readSchema();
 
-    const base = Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
+    const base = Object.keys(schema).find(
+      (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
+    );
 
     queries._ = base;
+
+    await get().onQueries();
 
     set({
       schema,
@@ -213,16 +209,17 @@ export const createOverviewSlice = (set, get) => ({
     set({ closeHandler: () => {} });
 
     const { base, queries, repoUUID } = get();
-
     const api = new API(repoUUID);
 
     const schema = await api.readSchema();
 
     const searchParams = queriesToParams(queries);
 
-    searchParams.delete('.group');
+    searchParams.delete(".group");
 
-    const { strm: fromStrm, closeHandler } = await api.selectStream(searchParams);
+    const { strm: fromStrm, closeHandler } = await api.selectStream(
+      searchParams
+    );
 
     set({ closeHandler });
 
@@ -230,29 +227,33 @@ export const createOverviewSlice = (set, get) => ({
       write(chunk) {
         const overview = [...get().overview, chunk];
 
-        const schemaBase = Object.fromEntries(Object.entries(schema).filter(
-          ([branch, info]) => branch === base
-            || info.trunk === base
-            || schema[info.trunk]?.trunk === base,
-        ));
+        const schemaBase = Object.fromEntries(
+          Object.entries(schema).filter(
+            ([branch, info]) =>
+              branch === base ||
+              info.trunk === base ||
+              schema[info.trunk]?.trunk === base
+          )
+        );
 
-        const groupBy = Object.prototype.hasOwnProperty.call(schemaBase, queries['.group'])
-          ? queries['.group']
-          : getDefaultGroupBy(
-            schemaBase,
-            overview,
-            searchParams,
-          );
+        const groupBy = Object.prototype.hasOwnProperty.call(
+          schemaBase,
+          queries[".group"]
+        )
+          ? queries[".group"]
+          : getDefaultGroupBy(schemaBase, overview, searchParams);
 
-        queries['.group'] = groupBy;
+        queries[".group"] = groupBy;
 
         set({
-          groupBy, queries, overview,
+          groupBy,
+          queries,
+          overview,
         });
       },
 
       abort(err) {
-        console.error('Sink error:', err);
+        console.error("Sink error:", err);
       },
     });
 
@@ -263,7 +264,7 @@ export const createOverviewSlice = (set, get) => ({
 
   onQueries: async () => {
     if (get().isInitialized) {
-      const { queries } = get();
+      const { queries, repoName } = get();
 
       const api = new API(get().repoUUID);
 
@@ -271,12 +272,28 @@ export const createOverviewSlice = (set, get) => ({
 
       const base = Object.prototype.hasOwnProperty.call(schema, queries._)
         ? queries._
-        : Object.keys(schema).find((branch) => !Object.prototype.hasOwnProperty.call(schema[branch], 'trunk'));
+        : Object.keys(schema).find(
+            (branch) =>
+              !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
+          );
 
       queries._ = base;
 
+      const searchParams = queriesToParams(queries);
+
+      const pathname = repoName === undefined ? "/" : `/${repoName}`;
+
+      window.history.replaceState(
+        null,
+        null,
+        `${pathname}?${searchParams.toString()}`
+      );
+
       set({
-        base, schema, overview: [], queries,
+        base,
+        schema,
+        overview: [],
+        queries,
       });
 
       await get().updateOverview();
@@ -305,16 +322,16 @@ export const createOverviewSlice = (set, get) => ({
 
     let repoName;
 
-    if (repoUUID === 'root' || get().isView) {
+    if (repoUUID === "root" || get().isView) {
       // leave repoName as undefined
     } else {
-      const api = new API('root');
+      const api = new API("root");
 
       const searchParams = new URLSearchParams();
 
-      searchParams.set('_', 'reponame');
+      searchParams.set("_", "reponame");
 
-      searchParams.set('reponame', repoUUID);
+      searchParams.set("reponame", repoUUID);
 
       const [entry] = await api.select(searchParams);
 
@@ -322,7 +339,10 @@ export const createOverviewSlice = (set, get) => ({
     }
 
     set({
-      repoName, repoUUID, queries: {}, entry: undefined,
+      repoName,
+      repoUUID,
+      queries: {},
+      entry: undefined,
     });
   },
 
@@ -336,13 +356,13 @@ export const createOverviewSlice = (set, get) => ({
 
     set({ closeHandler: () => {} });
 
-    const api = new API('root');
+    const api = new API("root");
 
     const searchParams = new URLSearchParams();
 
-    searchParams.set('_', 'reponame');
+    searchParams.set("_", "reponame");
 
-    searchParams.set('reponame', repoName);
+    searchParams.set("reponame", repoName);
 
     const [entry] = await api.select(searchParams);
 
@@ -353,7 +373,10 @@ export const createOverviewSlice = (set, get) => ({
     const repoUUID = entry.UUID;
 
     set({
-      repoName, repoUUID, queries: {}, entry: undefined,
+      repoName,
+      repoUUID,
+      queries: {},
+      entry: undefined,
     });
   },
 });

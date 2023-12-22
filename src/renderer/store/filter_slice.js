@@ -1,9 +1,9 @@
-import { OverviewType } from './types.js';
+import { OverviewType } from "./types.js";
 
 export const createFilterSlice = (set, get) => ({
   queries: {},
 
-  groupBy: '',
+  groupBy: "",
 
   overviewType: OverviewType.itinerary,
 
@@ -18,24 +18,27 @@ export const createFilterSlice = (set, get) => ({
   },
 
   onQueryAdd: async (queryField, queryValue) => {
-    if (queryValue) {
-      const queries = { ...get().queries, [queryField]: queryValue };
+    const { queries } = get();
 
-      set({ queries });
-    } else {
-      // TODO: refactor, remove useEffect onQueries
-      // rerun select even if queries not changed
-      await get().onQueries();
-    }
+    queries[queryField] = queryValue;
+
+    set({ queries });
+    // } else {
+    // TODO: refactor, remove useEffect onQueries
+    // rerun select even if queries not changed
+    await get().onQueries();
+    // }
   },
 
   onQueryRemove: async (queryField) => {
-    if (queryField !== '_' && queryField !== '.group') {
+    if (queryField !== "_" && queryField !== ".group") {
       const queries = { ...get().queries };
 
       delete queries[queryField];
 
       set({ queries });
+
+      await get().onQueries();
     }
   },
 });

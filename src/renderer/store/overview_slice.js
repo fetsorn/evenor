@@ -173,7 +173,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const groupBy = searchParams.get(".group") ?? undefined;
 
-    queries[".group"] = groupBy;
+    // queries[".group"] = groupBy;
 
     const schema = await api.readSchema();
 
@@ -181,7 +181,7 @@ export const createOverviewSlice = (set, get) => ({
       (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
     );
 
-    queries._ = base;
+    // queries._ = base;
 
     await get().onQueries();
 
@@ -215,7 +215,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const searchParams = queriesToParams(queries);
 
-    searchParams.delete(".group");
+    // searchParams.delete(".group");
 
     const { strm: fromStrm, closeHandler } = await api.selectStream(
       searchParams
@@ -243,7 +243,7 @@ export const createOverviewSlice = (set, get) => ({
           ? queries[".group"]
           : getDefaultGroupBy(schemaBase, overview, searchParams);
 
-        queries[".group"] = groupBy;
+        // queries[".group"] = groupBy;
 
         set({
           groupBy,
@@ -277,7 +277,7 @@ export const createOverviewSlice = (set, get) => ({
               !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
           );
 
-      queries._ = base;
+      // queries._ = base;
 
       const searchParams = queriesToParams(queries);
 

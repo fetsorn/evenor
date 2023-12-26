@@ -15,10 +15,12 @@ export function FilterQueryPlus({
 		queries,
     schema,
     onQueryAdd,
+		changeGroupBy,
   ] = useStore((state) => [
 		state.queries,
     state.schema,
     state.onQueryAdd,
+		state.changeGroupBy,
   ]);
 	
 
@@ -40,6 +42,7 @@ const menuItems = Object.keys(schema)
   			title:"title",
 				menuItems,
       }}/>
+			<button onClick={changeGroupBy}></button>
     </div>
   );
 }

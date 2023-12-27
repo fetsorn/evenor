@@ -40,10 +40,13 @@ export function FilterGroupBySelect({
 //     label: key
 //   }));
 
-const options = ["reponame", "option", "option-2"]
+const options = Object.keys(schema)
 
   return (
+		<label htmlFor={`selectGroupBy`}>
+			{t('header.dropdown.groupby')}
 		<select
+					id={`selectGroupBy`}
           value={groupBy}
           onChange={({ target: { value } }) => {
 						setGroupBy(value)					
@@ -55,5 +58,6 @@ const options = ["reponame", "option", "option-2"]
             </option>
           ))}
         </select>
+				</label>
   );
 }

@@ -262,12 +262,6 @@ export const createOverviewSlice = (set, get) => ({
     set({ closeHandler: () => {} });
   },
 
-  changeGroupBy: async () => {
-    const { groupBy: groupByold } = get();
-    console.log("changeGroupBy", groupByold);
-    set({ groupBy: groupByold === "bred" ? "reponame" : "bred" });
-  },
-
   onQueries: async () => {
     if (get().isInitialized) {
       const { queries, repoName } = get();

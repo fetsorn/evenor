@@ -385,4 +385,9 @@ export const createOverviewSlice = (set, get) => ({
       entry: undefined,
     });
   },
+  setGroupBy: async (groupBy) => {
+    set({
+      groupBy,
+    });
+  },
 });

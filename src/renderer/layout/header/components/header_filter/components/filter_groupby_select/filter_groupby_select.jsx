@@ -9,20 +9,25 @@ import {
 export function FilterGroupBySelect({
   
 }) {
-//   const { i18n, t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
-//   const [
-// 		queries,
-//     schema,
-//     onQueryAdd,
-// 		changeGroupBy,
-//   ] = useStore((state) => [
-// 		state.queries,
-//     state.schema,
-//     state.onQueryAdd,
-// 		state.changeGroupBy,
-//   ]);
+  const [
+		groupBy,
+		queries,
+    schema,
+    onQueryAdd,
+		changeGroupBy,
+		setGroupBy,
+  ] = useStore((state) => [
+		state.groupBy,
+		state.queries,
+    state.schema,
+    state.onQueryAdd,
+		state.changeGroupBy,
+		state.setGroupBy,
+  ]);
 	
+
 
 // const addedField = Object.keys(queries)
 
@@ -35,7 +40,20 @@ export function FilterGroupBySelect({
 //     label: key
 //   }));
 
+const options = ["reponame", "option", "option-2"]
+
   return (
-		<div>AAA</div>
+		<select
+          value={groupBy}
+          onChange={({ target: { value } }) => {
+						setGroupBy(value)					
+          }}
+        >
+          {options.map((field) => (
+            <option key={crypto.getRandomValues(new Uint32Array(10)).join('')} value={field}>
+              {field}
+            </option>
+          ))}
+        </select>
   );
 }

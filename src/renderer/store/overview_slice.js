@@ -216,6 +216,9 @@ export const createOverviewSlice = (set, get) => ({
     const searchParams = queriesToParams(queries);
 
     // searchParams.delete(".group");
+    searchParams.set("_", base);
+
+    console.log("updateOverview:searchParams", searchParams.toString());
 
     const { strm: fromStrm, closeHandler } = await api.selectStream(
       searchParams
@@ -226,6 +229,7 @@ export const createOverviewSlice = (set, get) => ({
     const toStrm = new WritableStream({
       write(chunk) {
         const overview = [...get().overview, chunk];
+        console.log("updateOverview:chunk", chunk);
 
         const schemaBase = Object.fromEntries(
           Object.entries(schema).filter(
@@ -260,6 +264,18 @@ export const createOverviewSlice = (set, get) => ({
     await fromStrm.pipeTo(toStrm);
 
     set({ closeHandler: () => {} });
+  },
+
+  changeBase: async () => {
+    const { base: baseOld } = get();
+
+    const base = baseOld === "rss_tag" ? "reponame" : "rss_tag";
+
+    console.log("base", baseOld);
+
+    set({ base, overview: [] });
+
+    await get().updateOverview();
   },
 
   onQueries: async () => {

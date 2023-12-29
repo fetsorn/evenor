@@ -400,4 +400,9 @@ export const createOverviewSlice = (set, get) => ({
       groupBy,
     });
   },
+  setBase: async (base) => {
+    set({
+      base,
+    });
+  },
 });

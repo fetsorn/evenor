@@ -17,6 +17,7 @@ export function OverviewItinerary() {
     entry,
     overview,
     groupBy,
+		base,
     onEntrySelect,
     onEntryCreate,
     onBatchSelect,
@@ -24,13 +25,14 @@ export function OverviewItinerary() {
     state.entry,
     state.overview,
     state.groupBy,
+		state.base,
     state.onEntrySelect,
     state.onEntryCreate,
     state.onBatchSelect,
   ]);
 
   async function onUseEffect() {
-    const itineraryNew = await buildItinerary(overview, groupBy);
+    const itineraryNew = await buildItinerary(overview, groupBy, base);
 
     setItinerary(itineraryNew);
 
@@ -41,7 +43,7 @@ export function OverviewItinerary() {
 
   useEffect(() => {
     onUseEffect();
-  }, [overview, groupBy]);
+  }, [overview, groupBy, base]);
 
   return (
     <div className={styles.timeline}>

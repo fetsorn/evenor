@@ -395,14 +395,16 @@ export const createOverviewSlice = (set, get) => ({
       entry: undefined,
     });
   },
+
   setGroupBy: async (groupBy) => {
     set({
       groupBy,
     });
   },
+
   setBase: async (base) => {
-    set({
-      base,
-    });
+    set({ base, overview: [] });
+
+    await get().updateOverview();
   },
 });

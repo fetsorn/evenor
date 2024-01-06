@@ -2,9 +2,6 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '@/store/index.js';
 import styles from './filter_base_select.module.css';
-import {
-  Dropdown,
-} from '@/components/index.js';
 
 export function FilterBaseSelect({
   
@@ -13,32 +10,14 @@ export function FilterBaseSelect({
 
   const [
 		base,
-		queries,
     schema,
-    onQueryAdd,
-		changeBase,
 		setBase,
   ] = useStore((state) => [
-		state.groupBase,
-		state.queries,
+		state.base,
     state.schema,
-    state.onQueryAdd,
-		state.changeBase,
 		state.setBase,
   ]);
 	
-
-
-// const addedField = Object.keys(queries)
-
-// const menuItems = Object.keys(schema)
-//   .filter(key => !addedField.includes(key)) 
-//   .map(key => ({
-//     onClick: () => {
-//       onQueryAdd(key, "");
-//     },
-//     label: key
-//   }));
 
 const options = Object.keys(schema)
 

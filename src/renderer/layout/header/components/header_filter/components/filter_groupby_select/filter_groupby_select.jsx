@@ -2,9 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '@/store/index.js';
 import styles from './filter_groupby_select.module.css';
-import {
-  Dropdown,
-} from '@/components/index.js';
+
 
 export function FilterGroupBySelect({
   
@@ -13,34 +11,16 @@ export function FilterGroupBySelect({
 
   const [
 		groupBy,
-		queries,
     schema,
-    onQueryAdd,
-		changeGroupBy,
 		setGroupBy,
   ] = useStore((state) => [
 		state.groupBy,
-		state.queries,
     state.schema,
-    state.onQueryAdd,
-		state.changeGroupBy,
 		state.setGroupBy,
   ]);
 	
-
-
-// const addedField = Object.keys(queries)
-
-// const menuItems = Object.keys(schema)
-//   .filter(key => !addedField.includes(key)) 
-//   .map(key => ({
-//     onClick: () => {
-//       onQueryAdd(key, "");
-//     },
-//     label: key
-//   }));
-
 const options = Object.keys(schema)
+console.log(schema);
 
   return (
 		<label htmlFor={`selectGroupBy`}>

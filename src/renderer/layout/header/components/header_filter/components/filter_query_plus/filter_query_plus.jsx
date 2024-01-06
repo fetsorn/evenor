@@ -15,12 +15,10 @@ export function FilterQueryPlus({
 		queries,
     schema,
     onQueryAdd,
-		changeBase,
   ] = useStore((state) => [
 		state.queries,
     state.schema,
     state.onQueryAdd,
-		state.changeBase,
   ]);
 	
 
@@ -42,7 +40,6 @@ const menuItems = Object.keys(schema)
   			title:"title",
 				menuItems,
       }}/>
-			<button onClick={changeBase}></button>
     </div>
   );
 }

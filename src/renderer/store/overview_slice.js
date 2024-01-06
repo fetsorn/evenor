@@ -266,17 +266,17 @@ export const createOverviewSlice = (set, get) => ({
     set({ closeHandler: () => {} });
   },
 
-  changeBase: async () => {
-    const { base: baseOld } = get();
+  // changeBase: async () => {
+  //   const { base: baseOld } = get();
 
-    const base = baseOld === "rss_tag" ? "reponame" : "rss_tag";
+  //   const base = baseOld === "rss_tag" ? "reponame" : "rss_tag";
 
-    console.log("base", baseOld);
+  //   console.log("base", baseOld);
 
-    set({ base, overview: [] });
+  //   set({ base, overview: [] });
 
-    await get().updateOverview();
-  },
+  //   await get().updateOverview();
+  // },
 
   onQueries: async () => {
     if (get().isInitialized) {
@@ -316,15 +316,15 @@ export const createOverviewSlice = (set, get) => ({
     }
   },
 
-  onChangeBase: async (base) => {
-    const { queries } = get();
+  // onChangeBase: async (base) => {
+  //   const { queries } = get();
 
-    queries._ = base;
+  //   queries._ = base;
 
-    set({ base, queries });
+  //   set({ base, queries });
 
-    await get().updateOverview();
-  },
+  //   await get().updateOverview();
+  // },
 
   setRepoUUID: async (repoUUID) => {
     // close select stream if already running

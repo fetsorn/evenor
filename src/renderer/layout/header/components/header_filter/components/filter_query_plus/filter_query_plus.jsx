@@ -15,8 +15,24 @@ import {
 	* @returns {string[]} - list of lieaves of base
 	*/
 function foo(schema, base) {
+	console.log(`filter_query_plus: foo-base-${base}`);
+	// when base undefined then return empty array
+	// if (base === undefined) {
+	// 	return []
+	// }
 	// pass to fields of schema and find fields where trunk == base
 	// return [leaf, leaf, leaf ]
+	//когда на сайте в base выбран reponame, плюс должен возвращать schema, category, tags
+	// if (base === "reponame") {
+	// 	return ["schema", "category", "tags"]
+	// }
+	//когда на сайте в base выбран tags, плюс должен возвращать sync_tag, remote_tag, rss_tag, local_tag, zip_tag, tg_tag
+	// if (base === "tags") {
+	// 	return ["sync_tag", "remote_tag", "rss_tag", "local_tag","zip_tag", "tg_tag"]
+	// }
+	// как найти все листочки base. Когда на сайте выбран base плюс должен возвращать все ветки у которых trunk === base.
+	return Object.keys(schema).filter((branch) => schema[branch].trunk === base)
+	
 }
 
 /**
@@ -28,7 +44,7 @@ function foo(schema, base) {
  * @param {string} branch - Branch name.
  * @returns {Boolean}
  */
-function isConnected(schema, base, branch) {
+function isConnectedOld(schema, base, branch) {
   const { trunk } = schema[branch];
 
   if (trunk === undefined) {
@@ -41,7 +57,7 @@ function isConnected(schema, base, branch) {
     // if trunk is object or array, leaf is not connected to base
     // because objects and arrays have their own leaves
     return false;
-  } if (isConnected(schema, base, trunk)) {
+  } if (isConnectedOld(schema, base, trunk)) {
     // if trunk is connected to base, leaf is also connected to base
     return true;
   }
@@ -59,7 +75,7 @@ function isConnected(schema, base, branch) {
  * @returns {string[]} - Array of leaf branches connected to the base branch.
  */
 export function findCrown(schema, base) {
-  return Object.keys(schema).filter((branch) => isConnected(schema, base, branch));
+  return Object.keys(schema).filter((branch) => isConnectedOld(schema, base, branch));
 }
 
 export function FilterQueryPlus({
@@ -81,8 +97,9 @@ export function FilterQueryPlus({
 	
 
 	// find all fields name
-	// const leafFields = foo(schema, base)
-	const leafFields = Object.keys(schema)
+	const leafFields = foo(schema, base)
+	console.log(`filter_query_plus: ${leafFields}`);
+	// const leafFields = Object.keys(schema)
 	// find field name which added to filterqueries
 	const addedFields = Object.keys(queries)
 	// find name fields which is not added to filterqueries

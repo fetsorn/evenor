@@ -173,15 +173,11 @@ export const createOverviewSlice = (set, get) => ({
 
     const groupBy = searchParams.get(".group") ?? undefined;
 
-    // queries[".group"] = groupBy;
-
     const schema = await api.readSchema();
 
     const base = Object.keys(schema).find(
       (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
     );
-
-    // queries._ = base;
 
     await get().onQueries();
 
@@ -215,10 +211,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const searchParams = queriesToParams(queries);
 
-    // searchParams.delete(".group");
     searchParams.set("_", base);
-
-    console.log("updateOverview:searchParams", searchParams.toString());
 
     const { strm: fromStrm, closeHandler } = await api.selectStream(
       searchParams
@@ -229,7 +222,6 @@ export const createOverviewSlice = (set, get) => ({
     const toStrm = new WritableStream({
       write(chunk) {
         const overview = [...get().overview, chunk];
-        console.log("updateOverview:chunk", chunk);
 
         const schemaBase = Object.fromEntries(
           Object.entries(schema).filter(
@@ -246,8 +238,6 @@ export const createOverviewSlice = (set, get) => ({
         )
           ? queries[".group"]
           : getDefaultGroupBy(schemaBase, overview, searchParams);
-
-        // queries[".group"] = groupBy;
 
         set({
           groupBy,
@@ -266,18 +256,6 @@ export const createOverviewSlice = (set, get) => ({
     set({ closeHandler: () => {} });
   },
 
-  // changeBase: async () => {
-  //   const { base: baseOld } = get();
-
-  //   const base = baseOld === "rss_tag" ? "reponame" : "rss_tag";
-
-  //   console.log("base", baseOld);
-
-  //   set({ base, overview: [] });
-
-  //   await get().updateOverview();
-  // },
-
   onQueries: async () => {
     if (get().isInitialized) {
       const { queries, repoName } = get();
@@ -292,8 +270,6 @@ export const createOverviewSlice = (set, get) => ({
             (branch) =>
               !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
           );
-
-      // queries._ = base;
 
       const searchParams = queriesToParams(queries);
 
@@ -315,16 +291,6 @@ export const createOverviewSlice = (set, get) => ({
       await get().updateOverview();
     }
   },
-
-  // onChangeBase: async (base) => {
-  //   const { queries } = get();
-
-  //   queries._ = base;
-
-  //   set({ base, queries });
-
-  //   await get().updateOverview();
-  // },
 
   setRepoUUID: async (repoUUID) => {
     // close select stream if already running

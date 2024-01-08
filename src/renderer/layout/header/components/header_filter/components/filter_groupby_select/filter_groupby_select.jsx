@@ -3,6 +3,20 @@ import { useTranslation } from 'react-i18next';
 import { useStore } from '@/store/index.js';
 import styles from './filter_groupby_select.module.css';
 
+/**
+	* return leaves of base
+	* @name filterLeaves
+	* @function 
+	* @param {object} schema - structure data base.
+	* @param {string} base - field of schema.
+	* @returns {string[]} - list of lieaves of base
+	*/
+
+  function filterLeaves(schema, base) {
+    // how to find all leaves of base. It should return all branches that have trunk === base when you select the plus button(base)
+		return Object.keys(schema).filter((branch) => schema[branch].trunk === base)
+		
+	}
 
 export function FilterGroupBySelect({
   
@@ -20,31 +34,10 @@ export function FilterGroupBySelect({
 		state.base,
 		state.setGroupBy,
   ]);
-
-	function foo(schema, base) {
-		console.log(`filter_query_plus: foo-base-${base}`);
-		// when base undefined then return empty array
-		// if (base === undefined) {
-		// 	return []
-		// }
-		// pass to fields of schema and find fields where trunk == base
-		// return [leaf, leaf, leaf ]
-		//когда на сайте в base выбран reponame, плюс должен возвращать schema, category, tags
-		// if (base === "reponame") {
-		// 	return ["schema", "category", "tags"]
-		// }
-		//когда на сайте в base выбран tags, плюс должен возвращать sync_tag, remote_tag, rss_tag, local_tag, zip_tag, tg_tag
-		// if (base === "tags") {
-		// 	return ["sync_tag", "remote_tag", "rss_tag", "local_tag","zip_tag", "tg_tag"]
-		// }
-		// как найти все листочки base. Когда на сайте выбран base плюс должен возвращать все ветки у которых trunk === base.
-		return Object.keys(schema).filter((branch) => schema[branch].trunk === base)
-		
-	}
-	const options = foo(schema, base).concat([base])
+  
 	
-// const options = Object.keys(schema)
-console.log(schema);
+	const options = filterLeaves(schema, base).concat([base])
+	
 
   return (
 		<label htmlFor={`selectGroupBy`}>

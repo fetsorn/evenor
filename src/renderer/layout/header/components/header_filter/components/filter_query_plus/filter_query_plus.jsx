@@ -97,7 +97,7 @@ export function FilterQueryPlus({
 	
 
 	// find all fields name
-	const leafFields = foo(schema, base)
+	const leafFields = foo(schema, base).concat([base])
 	console.log(`filter_query_plus: ${leafFields}`);
 	// const leafFields = Object.keys(schema)
 	// find field name which added to filterqueries

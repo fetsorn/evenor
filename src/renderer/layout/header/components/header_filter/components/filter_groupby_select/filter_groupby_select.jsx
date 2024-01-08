@@ -41,8 +41,7 @@ export function FilterGroupBySelect({
 		return Object.keys(schema).filter((branch) => schema[branch].trunk === base)
 		
 	}
-	const options = foo(schema, base)
-	
+	const options = foo(schema, base).concat([base])
 	
 // const options = Object.keys(schema)
 console.log(schema);

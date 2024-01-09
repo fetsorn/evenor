@@ -3,7 +3,6 @@ import {
   HashRouter as Router,
   Routes,
   Route,
-  useLocation,
   useParams,
 } from 'react-router-dom';
 import { useStore } from '@/store/index.js';
@@ -27,7 +26,7 @@ export function Root() {
 function Page() {
   const { repoRoute } = useParams();
 
-  const location = useLocation();
+  const location = window.location;
 
   const initialize = useStore((state) => state.initialize);
 

@@ -1,6 +1,7 @@
 .panel {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: end;
 }
 
 .search {

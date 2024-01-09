@@ -1,0 +1,9 @@
+.search {
+  display: flex;
+}
+
+.form {
+  display: flex;
+  /* width: 100vw; */
+  flex-wrap: wrap;
+}

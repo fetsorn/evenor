@@ -179,8 +179,6 @@ export const createOverviewSlice = (set, get) => ({
       (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
     );
 
-    await get().onQueries();
-
     set({
       schema,
       base,
@@ -192,6 +190,8 @@ export const createOverviewSlice = (set, get) => ({
       repoUUID,
       repoName,
     });
+
+    await get().updateOverview();
   },
 
   updateOverview: async () => {
@@ -205,6 +205,7 @@ export const createOverviewSlice = (set, get) => ({
     set({ closeHandler: () => {} });
 
     const { base, queries, repoUUID } = get();
+
     const api = new API(repoUUID);
 
     const schema = await api.readSchema();

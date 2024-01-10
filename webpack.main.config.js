@@ -3,7 +3,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   // target: 'electron-main',
-  entry: "./src-electron/indes.js",
+  entry: "./src-electron/index.js",
   // mode: "development",
   // devtool: "source-map",
   module: {

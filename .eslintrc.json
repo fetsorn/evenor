@@ -15,7 +15,8 @@
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react",
+        "@stylistic"
     ],
     "parser": "@babel/eslint-parser",
     "rules": {
@@ -25,6 +26,8 @@
       "no-console": "off",
       "no-await-in-loop": "off",
       "import/no-cycle": "off",
-      "no-restricted-syntax": "off"
+      "no-restricted-syntax": "off",
+      "@stylistic/quotes": ["warn", "double"]
     }
 }
+

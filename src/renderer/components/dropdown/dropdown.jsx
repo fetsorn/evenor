@@ -20,6 +20,7 @@ export function Dropdown({
       callback();
     };
   }
+	console.log("hi");
 
   return (
     <div title={title} className={cn(styles.dropdown, "dropdown")}>

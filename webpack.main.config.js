@@ -1,9 +1,9 @@
-const path = require('path');
-const CopyPlugin = require('copy-webpack-plugin');
+const path = require("path");
+const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   // target: 'electron-main',
-  entry: './src/main/index.js',
+  entry: "./src-electron/indes.js",
   // mode: "development",
   // devtool: "source-map",
   module: {
@@ -12,7 +12,7 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
         },
       },
     ],
@@ -24,17 +24,17 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         {
-          context: 'node_modules/@fetsorn/wasm-grep/pkg/nodejs/',
-          from: '*',
-          to: '[name][ext]',
+          context: "node_modules/@fetsorn/wasm-grep/pkg/nodejs/",
+          from: "*",
+          to: "[name][ext]",
         },
       ],
     }),
   ],
   resolve: {
     alias: {
-      lib: path.resolve(__dirname, './src/lib'),
+      lib: path.resolve(__dirname, "./src/lib"),
     },
-    extensions: ['.js', '.jsx', '.css', '.json'],
+    extensions: [".js", ".jsx", ".css", ".json"],
   },
 };

@@ -53,7 +53,7 @@
         server = pkgs.mkYarnPackage rec {
           name = package.name + "-server";
           version = package.version;
-          src = ./src/server;
+          src = ./src-server;
           packageJSON = pkgs.stdenv.mkDerivation {
             name = package.name + "-server-package-json";
             inherit src;

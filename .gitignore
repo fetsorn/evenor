@@ -83,7 +83,7 @@ jspm_packages/
 out/
 /result
 /release/
-/src/server/build
+/src-server/build
 /dist/
 
 # add .idea to .gitignore

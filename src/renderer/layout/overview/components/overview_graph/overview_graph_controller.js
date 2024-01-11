@@ -1,10 +1,6 @@
-import { API } from 'lib/api';
+import { API } from "../../../../../api";
 
-async function renderGed(
-  dir,
-  depth,
-  familyID,
-) {
+async function renderGed(dir, depth, familyID) {
   const api = new API(dir);
 
   const index = await api.readGedcom();
@@ -13,7 +9,7 @@ async function renderGed(
   // when passed familyID is undefined or non-existing
   let dot;
 
-  const { ged2dot, ged2dot_ } = await import('@fetsorn/ged2dot');
+  const { ged2dot, ged2dot_ } = await import("@fetsorn/ged2dot");
 
   if (familyID) {
     dot = ged2dot(index, familyID, depth);
@@ -21,12 +17,12 @@ async function renderGed(
     dot = ged2dot_(index);
   }
 
-  const { Graphviz } = await import('@hpcc-js/wasm');
+  const { Graphviz } = await import("@hpcc-js/wasm");
 
   const graphviz = await Graphviz.load();
 
   // render dot notation with graphviz
-  const svg = graphviz.layout(dot, 'svg', 'dot');
+  const svg = graphviz.layout(dot, "svg", "dot");
 
   return svg;
 }
@@ -46,7 +42,7 @@ async function render(dir, depth, familyID) {
 
     return html;
   } catch (e1) {
-    console.log('no index.ged', e1);
+    console.log("no index.ged", e1);
   }
 
   // if there's an index file, render it as overview
@@ -55,17 +51,13 @@ async function render(dir, depth, familyID) {
 
     return html;
   } catch (e2) {
-    console.log('no index.html', e2);
+    console.log("no index.html", e2);
   }
 
-  throw Error('render failed for unknown reason');
+  throw Error("render failed for unknown reason");
 }
 
-export async function load(
-  dir,
-  depth,
-  familyID,
-) {
+export async function load(dir, depth, familyID) {
   try {
     const html = await render(dir, depth, familyID);
 

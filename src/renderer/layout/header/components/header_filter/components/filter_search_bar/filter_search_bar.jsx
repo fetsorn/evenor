@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API } from 'lib/api';
+import { API } from '../../../../../../../api';
 import { Button } from '@/components/index.js';
 import { useStore } from '@/store/index.js';
 import styles from './filter_search_bar.module.css';

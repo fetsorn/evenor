@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { exportPDF, generateLatex } from 'lib/latex/';
+// import { exportPDF, generateLatex } from 'lib/latex/';
 import { useStore } from '@/store/index.js';
 
 export function OverviewBook() {
@@ -15,11 +15,11 @@ export function OverviewBook() {
 
   async function onUseEffect() {
     // create latex from overview
-    const latex = generateLatex(overview);
+    // const latex = generateLatex(overview);
 
-    const url = await exportPDF(latex);
+    // const url = await exportPDF(latex);
 
-    setBlobURL(url);
+    // setBlobURL(url);
   }
 
   useEffect(() => {

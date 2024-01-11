@@ -1,4 +1,4 @@
-import { API, schemaRoot } from "lib/api";
+import { API, schemaRoot } from "../../api";
 import { OverviewType } from "./types.js";
 
 // pick a param to group data by

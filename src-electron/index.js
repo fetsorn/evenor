@@ -1,7 +1,7 @@
 import path from "path";
 import url from "url";
 import { app, BrowserWindow, ipcMain, shell, Menu } from "electron";
-import { ElectronAPI as API } from "lib/api/electron.js";
+import { ElectronAPI as API } from "../src/api/electron.js";
 
 let windows = {};
 

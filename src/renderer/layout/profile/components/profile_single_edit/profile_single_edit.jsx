@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
-import { schemaRoot } from 'lib/api';
+import { schemaRoot } from '../../../../../api';
 import {
   AssetView,
   Button,

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import express from 'express';
-import bodyParser from 'body-parser';
-import path from 'path';
-import formidable from 'formidable';
-import { ServerAPI } from 'evenor/src/lib/api/server.mjs';
+import express from "express";
+import bodyParser from "body-parser";
+import path from "path";
+import formidable from "formidable";
+import { ServerAPI } from "../src/api/server.mjs";
 
 const dirname = path.dirname(new URL(import.meta.url).pathname);
 
@@ -14,15 +14,15 @@ const api = new ServerAPI(process.cwd());
 const router = express.Router();
 const app = express();
 
-app.set('query parser', (queryString) => new URLSearchParams(queryString));
+app.set("query parser", (queryString) => new URLSearchParams(queryString));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-app.use('/', router);
+app.use("/", router);
 
 // on POST `/grep` return results of a search
-router.get('/query*', async (req, res) => {
+router.get("/query*", async (req, res) => {
   // console.log('post query', req.path, req.query);
 
   const overview = await api.select(req.query);
@@ -31,10 +31,10 @@ router.get('/query*', async (req, res) => {
 });
 
 // on GET `/api/path` serve `/path` in current directory
-router.get('/api/*', async (req, res) => {
+router.get("/api/*", async (req, res) => {
   // console.log('get api', req.path);
 
-  const filepath = decodeURI(req.path.replace(/^\/api/, ''));
+  const filepath = decodeURI(req.path.replace(/^\/api/, ""));
 
   const content = await api.fetchFile(filepath);
 
@@ -42,12 +42,12 @@ router.get('/api/*', async (req, res) => {
 });
 
 // on POST `/api/path` write `/path` in current directory
-router.post('/api/*', async (req, res) => {
+router.post("/api/*", async (req, res) => {
   // console.log('post api', req.path);
 
   const { content } = req.body;
 
-  const filepath = decodeURI(req.path.replace(/^\/api/, ''));
+  const filepath = decodeURI(req.path.replace(/^\/api/, ""));
 
   await api.writeFile(filepath, content);
 
@@ -55,7 +55,7 @@ router.post('/api/*', async (req, res) => {
 });
 
 // on PUT `/api/path` git commit current directory
-router.put('/api/*', async (_, res) => {
+router.put("/api/*", async (_, res) => {
   // console.log('put api');
 
   await api.commit();
@@ -64,7 +64,7 @@ router.put('/api/*', async (_, res) => {
 });
 
 // on POST `/upload` upload file
-router.post('/upload', async (req, res) => {
+router.post("/upload", async (req, res) => {
   const form = formidable({});
 
   form.keepExtensions = true;
@@ -84,19 +84,19 @@ router.post('/upload', async (req, res) => {
 });
 
 // on `/` serve a react app with hash router
-router.get('/', (req, res) => {
+router.get("/", (req, res) => {
   // console.log(req.path);
 
-  res.sendFile(path.join(dirname, 'build', 'index.html'));
+  res.sendFile(path.join(dirname, "build", "index.html"));
 });
 
 // serve `build/file` at `/file`
-app.use(express.static(path.join(dirname, 'build')));
+app.use(express.static(path.join(dirname, "build")));
 
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
   console.log(`App listening on port ${PORT}`);
 
-  console.log('Press Ctrl+C to quit.');
+  console.log("Press Ctrl+C to quit.");
 });

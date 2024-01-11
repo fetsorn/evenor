@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
-import { schemaRoot } from 'lib/api';
+import { schemaRoot } from '../../../../../api';
 import {
   Button,
   Title,

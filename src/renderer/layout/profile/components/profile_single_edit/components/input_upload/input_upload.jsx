@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { API } from 'lib/api';
+import { API } from '../../../../../../../api';
 import { useStore } from '@/store/index.js';
 import { Button, AssetView } from '@/components/index.js';
 import styles from './input_upload.module.css';

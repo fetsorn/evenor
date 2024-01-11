@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { API, deepClone } from 'lib/api';
+import { API, deepClone } from '../../../../../../../api';
 import { useStore } from '@/store/index.js';
 import { EditInput, InputDropdown } from '..';
 

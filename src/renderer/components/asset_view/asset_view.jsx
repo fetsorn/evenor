@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { API } from 'lib/api';
+import { API } from '../../../api';
 import { useStore } from '@/store/index.js';
 import { convert, isIFrameable } from './asset_view_controller.js';
 

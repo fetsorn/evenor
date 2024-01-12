@@ -6,7 +6,7 @@ import {
   schemaLocal,
   schemaZip,
   schemaTG,
-} from "../lib/dispensers/index.js";
+} from "../layout/profile_view/components/dispenser/components";
 
 export function entryToSchema(schemaEntry) {
   const schemaObject = {};

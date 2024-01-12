@@ -4,7 +4,7 @@ import { AssetView } from '@/components/index.js';
 import { useStore } from '@/store/index.js';
 import { FieldText } from '..';
 
-const Dispenser = React.lazy(() => import('lib/dispensers/index.js'));
+const Dispenser = React.lazy(() => import('../../../../../../../../src/layout/profile_view/components/dispenser/components/index.js'));
 
 export function ViewField({ entry, schema, isBaseObject }) {
   const { i18n } = useTranslation();

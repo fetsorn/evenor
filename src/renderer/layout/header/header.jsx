@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './header.module.css';
-import { useStore } from '../../../store/store/index.js';
+import { useStore } from '../../../store/index.js';
 import {
   Button,
-} from '../../../components/components/index.js';
+} from '../../../components/index.js';
 import {
   HeaderFilter,
   HeaderOverviewRadio,

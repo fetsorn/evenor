@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './filter_query_list.module.css';
-import { useStore } from '../../../../../../../store/store/index.js';
+import { useStore } from '../../../../../../../store/index.js';
 
 export function FilterQueryList({ onQuerySelect }) {
   const { t } = useTranslation();

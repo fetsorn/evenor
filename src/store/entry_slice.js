@@ -3,7 +3,7 @@ import {
   generateDefaultSchemaEntry,
   schemaToEntry,
   entryToSchema,
-} from "../../api";
+} from "../api";
 
 // TODO: set default values for required fields
 async function createEntry(schema, base) {

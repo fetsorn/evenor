@@ -5,8 +5,8 @@ import { schemaRoot } from '../../../../../api';
 import {
   Button,
   Title,
-} from '../../../../../components/components/index.js';
-import { useStore } from '../../../../../store/store/index.js';
+} from '../../../../../components/index.js';
+import { useStore } from '../../../../../store/index.js';
 import {
   ViewField,
 } from './components/index.js';

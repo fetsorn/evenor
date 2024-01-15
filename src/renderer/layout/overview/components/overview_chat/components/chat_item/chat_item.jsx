@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import styles from './chat_item.module.css';
-import { useWindowSize } from '../../../../../../../components/components/index.js';
+import { useWindowSize } from '../../../../../../../components/index.js';
 
 export function ChatItem({
   data: entry,

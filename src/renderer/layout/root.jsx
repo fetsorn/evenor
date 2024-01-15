@@ -5,7 +5,7 @@ import {
   Route,
   useParams,
 } from 'react-router-dom';
-import { useStore } from '../../store/store/index.js';
+import { useStore } from '../../store/index.js';
 import { Header } from './header/index.js';
 import { Overview } from './overview/index.js';
 import { Profile } from './profile/index.js';

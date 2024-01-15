@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './overview_chat.module.css';
-import { VirtualScroll } from '../../../../../components/components/index.js'
-import { useStore } from '../../../../../store/store/index.js';
+import { VirtualScroll } from '../../../../../components/index.js'
+import { useStore } from '../../../../../store/index.js';
 import {
   ChatItem
 } from './components/chat_item/index';

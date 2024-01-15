@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { API } from '../../../api';
-import { useStore } from '../../../store/index.js';
+import { API } from '../../api';
+import { useStore } from '../../store/index.js';
 import { convert, isIFrameable } from './asset_view_controller.js';
 
 function FileView({ downloadUrl, mimetype }) {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Paragraph } from '../../../../../../../components/components/index.js';
+import { Paragraph } from '../../../../../../../components/index.js';
 
 export function FieldText({ value }) {
   return (

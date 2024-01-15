@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '@/store/index.js';
+import { useStore } from '../../../../../../../store/store/index.js';
 import styles from './filter_base_select.module.css';
 
 export function FilterBaseSelect({

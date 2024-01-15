@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import styles from './listing_item.module.css';
-import { useStore } from '@/store/index.js';
+import { useStore } from '../../../../../../../store/store/index.js';
 
 export function ListingItem({
   data: listing,

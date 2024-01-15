@@ -1,5 +1,5 @@
 import React from 'react';
-import { useStore } from '@/store/index.js';
+import { useStore } from '../../../../../../../store/store/index.js';
 import { colorFile } from './waypoint_entries_controller.js';
 import styles from './waypoint_entries.module.css';
 

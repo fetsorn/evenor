@@ -7,8 +7,8 @@ import {
   AssetView,
   Button,
   Title,
-} from '@/components/index.js';
-import { useStore } from '@/store/index.js';
+} from '../../../../../components/components/index.js';
+import { useStore } from '../../../../../store/store/index.js';
 import {
   EditInput,
 } from './components/index.js';

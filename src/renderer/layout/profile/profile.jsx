@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { useStore } from '@/store/index.js';
+import { useStore } from '../../../store/store/index.js';
 
 const ProfileSingleEdit = React.lazy(() => import('./components/profile_single_edit/index.js'));
 const ProfileSingleView = React.lazy(() => import('./components/profile_single_view/index.js'));

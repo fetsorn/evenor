@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { OverviewType, useStore } from '@/store/index.js';
+import { OverviewType, useStore } from '../../../store/store/index.js';
 
 const OverviewItinerary = React.lazy(() => import('./components/overview_itinerary/index.js'));
 const OverviewBook = React.lazy(() => import('./components/overview_book/index.js'));

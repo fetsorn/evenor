@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useStore } from '@/store/index.js';
+import { useStore } from '../../../../../store/store/index.js';
 import { load } from './overview_graph_controller.js';
 import { GraphSvg, GraphTextInput, GraphRangeInput } from './components/index.js';
 import styles from './overview_graph.module.css';

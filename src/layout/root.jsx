@@ -5,11 +5,11 @@ import {
   Route,
   useParams,
 } from 'react-router-dom';
-import { useStore } from '../../store/index.js';
-import { Header } from './header/index.js';
-import { Overview } from './overview/index.js';
-import { Profile } from './profile/index.js';
-import { Footer } from './footer/index.js';
+import { useStore } from '../store/index.js';
+import { Header } from '../renderer/layout/header/index.js';
+import { Overview } from '../renderer/layout/overview/index.js';
+import { Profile } from '../renderer/layout/profile/index.js';
+import { Footer } from '../renderer/layout/footer/index.js';
 import styles from './root.module.css';
 
 export function Root() {

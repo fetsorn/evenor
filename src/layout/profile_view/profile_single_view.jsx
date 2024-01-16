@@ -1,12 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import cn from 'classnames';
-import { schemaRoot } from '../../../../../api';
+import { schemaRoot } from '../../api/index.js';
 import {
   Button,
   Title,
-} from '../../../../../components/index.js';
-import { useStore } from '../../../../../store/index.js';
+} from '../../components/index.js';
+import { useStore } from '../../store/index.js';
 import {
   ViewField,
 } from './components/index.js';

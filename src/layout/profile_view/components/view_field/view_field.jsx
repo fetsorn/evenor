@@ -1,10 +1,10 @@
 import React, { useState, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AssetView } from '../../../../../../../components/index.js';
-import { useStore } from '../../../../../../../store/index.js';
+import { AssetView } from '../../../../components/index.js';
+import { useStore } from '../../../../store/index.js';
 import { FieldText } from '..';
 
-const Dispenser = React.lazy(() => import('../../../../../../../../src/layout/profile_view/components/dispenser/components/index.js'));
+const Dispenser = React.lazy(() => import('../dispenser/components/index.js'));
 
 export function ViewField({ entry, schema, isBaseObject }) {
   const { i18n } = useTranslation();

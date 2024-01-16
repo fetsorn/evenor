@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import {
   HashRouter as Router,
   Routes,
@@ -8,7 +8,6 @@ import {
 import { useStore } from '../store/index.js';
 import { Header } from '../renderer/layout/header/index.js';
 import { Overview } from '../renderer/layout/overview/index.js';
-import { Profile } from '../renderer/layout/profile/index.js';
 import styles from './root.module.css';
 
 export function Root() {
@@ -22,17 +21,21 @@ export function Root() {
   );
 }
 
+const ProfileSingleEdit = React.lazy(() => import('../renderer/layout/profile/components/profile_single_edit/index.js'));
+const ProfileSingleView = React.lazy(() => import('../renderer/layout/profile/components/profile_single_view/index.js'));
+
 function Page() {
   const { repoRoute } = useParams();
 
   const location = window.location;
 
-  const initialize = useStore((state) => state.initialize);
+  const [initialize, isEdit] = useStore((state) => [state.initialize,  state.isEdit]);
 
   useEffect(() => {
     initialize(repoRoute, location.search);
   }, []);
 
+  
   return (
     <>
       <Header />
@@ -40,7 +43,13 @@ function Page() {
       <main className={styles.main}>
         <Overview />
 
-        <Profile />
+		<Suspense>
+      { isEdit ? (
+        <ProfileSingleEdit />
+      ) : (
+        <ProfileSingleView />
+      )}
+    </Suspense>
       </main>
 
     </>

@@ -2,13 +2,13 @@ import React from 'react';
 import cn from 'classnames';
 import { useTranslation } from 'react-i18next';
 import { create } from 'zustand';
-import { schemaRoot } from '../../../../../api';
+import { schemaRoot } from '../../api';
 import {
   AssetView,
   Button,
   Title,
-} from '../../../../../components/index.js';
-import { useStore } from '../../../../../store/index.js';
+} from '../../components/index.js';
+import { useStore } from '../../store/index.js';
 import {
   EditInput,
 } from './components/index.js';

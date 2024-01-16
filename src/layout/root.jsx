@@ -21,7 +21,7 @@ export function Root() {
   );
 }
 
-const ProfileSingleEdit = React.lazy(() => import('../renderer/layout/profile/components/profile_single_edit/index.js'));
+const ProfileSingleEdit = React.lazy(() => import('./profile_edit/index.js'));
 const ProfileSingleView = React.lazy(() => import('../renderer/layout/profile/components/profile_single_view/index.js'));
 
 function Page() {

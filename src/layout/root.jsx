@@ -9,7 +9,6 @@ import { useStore } from '../store/index.js';
 import { Header } from '../renderer/layout/header/index.js';
 import { Overview } from '../renderer/layout/overview/index.js';
 import { Profile } from '../renderer/layout/profile/index.js';
-import { Footer } from '../renderer/layout/footer/index.js';
 import styles from './root.module.css';
 
 export function Root() {
@@ -44,7 +43,6 @@ function Page() {
         <Profile />
       </main>
 
-      <Footer />
     </>
   );
 }

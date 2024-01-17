@@ -7,21 +7,18 @@ import {
 } from '../../../components/index.js';
 import {
   HeaderFilter,
-  HeaderOverviewRadio,
 } from './components/index.js';
 
 export function Header() {
   const { t } = useTranslation();
 
   const [
-    onChangeOverviewType,
     isView,
     repoUUID,
     repoName,
     setRepoUUID,
     onSettingsOpen,
   ] = useStore((state) => [
-    state.onChangeOverviewType,
     state.isView,
     state.repoUUID,
     state.repoName,
@@ -30,8 +27,7 @@ export function Header() {
   ]);
 
   function onHome() {
-    onChangeOverviewType('itinerary');
-
+    
     setRepoUUID('root');
   }
 
@@ -51,8 +47,6 @@ export function Header() {
           </Button>
         )
         : <div />}
-
-      <HeaderOverviewRadio />
 
       <HeaderFilter />
 

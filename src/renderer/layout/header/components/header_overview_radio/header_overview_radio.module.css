@@ -1,9 +1,0 @@
-.container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.radiobutton {
-  padding: calc(var(--rem) * 4)
-}

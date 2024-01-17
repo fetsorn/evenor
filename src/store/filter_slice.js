@@ -1,21 +1,9 @@
-import { OverviewType } from "./types.js";
-
 export const createFilterSlice = (set, get) => ({
   queries: {},
 
   groupBy: "",
 
-  overviewType: OverviewType.itinerary,
-
   onChangeGroupBy: (groupBy) => set({ groupBy }),
-
-  onChangeOverviewType: (overviewTypeNew) => {
-    const overviewType = overviewTypeNew
-      ? OverviewType[overviewTypeNew]
-      : get().overviewType;
-
-    set({ overviewType });
-  },
 
   onQueryAdd: async (queryField, queryValue) => {
     const { queries } = get();

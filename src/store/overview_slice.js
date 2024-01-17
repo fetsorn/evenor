@@ -1,5 +1,4 @@
 import { API, schemaRoot } from "../api";
-import { OverviewType } from "./types.js";
 
 // pick a param to group data by
 function getDefaultGroupBy(schema, data, searchParams) {
@@ -165,12 +164,6 @@ export const createOverviewSlice = (set, get) => ({
 
     const queries = paramsToQueries(searchParams);
 
-    const overviewTypeParam = searchParams.get(".overview");
-
-    const overviewType = overviewTypeParam
-      ? OverviewType[overviewTypeParam]
-      : get().overviewType;
-
     const groupBy = searchParams.get(".group") ?? undefined;
 
     const schema = await api.readSchema();
@@ -184,7 +177,6 @@ export const createOverviewSlice = (set, get) => ({
       base,
       queries,
       groupBy,
-      overviewType,
       isView,
       isInitialized: true,
       repoUUID,

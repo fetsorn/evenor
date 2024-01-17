@@ -7,7 +7,7 @@ import {
 } from 'react-router-dom';
 import { useStore } from '../store/index.js';
 import { Header } from '../renderer/layout/header/index.js';
-import { Overview } from '../renderer/layout/overview/index.js';
+import { Overview } from './overview/index.js';
 import styles from './root.module.css';
 
 export function Root() {

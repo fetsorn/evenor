@@ -52,16 +52,16 @@ yarn build:server
 cd ~/csvs-init
 
 ## launch command-line
-node path/to/evenor/src/server/index.js
+node path/to/evenor/src-server/index.js
 #+end_src
 * Documentation
 Evenor stands for "EVENt editOR". In Greek, Evenor is the ancestor of the people of Atlantis. In tokien's elvish, evenor can be loosely translated as "common ground".
 ** Structure of the repo
 [[src/renderer][renderer]] - a React app, packaged both as a webapp and as an Electron renderer
 
-[[src/main][main]] - main Electron thread
+[[src-electron][src-electron]] - main Electron thread
 
-[[src/server][server]] - a local ExpressJS server that serves the React app
+[[src-server][server]] - a local ExpressJS server that serves the React app
 
 [[src/lib][lib]] - common APIs
 * Thanks

@@ -7,8 +7,8 @@
   "scripts": {
     "build:webapp": "webpack --config webpack.web.config.mjs --mode='production'",
     "start:webapp": "webpack serve --config webpack.web.config.mjs",
-    "build:server": "webpack --env buildMode=server --mode='development' --config webpack.web.config.mjs; ln -sTf $(realpath release/renderer) src/server/build; cd src/server; yarn",
-    "start:server": "node ./src/server/index.js",
+    "build:server": "webpack --env buildMode=server --mode='development' --config webpack.web.config.mjs; ln -sTf $(realpath release/renderer) src-server/build; cd src-server; yarn",
+    "start:server": "node ./src-server/index.js",
     "start:electron": "electron-forge start",
     "build:electron": "electron-forge make",
     "lint": "eslint .",

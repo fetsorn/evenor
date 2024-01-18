@@ -1,21 +1,21 @@
-import path from 'path';
-import url from 'url';
-import { createRequire } from 'module';
-import webpack from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import HtmlWebpackPlugin from 'html-webpack-plugin';
-import CopyPlugin from 'copy-webpack-plugin';
+import path from "path";
+import url from "url";
+import { createRequire } from "module";
+import webpack from "webpack";
+import MiniCssExtractPlugin from "mini-css-extract-plugin";
+import HtmlWebpackPlugin from "html-webpack-plugin";
+import CopyPlugin from "copy-webpack-plugin";
 
 const require = createRequire(import.meta.url);
 const dirname = path.dirname(url.fileURLToPath(import.meta.url));
 
 export default (env) => ({
-  entry: './src/renderer/app.jsx',
-  mode: process.env.production ? 'production' : 'development',
-  devtool: 'source-map',
+  entry: "./src/app.jsx",
+  mode: process.env.production ? "production" : "development",
+  devtool: "source-map",
   output: {
-    path: path.resolve(dirname, 'release/renderer'),
-    filename: '[name].bundle.js',
+    path: path.resolve(dirname, "release/renderer"),
+    filename: "[name].bundle.js",
   },
   experiments: {
     syncWebAssembly: true,
@@ -29,12 +29,12 @@ export default (env) => ({
         test: /\.(jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
+          loader: "babel-loader",
         },
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
     ],
   },
@@ -44,49 +44,49 @@ export default (env) => ({
     }),
 
     new MiniCssExtractPlugin({
-      filename: 'style.css',
+      filename: "style.css",
     }),
 
     new webpack.ProvidePlugin({
-      process: 'process/browser',
+      process: "process/browser",
     }),
 
     new webpack.ProvidePlugin({
-      Buffer: ['buffer', 'Buffer'],
+      Buffer: ["buffer", "Buffer"],
     }),
 
     new HtmlWebpackPlugin({
-      template: './src/renderer/index.html',
-      favicon: './public/favicon.ico',
+      template: "./src/index.html",
+      favicon: "./public/favicon.ico",
     }),
 
     new CopyPlugin({
       patterns: [
         {
-          context: 'public/js/',
-          from: '*',
-          to: '[name][ext]',
+          context: "public/js/",
+          from: "*",
+          to: "[name][ext]",
         },
       ],
     }),
   ],
   resolve: {
     alias: {
-      '@': path.resolve(dirname, './src/renderer'),
-      lib: path.resolve(dirname, './src/lib'),
+      "@": path.resolve(dirname, "./src/renderer"),
+      lib: path.resolve(dirname, "./src/lib"),
     },
     fallback: {
       // For WASM
-      stream: require.resolve('stream-browserify'),
+      stream: require.resolve("stream-browserify"),
       // For Ethereum Web3
-      crypto: require.resolve('crypto-browserify'),
+      crypto: require.resolve("crypto-browserify"),
       fs: false,
-      path: require.resolve('path-browserify'),
-      buffer: require.resolve('buffer/'),
+      path: require.resolve("path-browserify"),
+      buffer: require.resolve("buffer/"),
       // util: require.resolve('util'),
       // zlib: require.resolve('zlib-browserify'),
       // process: require.resolve('process/browser'),
     },
-    extensions: ['.js', '.jsx', '.css'],
+    extensions: [".js", ".jsx", ".css"],
   },
 });

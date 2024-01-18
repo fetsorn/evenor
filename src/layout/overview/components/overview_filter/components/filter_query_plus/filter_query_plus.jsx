@@ -1,10 +1,10 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useStore } from '../../../../../../../store/index.js';
+import { useStore } from '../../../../../../store/index.js';
 import styles from './filter_query_plus.module.css';
 import {
   Dropdown,
-} from '../../../../../../../components/index.js';
+} from '../../../../../../components/index.js';
 
 /**
 	* return leaves of base

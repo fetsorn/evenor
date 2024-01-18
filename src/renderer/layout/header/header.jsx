@@ -5,9 +5,7 @@ import { useStore } from '../../../store/index.js';
 import {
   Button,
 } from '../../../components/index.js';
-import {
-  HeaderFilter,
-} from './components/index.js';
+
 
 export function Header() {
   const { t } = useTranslation();
@@ -47,8 +45,6 @@ export function Header() {
           </Button>
         )
         : <div />}
-
-      <HeaderFilter />
 
       <div />
 

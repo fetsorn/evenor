@@ -6,7 +6,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 module.exports = {
   // target: 'electron-renderer', // do not set,
   // causes "require is not defined" in electron-webpack-plugin
-  entry: { renderer: "./src/renderer/app.jsx" },
+  entry: { renderer: "./src/app.jsx" },
   mode: process.env.production ? "production" : "development",
   devtool: "source-map",
   module: {

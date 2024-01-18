@@ -31,7 +31,8 @@ export function Overview() {
 	  }
 
       return (
-        <Suspense>
+        <div>
+			<div>
 			{ (!isView)
          && repoUUID !== 'root'
         ? (
@@ -39,7 +40,7 @@ export function Overview() {
             type="button"
             title={t('header.button.back')}
             onClick={() => onHome()}
-          >
+			>
             {/* &lt;= */}
             🏠
             {repoName}
@@ -56,8 +57,9 @@ export function Overview() {
 				⚙️
 				</Button>
 			)}
-		<OverviewFilter/>
-		<OverviewItinerary />
-        </Suspense>
+			</div>
+			<OverviewFilter/>
+			<Suspense><OverviewItinerary /></Suspense>
+        </div>
       );
 }

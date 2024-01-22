@@ -327,6 +327,7 @@ export const createOverviewSlice = (set, get) => ({
       queries: {},
       entry: undefined,
     });
+    await get().onQueries();
   },
 
   setRepoName: async (repoName) => {

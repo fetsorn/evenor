@@ -327,6 +327,7 @@ export const createOverviewSlice = (set, get) => ({
       queries: {},
       entry: undefined,
     });
+    await get().onQueries();
   },
 
   setRepoName: async (repoName) => {
@@ -361,6 +362,7 @@ export const createOverviewSlice = (set, get) => ({
       queries: {},
       entry: undefined,
     });
+    await get().onQueries();
   },
 
   setGroupBy: async (groupBy) => {

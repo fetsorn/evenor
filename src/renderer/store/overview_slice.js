@@ -279,7 +279,9 @@ export const createOverviewSlice = (set, get) => ({
       window.history.replaceState(
         null,
         null,
-        `${pathname}?${searchParams.toString()}`
+        `${pathname}${
+          searchParams.toString() == "" ? "" : `?${searchParams.toString()}`
+        }`
       );
 
       set({

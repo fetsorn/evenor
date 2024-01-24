@@ -196,11 +196,7 @@ export const createOverviewSlice = (set, get) => ({
 
   updateOverview: async () => {
     // close select stream if already running
-    try {
-      get().closeHandler();
-    } catch {
-      // do nothing
-    }
+    get().closeHandler();
 
     set({ closeHandler: () => {} });
 

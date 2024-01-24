@@ -229,7 +229,13 @@ export class BrowserAPI {
       start(controller) {
         const worker = new Worker(new URL('./browser.worker', import.meta.url));
 
-        closeHandler = controller.close;
+        closeHandler = () => {
+          try {
+            controller.close();
+          } catch {
+            // ignore catch
+          }
+        }
 
         worker.onmessage = async (message) => {
           switch (message.data.action) {
@@ -251,7 +257,11 @@ export class BrowserAPI {
               break;
             }
             case 'close': {
-              controller.close();
+              try {
+                controller.close();
+              } catch {
+                // ignore catch
+              }
 
               break;
             }

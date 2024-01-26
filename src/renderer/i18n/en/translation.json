@@ -60,5 +60,10 @@
       "url": "Project name or URL",
       "token": "Authentication token"
     }
+  },
+  "profile": {
+	"label": {
+		"uuid": "entry code"
+	}
   }
 }

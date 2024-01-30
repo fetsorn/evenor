@@ -28,7 +28,7 @@
       "edit": "edit event",
       "delete": "delete event",
       "remove": "remove {{ field }} field",
-      "upload": "upload",
+      "upload": "choose file",
       "open": "open project"
     },
     "dropdown": {

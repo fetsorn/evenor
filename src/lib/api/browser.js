@@ -252,7 +252,12 @@ export class BrowserAPI {
               break;
             }
             case 'write': {
-              controller.enqueue(message.data.entry);
+              try {
+                controller.enqueue(message.data.entry);
+              } catch {
+                // after stream is interrupted
+                // ReadableStreamDefaultController is not in a state where chunk can be enqueued
+              }
 
               break;
             }

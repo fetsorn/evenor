@@ -90,7 +90,7 @@ export const createOverviewSlice = (set, get) => ({
 
   base: undefined,
 
-  closeHandler: () => {},
+  abortPreviousStream: () => {},
 
   initialize: async (repoRoute, search) => {
     const searchParams = new URLSearchParams(search);
@@ -195,10 +195,18 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   updateOverview: async () => {
-    // close select stream if already running
-    get().closeHandler();
+    // abort previous search stream if it is running
+    get().abortPreviousStream();
 
-    set({ closeHandler: () => {} });
+    let isAborted = false;
+
+    const abort_controller = new AbortController();
+
+    set({ abortPreviousStream: async () => {
+      isAborted = true;
+
+      await abort_controller.abort()
+    } });
 
     const { base, queries, repoUUID } = get();
 
@@ -214,10 +222,12 @@ export const createOverviewSlice = (set, get) => ({
       searchParams
     );
 
-    set({ closeHandler });
-
     const toStrm = new WritableStream({
       write(chunk) {
+        if (isAborted) {
+          return
+        }
+
         const overview = [...get().overview, chunk];
 
         const schemaBase = Object.fromEntries(
@@ -244,13 +254,17 @@ export const createOverviewSlice = (set, get) => ({
       },
 
       abort(err) {
-        console.error("Sink error:", err);
+        // stream interrupted
+        // no need to await on the promise, closing api stream for cleanup
+        closeHandler()
       },
     });
 
-    await fromStrm.pipeTo(toStrm);
-
-    set({ closeHandler: () => {} });
+    try {
+      await fromStrm.pipeTo(toStrm, { signal: abort_controller.signal });
+    } catch {
+      // stream interrupted
+    }
   },
 
   onQueries: async () => {
@@ -292,14 +306,8 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoUUID: async (repoUUID) => {
-    // close select stream if already running
-    try {
-      get().closeHandler();
-    } catch {
-      // do nothing
-    }
-
-    set({ closeHandler: () => {} });
+    // abort previous search stream if it is running
+    get().abortPreviousStream();
 
     let repoName;
 
@@ -329,14 +337,8 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoName: async (repoName) => {
-    // close select stream if already running
-    try {
-      get().closeHandler();
-    } catch {
-      // do nothing
-    }
-
-    set({ closeHandler: () => {} });
+    // abort previous search stream if it is running
+    get().abortPreviousStream();
 
     const api = new API("root");
 

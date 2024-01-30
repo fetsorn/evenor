@@ -15,8 +15,10 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
   const [
     baseEntry,
+	repoUUID,
   ] = useStore((state) => [
     state.entry,
+	state.repoUUID,
   ]);
 
   const branch = entry._;
@@ -100,9 +102,10 @@ export function ViewField({ entry, schema, isBaseObject }) {
     );
   }
 
+
   switch (branchType) {
     case 'array':
-      return (
+      return ((repoUUID !== "root" || branch !== "schema") && (
         <div>
           {!isOpen ? (
             <div>
@@ -146,7 +149,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
             </div>
           )}
         </div>
-      );
+      ));
 
     case 'object':
       if (branchTask === 'file') {

@@ -112,7 +112,7 @@ export function InputArray({
     <div>
       <div>{entry.UUID}</div>
 
-      { options.length > 0 && (
+      {/* { options.length > 0 && (
         <select
           value="default"
           onChange={({ target: { value } }) => {
@@ -129,7 +129,7 @@ export function InputArray({
             </option>
           ))}
         </select>
-      )}
+      )} */}
 
       <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
 

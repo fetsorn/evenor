@@ -24,22 +24,22 @@ export function Overview() {
         </Suspense>
       );
 
-    case OverviewType.book:
-      return (
-        <Suspense>
-          <OverviewBook />
-        </Suspense>
-      );
+    // case OverviewType.book:
+    //   return (
+    //     <Suspense>
+    //       <OverviewBook />
+    //     </Suspense>
+    //   );
 
     case OverviewType.listing:
       return (<Suspense>
                 <OverviewListing />
               </Suspense>);
 
-    case OverviewType.chat:
-      return (<Suspense>
-                <OverviewChat />
-              </Suspense>);
+    // case OverviewType.chat:
+    //   return (<Suspense>
+    //             <OverviewChat />
+    //           </Suspense>);
 
       /* case OverviewType.gallery:
      *   return <OverviewGallery />; */

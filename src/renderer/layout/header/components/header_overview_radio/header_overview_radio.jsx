@@ -8,11 +8,15 @@ export function HeaderOverviewRadio() {
 
   const [
     onChangeOverviewType,
+    repoUUID
   ] = useStore((state) => {
     return [
       state.onChangeOverviewType,
+      state.repoUUID
     ]
   });
+
+  const isNotMainScreen = repoUUID !== "root";
 
   return (
     <div className={styles.container}>
@@ -33,20 +37,22 @@ export function HeaderOverviewRadio() {
         {/* yarn 🧶 level slider 🎚 chains ⛓ infinity ♾ */}
         🌿
       </label>
-      <label
-        htmlFor="radio_graph"
-        title={t('header.button.graph')}
-        className={styles.radiobutton}
-      >
-        <input
-          type="radio"
-          id="radio_graph"
-          name="overview_type"
-          value="graph"
-          onChange={({ target: { value } }) => onChangeOverviewType(value)}
-        />
-        🌳
-      </label>
+      {isNotMainScreen && (
+        <label
+          htmlFor="radio_graph"
+          title={t('header.button.graph')}
+          className={styles.radiobutton}
+        >
+          <input
+            type="radio"
+            id="radio_graph"
+            name="overview_type"
+            value="graph"
+            onChange={({ target: { value } }) => onChangeOverviewType(value)}
+          />
+          🌳
+        </label>
+      )}
       <label
         htmlFor="radio_listing"
         title={t('header.button.listing')}
@@ -61,20 +67,20 @@ export function HeaderOverviewRadio() {
         />
         ✔️
       </label>
-      <label
-        htmlFor="radio_chat"
-        title={t('header.button.chat')}
-        className={styles.radiobutton}
-      >
-        <input
-          type="radio"
-          id="radio_chat"
-          name="overview_type"
-          value="chat"
-          onChange={({ target: { value } }) => onChangeOverviewType(value)}
-        />
-        💬️
-      </label>
+      {/* <label */}
+      {/*   htmlFor="radio_chat" */}
+      {/*   title={t('header.button.chat')} */}
+      {/*   className={styles.radiobutton} */}
+      {/* > */}
+      {/*   <input */}
+      {/*     type="radio" */}
+      {/*     id="radio_chat" */}
+      {/*     name="overview_type" */}
+      {/*     value="chat" */}
+      {/*     onChange={({ target: { value } }) => onChangeOverviewType(value)} */}
+      {/*   /> */}
+      {/*   💬️ */}
+      {/* </label> */}
       {/* <label */}
       {/*   htmlFor="radio_book" */}
       {/*   title={t('header.button.book')} */}

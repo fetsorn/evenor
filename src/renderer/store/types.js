@@ -1,7 +1,7 @@
 export const OverviewType = Object.freeze({
   itinerary: 'itinerary',
   graph: 'graph',
-  book: 'book',
+  // book: 'book',
   listing: 'listing',
-  chat: 'chat',
+  // chat: 'chat',
 });

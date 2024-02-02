@@ -15,7 +15,7 @@ export function FilterQueryListNew() {
     state.onQueryRemove,
     state.onQueryAdd,
   ]);
-
+console.log(queries);
 
   return (
     <div className={styles.queries}>

@@ -1,76 +1,73 @@
-import React, { useEffect, useState } from 'react';
-import { API } from 'lib/api';
-import { useTranslation } from 'react-i18next';
-import styles from './filter_query_list.module.css';
-import { useStore } from '@/store/index.js';
+import React, { useState } from "react";
+import { API } from "lib/api";
+import { useTranslation } from "react-i18next";
+import styles from "./filter_query_list.module.css";
+import { useStore } from "@/store/index.js";
 
 export function FilterQueryListNew() {
   const { t } = useTranslation();
 
   const [
-    queries,
-    onQueryRemove,
-    onQueryAdd,
-  ] = useStore((state) => [
+	queries, 
+	onQueryRemove, 
+	onQueryAdd, 
+	repoUUID] 
+  = useStore((state) => [
     state.queries,
     state.onQueryRemove,
     state.onQueryAdd,
+	state.repoUUID
   ]);
-console.log(queries);
 
-async function onFocus() {
-	const optionsNew = await api.queryOptions(queryBranch);
+  const api = new API(repoUUID);
 
-	const optionValues = optionsNew.map((entry) => entry[queryBranch]);
+  const [options, setOptions] = useState([]);
 
-	setOptions([...new Set(optionValues)]);
-}
+  async function onFocus(field) {
+	setOptions([])
 
+  	const optionsNew = await api.queryOptions(field);
+
+  	const optionValues = optionsNew.map((entry) => entry[field]);
+
+  	setOptions([...new Set(optionValues)]);
+  }
 
   return (
     <div className={styles.queries}>
       {Object.keys(queries).map((field) => (
-        <div key={`querylist-${field ?? Math.random()}`} className={styles.query}>
-			<select
-        name="searchBarDropdown"
-        value={queryBranch}
-        title={t('header.dropdown.search', { field: queryBranch })}
-        onChange={({ target: { value } }) => {
-          onQuerySelect(value);
-
-          setOptions([]);
-        }}
-      ></select>
-      <label
-        htmlFor={`input-${field}`}
-      >
-        {field}
-          <button
-            type="button"
-            title={t('header.button.remove', { field })}
-            onClick={() => onQueryRemove(field)}
-            style={{ marginLeft: '5px', color: 'red', cursor: 'pointer' }}
-          >
-            X
-          </button>
-        <br />
-        <input
-          className={styles.input}
-          type="text"
-					id={`input-${field}`}
-					value={queries[field]}
-					onFocus={onFocus}
-          onChange={({ target: { value } }) => {
-            onQueryAdd(field, value);
-          }}
-        
-        />
-      </label>
-	  <datalist id="panel_list">
-          {options.map((option) => (
-            <option key={`panel_list ${option ?? Math.random()}`} value={option} />
-          ))}
-        </datalist>
+        <div
+          key={`querylist-${field ?? Math.random()}`}
+          className={styles.query}
+        >
+          <label htmlFor={`input-${field}`}>
+            {field}
+            <button
+              type="button"
+              title={t("header.button.remove", { field })}
+              onClick={() => onQueryRemove(field)}
+              style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
+            >
+              X
+            </button>
+            <br />
+            <input
+              className={styles.input}
+              type="text"
+              id={`input-${field}`}
+              value={queries[field]}
+			  list={`panel_list-${field ?? Math.random()}`}
+              onFocus={() => onFocus(field)}
+              onChange={({ target: { value } }) => {
+                onQueryAdd(field, value);
+              }}
+            />
+          </label>
+          	<datalist id={`panel_list-${field ?? Math.random()}`}>
+				{options.map((option) => (
+					<option key={`panel_list ${option ?? Math.random()}`} value={option} />
+				))}
+			</datalist>
         </div>
       ))}
     </div>

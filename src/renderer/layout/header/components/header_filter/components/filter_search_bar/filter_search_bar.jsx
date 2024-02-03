@@ -53,6 +53,8 @@ export function FilterSearchBar({
     { branch: '.group', label: t('header.dropdown.groupby') },
   ]);
 
+  console.log(queriesToAdd);
+
   async function onFocus() {
     if (queryBranch === '_') {
       const roots = Object.keys(schema)

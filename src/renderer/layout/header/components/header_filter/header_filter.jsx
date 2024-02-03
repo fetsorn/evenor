@@ -7,7 +7,7 @@ export function HeaderFilter() {
   return (
     <div className={styles.panel}>
 			<FilterBaseSelect/>
-      <FilterQueryListNew />
+      		<FilterQueryListNew />
 			<FilterQueryPlus/>
 			<FilterGroupBySelect/>
     </div>

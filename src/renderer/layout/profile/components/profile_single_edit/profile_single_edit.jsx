@@ -55,8 +55,11 @@ export function ProfileSingleEdit() {
     state.onEntrySave,
     state.onEntryChange,
   ]);
+  console.log(entry);
 
   const schema = isSettings ? schemaRoot : useStore((state) => state.schema);
+  
+  console.log(schema);
 
   const title = formatDate(group);
 

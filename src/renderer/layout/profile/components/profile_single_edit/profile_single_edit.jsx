@@ -58,6 +58,7 @@ export function ProfileSingleEdit() {
 
   const schema = isSettings ? schemaRoot : useStore((state) => state.schema);
 
+
   const title = formatDate(group);
 
   return (

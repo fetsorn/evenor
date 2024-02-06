@@ -202,11 +202,13 @@ export const createOverviewSlice = (set, get) => ({
 
     const abort_controller = new AbortController();
 
-    set({ abortPreviousStream: async () => {
-      isAborted = true;
+    set({
+      abortPreviousStream: async () => {
+        isAborted = true;
 
-      await abort_controller.abort()
-    } });
+        await abort_controller.abort();
+      },
+    });
 
     const { base, queries, repoUUID } = get();
 
@@ -225,7 +227,7 @@ export const createOverviewSlice = (set, get) => ({
     const toStrm = new WritableStream({
       write(chunk) {
         if (isAborted) {
-          return
+          return;
         }
 
         const overview = [...get().overview, chunk];
@@ -256,7 +258,7 @@ export const createOverviewSlice = (set, get) => ({
       abort(err) {
         // stream interrupted
         // no need to await on the promise, closing api stream for cleanup
-        closeHandler()
+        closeHandler();
       },
     });
 
@@ -284,7 +286,7 @@ export const createOverviewSlice = (set, get) => ({
 
       const searchParams = queriesToParams(queries);
 
-      const pathname = repoName === undefined ? "/" : `/${repoName}`;
+      const pathname = repoName === undefined ? "/" : `#/${repoName}`;
 
       window.history.replaceState(
         null,

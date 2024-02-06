@@ -27,6 +27,14 @@ export function InputText({
 		  const optionValues = optionsNew.map((entry) => entry[branch]);
 	
 		  setOptions([...new Set(optionValues)]);
+
+		  const sortedOptions = [...new Set(optionValues)].sort()
+
+		  const queryValue = branch[branch];
+		  
+		  const updatedOptions = sortedOptions.filter(option => option !== queryValue).concat(queryValue);
+  
+  setOptions(updatedOptions);
 	  }
 
 

@@ -25,6 +25,7 @@ export function FilterQueryListNew() {
 
   async function onFocus(field) {
 	setOptions([])
+	console.log(queries);
 
   	const optionsNew = await api.queryOptions(field);
 
@@ -32,6 +33,7 @@ export function FilterQueryListNew() {
 
   	setOptions([...new Set(optionValues)]);
   }
+
 
   return (
     <div className={styles.queries}>

@@ -10,9 +10,12 @@ export function InputText({
 }) {
 
 	const [
-		repoUUID] 
+		repoUUID,
+		queries,
+	] 
 	  = useStore((state) => [
-		state.repoUUID
+		state.repoUUID,
+		state.queries,
 	  ]);
 
 	const [options, setOptions] = useState([]);
@@ -30,13 +33,13 @@ export function InputText({
 
 		  const sortedOptions = [...new Set(optionValues)].sort()
 
-		  const queryValue = branch[branch];
-		  
-		  const updatedOptions = sortedOptions.filter(option => option !== queryValue).concat(queryValue);
+		  const queryValue = queries[branch];
+
+		  const updatedOptions = [queryValue].concat(sortedOptions.filter(option => option !== queryValue));
+
   
   setOptions(updatedOptions);
 	  }
-
 
   return (
     <div>

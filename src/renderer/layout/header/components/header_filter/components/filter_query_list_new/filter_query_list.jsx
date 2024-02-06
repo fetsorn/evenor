@@ -20,7 +20,6 @@ export function FilterQueryListNew() {
 
   async function onFocus(field) {
     setOptions([]);
-    console.log(queries);
 
     const optionsNew = await api.queryOptions(field);
 

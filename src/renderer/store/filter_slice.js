@@ -19,9 +19,9 @@ export const createFilterSlice = (set, get) => ({
 
   onQueryAdd: async (queryField, queryValue) => {
     const { queries } = get();
-    // queries = {}
+
     queries[queryField] = queryValue;
-    // queries = { "category": "d" }
+
     set({ queries });
 
     await get().onQueries();

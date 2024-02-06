@@ -7,16 +7,11 @@ import { useStore } from "@/store/index.js";
 export function FilterQueryListNew() {
   const { t } = useTranslation();
 
-  const [
-	queries, 
-	onQueryRemove, 
-	onQueryAdd, 
-	repoUUID] 
-  = useStore((state) => [
+  const [queries, onQueryRemove, onQueryAdd, repoUUID] = useStore((state) => [
     state.queries,
     state.onQueryRemove,
     state.onQueryAdd,
-	state.repoUUID
+    state.repoUUID,
   ]);
 
   const api = new API(repoUUID);
@@ -24,16 +19,15 @@ export function FilterQueryListNew() {
   const [options, setOptions] = useState([]);
 
   async function onFocus(field) {
-	setOptions([])
-	console.log(queries);
+    setOptions([]);
+    console.log(queries);
 
-  	const optionsNew = await api.queryOptions(field);
+    const optionsNew = await api.queryOptions(field);
 
-  	const optionValues = optionsNew.map((entry) => entry[field]);
+    const optionValues = optionsNew.map((entry) => entry[field]);
 
-  	setOptions([...new Set(optionValues)]);
+    setOptions([...new Set(optionValues)]);
   }
-
 
   return (
     <div className={styles.queries}>
@@ -58,18 +52,21 @@ export function FilterQueryListNew() {
               type="text"
               id={`input-${field}`}
               value={queries[field]}
-			  list={`panel_list-${field ?? Math.random()}`}
+              list={`panel_list-${field ?? Math.random()}`}
               onFocus={() => onFocus(field)}
               onChange={({ target: { value } }) => {
                 onQueryAdd(field, value);
               }}
             />
           </label>
-          	<datalist id={`panel_list-${field ?? Math.random()}`}>
-				{options.map((option) => (
-					<option key={`panel_list ${option ?? Math.random()}`} value={option} />
-				))}
-			</datalist>
+          <datalist id={`panel_list-${field ?? Math.random()}`}>
+            {options.map((option) => (
+              <option
+                key={`panel_list ${option ?? Math.random()}`}
+                value={option}
+              />
+            ))}
+          </datalist>
         </div>
       ))}
     </div>

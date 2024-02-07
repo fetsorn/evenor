@@ -131,7 +131,10 @@ export function InputArray({
         </select>
       )} */}
 
-      <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
+      {/* <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} /> */}
+	  <button
+	  	onClick={() => onFieldAddArrayItem(leaves[0])}
+	  ></button>
 
       {items.map((item, index) => {
         function onFieldChangeArrayItem(itemBranch, itemValue) {

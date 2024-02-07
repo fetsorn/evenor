@@ -19,6 +19,7 @@ export function InputDropdown({
     };
   });
 
+  console.log(menuItems);
   return (
     <>
       {menuItems.length > 0 && (
@@ -29,11 +30,13 @@ export function InputDropdown({
           <option hidden disabled value="default">
             {t('line.dropdown.input')}
           </option>
-          {menuItems.map((field, idx) => (
+          {menuItems.map((field, idx) => { 
+console.log("branch in field", field.branch);			
+return (
             <option key={idx} value={field.branch}>
               {field.description}
             </option>
-          ))}
+          )})}
         </select>
       )}
     </>

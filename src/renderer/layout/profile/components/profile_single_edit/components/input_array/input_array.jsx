@@ -131,11 +131,10 @@ export function InputArray({
         </select>
       )} */}
 
-      {/* <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} /> */}
 	  <button
 	  	onClick={() => onFieldAddArrayItem(leaves[0])}
 	  >
-            {t('line.dropdown.input')}
+            {t('line.button.add-field')}
 
 	  </button>
 

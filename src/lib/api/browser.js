@@ -173,10 +173,8 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    const dir = await this.dir();
-
     // write buffer to assetEndpoint/filename
-    const assetEndpoint = path.join(dir, lfsDir);
+    const assetEndpoint = `${lfsDir}/${filename}`;
 
     await this.writeFile(assetEndpoint, buffer);
   }

@@ -23,6 +23,7 @@
   "line": {
     "button": {
       "add": "add event",
+	  "add-project": "add project",
       "revert": "revert changes",
       "save": "save event",
       "edit": "edit event",

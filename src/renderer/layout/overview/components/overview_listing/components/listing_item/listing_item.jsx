@@ -22,6 +22,8 @@ export function ListingItem({
     state.setRepoName,
   ]);
 
+  const addFirstTooltip = repoUUID === 'root'? t('line.button.add-project') : t('line.button.add')
+
   return (
     <section>
       <div>
@@ -47,7 +49,7 @@ export function ListingItem({
           className={styles.add}
           type="button"
           onClick={() => onEntryCreate()}
-          title={t('line.button.add')}
+          title={addFirstTooltip}
           key="addevent"
         >
           +

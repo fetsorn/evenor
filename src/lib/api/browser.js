@@ -834,12 +834,14 @@ export class BrowserAPI {
 
     const assetPath = `${assetEndpoint}/${filename}`;
 
-    content = await fs.promises.readFile(assetPath, { encoding: 'utf8' });
+    content = await fs.promises.readFile(assetPath);
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
 
-    if (pointsToLFS(content)) {
-      const pointer = await readPointer({ dir, content });
+    const contentUTF8 = (new TextDecoder()).decode(content);
+
+    if (pointsToLFS(contentUTF8)) {
+      const pointer = await readPointer({ dir, content: contentUTF8 });
 
       const remotes = await this.listRemotes();
 

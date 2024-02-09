@@ -6,6 +6,23 @@ import { Button, AssetView } from '@/components/index.js';
 import styles from './input_upload.module.css';
 import { InputText } from '..';
 
+function UploadButton({onUpload, title}) {
+  if (__BUILD_MODE__ === 'electron') {
+    return (
+      <Button type="button" onClick={() => onUpload()}>
+        {title}
+      </Button>
+    );
+  }
+
+  return (
+    <input
+      type="file"
+      onChange={(e) => onUpload(e.target.files[0])}
+    />
+  );
+}
+
 export function InputUpload({
   schema,
   entry,
@@ -47,6 +64,8 @@ export function InputUpload({
     onFieldChange(branch, entryNew);
   }
 
+  const isNotUploaded = entry[filehashBranch] === undefined;
+
   return (
     <div>
       <div>{ entry.UUID }</div>
@@ -61,16 +80,7 @@ export function InputUpload({
 
       {entry[filehashBranch] ?? ''}
 
-      {__BUILD_MODE__ === 'electron' ? (
-        <Button type="button" onClick={() => onUpload()}>
-          {t('line.button.upload')}
-        </Button>
-      ) : (
-        <input
-          type="file"
-          onChange={(e) => onUpload(e.target.files[0])}
-        />
-      )}
+      { isNotUploaded && <UploadButton onUpload={() => onUpload()} title={t('line.button.upload')}/> }
 
       {entry[filenameBranch] && entry[filehashBranch] && (
         <AssetView {...{ entry, schema }} />

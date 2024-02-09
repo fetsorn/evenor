@@ -43,6 +43,15 @@ export function ListingItem({
               {t('line.button.open')}
             </button>
           )}
+		  <button
+          className={styles.add}
+          type="button"
+          onClick={() => onEntryCreate()}
+          title={t('line.button.add')}
+          key="addevent"
+        >
+          +
+        </button>
         </div>
       </div>
     </section>

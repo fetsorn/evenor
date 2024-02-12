@@ -30,8 +30,6 @@ export function ListingItem({
   
   const {key:_, ...listingWithoutkey} = listing
 
-console.log("listing_item.jsx",listingWithoutkey);
-
   return (
     <section>
       <div>

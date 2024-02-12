@@ -1,12 +1,15 @@
 import {
-  API, generateDefaultSchemaEntry, schemaToEntry, entryToSchema,
-} from 'lib/api';
+  API,
+  generateDefaultSchemaEntry,
+  schemaToEntry,
+  entryToSchema,
+} from "lib/api";
 
 // TODO: set default values for required fields
 async function createEntry(schema, base) {
   const entry = {};
 
-  const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
+  const { digestMessage, randomUUID } = await import("@fetsorn/csvs-js");
 
   const uuid = await randomUUID();
 
@@ -14,11 +17,11 @@ async function createEntry(schema, base) {
 
   entry._ = base;
 
-  if (schema[base].type === 'array') {
+  if (schema[base].type === "array") {
     entry.items = [];
   }
 
-  if (base === 'reponame') {
+  if (base === "reponame") {
     entry.schema = await generateDefaultSchemaEntry();
   }
 
@@ -51,7 +54,7 @@ async function selectRepo(repoUUID, entry) {
         entryNew.tags = {
           UUID: await digestMessage(await randomUUID()),
           items: [],
-        }
+        };
       }
 
       if (entryNew.tags.items === undefined) {
@@ -64,7 +67,7 @@ async function selectRepo(repoUUID, entry) {
         remote_name: remoteName,
         remote_url: remoteUrl,
         remote_token: remoteToken,
-      })
+      });
     }
   } catch {
     // do nothing
@@ -78,7 +81,7 @@ async function selectRepo(repoUUID, entry) {
         entryNew.tags = {
           UUID: await digestMessage(await randomUUID()),
           items: [],
-        }
+        };
       }
 
       if (entryNew.tags.items === undefined) {
@@ -89,7 +92,7 @@ async function selectRepo(repoUUID, entry) {
         _: "local_tag",
         UUID: await digestMessage(await randomUUID()),
         local_path: assetPath,
-      })
+      });
     }
   } catch {
     // do nothing
@@ -101,7 +104,8 @@ async function selectRepo(repoUUID, entry) {
 async function saveRepo(repoUUID, entry) {
   const api = new API(entry.UUID);
 
-  const remoteTags = entry.tags?.items?.filter((item) => item._ === 'remote_tag') ?? [];
+  const remoteTags =
+    entry.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
 
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
@@ -123,13 +127,18 @@ async function saveRepo(repoUUID, entry) {
 
   for (const remoteTag of remoteTags) {
     try {
-      api.addRemote(remoteTag.remote_name, remoteTag.remote_url, remoteTag.remote_token);
+      api.addRemote(
+        remoteTag.remote_name,
+        remoteTag.remote_url,
+        remoteTag.remote_token
+      );
     } catch {
       // do nothing
     }
   }
 
-  const localTags = entry.tags?.items?.filter((item) => item._ === 'local_tag') ?? [];
+  const localTags =
+    entry.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
 
   for (const local of localTags) {
     try {
@@ -145,7 +154,7 @@ async function saveRepo(repoUUID, entry) {
   if (entryNew.tags?.items) {
     // omit to not save remote tags to csvs
     const filteredTags = entryNew.tags.items.filter(
-      (item) => item._ !== 'remote_tag' && item._ !== 'local_tag'
+      (item) => item._ !== "remote_tag" && item._ !== "local_tag"
     );
 
     entryNew.tags.items = filteredTags;
@@ -179,7 +188,7 @@ export const createEntrySlice = (set, get) => ({
     let entryNew = entry;
 
     // eslint-disable-next-line
-    if (get().repoUUID === 'root' && __BUILD_MODE__ !== 'server') {
+    if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
       entryNew = await selectRepo(get().repoUUID, entry);
     }
 
@@ -190,14 +199,15 @@ export const createEntrySlice = (set, get) => ({
     const entry = await createEntry(get().schema, get().base);
 
     set({
-      index: '',
+      index: "",
       isEdit: true,
-      title: '',
+      title: "",
       entry,
     });
   },
 
-  onEntryEdit: () => set({ isEdit: true, entryOriginal: get().entry }),
+  onEntryEdit: (entry) =>
+    set({ entry, isEdit: true, entryOriginal: get().entry }),
 
   onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
 
@@ -205,11 +215,11 @@ export const createEntrySlice = (set, get) => ({
     let { entry } = get();
 
     if (entry[entry._] === undefined) {
-      entry[entry._] = '';
+      entry[entry._] = "";
     }
 
     // eslint-disable-next-line
-    if (get().repoUUID === 'root' && __BUILD_MODE__ !== 'server') {
+    if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
       entry = await saveRepo(get().repoUUID, get().entry);
     }
 
@@ -252,17 +262,18 @@ export const createEntrySlice = (set, get) => ({
 
     const entry = await selectRepo(get().repoUUID, entryRepo);
 
-    const apiRoot = new API('root');
+    const apiRoot = new API("root");
 
     const { onEntrySave, onEntryDelete } = get();
 
-    const onSettingsClose = () => set({
-      entry: undefined,
-      base: baseOld,
-      onEntrySave,
-      onEntryDelete,
-      isSettings: false,
-    });
+    const onSettingsClose = () =>
+      set({
+        entry: undefined,
+        base: baseOld,
+        onEntrySave,
+        onEntryDelete,
+        isSettings: false,
+      });
 
     const onSettingsSave = async () => {
       const entryNew = await saveRepo(get().repoUUID, get().entry);
@@ -276,7 +287,7 @@ export const createEntrySlice = (set, get) => ({
       await apiRoot.deleteEntry(get().entry);
 
       set({
-        repoUUID: 'root',
+        repoUUID: "root",
         entry: undefined,
         base: baseOld,
         onEntrySave,
@@ -287,7 +298,7 @@ export const createEntrySlice = (set, get) => ({
 
     set({
       entry,
-      index: '',
+      index: "",
       group: `${get().repoName} settings`,
       onEntryClose: onSettingsClose,
       onEntrySave: onSettingsSave,

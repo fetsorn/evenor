@@ -56,6 +56,7 @@ export function EditInput({
 
   // if non-array root, treat as object
   // if array root, treat as array later
+  console.log("edit_input.jsx", branch);
   if (schema[branch].trunk === undefined
         && schema[branch].type !== 'array'
         && isBaseObject) {

@@ -29,13 +29,13 @@ export function Header() {
     state.onSettingsOpen,
   ]);
 
-  function onHome(overviewType) {
+  function onHome(overviewTypeNew) {
     if (onChangeOverviewType !== ('itinerary')) {
-        overviewType = 'listing'; 
+        overviewTypeNew = 'listing'; 
     }
 
     setRepoUUID('root');
-    return overviewType; 
+    return overviewTypeNew; 
 }
 
   return (

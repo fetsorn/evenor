@@ -29,11 +29,14 @@ export function Header() {
     state.onSettingsOpen,
   ]);
 
-  function onHome() {
-    onChangeOverviewType('itinerary');
+  function onHome(overviewType) {
+    if (onChangeOverviewType !== ('itinerary')) {
+        overviewType = 'listing'; 
+    }
 
     setRepoUUID('root');
-  }
+    return overviewType; 
+}
 
   return (
     <header className={styles.header}>
@@ -43,7 +46,8 @@ export function Header() {
           <Button
             type="button"
             title={t('header.button.back')}
-            onClick={() => onHome()}
+            onClick={() => {
+                onHome()}}
           >
             {/* &lt;= */}
             🏠

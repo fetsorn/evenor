@@ -6,6 +6,7 @@ import {
 	Button,
   } from '@/components/index.js';
 import cn from 'classnames';
+import { groupBy } from 'telegram/Helpers';
 
 export function ListingItem({
   data: listing,
@@ -20,10 +21,12 @@ export function ListingItem({
     repoUUID,
     setRepoName,
 	onEntryEdit,
+	groupBy,
   ] = useStore((state) => [
     state.repoUUID,
     state.setRepoName,
 	state.onEntryEdit,
+	state.groupBy,
   ]);
 
   const addFirstTooltip = repoUUID === 'root'? t('line.button.add-project') : t('line.button.add')
@@ -33,7 +36,8 @@ export function ListingItem({
   return (
     <section>
       <div>
-        <div className={styles.date}>{listing.reponame}
+        <div className={styles.date}>
+			{listing[groupBy]}
           <button
             className={styles.star}
             type="button"

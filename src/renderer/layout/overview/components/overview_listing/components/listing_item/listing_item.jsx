@@ -39,6 +39,8 @@ export function ListingItem({
   
   const {key:_, ...listingWithoutkey} = listing
 
+  const selectTooltip = JSON.stringify(listing)
+
   return (
     <section>
       <div>
@@ -48,7 +50,7 @@ export function ListingItem({
             className={styles.star}
             type="button"
             onClick={() => onEntrySelect(listingWithoutkey)}
-            title={listingWithoutkey?.FILE_PATH}
+            title={selectTooltip}
             id={listingWithoutkey?.UUID}
           >
           </button>

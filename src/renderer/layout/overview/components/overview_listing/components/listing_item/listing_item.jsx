@@ -30,6 +30,12 @@ export function ListingItem({
   ]);
 
   const addFirstTooltip = repoUUID === 'root'? t('line.button.add-project') : t('line.button.add')
+
+  const groupByField = listing[groupBy]
+
+  const isObject = typeof groupByField == "object"
+
+  const listingLabel = isObject ? groupByField.UUID : groupByField
   
   const {key:_, ...listingWithoutkey} = listing
 
@@ -37,7 +43,7 @@ export function ListingItem({
     <section>
       <div>
         <div className={styles.date}>
-			{listing[groupBy]}
+			{listingLabel}
           <button
             className={styles.star}
             type="button"

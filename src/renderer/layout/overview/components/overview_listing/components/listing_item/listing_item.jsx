@@ -15,18 +15,20 @@ export function ListingItem({
   isLast,
   ...others
 }) {
-  const { t } = useTranslation();
+  const {i18n, t } = useTranslation();
 
   const [
     repoUUID,
     setRepoName,
 	onEntryEdit,
 	groupBy,
+	schema,
   ] = useStore((state) => [
     state.repoUUID,
     state.setRepoName,
 	state.onEntryEdit,
 	state.groupBy,
+	state.schema,
   ]);
 
   const addFirstTooltip = repoUUID === 'root'? t('line.button.add-project') : t('line.button.add')
@@ -39,7 +41,28 @@ export function ListingItem({
   
   const {key:_, ...listingWithoutkey} = listing
 
-  const selectTooltip = JSON.stringify(listing)
+  const lang = i18n.resolvedLanguage;
+
+
+  function listingFortext(listing) {
+	const keys = Object.keys(listing)
+
+	const keysWithoutnames = keys.filter((branch) => (branch !== "_" && branch !== "UUID" && branch !== "key"))
+
+	const textPairs = keysWithoutnames.map((branch) => {
+
+		const description = schema?.[branch]?.description?.[lang] ?? branch;
+		
+		const value = listing[branch]
+		
+		const textPair = `${description}:${value}`
+		return textPair
+	})	
+	const text = textPairs.join(", ")
+	return text
+  }
+
+  const selectTooltip = listingFortext(listing)
 
   return (
     <section>

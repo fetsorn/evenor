@@ -15,20 +15,20 @@ export function OverviewChat() {
   const [
     entry,
     overview,
-    groupBy,
+    sortBy,
     onEntrySelect,
     onEntryCreate,
     onBatchSelect,
   ] = useStore((state) => [
     state.entry,
     state.overview,
-    state.groupBy,
+    state.sortBy,
     state.onEntrySelect,
     state.onEntryCreate,
     state.onBatchSelect,
   ]);
 
-  const chatHistory = overview.sort((a, b) => a[groupBy].localeCompare(b[groupBy]))
+  const chatHistory = overview.sort((a, b) => a[sortBy].localeCompare(b[sortBy]))
 
   console.log(chatHistory)
 

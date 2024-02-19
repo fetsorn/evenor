@@ -6,7 +6,6 @@ import {
 	Button,
   } from '@/components/index.js';
 import cn from 'classnames';
-import { groupBy } from 'telegram/Helpers';
 
 export function ListingItem({
   data: listing,
@@ -21,23 +20,23 @@ export function ListingItem({
     repoUUID,
     setRepoName,
 	onEntryEdit,
-	groupBy,
+	sortBy,
 	schema,
   ] = useStore((state) => [
     state.repoUUID,
     state.setRepoName,
 	state.onEntryEdit,
-	state.groupBy,
+	state.sortBy,
 	state.schema,
   ]);
 
   const addFirstTooltip = repoUUID === 'root'? t('line.button.add-project') : t('line.button.add')
 
-  const groupByField = listing[groupBy]
+  const sortByField = listing[sortBy]
 
-  const isObject = typeof groupByField == "object"
+  const isObject = typeof sortByField == "object"
 
-  const listingLabel = isObject ? groupByField.UUID : groupByField
+  const listingLabel = isObject ? sortByField.UUID : sortByField
   
   const {key:_, ...listingWithoutkey} = listing
 

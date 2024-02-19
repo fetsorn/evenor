@@ -2,50 +2,50 @@ import { API, schemaRoot } from "lib/api";
 import { OverviewType } from "./types.js";
 
 // pick a param to group data by
-function getDefaultGroupBy(schema, data, searchParams) {
-  // fallback to groupBy param from the search query
+function getDefaultSortBy(schema, data, searchParams) {
+  // fallback to sortBy param from the search query
   if (searchParams.has(".group")) {
-    const groupBy = searchParams.get(".group");
+    const sortBy = searchParams.get(".group");
 
-    return groupBy;
+    return sortBy;
   }
 
-  let groupBy;
+  let sortBy;
 
   const car = data[0] ?? {};
 
   // fallback to first date param present in data
-  groupBy = Object.keys(schema).find(
+  sortBy = Object.keys(schema).find(
     (branch) =>
       schema[branch].task === "date" &&
       Object.prototype.hasOwnProperty.call(car, branch)
   );
 
   // fallback to first param present in data
-  if (!groupBy) {
-    groupBy = Object.keys(schema).find((branch) =>
+  if (!sortBy) {
+    sortBy = Object.keys(schema).find((branch) =>
       Object.prototype.hasOwnProperty.call(car, branch)
     );
   }
 
   // fallback to first date param present in schema
-  if (!groupBy) {
-    groupBy = Object.keys(schema).find(
+  if (!sortBy) {
+    sortBy = Object.keys(schema).find(
       (branch) => schema[branch].task === "date"
     );
   }
 
   // fallback to first param present in schema
-  if (!groupBy) {
-    [groupBy] = Object.keys(schema);
+  if (!sortBy) {
+    [sortBy] = Object.keys(schema);
   }
 
   // unreachable with a valid scheme
-  if (!groupBy) {
-    throw Error("failed to find default groupBy in the schema");
+  if (!sortBy) {
+    throw Error("failed to find default sortBy in the schema");
   }
 
-  return groupBy;
+  return sortBy;
 }
 
 export function queriesToParams(queries) {
@@ -171,7 +171,7 @@ export const createOverviewSlice = (set, get) => ({
       ? OverviewType[overviewTypeParam]
       : get().overviewType;
 
-    const groupBy = searchParams.get(".group") ?? undefined;
+    const sortBy = searchParams.get(".group") ?? undefined;
 
     const schema = await api.readSchema();
 
@@ -183,7 +183,7 @@ export const createOverviewSlice = (set, get) => ({
       schema,
       base,
       queries,
-      groupBy,
+      sortBy,
       overviewType,
       isView,
       isInitialized: true,
@@ -241,15 +241,15 @@ export const createOverviewSlice = (set, get) => ({
           )
         );
 
-        const groupBy = Object.prototype.hasOwnProperty.call(
+        const sortBy = Object.prototype.hasOwnProperty.call(
           schemaBase,
           queries[".group"]
         )
           ? queries[".group"]
-          : getDefaultGroupBy(schemaBase, overview, searchParams);
+          : getDefaultSortBy(schemaBase, overview, searchParams);
 
         set({
-          groupBy,
+          sortBy,
           queries,
           overview,
         });
@@ -367,9 +367,9 @@ export const createOverviewSlice = (set, get) => ({
     await get().onQueries();
   },
 
-  setGroupBy: async (groupBy) => {
+  setSortBy: async (sortBy) => {
     set({
-      groupBy,
+      sortBy,
     });
   },
 

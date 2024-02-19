@@ -7,10 +7,10 @@ export function OverviewBook() {
 
   const [
     overview,
-    groupBy,
+    sortBy,
   ] = useStore((state) => [
     state.overview,
-    state.groupBy,
+    state.sortBy,
   ]);
 
   async function onUseEffect() {
@@ -24,7 +24,7 @@ export function OverviewBook() {
 
   useEffect(() => {
     onUseEffect();
-  }, [overview, groupBy]);
+  }, [overview, sortBy]);
 
   return (
     <iframe title="iframe" src={blobURL} width="50%" height="800px" />

@@ -3,11 +3,11 @@ import { OverviewType } from "./types.js";
 export const createFilterSlice = (set, get) => ({
   queries: {},
 
-  groupBy: "",
+  sortby: "",
 
   overviewType: OverviewType.itinerary,
 
-  onChangeGroupBy: (groupBy) => set({ groupBy }),
+  onChangeSortBy: (sortby) => set({ sortby }),
 
   onChangeOverviewType: (overviewTypeNew) => {
     const overviewType = overviewTypeNew

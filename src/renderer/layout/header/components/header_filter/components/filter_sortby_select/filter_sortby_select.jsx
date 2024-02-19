@@ -1,7 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useStore } from '@/store/index.js';
-import styles from './filter_groupby_select.module.css';
+import styles from './filter_sortby_select.module.css';
 
 /**
 	* return leaves of base
@@ -18,21 +18,21 @@ import styles from './filter_groupby_select.module.css';
 		
 	}
 
-export function FilterGroupBySelect({
+export function FilterSortBySelect({
   
 }) {
   const { i18n, t } = useTranslation();
 
   const [
-		groupBy,
+	sortBy,
     schema,
 		base,
-		setGroupBy,
+		setSortBy,
   ] = useStore((state) => [
-		state.groupBy,
+		state.sortBy,
     state.schema,
 		state.base,
-		state.setGroupBy,
+		state.setSortBy,
   ]);
   
 	
@@ -40,13 +40,13 @@ export function FilterGroupBySelect({
 	
 
   return (
-		<label htmlFor={`selectGroupBy`}>
-			{t('header.dropdown.groupby')}
+		<label htmlFor={`selectSortBy`}>
+			{t('header.dropdown.sortBy')}
 		<select
-					id={`selectGroupBy`}
-          value={groupBy}
+					id={`selectSortBy`}
+          value={sortBy}
           onChange={({ target: { value } }) => {
-						setGroupBy(value)					
+						setSortBy(value)					
           }}
         >
           {options.map((field) => (

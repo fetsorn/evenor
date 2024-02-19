@@ -6,7 +6,6 @@ import {
 	Button,
   } from '@/components/index.js';
 import cn from 'classnames';
-import { groupBy } from 'telegram/Helpers';
 
 export function ListingItem({
   data: listing,
@@ -15,29 +14,54 @@ export function ListingItem({
   isLast,
   ...others
 }) {
-  const { t } = useTranslation();
+  const {i18n, t } = useTranslation();
 
   const [
     repoUUID,
     setRepoName,
 	onEntryEdit,
-	groupBy,
+	sortBy,
+	schema,
   ] = useStore((state) => [
     state.repoUUID,
     state.setRepoName,
 	state.onEntryEdit,
-	state.groupBy,
+	state.sortBy,
+	state.schema,
   ]);
 
   const addFirstTooltip = repoUUID === 'root'? t('line.button.add-project') : t('line.button.add')
 
-  const groupByField = listing[groupBy]
+  const sortByField = listing[sortBy]
 
-  const isObject = typeof groupByField == "object"
+  const isObject = typeof sortByField == "object"
 
-  const listingLabel = isObject ? groupByField.UUID : groupByField
+  const listingLabel = isObject ? sortByField.UUID : sortByField
   
   const {key:_, ...listingWithoutkey} = listing
+
+  const lang = i18n.resolvedLanguage;
+
+
+  function listingFortext(listing) {
+	const keys = Object.keys(listing)
+
+	const keysWithoutnames = keys.filter((branch) => (branch !== "_" && branch !== "UUID" && branch !== "key"))
+
+	const textPairs = keysWithoutnames.map((branch) => {
+
+		const description = schema?.[branch]?.description?.[lang] ?? branch;
+		
+		const value = listing[branch]
+		
+		const textPair = `${description}:${value}`
+		return textPair
+	})	
+	const text = textPairs.join(", ")
+	return text
+  }
+
+  const selectTooltip = listingFortext(listing)
 
   return (
     <section>
@@ -48,7 +72,7 @@ export function ListingItem({
             className={styles.star}
             type="button"
             onClick={() => onEntrySelect(listingWithoutkey)}
-            title={listingWithoutkey?.FILE_PATH}
+            title={selectTooltip}
             id={listingWithoutkey?.UUID}
           >
           </button>

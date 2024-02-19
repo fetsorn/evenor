@@ -12,7 +12,7 @@
     },
     "dropdown": {
       "overview": "show events as {{ field }}",
-      "groupby": "Group branch",
+      "sortby": "Group branch",
       "base": "Base branch",
       "search": "search for field {{ field }}"
     },

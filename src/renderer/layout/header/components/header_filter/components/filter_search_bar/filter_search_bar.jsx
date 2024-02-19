@@ -50,7 +50,7 @@ export function FilterSearchBar({
     },
   ).concat([
     { branch: '_', label: t('header.dropdown.base') },
-    { branch: '.group', label: t('header.dropdown.groupby') },
+    { branch: '.group', label: t('header.dropdown.sortby') },
   ]);
 
 

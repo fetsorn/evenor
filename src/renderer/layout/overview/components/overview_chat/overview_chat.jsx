@@ -14,27 +14,27 @@ export function OverviewChat() {
 
   const [
     entry,
-    overview,
+    records,
     sortBy,
     onEntrySelect,
     onEntryCreate,
     onBatchSelect,
   ] = useStore((state) => [
     state.entry,
-    state.overview,
+    state.records,
     state.sortBy,
     state.onEntrySelect,
     state.onEntryCreate,
     state.onBatchSelect,
   ]);
 
-  const chatHistory = overview.sort((a, b) => a[sortBy].localeCompare(b[sortBy]))
+  const chatHistory = records.sort((a, b) => a[sortBy].localeCompare(b[sortBy]))
 
   console.log(chatHistory)
 
   return (
     <div className={styles.timeline}>
-      {!overview.length ? (
+      {!records.length ? (
         <button
           className={styles.star}
           type="button"

@@ -76,7 +76,7 @@ function paramsToQueries(searchParams) {
 export const createOverviewSlice = (set, get) => ({
   schema: {},
 
-  overview: [],
+  records: [],
 
   isInitialized: false,
 
@@ -230,7 +230,7 @@ export const createOverviewSlice = (set, get) => ({
           return;
         }
 
-        const overview = [...get().overview, chunk];
+        const records = [...get().records, chunk];
 
         const schemaBase = Object.fromEntries(
           Object.entries(schema).filter(
@@ -246,12 +246,12 @@ export const createOverviewSlice = (set, get) => ({
           queries[".group"]
         )
           ? queries[".group"]
-          : getDefaultSortBy(schemaBase, overview, searchParams);
+          : getDefaultSortBy(schemaBase, records, searchParams);
 
         set({
           sortBy,
           queries,
-          overview,
+          records,
         });
       },
 
@@ -299,7 +299,7 @@ export const createOverviewSlice = (set, get) => ({
       set({
         base,
         schema,
-        overview: [],
+        records: [],
         queries,
       });
 
@@ -374,7 +374,7 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setBase: async (base) => {
-    set({ base, overview: [] });
+    set({ base, records: [] });
 
     await get().updateOverview();
   },

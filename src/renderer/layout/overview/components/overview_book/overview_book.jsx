@@ -6,16 +6,16 @@ export function OverviewBook() {
   const [blobURL, setBlobURL] = useState([]);
 
   const [
-    overview,
+    records,
     sortBy,
   ] = useStore((state) => [
-    state.overview,
+    state.records,
     state.sortBy,
   ]);
 
   async function onUseEffect() {
-    // create latex from overview
-    const latex = generateLatex(overview);
+    // create latex from records
+    const latex = generateLatex(records);
 
     const url = await exportPDF(latex);
 
@@ -24,7 +24,7 @@ export function OverviewBook() {
 
   useEffect(() => {
     onUseEffect();
-  }, [overview, sortBy]);
+  }, [records, sortBy]);
 
   return (
     <iframe title="iframe" src={blobURL} width="50%" height="800px" />

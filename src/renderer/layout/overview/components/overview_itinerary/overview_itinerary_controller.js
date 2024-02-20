@@ -43,13 +43,13 @@ function groupArray(data, branch) {
   return arrayOfObjects;
 }
 
-export async function buildItinerary(overview, sortBy) {
+export async function buildItinerary(records, sortBy) {
   // disable worker to avoid spawning too much threads on stream updates
   // TODO: replace with worker cancellation strategy
   // const queryWorker = queryWorkerInit();
 
-  // const itinerary = await queryWorker.buildLine(overview, sortBy);
-  const itinerary = groupArray(overview, sortBy);
+  // const itinerary = await queryWorker.buildLine(records, sortBy);
+  const itinerary = groupArray(records, sortBy);
 
   return itinerary;
 }

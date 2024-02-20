@@ -14,13 +14,13 @@ export function OverviewListing() {
 
   const [
     entry,
-    overview,
+    records,
     onEntrySelect,
     onEntryCreate,
     onBatchSelect,
   ] = useStore((state) => [
       state.entry,
-      state.overview,
+      state.records,
       state.onEntrySelect,
       state.onEntryCreate,
       state.onBatchSelect,
@@ -28,7 +28,7 @@ export function OverviewListing() {
   );
   return (
     <div className={styles.timeline}>
-      {!overview.length ? (
+      {!records.length ? (
         <button
           className={styles.star}
           type="button"
@@ -44,7 +44,7 @@ export function OverviewListing() {
             onEntryCreate,
             onBatchSelect
           }}
-          data={overview}
+          data={records}
           rowComponent={ListingItem}
         />
       )}

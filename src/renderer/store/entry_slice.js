@@ -225,11 +225,11 @@ export const createEntrySlice = (set, get) => ({
 
     const api = new API(get().repoUUID);
 
-    const overview = await api.updateEntry(entry, get().overview);
+    const records = await api.updateEntry(entry, get().records);
 
     api.commit();
 
-    set({ overview, isEdit: false });
+    set({ records, isEdit: false });
   },
 
   onEntryCommit: async (uuid) => {
@@ -241,11 +241,11 @@ export const createEntrySlice = (set, get) => ({
   onEntryDelete: async () => {
     const api = new API(get().repoUUID);
 
-    const overview = await api.deleteEntry(get().entry, get().overview);
+    const records = await api.deleteEntry(get().entry, get().records);
 
     api.commit();
 
-    set({ overview, entry: undefined });
+    set({ records, entry: undefined });
   },
 
   onEntryClose: () => set({ entry: undefined }),

@@ -8,6 +8,7 @@ const OverviewListing = React.lazy(() => import('./components/overview_listing/i
 const OverviewChat = React.lazy(() => import('./components/overview_chat/index'))
 export function Overview() {
   const overviewType = useStore((state) => state.overviewType);
+
   switch (overviewType) {
     case OverviewType.itinerary:
       return (
@@ -19,7 +20,7 @@ export function Overview() {
     case OverviewType.graph:
       return (
         <Suspense>
-          <OverviewGraph /> 
+          <OverviewGraph />
         </Suspense>
       );
 

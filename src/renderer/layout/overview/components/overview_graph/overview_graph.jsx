@@ -11,8 +11,6 @@ export function OverviewGraph() {
 
   const [html, setHTML] = useState(undefined);
 
-  const [hasFamilyTree, setHasFamilyTree] = useState(false)
-
   const [
     repoUUID,
     onQueryAdd,
@@ -55,26 +53,20 @@ export function OverviewGraph() {
 
   useEffect(() => {
     (async () => {
-		if (hasFamilyTree) {
       const newHTML = await load(repoUUID, depth, family);
 
-      setHTML(newHTML)
-		};
+      setHTML(newHTML);
     })();
-  }, [depth, family, hasFamilyTree]);
+  }, [depth, family]);
 
   return (
     <>
-      {html ? ( 
-        <GraphSvg html={html} />
-      ) : (
-        "There is no family tree in this project. Link to documentation: How to add a tree (for advanced users)"
-      )}
+      <GraphSvg html={html} />
 
       <div className={styles.slider}>
-        {hasFamilyTree && <GraphTextInput {...{ family, onSetFamily }} />}
+        <GraphTextInput {...{ family, onSetFamily }} />
 
-        {hasFamilyTree && <GraphRangeInput {...{ depth, onSetDepth }} />} 
+        <GraphRangeInput {...{ depth, onSetDepth }} />
       </div>
     </>
   );

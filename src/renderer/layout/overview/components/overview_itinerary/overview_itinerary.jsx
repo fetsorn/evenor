@@ -30,6 +30,7 @@ export function OverviewItinerary() {
   ]);
 
   async function onUseEffect() {
+	  console.log( "useEffect",(records));
     const itineraryNew = await buildItinerary(records, sortBy);
 
     setItinerary(itineraryNew);

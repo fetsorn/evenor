@@ -11,7 +11,7 @@ export function OverviewGraph() {
 
   const [html, setHTML] = useState(undefined);
 
-  const [hasFamilyTree, setHasFamilyTree] = useState(true)
+  const [hasFamilyTree, setHasFamilyTree] = useState(false)
 
   const [
     repoUUID,
@@ -65,7 +65,11 @@ export function OverviewGraph() {
 
   return (
     <>
-      {hasFamilyTree && <GraphSvg html={html} />}
+      {html ? ( 
+        <GraphSvg html={html} />
+      ) : (
+        "There is no family tree in this project. Link to documentation: How to add a tree (for advanced users)"
+      )}
 
       <div className={styles.slider}>
         {hasFamilyTree && <GraphTextInput {...{ family, onSetFamily }} />}

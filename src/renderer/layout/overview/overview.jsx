@@ -8,7 +8,7 @@ const OverviewListing = React.lazy(() => import('./components/overview_listing/i
 const OverviewChat = React.lazy(() => import('./components/overview_chat/index'))
 export function Overview() {
   const overviewType = useStore((state) => state.overviewType);
-
+  const hasFamilyTree = false;
   switch (overviewType) {
     case OverviewType.itinerary:
       return (
@@ -20,7 +20,7 @@ export function Overview() {
     case OverviewType.graph:
       return (
         <Suspense>
-          <OverviewGraph />
+          {hasFamilyTree ? <OverviewGraph /> : "There is no family tree in this project. link to documentation: How to add a tree (for advanced users)"}
         </Suspense>
       );
 

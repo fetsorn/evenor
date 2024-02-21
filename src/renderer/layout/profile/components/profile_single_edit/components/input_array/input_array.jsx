@@ -90,6 +90,8 @@ export function InputArray({
     ? entry.items.sort((a, b) => a.UUID?.localeCompare(b.UUID))
     : [];
 
+  const isOnlyOption = options.length === 1;
+
   async function onFieldAddArrayItem(itemBranch) {
     const arrayNew = await addField(schema, entry, itemBranch);
 
@@ -131,12 +133,16 @@ export function InputArray({
         </select>
       )} */}
 
-	  <button
-	  	onClick={() => onFieldAddArrayItem(leaves[0])}
-	  >
-            {t('line.button.add-field')}
+      { isOnlyOption ? (
+        <button
+          onClick={() => onFieldAddArrayItem(leaves[0])}
+        >
+          {t('line.button.add-field')}
 
-	  </button>
+        </button>
+      ) : (
+        <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
+      )}
 
       {items.map((item, index) => {
         function onFieldChangeArrayItem(itemBranch, itemValue) {

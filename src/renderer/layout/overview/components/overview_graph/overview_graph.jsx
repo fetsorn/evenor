@@ -21,6 +21,8 @@ export function OverviewGraph() {
     state.onChangeOverviewType,
   ]);
 
+  const isHide = html === undefined || html === "";
+
   async function onSetDepth(_depth) {
     setDepth(_depth);
 
@@ -61,13 +63,19 @@ export function OverviewGraph() {
 
   return (
     <>
-      <GraphSvg html={html} />
+      { isHide ? (
+        <p>There is no family tree in this project</p>
+      ) : (
+        <div>
+          <GraphSvg html={html} />
 
-      <div className={styles.slider}>
-        <GraphTextInput {...{ family, onSetFamily }} />
+          <div className={styles.slider}>
+            <GraphTextInput {...{ family, onSetFamily }} />
 
-        <GraphRangeInput {...{ depth, onSetDepth }} />
-      </div>
+            <GraphRangeInput {...{ depth, onSetDepth }} />
+          </div>
+        </div>
+      )}
     </>
   );
 }

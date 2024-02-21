@@ -30,8 +30,6 @@ export function OverviewChat() {
 
   const chatHistory = records.sort((a, b) => a[sortBy].localeCompare(b[sortBy]))
 
-  console.log(chatHistory)
-
   return (
     <div className={styles.timeline}>
       {!records.length ? (

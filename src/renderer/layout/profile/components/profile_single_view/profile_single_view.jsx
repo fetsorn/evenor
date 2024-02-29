@@ -66,7 +66,7 @@ export function ProfileSingleView() {
             </Title>
 
             <div className={cn(styles.buttonbar,'view-sidebar__btn-bar')}>
-              <Button type="button" title={t('line.button.edit')} onClick={onEntryEdit}>
+              <Button type="button" title={t('line.button.edit')} onClick={() => onEntryEdit(entry)}>
                 ✏️
               </Button>
 

@@ -1,8 +1,8 @@
 {
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-23.11";
-    rust-overlay = {
-      url = "github:oxalica/rust-overlay";
+    nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
+    fenix = {
+      url = "github:nix-community/fenix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     crane = {
@@ -10,7 +10,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
-  outputs = inputs@{ nixpkgs, rust-overlay, ... }:
+  outputs = inputs@{ nixpkgs, ... }:
     let
       eachSystem = systems: f:
         let
@@ -29,14 +29,12 @@
       defaultSystems = [ "x86_64-linux" "aarch64-darwin" "aarch64-linux" ];
     in eachSystem defaultSystems (system:
       let
-        overlays = [ (import rust-overlay) ];
+        overlays = [ inputs.fenix.overlays.default ];
         pkgs = import nixpkgs { inherit system overlays; };
-        rust-stable = pkgs.rust-bin.stable.latest.default.override {
-          extensions = [ "rust-src" "rust-analyzer" "clippy" ];
-        };
         crane = rec {
           lib = inputs.crane.lib.${system};
-          stable = lib.overrideToolchain rust-stable;
+          stable = lib.overrideToolchain
+            inputs.fenix.packages.${system}.minimal.toolchain;
         };
         src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
         package = (pkgs.lib.importJSON (src + "/package.json"));
@@ -107,19 +105,17 @@
         defaultApp = server;
         devShell = pkgs.mkShell {
           nativeBuildInputs = with pkgs; [
-            rust-bin.stable.latest.default
-            rust-analyzer
+            (fenix.complete.withComponents [
+              "cargo"
+              "clippy"
+              "rust-src"
+              "rustc"
+              "rustfmt"
+            ])
+            rust-analyzer-nightly
             pkg-config
-            glib
-            gdk-pixbuf
-            pango
-            gtk4
-            libadwaita
-            openssl
-            sqlite
-            # cargo-tauri
-            rustup
             yarn
+            libiconv
             (if system == "aarch64-darwin" then
               with darwin.apple_sdk.frameworks; [
                 SystemConfiguration
@@ -129,12 +125,22 @@
               ]
             else
               [ ])
-            # linux-specific but doesn't work with a system check
-            # gtk3
-            # webkitgtk_4_1
-            # libsoup_3
+
+            # linux-specific don't work with a system check
+            (if system == "x86_64-linux" || system == "aarch64-linux" then [
+              gtk3
+              webkitgtk_4_1
+              libsoup_3
+              # glib
+              # gdk-pixbuf
+              # pango
+              # gtk4
+              # libadwaita
+              # openssl
+              # sqlite
+            ] else
+              [ ])
           ];
-          RUST_SRC_PATH = pkgs.rustPlatform.rustLibSrc;
         };
       });
 }

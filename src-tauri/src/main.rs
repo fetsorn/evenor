@@ -4,7 +4,7 @@
   windows_subsystem = "windows"
 )]
 
-use tauri_test::AppBuilder;
+use evenor_lib::AppBuilder;
 
 pub fn main() {
   AppBuilder::new().run();

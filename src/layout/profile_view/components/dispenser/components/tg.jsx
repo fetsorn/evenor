@@ -3,7 +3,7 @@ import smalltalk from 'smalltalk';
 //import { TelegramClient } from "telegram";
 //import { StringSession } from "telegram/sessions";
 import MP3Tag from "mp3tag.js"
-import { API } from '../api/index.js';
+import { API } from '../../../../../api/index.js';
 
 export const schemaTG = {
   tg_tag: {

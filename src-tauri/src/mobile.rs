@@ -1,4 +1,4 @@
-use tauri_test::AppBuilder;
+use evenor_lib::AppBuilder;
 
 #[tauri::mobile_entry_point]
 fn main() {

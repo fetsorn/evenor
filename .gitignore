@@ -88,3 +88,5 @@ out/
 
 # add .idea to .gitignore
 .idea
+
+/src-tauri/gen/

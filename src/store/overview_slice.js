@@ -162,6 +162,10 @@ export const createOverviewSlice = (set, get) => ({
 
     const api = new API(repoUUID);
 
+    const debugMessage = await api.helloWorld("Hello")
+
+    console.log(debugMessage)
+
     const queries = paramsToQueries(searchParams);
 
     const groupBy = searchParams.get(".group") ?? undefined;

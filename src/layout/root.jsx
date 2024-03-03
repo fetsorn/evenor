@@ -8,6 +8,7 @@ import {
 import { useStore } from '../store/index.js';
 import { Overview } from './overview/index.js';
 import styles from './root.module.css';
+import { API } from '../api';
 
 export function Root() {
   return (

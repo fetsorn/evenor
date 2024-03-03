@@ -1,5 +1,6 @@
 // import axios from "axios";
 import { BrowserAPI } from './browser.js';
+import { invoke } from '@tauri-apps/api/core';
 
 export class API {
   // UUID of repo in the store
@@ -12,6 +13,18 @@ export class API {
 
     // TODO is unnecessarily created in electron
     this.#browser = new BrowserAPI(uuid);
+  }
+
+  async helloWorld(someVariable) {
+    console.log("api helloWorld", __BUILD_MODE__)
+    // eslint-disable-next-line
+    switch (__BUILD_MODE__) {
+      case 'tauri':
+        return invoke("helloWorld", { someVariable })
+
+      default:
+        return this.#browser.helloWorld(someVariable);
+    }
   }
 
   async fetchAsset(filename) {

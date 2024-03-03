@@ -72,6 +72,10 @@ export class BrowserAPI {
       .find((repo) => new RegExp(`^${this.uuid}`).test(repo))}`;
   }
 
+  async helloWorld(someVariable) {
+    return `${someVariable} from browser`;
+  }
+
   async fetchFile(filepath) {
     // eslint-disable-next-line
     if (__BUILD_MODE__ === 'server') {

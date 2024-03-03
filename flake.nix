@@ -126,18 +126,18 @@
             else
               [ ])
 
-            # linux-specific don't work with a system check
-            (if system == "x86_64-linux" || system == "aarch64-linux" then [
-              gtk3
+	      gtk3
               webkitgtk_4_1
               libsoup_3
-              # glib
-              # gdk-pixbuf
-              # pango
-              # gtk4
-              # libadwaita
-              # openssl
-              # sqlite
+              glib
+              gdk-pixbuf
+              pango
+              gtk4
+              libadwaita
+              openssl
+              sqlite
+            # linux-specific don't work with a system check
+            (if system == "x86_64-linux" || system == "aarch64-linux" || system == "x86_64-unknown-linux-gnu" then [
             ] else
               [ ])
           ];

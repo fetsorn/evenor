@@ -1,10 +1,10 @@
 {
-  "productName": "tairi-beta-test",
+  "productName": "evenor",
   "version": "0.0.0",
   "identifier": "com.fetsorn",
   "build": {
-    "beforeDevCommand": "yarn dev",
-    "beforeBuildCommand": "yarn build",
+    "beforeDevCommand": "yarn dev:tauri",
+    "beforeBuildCommand": "yarn build:tauri",
     "frontendDist": "../dist",
     "devUrl": "http://localhost:1420"
   },
@@ -14,7 +14,7 @@
       {
         "fullscreen": false,
         "resizable": true,
-        "title": "tauri-test",
+        "title": "evenor",
         "width": 800,
         "height": 600
       }

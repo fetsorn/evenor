@@ -18,6 +18,12 @@ fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
 }
 
+#[tauri::command]
+fn helloWorld(someVariable: &str) -> String {
+    println!("helloWorld in Rust");
+    format!("{} from Rust!", someVariable)
+}
+
 impl AppBuilder {
   pub fn new() -> Self {
     Self::default()
@@ -43,6 +49,7 @@ impl AppBuilder {
       })
       // .plugin(tauri_plugin_shell::init())
       .invoke_handler(tauri::generate_handler![greet])
+      .invoke_handler(tauri::generate_handler![helloWorld])
       .run(tauri::generate_context!())
       .expect("error while running tauri application");
   }

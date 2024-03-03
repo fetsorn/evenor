@@ -7,9 +7,11 @@
   "scripts": {
     "build": "webpack --config webpack.web.config.mjs --mode='production'",
     "dev": "webpack serve --config webpack.web.config.mjs --port 1420",
+    "build:tauri": "webpack --config webpack.web.config.mjs --mode='production' --env buildMode=tauri",
+    "dev:tauri": "webpack serve --config webpack.web.config.mjs --port 1420 --env buildMode=tauri",
     "tauri": "tauri",
     "build:server": "webpack --env buildMode=server --mode='development' --config webpack.web.config.mjs; ln -sTf $(realpath release/renderer) src-server/build; cd src-server; yarn",
-    "start:server": "node ./src-server/index.js",
+    "dev:server": "node ./src-server/index.js",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -19,9 +21,9 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@tauri-apps/cli": "^2.0.0-beta.6",
     "@babel/eslint-parser": "7.19.1",
     "@stylistic/eslint-plugin": "^1.5.3",
+    "@tauri-apps/cli": "^2.0.0-beta.6",
     "electron": "23.1.0",
     "eslint": "^8.56.0",
     "eslint-config-airbnb": "19.0.4",
@@ -41,6 +43,7 @@
     "@fetsorn/wasm-grep": "0.3.1",
     "@hpcc-js/wasm": "2.8.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
+    "@tauri-apps/api": "2.0.0-beta.3",
     "babel-loader": "9.1.2",
     "buffer": "6.0.3",
     "cfb": "^0.10.0",

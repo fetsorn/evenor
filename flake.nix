@@ -104,19 +104,20 @@
         defaultPackage = packages.webapp;
         defaultApp = server;
         devShell = pkgs.mkShell {
-          nativeBuildInputs = with pkgs; [
-            (fenix.complete.withComponents [
-              "cargo"
-              "clippy"
-              "rust-src"
-              "rustc"
-              "rustfmt"
-            ])
-            rust-analyzer-nightly
-            pkg-config
-            yarn
-            libiconv
-            (if system == "aarch64-darwin" then
+          nativeBuildInputs = with pkgs;
+            [
+              (fenix.complete.withComponents [
+                "cargo"
+                "clippy"
+                "rust-src"
+                "rustc"
+                "rustfmt"
+              ])
+              rust-analyzer-nightly
+              pkg-config
+              yarn
+              libiconv
+            ] ++ (if system == "aarch64-darwin" then
               with darwin.apple_sdk.frameworks; [
                 SystemConfiguration
                 Carbon
@@ -124,23 +125,20 @@
                 cocoapods
               ]
             else
-              [ ])
-
-	      gtk3
-              webkitgtk_4_1
-              libsoup_3
-              glib
-              gdk-pixbuf
-              pango
-              gtk4
-              libadwaita
-              openssl
-              sqlite
-            # linux-specific don't work with a system check
-            (if system == "x86_64-linux" || system == "aarch64-linux" || system == "x86_64-unknown-linux-gnu" then [
-            ] else
-              [ ])
-          ];
+              [ ]) ++ (if system == "x86_64-linux" || system == "aarch64-linux"
+              || system == "x86_64-unknown-linux-gnu" then [
+                gtk3
+                webkitgtk_4_1
+                libsoup_3
+                glib
+                gdk-pixbuf
+                pango
+                gtk4
+                libadwaita
+                openssl
+                sqlite
+              ] else
+                [ ]);
         };
       });
 }

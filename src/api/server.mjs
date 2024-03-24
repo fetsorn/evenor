@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path from 'path';
-import { promisify } from 'util';
-import { exec } from 'child_process';
-import git from 'isomorphic-git';
-import { CSVS } from '@fetsorn/csvs-js';
-import crypto from 'crypto';
+import fs from "fs";
+import path from "path";
+import { promisify } from "util";
+import { exec } from "child_process";
+import git from "isomorphic-git";
+import { CSVS } from "@fetsorn/csvs-js";
+import crypto from "crypto";
 
 const lfsDir = "lfs";
 
@@ -20,21 +20,23 @@ async function grepCallback(contentFile, patternFile, isInverse) {
 
   await fs.promises.writeFile(patternFilePath, patternFile);
 
-  let output = '';
+  let output = "";
 
   try {
     // console.log(`grep ${contentFile} for ${patternFile}`)
     const { stdout, stderr } = await promisify(exec)(
-      'export PATH=$PATH:~/.nix-profile/bin/; '
-        + `rg ${isInverse ? '-v' : ''} -f ${patternFilePath} ${contentFilePath}`,
+      "export PATH=$PATH:~/.nix-profile/bin/; "
+      + `rg ${isInverse ? "-v" : ""} -f ${patternFilePath} ${contentFilePath}`,
     );
 
     if (stderr) {
-      console.log('grep cli failed', stderr);
-    } else {
+      console.log("grep cli failed", stderr);
+    }
+    else {
       output = stdout;
     }
-  } catch (e) {
+  }
+  catch (e) {
     // console.log('grep cli returned empty', e);
   }
 
@@ -58,10 +60,11 @@ export class ServerAPI {
     let contents;
 
     try {
-      contents = await fs.promises.readFile(realpath, { encoding: 'utf8' });
+      contents = await fs.promises.readFile(realpath, { encoding: "utf8" });
 
       return contents;
-    } catch {
+    }
+    catch {
       throw ("couldn't find file", filepath);
     }
   }
@@ -73,8 +76,9 @@ export class ServerAPI {
       const content = fs.readFileSync(realpath);
 
       return content;
-    } catch {
-      return new Buffer('')
+    }
+    catch {
+      return new Buffer("");
     }
   }
 
@@ -90,8 +94,8 @@ export class ServerAPI {
 
     // remove file name
     pathElements.pop();
-    
-    let root = '';
+
+    let root = "";
 
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
@@ -103,10 +107,12 @@ export class ServerAPI {
       if (!files.includes(pathElement)) {
         try {
           await fs.promises.mkdir(path.join(this.dir, root, pathElement));
-        } catch {
+        }
+        catch {
           // do nothing
         }
-      } else {
+      }
+      else {
         // console.log(`${root} has ${pathElement}`)
       }
 
@@ -120,21 +126,22 @@ export class ServerAPI {
     const fileArrayBuffer = fs.readFileSync(file.filepath);
 
     const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
-      'SHA-256',
+      "SHA-256",
       fileArrayBuffer,
     );
 
     const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-    const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+    const hashHexString = hashByteArray.map(b => b.toString(16).padStart(2, "0")).join("");
 
     const uploadDir = path.join(this.dir, lfsDir);
 
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
-      console.log(`Directory ${root} is created.`);
-    } else {
-      console.log(`Directory ${root} already exists.`);
+      console.log(`Directory ${uploadDir} is created.`);
+    }
+    else {
+      console.log(`Directory ${uploadDir} already exists.`);
     }
 
     const uploadPath = path.join(uploadDir, hashHexString);
@@ -192,24 +199,26 @@ export class ServerAPI {
         let status;
 
         if (workingDirStatus === 0) {
-          status = 'deleted';
+          status = "deleted";
 
           await git.remove({
             fs,
             dir,
             filepath,
           });
-        } else {
+        }
+        else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
-            const { addLFS } = await import('./lfs.mjs');
+            const { addLFS } = await import("./lfs.mjs");
 
             await addLFS({
               fs,
               dir,
               filepath,
             });
-          } else {
+          }
+          else {
             await git.add({
               fs,
               dir,
@@ -218,9 +227,10 @@ export class ServerAPI {
           }
 
           if (HEADStatus === 1) {
-            status = 'modified';
-          } else {
-            status = 'added';
+            status = "modified";
+          }
+          else {
+            status = "added";
           }
         }
 
@@ -233,8 +243,8 @@ export class ServerAPI {
         fs,
         dir,
         author: {
-          name: 'name',
-          email: 'name@mail.com',
+          name: "name",
+          email: "name@mail.com",
         },
         message: message.toString(),
       });

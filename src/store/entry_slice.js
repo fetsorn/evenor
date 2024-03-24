@@ -40,7 +40,8 @@ async function selectRepo(repoUUID, entry) {
     const schemaEntry = await schemaToEntry(schema);
 
     entryNew.schema = schemaEntry;
-  } catch {
+  }
+  catch {
     // do nothing
   }
 
@@ -71,7 +72,8 @@ async function selectRepo(repoUUID, entry) {
         remote_token: remoteToken,
       });
     }
-  } catch {
+  }
+  catch {
     // do nothing
   }
 
@@ -96,7 +98,8 @@ async function selectRepo(repoUUID, entry) {
         local_path: assetPath,
       });
     }
-  } catch {
+  }
+  catch {
     // do nothing
   }
 
@@ -106,7 +109,7 @@ async function selectRepo(repoUUID, entry) {
 async function saveRepo(repoUUID, entry) {
   const api = new API(entry.UUID);
 
-  const remoteTags = entry.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
+  const remoteTags = entry.tags?.items?.filter(item => item._ === "remote_tag") ?? [];
 
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
@@ -118,7 +121,8 @@ async function saveRepo(repoUUID, entry) {
       await api.clone(remoteTag.remote_url, remoteTag.remote_token);
 
       schema = await api.readSchema();
-    } catch {
+    }
+    catch {
       // do nothing
     }
   }
@@ -133,28 +137,31 @@ async function saveRepo(repoUUID, entry) {
         remoteTag.remote_url,
         remoteTag.remote_token,
       );
-    } catch {
+    }
+    catch {
       // do nothing
     }
   }
 
-  const localTags = entry.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
+  const localTags = entry.tags?.items?.filter(item => item._ === "local_tag") ?? [];
 
   for (const localTag of localTags) {
     try {
       api.addAssetPath(localTag.local_path);
-    } catch {
+    }
+    catch {
       // do nothing
     }
   }
 
   // omit to not save schema branch to csvs
+  // eslint-disable-next-line
   const { schema: omitSchema, ...entryNew } = entry;
 
   if (entryNew.tags?.items) {
     // omit to not save remote tags to csvs
     const filteredTags = entryNew.tags.items.filter(
-      (item) => item._ !== "remote_tag" && item._ !== "local_tag",
+      item => item._ !== "remote_tag" && item._ !== "local_tag",
     );
 
     entryNew.tags.items = filteredTags;

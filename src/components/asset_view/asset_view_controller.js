@@ -1,82 +1,82 @@
-async function ffmpegInit() {
+// async function ffmpegInit() {
 
-  // const { createFFmpeg, fetchFile } = await import('@ffmpeg/ffmpeg');
-  //   const ffmpeg = createFFmpeg({
-  //     corePath: "https:unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js",
-  //     log: true,
-  //   });
+// const { createFFmpeg, fetchFile } = await import('@ffmpeg/ffmpeg');
+//   const ffmpeg = createFFmpeg({
+//     corePath: "https:unpkg.com/@ffmpeg/core@0.10.0/dist/ffmpeg-core.js",
+//     log: true,
+//   });
 
-  //   // breaks in firefox if dev tools are open
-  //   const doTranscode = async (path) => {
-  //     try {
-  //       // console.log('Loading ffmpeg-core.js')
+//   // breaks in firefox if dev tools are open
+//   const doTranscode = async (path) => {
+//     try {
+//       // console.log('Loading ffmpeg-core.js')
 
-  //       if (!ffmpeg.isLoaded()) {
-  //         await ffmpeg.load();
-  //       }
+//       if (!ffmpeg.isLoaded()) {
+//         await ffmpeg.load();
+//       }
 
-  //       console.log("Start transcoding", path);
+//       console.log("Start transcoding", path);
 
-  //       const regex = /(?:\.([^.]+))?$/;
+//       const regex = /(?:\.([^.]+))?$/;
 
-  //       const ext = regex.exec(path)[1]?.trim();
+//       const ext = regex.exec(path)[1]?.trim();
 
-  //       const filename = "test." + ext;
+//       const filename = "test." + ext;
 
-  //       ffmpeg.FS(
-  //         "writeFile",
-  //         filename,
-  //         await fetchFile("/api/" + encodeURIComponent(path))
-  //       );
+//       ffmpeg.FS(
+//         "writeFile",
+//         filename,
+//         await fetchFile("/api/" + encodeURIComponent(path))
+//       );
 
-  //       await ffmpeg.run("-i", filename, "test.mp4");
+//       await ffmpeg.run("-i", filename, "test.mp4");
 
-  //       console.log("Complete transcoding");
+//       console.log("Complete transcoding");
 
-  //       const data = ffmpeg.FS("readFile", "test.mp4");
+//       const data = ffmpeg.FS("readFile", "test.mp4");
 
-  //       const blobURL = URL.createObjectURL(
-  //         new Blob([data.buffer], { type: "video/mp4" })
-  //       );
+//       const blobURL = URL.createObjectURL(
+//         new Blob([data.buffer], { type: "video/mp4" })
+//       );
 
-  //       return blobURL;
-  //     } catch (e) {
-  //       console.log(e);
+//       return blobURL;
+//     } catch (e) {
+//       console.log(e);
 
-  //       throw Error(e.toString());
-  //     }
-  //   };
+//       throw Error(e.toString());
+//     }
+//   };
 
 //   return { doTranscode };
-}
+// }
 
-async function unoconvert(path) {
+// async function unoconvert(path) {
 //   const resp1 = await fetch(path);
 
-  //   const blob1 = await resp1.blob();
+//   const blob1 = await resp1.blob();
 
-  //   const mime = await import('mime');
-  //
-  //   const mimetype = mime.getType(path);
+//   const mime = await import('mime');
+//
+//   const mimetype = mime.getType(path);
 
-  //   const resp2 = await fetch(
-  //     `${process.env.REACT_APP_UNOCONV_URL}/convert/format/pdf/output/newname.pdf`,
-  //     {
-  //       method: "POST",
-  //       body: blob1,
-  //       headers: {
-  //         "Content-Type": mimetype,
-  //         "Content-Disposition": 'attachment; filename="example.docx"',
-  //       },
-  //     }
-  //   );
+//   const resp2 = await fetch(
+//     `${process.env.REACT_APP_UNOCONV_URL}/convert/format/pdf/output/newname.pdf`,
+//     {
+//       method: "POST",
+//       body: blob1,
+//       headers: {
+//         "Content-Type": mimetype,
+//         "Content-Disposition": 'attachment; filename="example.docx"',
+//       },
+//     }
+//   );
 
-  //   const blob2 = await resp2.blob();
+//   const blob2 = await resp2.blob();
 
-  //   const blobURL = URL.createObjectURL(blob2, { type: "application/pdf" });
+//   const blobURL = URL.createObjectURL(blob2, { type: "application/pdf" });
 
 //   return blobURL;
-}
+// }
 
 // buf: ArrayBuffer
 async function pptxToHtml(buf) {
@@ -94,19 +94,19 @@ async function pptxToHtml(buf) {
 }
 
 // buf: ArrayBuffer
-async function docToHtml(buf) {
-  //   const _buf = Buffer.from(buf);
+// async function docToHtml(buf) {
+//   const _buf = Buffer.from(buf);
 
-  // const WordExtractor = await import("word-extractor");
+// const WordExtractor = await import("word-extractor");
 
-  //   const extractor = new WordExtractor();
+//   const extractor = new WordExtractor();
 
-  //   const document = await extractor.extract(_buf);
+//   const document = await extractor.extract(_buf);
 
-  //   const html = document.getBody();
+//   const html = document.getBody();
 
-  //   return html;
-}
+//   return html;
+// }
 
 // buf: ArrayBuffer
 async function pptToHtml(buf) {
@@ -123,13 +123,13 @@ async function pptToHtml(buf) {
 
   // { docs: [ { slideList: [ "" ] } ]
   //   slides: [ { drawing: { groupShape: [ { clientTextbox: { t: "" } } ] } } ] }
-  const textboxes = pptObj.slides.map((slide) => slide.drawing?.groupShape
+  const textboxes = pptObj.slides.map(slide => slide.drawing?.groupShape
 
-    ?.map((shape) => shape.clientTextbox?.t)
+    ?.map(shape => shape.clientTextbox?.t)
 
     .join("\n"));
 
-  const headings = pptObj.docs.map((doc) => doc.slideList?.join("\n"));
+  const headings = pptObj.docs.map(doc => doc.slideList?.join("\n"));
 
   const html = headings.join("\n") + textboxes.join("\n");
 
@@ -146,23 +146,23 @@ async function rtfToHtml(buf) {
 
   const divs = await doc.render();
 
-  const html = divs.map((e) => e.outerHTML);
+  const html = divs.map(e => e.outerHTML);
 
   return html;
 }
 
 // importing mammoth fails
-async function docxToHtml(buf) {
+// async function docxToHtml(buf) {
 
-  // const mammoth = await import("mammoth");
+// const mammoth = await import("mammoth");
 
-  //   const html = await mammoth.convertToHtml(
-  //     { arrayBuffer: buf },
-  //     { includeDefaultStyleMap: true }
-  //   );
+//   const html = await mammoth.convertToHtml(
+//     { arrayBuffer: buf },
+//     { includeDefaultStyleMap: true }
+//   );
 
 //   return html.value;
-}
+// }
 
 // ArrayBuffer
 async function toHtml(path, buf) {
@@ -202,7 +202,8 @@ export async function convert(filepath, blob) {
     const blobURL = URL.createObjectURL(content);
 
     return blobURL;
-  } catch (e1) {
+  }
+  catch (e1) {
     console.log("handleDoc failed", e1);
 
     // try to fetch plain text
@@ -218,7 +219,8 @@ export async function convert(filepath, blob) {
       const blobURL = URL.createObjectURL(content);
 
       return blobURL;
-    } catch (e2) {
+    }
+    catch (e2) {
       /* console.log("handlePlain failed", e2); */
     }
   }

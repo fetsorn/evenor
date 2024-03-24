@@ -39,7 +39,7 @@ function groupArray(data, branch) {
   // [ {"date": "YYYY-MM-DD","events": [event1, event2, event3]} ]
   const arrayOfObjects = Object.keys(objectOfArrays)
     .sort()
-    .map((key) => ({ date: key, events: objectOfArrays[key] }));
+    .map(key => ({ date: key, events: objectOfArrays[key] }));
 
   return arrayOfObjects;
 }

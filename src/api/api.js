@@ -84,41 +84,44 @@ export class API {
   async selectStream(searchParams) {
     // console.log('api/selectStream', searchParams.toString());
 
+    const { uuid } = this;
+
+    let closeHandler;
+
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        const { uuid } = this;
-
-        let closeHandler;
-
-        const strm = new ReadableStream({
-          start(controller) {
-            function enqueueHandler(event, entry) {
-              try {
-                controller.enqueue(entry);
-              } catch {
-                // do nothing
+        return {
+          strm: new ReadableStream({
+            start(controller) {
+              function enqueueHandler(event, entry) {
+                try {
+                  controller.enqueue(entry);
+                }
+                catch {
+                  // do nothing
+                }
               }
-            }
 
-            closeHandler = () => {
-              try {
-                controller.close();
-              } catch {
-                // do nothing
-              }
-            };
+              closeHandler = () => {
+                try {
+                  controller.close();
+                }
+                catch {
+                  // do nothing
+                }
+              };
 
-            return window.electron.selectStream(
-              uuid,
-              searchParams.toString(),
-              enqueueHandler,
-              closeHandler,
-            );
-          },
-        });
-
-        return { strm, closeHandler };
+              return window.electron.selectStream(
+                uuid,
+                searchParams.toString(),
+                enqueueHandler,
+                closeHandler,
+              );
+            },
+          }),
+          closeHandler,
+        };
       default:
         return this.#browser.selectStream(searchParams);
     }

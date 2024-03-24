@@ -72,8 +72,8 @@ export default (env) => ({
   ],
   resolve: {
     alias: {
-      "@": path.resolve(dirname, "./src/renderer"),
-      lib: path.resolve(dirname, "./src/lib"),
+      // "@": path.resolve(dirname, "./src/renderer"),
+      // lib: path.resolve(dirname, "./src/lib"),
     },
     fallback: {
       // For WASM

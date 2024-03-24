@@ -16,7 +16,8 @@ async function runWorker(readFile, searchParams) {
           const contents = await readFile(message.data.filepath);
 
           message.ports[0].postMessage({ result: contents });
-        } catch (e) {
+        }
+        catch (e) {
           // safari cannot clone the error object, force to string
           message.ports[0].postMessage({ error: `${e}` });
         }
@@ -46,7 +47,8 @@ async function runWorker(readFile, searchParams) {
 
           if (data.error) {
             rej(data.error);
-          } else {
+          }
+          else {
             res(data.result);
           }
         };
@@ -69,7 +71,7 @@ export class BrowserAPI {
 
   async dir() {
     return `/${(await pfs.readdir("/"))
-      .find((repo) => new RegExp(`^${this.uuid}`).test(repo))}`;
+      .find(repo => new RegExp(`^${this.uuid}`).test(repo))}`;
   }
 
   async helloWorld(someVariable) {
@@ -98,7 +100,8 @@ export class BrowserAPI {
 
       if (files.includes(pathElement)) {
         root += pathElement;
-      } else {
+      }
+      else {
         // console.log(
         //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`,
         // );
@@ -163,10 +166,12 @@ export class BrowserAPI {
         // try/catch because csvs can call this in parallel and fail with EEXIST
         try {
           await pfs.mkdir(`${root}/${pathElement}`);
-        } catch {
+        }
+        catch {
           // do nothing
         }
-      } else {
+      }
+      else {
         // console.log(`writeFileBrowser ${root} has ${pathElement}`)
       }
 
@@ -211,7 +216,7 @@ export class BrowserAPI {
 
     const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-    const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+    const hashHexString = hashByteArray.map(b => b.toString(16).padStart(2, "0")).join("");
 
     await this.putAsset(hashHexString, fileArrayBuffer);
 
@@ -242,7 +247,8 @@ export class BrowserAPI {
                 const contents = await br.readFile(message.data.filepath);
 
                 message.ports[0].postMessage({ result: contents });
-              } catch (e) {
+              }
+              catch (e) {
                 // safari cannot clone the error object, force to string
                 message.ports[0].postMessage({ error: `${e}` });
               }
@@ -297,11 +303,11 @@ export class BrowserAPI {
     const { deepClone } = await import("./curse_controller.js");
 
     const entryNew = await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
+      readFile: filepath => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).update(deepClone(entry));
 
-    if (overview.find((e) => e.UUID === entryNew.UUID)) {
+    if (overview.find(e => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {
         if (e.UUID === entryNew.UUID) {
           return entryNew;
@@ -319,15 +325,15 @@ export class BrowserAPI {
     const { deepClone } = await import("./curse_controller.js");
 
     await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
+      readFile: filepath => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).delete(deepClone(entry));
 
-    return overview.filter((e) => e.UUID !== entry.UUID);
+    return overview.filter(e => e.UUID !== entry.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {
-    if ((await pfs.readdir("/")).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+    if ((await pfs.readdir("/")).some(repo => new RegExp(`^${this.uuid}`).test(repo))) {
       throw Error(`could not clone, directory ${this.uuid} exists`);
     }
 
@@ -431,7 +437,8 @@ export class BrowserAPI {
             dir,
             filepath,
           });
-        } else {
+        }
+        else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import("./lfs.mjs");
@@ -441,7 +448,8 @@ export class BrowserAPI {
               dir,
               filepath,
             });
-          } else {
+          }
+          else {
             await add({
               fs,
               dir,
@@ -451,7 +459,8 @@ export class BrowserAPI {
 
           if (HEADStatus === 1) {
             status = "modified";
-          } else {
+          }
+          else {
             status = "added";
           }
         }
@@ -502,7 +511,8 @@ export class BrowserAPI {
           return undefined;
         }),
       )).filter(Boolean);
-    } else {
+    }
+    else {
       assets = files;
     }
 
@@ -520,7 +530,8 @@ export class BrowserAPI {
 
     try {
       await this.uploadBlobsLFS(remote);
-    } catch (e) {
+    }
+    catch (e) {
       console.log("api/browser/uploadBlobsLFS failed", e);
     }
 
@@ -570,13 +581,14 @@ export class BrowserAPI {
     const { init, setConfig } = await import("isomorphic-git");
 
     const existingRepo = (await pfs.readdir("/"))
-      .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+      .find(repo => new RegExp(`^${this.uuid}`).test(repo));
 
     if (existingRepo === undefined) {
       await pfs.mkdir(dir);
 
       await init({ fs, dir, defaultBranch: "main" });
-    } else if (`/${existingRepo}` !== dir) {
+    }
+    else if (`/${existingRepo}` !== dir) {
       await pfs.rename(`/${existingRepo}`, dir);
     }
 
@@ -588,7 +600,8 @@ export class BrowserAPI {
 
     try {
       await pfs.mkdir(`${dir}/.git`);
-    } catch {
+    }
+    catch {
       // do nothing
     }
 
@@ -640,7 +653,8 @@ export class BrowserAPI {
 
     try {
       files = await pfs.readdir(rimrafpath);
-    } catch {
+    }
+    catch {
       throw Error(`can't read ${rimrafpath} to rimraf it`);
     }
 
@@ -651,7 +665,8 @@ export class BrowserAPI {
 
       if (type === "file") {
         await pfs.unlink(filepath);
-      } else if (type === "dir") {
+      }
+      else if (type === "dir") {
         await this.rimraf(filepath);
       }
     }
@@ -664,7 +679,8 @@ export class BrowserAPI {
 
     try {
       files = await pfs.readdir(lspath);
-    } catch {
+    }
+    catch {
       throw Error(`can't read ${lspath} to list it`);
     }
 
@@ -724,7 +740,8 @@ export class BrowserAPI {
           const content = await pfs.readFile(filepath);
 
           zipDir.file(file, content);
-        } else if (filetype === "dir") {
+        }
+        else if (filetype === "dir") {
           const zipDirNew = zipDir.folder(file);
 
           await addToZip(filepath, zipDirNew);
@@ -748,7 +765,8 @@ export class BrowserAPI {
       const dir = await this.dir();
 
       await this.rimraf(dir);
-    } catch {
+    }
+    catch {
       // do nothing
     }
 
@@ -783,7 +801,8 @@ export class BrowserAPI {
         content = await fetch(assetPath);
 
         return content;
-      } catch (e) {
+      }
+      catch (e) {
         // do nothing
       }
 
@@ -791,7 +810,8 @@ export class BrowserAPI {
       content = await fs.promises.readFile(assetPath);
 
       return content;
-    } catch (e) {
+    }
+    catch (e) {
       // do nothing
     }
 
@@ -829,7 +849,8 @@ export class BrowserAPI {
           );
 
           return content;
-        } catch (e) {
+        }
+        catch (e) {
           // do nothing
         }
       }
@@ -852,7 +873,7 @@ export class BrowserAPI {
       dir,
     });
 
-    return remotes.map((r) => r.remote);
+    return remotes.map(r => r.remote);
   }
 
   async addRemote(remoteName, remoteUrl, remoteToken) {

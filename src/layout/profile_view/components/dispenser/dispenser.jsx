@@ -1,10 +1,5 @@
 import React from 'react';
-import { RSS } from './rss.jsx';
-import { Remote } from './remote.jsx';
-import { Sync } from './sync.jsx';
-import { Zip } from './zip.jsx';
-import { Local } from './local.jsx';
-import { TG } from './tg.jsx';
+import { RSS, Remote, Sync, Zip, Local, TG } from './components/index.js';
 
 export function Dispenser({ baseEntry, branchEntry }) {
   switch (branchEntry._) {

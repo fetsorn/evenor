@@ -1,4 +1,4 @@
-import path from 'path';
+import path from "path";
 
 export async function addLFS({
   fs,
@@ -7,14 +7,14 @@ export async function addLFS({
 }) {
   const fileBlob = await fs.promises.readFile(path.join(dir, filepath));
 
-  const { buildPointerInfo, formatPointerInfo } = await import('@fetsorn/isogit-lfs');
+  const { buildPointerInfo, formatPointerInfo } = await import("@fetsorn/isogit-lfs");
 
   const pointerInfo = await buildPointerInfo(fileBlob);
 
   // turn blob into pointer
   const pointerBlob = formatPointerInfo(pointerInfo);
 
-  const { writeBlob, updateIndex } = await import('isomorphic-git');
+  const { writeBlob, updateIndex } = await import("isomorphic-git");
 
   const pointerOID = await writeBlob({
     fs,

@@ -10,7 +10,7 @@ async function grep(contentFile, patternFile, isInverted = false) {
   );
 }
 
-const readFile = (filepath) => new Promise((res, rej) => {
+const readFile = filepath => new Promise((res, rej) => {
   const channel = new MessageChannel();
 
   channel.port1.onmessage = ({ data }) => {
@@ -18,7 +18,8 @@ const readFile = (filepath) => new Promise((res, rej) => {
 
     if (data.error) {
       rej(data.error);
-    } else {
+    }
+    else {
       res(data.result);
     }
   };
@@ -34,12 +35,14 @@ async function select(message) {
       const searchParams = new URLSearchParams(message.data.searchParams);
 
       result = await (new CSVS({ readFile, grep })).select(searchParams);
-    } catch (e) {
+    }
+    catch (e) {
       result = [];
     }
 
     message.ports[0].postMessage({ result });
-  } catch (e) {
+  }
+  catch (e) {
     message.ports[0].postMessage({ error: e });
   }
 }
@@ -62,7 +65,8 @@ async function selectStream(message) {
     }
 
     postMessage({ action: "close" }, [channel.port2]);
-  } catch (e) {
+  }
+  catch (e) {
     postMessage({ action: "error", error: e }, [channel.port2]);
   }
 }
@@ -70,7 +74,8 @@ async function selectStream(message) {
 onmessage = async (message) => {
   if (message.data.action === "select") {
     await select(message);
-  } else if (message.data.action === "selectStream") {
+  }
+  else if (message.data.action === "selectStream") {
     await selectStream(message);
   }
 };

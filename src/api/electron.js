@@ -47,7 +47,8 @@ async function runWorker(workerData) {
     worker.on("message", (message) => {
       if (typeof message === "string" && message.startsWith("log")) {
         // console.log(message);
-      } else {
+      }
+      else {
         if (workerData.msg === "select") {
           readWorker = undefined;
         }
@@ -61,7 +62,7 @@ async function runWorker(workerData) {
       if (workerData.msg === "select") {
         readWorker = undefined;
       }
-      if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
+      if (code !== 0) reject(new Error(`Worker stopped with exit code ${code}`));
     });
 
     if (workerData.msg === "select") {
@@ -81,12 +82,13 @@ export class ElectronAPI {
     try {
       // find repo with uuid
       const repoDir = (fs.readdirSync(appPath))
-        .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+        .find(repo => new RegExp(`^${this.uuid}`).test(repo));
 
       if (repoDir) {
         this.dir = path.join(appPath, repoDir);
       }
-    } catch (e) {
+    }
+    catch (e) {
       // do nothing
       console.log(e);
     }
@@ -128,10 +130,12 @@ export class ElectronAPI {
       if (!files.includes(pathElement)) {
         try {
           await pfs.mkdir(path.join(this.dir, root, pathElement));
-        } catch (e) {
+        }
+        catch (e) {
           // do nothing
         }
-      } else {
+      }
+      else {
         // console.log(`${root} has ${pathElement}`)
       }
 
@@ -155,7 +159,8 @@ export class ElectronAPI {
 
     if (res.canceled) {
       throw Error("cancelled");
-    } else {
+    }
+    else {
       const filepath = res.filePaths[0];
 
       const fileArrayBuffer = fs.readFileSync(filepath);
@@ -169,7 +174,7 @@ export class ElectronAPI {
 
       const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-      const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, "0")).join("");
+      const hashHexString = hashByteArray.map(b => b.toString(16).padStart(2, "0")).join("");
 
       await this.putAsset(hashHexString, fileArrayBuffer);
 
@@ -190,7 +195,8 @@ export class ElectronAPI {
 
     try {
       await streamWorker.terminate();
-    } catch {
+    }
+    catch {
       // do nothing
     }
 
@@ -208,9 +214,11 @@ export class ElectronAPI {
     worker.on("message", (message) => {
       if (typeof message === "string" && message.startsWith("log")) {
         console.log(message);
-      } else if (message.msg === "selectStream:enqueue") {
+      }
+      else if (message.msg === "selectStream:enqueue") {
         enqueueHandler(message.entry);
-      } else if (message.msg === "selectStream:close") {
+      }
+      else if (message.msg === "selectStream:close") {
         closeHandler();
       }
     });
@@ -241,7 +249,7 @@ export class ElectronAPI {
       entry,
     });
 
-    if (overview.find((e) => e.UUID === entryNew.UUID)) {
+    if (overview.find(e => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {
         if (e.UUID === entryNew.UUID) {
           return entryNew;
@@ -260,17 +268,18 @@ export class ElectronAPI {
       entry,
     });
 
-    return overview.filter((e) => e.UUID !== entry.UUID);
+    return overview.filter(e => e.UUID !== entry.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {
     try {
       await pfs.stat(appPath);
-    } catch (e) {
+    }
+    catch (e) {
       await pfs.mkdir(appPath);
     }
 
-    if ((await pfs.readdir(appPath)).some((repo) => new RegExp(`^${this.uuid}`).test(repo))) {
+    if ((await pfs.readdir(appPath)).some(repo => new RegExp(`^${this.uuid}`).test(repo))) {
       throw Error(`could not clone, directory ${this.uuid} exists`);
     }
 
@@ -310,7 +319,8 @@ export class ElectronAPI {
   async cloneView(remoteUrl, remoteToken) {
     try {
       await ElectronAPI.rimraf(this.dir);
-    } catch {
+    }
+    catch {
       // do nothing
     }
 
@@ -363,7 +373,8 @@ export class ElectronAPI {
             dir,
             filepath,
           });
-        } else {
+        }
+        else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import("./lfs.mjs");
@@ -373,7 +384,8 @@ export class ElectronAPI {
               dir,
               filepath,
             });
-          } else {
+          }
+          else {
             await git.add({
               fs,
               dir,
@@ -383,7 +395,8 @@ export class ElectronAPI {
 
           if (HEADStatus === 1) {
             status = "modified";
-          } else {
+          }
+          else {
             status = "added";
           }
         }
@@ -432,7 +445,8 @@ export class ElectronAPI {
           return undefined;
         }),
       )).filter(Boolean);
-    } else {
+    }
+    else {
       assets = files;
     }
 
@@ -450,7 +464,8 @@ export class ElectronAPI {
 
     try {
       await this.uploadBlobsLFS(remote);
-    } catch (e) {
+    }
+    catch (e) {
       console.log("uploadBlobs failed", e);
     }
 
@@ -485,26 +500,29 @@ export class ElectronAPI {
   async ensure(schema, name) {
     try {
       await pfs.stat(appPath);
-    } catch {
+    }
+    catch {
       await pfs.mkdir(appPath);
     }
 
     if (name) {
       this.dir = path.join(appPath, `${this.uuid}-${name}`);
-    } else {
+    }
+    else {
       this.dir = path.join(appPath, `${this.uuid}`);
     }
 
     const { dir } = this;
 
     const existingRepo = (await pfs.readdir(appPath))
-      .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+      .find(repo => new RegExp(`^${this.uuid}`).test(repo));
 
     if (existingRepo === undefined) {
       await pfs.mkdir(dir);
 
       await git.init({ fs, dir, defaultBranch: "main" });
-    } else {
+    }
+    else {
       await pfs.rename(path.join(appPath, existingRepo), dir);
     }
 
@@ -559,10 +577,12 @@ export class ElectronAPI {
 
       if (stats.isFile()) {
         await pfs.unlink(rimrafpath);
-      } else if (stats.isDirectory()) {
+      }
+      else if (stats.isDirectory()) {
         await pfs.rm(rimrafpath, { recursive: true });
       }
-    } catch (e) {
+    }
+    catch (e) {
       // console.log(`failed to rimraf ${e}`);
     }
   }
@@ -572,7 +592,8 @@ export class ElectronAPI {
 
     try {
       files = await pfs.readdir(lspath);
-    } catch {
+    }
+    catch {
       throw Error(`can't read ${lspath} to list it`);
     }
 
@@ -648,7 +669,8 @@ export class ElectronAPI {
           const content = await pfs.readFile(filepath);
 
           zipDir.file(filename, content);
-        } else if (stats.isDirectory()) {
+        }
+        else if (stats.isDirectory()) {
           const zipDirNew = zipDir.folder(filename);
 
           await addToZip(filepath, zipDirNew);
@@ -700,7 +722,8 @@ export class ElectronAPI {
         content = await fetch(assetPath);
 
         return content;
-      } catch (e) {
+      }
+      catch (e) {
         // do nothing
       }
 
@@ -708,7 +731,8 @@ export class ElectronAPI {
       content = await fs.readFileSync(assetPath);
 
       return content;
-    } catch (e) {
+    }
+    catch (e) {
       console.log(e);
       // do nothing
     }
@@ -744,7 +768,8 @@ export class ElectronAPI {
           );
 
           return content;
-        } catch (e) {
+        }
+        catch (e) {
           // do nothing
         }
       }
@@ -763,7 +788,7 @@ export class ElectronAPI {
       dir: this.dir,
     });
 
-    return remotes.map((r) => r.remote);
+    return remotes.map(r => r.remote);
   }
 
   async addRemote(remoteName, remoteUrl, remoteToken) {

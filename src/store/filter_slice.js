@@ -3,7 +3,7 @@ export const createFilterSlice = (set, get) => ({
 
   groupBy: "",
 
-  onChangeGroupBy: (groupBy) => set({ groupBy }),
+  onChangeGroupBy: groupBy => set({ groupBy }),
 
   onQueryAdd: async (queryField, queryValue) => {
     const { queries } = get();

@@ -209,7 +209,8 @@ export const createEntrySlice = (set, get) => ({
     });
   },
 
-  onEntryEdit: (entry) => set({ entry, isEdit: true, entryOriginal: get().entry }),
+  onEntryEdit: (entry) =>
+    set({ entry, isEdit: true, entryOriginal: get().entry }),
 
   onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
 

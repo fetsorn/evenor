@@ -31,7 +31,7 @@
       "remove": "remove {{ field }} field",
       "upload": "choose file",
       "open": "open project",
-      "add-field":"add field"
+      "add-field": "add field"
     },
     "dropdown": {
       "input": "add field"

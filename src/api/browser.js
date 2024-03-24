@@ -243,7 +243,7 @@ export class BrowserAPI {
           } catch {
             // ignore catch
           }
-        }
+        };
 
         worker.onmessage = async (message) => {
           switch (message.data.action) {
@@ -825,7 +825,7 @@ export class BrowserAPI {
       "@fetsorn/isogit-lfs"
     );
 
-    const contentUTF8 = (new TextDecoder()).decode(content);
+    const contentUTF8 = new TextDecoder().decode(content);
 
     if (pointsToLFS(contentUTF8)) {
       const pointer = await readPointer({ dir, content: contentUTF8 });

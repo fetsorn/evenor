@@ -36,7 +36,6 @@ export function FilterQueryList() {
           className={styles.query}
         >
           <label htmlFor={`input-${field}`}>
-
             {field}
 
             <button

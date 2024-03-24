@@ -251,10 +251,11 @@ export const createOverviewSlice = (set, get) => ({
         });
       },
 
-      abort(err) {
+      abort() {
         // stream interrupted
         // no need to await on the promise, closing api stream for cleanup
-        closeHandler();      },
+        closeHandler();
+      },
     });
 
     try {
@@ -288,7 +289,7 @@ export const createOverviewSlice = (set, get) => ({
         null,
         `${pathname}${
           searchParams.toString() == "" ? "" : `?${searchParams.toString()}`
-        }`
+        }`,
       );
 
       set({

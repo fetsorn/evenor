@@ -11,21 +11,15 @@ export function OverviewItinerary() {
 
   const { t } = useTranslation();
 
-  const [
-    entry,
-    records,
-    sortBy,
-    onEntrySelect,
-    onEntryCreate,
-    onBatchSelect,
-  ] = useStore((state) => [
-    state.entry,
-    state.records,
-    state.sortBy,
-    state.onEntrySelect,
-    state.onEntryCreate,
-    state.onBatchSelect,
-  ]);
+  const [entry, records, sortBy, onEntrySelect, onEntryCreate, onBatchSelect] =
+    useStore((state) => [
+      state.entry,
+      state.records,
+      state.sortBy,
+      state.onEntrySelect,
+      state.onEntryCreate,
+      state.onBatchSelect,
+    ]);
 
   async function onUseEffect() {
     const itineraryNew = await buildItinerary(records, sortBy);

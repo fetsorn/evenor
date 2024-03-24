@@ -13,7 +13,10 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
   const [isOpenUUID, setIsOpenUUID] = useState(false);
 
-  const [baseEntry, repoUUID] = useStore((state) => [state.entry, state.repoUUID]);
+  const [baseEntry, repoUUID] = useStore((state) => [
+    state.entry,
+    state.repoUUID,
+  ]);
 
   const branch = entry._;
 
@@ -24,7 +27,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
   const branchDescription =
     schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
-  const uuidDescription = t('profile.label.uuid')
+  const uuidDescription = t("profile.label.uuid");
 
   const trunk = schema[branch]?.trunk;
 
@@ -34,19 +37,23 @@ export function ViewField({ entry, schema, isBaseObject }) {
         <div>
           {!isOpenUUID ? (
             <div>
-              <button type="button" onClick={() => setIsOpenUUID(true)}>▶️</button>
+              <button type="button" onClick={() => setIsOpenUUID(true)}>
+                ▶️
+              </button>
 
               {uuidDescription}
             </div>
           ) : (
             <div>
               <div>
-                <button type="button" onClick={() => setIsOpenUUID(false)}>🔽</button>
+                <button type="button" onClick={() => setIsOpenUUID(false)}>
+                  🔽
+                </button>
 
                 {uuidDescription}
               </div>
 
-              { entry.UUID }
+              {entry.UUID}
             </div>
           )}
         </div>
@@ -103,55 +110,64 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
   switch (branchType) {
     case "array":
-      return ((repoUUID !== "root" || branch !== "schema") && (
-        <div>
-          {!isOpen ? (
-            <div>
-              <button type="button" onClick={() => setIsOpen(true)}>
-                ▶️
-              </button>
-
-              {branchDescription}
-            </div>
-          ) : (
-            <div>
+      return (
+        (repoUUID !== "root" || branch !== "schema") && (
+          <div>
+            {!isOpen ? (
               <div>
-                <button type="button" onClick={() => setIsOpen(false)}>
-                  🔽
+                <button type="button" onClick={() => setIsOpen(true)}>
+                  ▶️
                 </button>
 
                 {branchDescription}
               </div>
-
+            ) : (
               <div>
-                {!isOpenUUID ? (
-                  <div>
-                    <button type="button" onClick={() => setIsOpenUUID(true)}>▶️</button>
+                <div>
+                  <button type="button" onClick={() => setIsOpen(false)}>
+                    🔽
+                  </button>
 
-                    {uuidDescription}
-                  </div>
-                ) : (
-                  <div>
+                  {branchDescription}
+                </div>
+
+                <div>
+                  {!isOpenUUID ? (
                     <div>
-                      <button type="button" onClick={() => setIsOpenUUID(false)}>🔽</button>
+                      <button type="button" onClick={() => setIsOpenUUID(true)}>
+                        ▶️
+                      </button>
 
                       {uuidDescription}
                     </div>
+                  ) : (
+                    <div>
+                      <div>
+                        <button
+                          type="button"
+                          onClick={() => setIsOpenUUID(false)}
+                        >
+                          🔽
+                        </button>
 
-                    { entry.UUID }
-                  </div>
-                )}
-              </div>
+                        {uuidDescription}
+                      </div>
 
-              {entry.items.map((item) => (
-                <div key={`array_item_${Math.random()}`}>
-                  <ViewField entry={item} schema={schema} />
+                      {entry.UUID}
+                    </div>
+                  )}
                 </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ));
+
+                {entry.items.map((item) => (
+                  <div key={`array_item_${Math.random()}`}>
+                    <ViewField entry={item} schema={schema} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )
+      );
 
     case "object":
       if (branchTask === "file") {
@@ -181,19 +197,26 @@ export function ViewField({ entry, schema, isBaseObject }) {
               <div>
                 {!isOpenUUID ? (
                   <div>
-                    <button type="button" onClick={() => setIsOpenUUID(true)}>▶️</button>
+                    <button type="button" onClick={() => setIsOpenUUID(true)}>
+                      ▶️
+                    </button>
 
                     {uuidDescription}
                   </div>
                 ) : (
                   <div>
                     <div>
-                      <button type="button" onClick={() => setIsOpenUUID(false)}>🔽</button>
+                      <button
+                        type="button"
+                        onClick={() => setIsOpenUUID(false)}
+                      >
+                        🔽
+                      </button>
 
                       {uuidDescription}
                     </div>
 
-                    { entry.UUID }
+                    {entry.UUID}
                   </div>
                 )}
               </div>

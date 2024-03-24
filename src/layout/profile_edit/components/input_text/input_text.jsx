@@ -4,7 +4,6 @@ import { useStore } from "../../../../store/index.js";
 import styles from "./input_text.module.css";
 
 export function InputText({ branch, value, onFieldChange }) {
-
   const [repoUUID, queries] = useStore((state) => [
     state.repoUUID,
     state.queries,

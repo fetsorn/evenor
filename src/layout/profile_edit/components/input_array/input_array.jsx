@@ -124,19 +124,18 @@ export function InputArray({ schema, entry, onFieldChange }) {
             value={JSON.stringify(field)}
           >
             {JSON.stringify(field)}
-            </option>
+          </option>
         ))}
       </select>
 
-      { isOnlyOption ? (
-        <button
-          onClick={() => onFieldAddArrayItem(leaves[0])}
-        >
-          {t('line.button.add-field')}
-
+      {isOnlyOption ? (
+        <button onClick={() => onFieldAddArrayItem(leaves[0])}>
+          {t("line.button.add-field")}
         </button>
       ) : (
-        <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
+        <InputDropdown
+          {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }}
+        />
       )}
 
       {items.map((item, index) => {

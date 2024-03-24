@@ -50,10 +50,10 @@ async function selectStream(message) {
   try {
     const searchParams = new URLSearchParams(message.data.searchParams);
 
-    const { base, baseUUIDs } = await (new CSVS({ readFile, grep })).selectBaseUUIDs(searchParams);
+    const { base, baseKeys } = await (new CSVS({ readFile, grep })).selectBaseKeys(searchParams);
 
-    for (const baseUUID of baseUUIDs) {
-      const entry = await (new CSVS({ readFile, grep })).buildEntry(base, baseUUID);
+    for (const baseKey of baseKeys) {
+      const entry = await (new CSVS({ readFile, grep })).buildRecord(base, baseKey);
 
       postMessage({
         action: 'write',

@@ -36,7 +36,7 @@
     "@babel/core": "7.21.0",
     "@babel/preset-env": "7.20.2",
     "@babel/preset-react": "7.18.6",
-    "@fetsorn/csvs-js": "0.14.0",
+    "@fetsorn/csvs-js": "0.15.2",
     "@fetsorn/ged2dot": "0.2.0",
     "@fetsorn/isogit-lfs": "^0.4.1",
     "@fetsorn/ppt": "0.0.1",

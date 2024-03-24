@@ -1,11 +1,7 @@
-import React from 'react';
-import styles from './input_date.module.css';
+import React from "react";
+import styles from "./input_date.module.css";
 
-export function InputDate({
-  branch,
-  value,
-  onFieldChange,
-}) {
+export function InputDate({ branch, value, onFieldChange }) {
   return (
     <div>
       <input

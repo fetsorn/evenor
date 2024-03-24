@@ -16,8 +16,7 @@ async function runWorker(readFile, searchParams) {
           const contents = await readFile(message.data.filepath);
 
           message.ports[0].postMessage({ result: contents });
-        }
-        catch (e) {
+        } catch (e) {
           // safari cannot clone the error object, force to string
           message.ports[0].postMessage({ error: `${e}` });
         }
@@ -26,7 +25,7 @@ async function runWorker(readFile, searchParams) {
       }
 
       default:
-        // do nothing
+      // do nothing
     }
   };
 
@@ -47,8 +46,7 @@ async function runWorker(readFile, searchParams) {
 
           if (data.error) {
             rej(data.error);
-          }
-          else {
+          } else {
             res(data.result);
           }
         };
@@ -70,8 +68,9 @@ export class BrowserAPI {
   }
 
   async dir() {
-    return `/${(await pfs.readdir("/"))
-      .find(repo => new RegExp(`^${this.uuid}`).test(repo))}`;
+    return `/${(await pfs.readdir("/")).find((repo) =>
+      new RegExp(`^${this.uuid}`).test(repo),
+    )}`;
   }
 
   async helloWorld(someVariable) {
@@ -80,14 +79,17 @@ export class BrowserAPI {
 
   async fetchFile(filepath) {
     // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
+    if (__BUILD_MODE__ === "server") {
       return (await fetch(`/api/${filepath}`)).arrayBuffer();
     }
 
     const dir = await this.dir();
 
     // check if path exists in the repo
-    const pathElements = dir.replace(/^\//, "").split("/").concat(filepath.split("/"));
+    const pathElements = dir
+      .replace(/^\//, "")
+      .split("/")
+      .concat(filepath.split("/"));
 
     let root = "";
 
@@ -100,8 +102,7 @@ export class BrowserAPI {
 
       if (files.includes(pathElement)) {
         root += pathElement;
-      }
-      else {
+      } else {
         // console.log(
         //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`,
         // );
@@ -125,12 +126,9 @@ export class BrowserAPI {
     return restext;
   }
 
-  async writeFile(
-    filepath,
-    content,
-  ) {
+  async writeFile(filepath, content) {
     // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
+    if (__BUILD_MODE__ === "server") {
       await fetch(`/api/${filepath}`, {
         method: "POST",
         headers: {
@@ -148,7 +146,10 @@ export class BrowserAPI {
 
     // if path doesn't exist, create it
     // split path into array of directory names
-    const pathElements = dir.replace(/^\//, "").split("/").concat(filepath.split("/"));
+    const pathElements = dir
+      .replace(/^\//, "")
+      .split("/")
+      .concat(filepath.split("/"));
 
     // remove file name
     pathElements.pop();
@@ -166,12 +167,10 @@ export class BrowserAPI {
         // try/catch because csvs can call this in parallel and fail with EEXIST
         try {
           await pfs.mkdir(`${root}/${pathElement}`);
-        }
-        catch {
+        } catch {
           // do nothing
         }
-      }
-      else {
+      } else {
         // console.log(`writeFileBrowser ${root} has ${pathElement}`)
       }
 
@@ -192,7 +191,7 @@ export class BrowserAPI {
 
   async uploadFile(file) {
     // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
+    if (__BUILD_MODE__ === "server") {
       const form = new FormData();
 
       form.append("file", file);
@@ -216,7 +215,9 @@ export class BrowserAPI {
 
     const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-    const hashHexString = hashByteArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const hashHexString = hashByteArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
     await this.putAsset(hashHexString, fileArrayBuffer);
 
@@ -247,8 +248,7 @@ export class BrowserAPI {
                 const contents = await br.readFile(message.data.filepath);
 
                 message.ports[0].postMessage({ result: contents });
-              }
-              catch (e) {
+              } catch (e) {
                 // safari cannot clone the error object, force to string
                 message.ports[0].postMessage({ error: `${e}` });
               }
@@ -271,7 +271,7 @@ export class BrowserAPI {
               break;
             }
             default:
-              // do nothing
+            // do nothing
           }
         };
 
@@ -303,11 +303,11 @@ export class BrowserAPI {
     const { deepClone } = await import("./curse_controller.js");
 
     const entryNew = await new CSVS({
-      readFile: filepath => this.readFile(filepath),
+      readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).update(deepClone(entry));
 
-    if (overview.find(e => e.UUID === entryNew.UUID)) {
+    if (overview.find((e) => e.UUID === entryNew.UUID)) {
       return overview.map((e) => {
         if (e.UUID === entryNew.UUID) {
           return entryNew;
@@ -325,15 +325,19 @@ export class BrowserAPI {
     const { deepClone } = await import("./curse_controller.js");
 
     await new CSVS({
-      readFile: filepath => this.readFile(filepath),
+      readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).delete(deepClone(entry));
 
-    return overview.filter(e => e.UUID !== entry.UUID);
+    return overview.filter((e) => e.UUID !== entry.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {
-    if ((await pfs.readdir("/")).some(repo => new RegExp(`^${this.uuid}`).test(repo))) {
+    if (
+      (await pfs.readdir("/")).some((repo) =>
+        new RegExp(`^${this.uuid}`).test(repo),
+      )
+    ) {
       throw Error(`could not clone, directory ${this.uuid} exists`);
     }
 
@@ -355,9 +359,7 @@ export class BrowserAPI {
       });
     }
 
-    const {
-      clone, setConfig,
-    } = await import("isomorphic-git");
+    const { clone, setConfig } = await import("isomorphic-git");
 
     await clone(options);
 
@@ -380,7 +382,7 @@ export class BrowserAPI {
 
   async commit() {
     // eslint-disable-next-line
-    if (__BUILD_MODE__ === 'server') {
+    if (__BUILD_MODE__ === "server") {
       await fetch("api/", {
         method: "PUT",
       });
@@ -392,21 +394,16 @@ export class BrowserAPI {
 
     const message = [];
 
-    const {
-      statusMatrix, resetIndex, remove, add, commit,
-    } = await import("isomorphic-git");
+    const { statusMatrix, resetIndex, remove, add, commit } = await import(
+      "isomorphic-git"
+    );
 
     const matrix = await statusMatrix({
       fs,
       dir,
     });
 
-    for (let [
-      filepath,
-      HEADStatus,
-      workingDirStatus,
-      stageStatus,
-    ] of matrix) {
+    for (let [filepath, HEADStatus, workingDirStatus, stageStatus] of matrix) {
       if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
         await resetIndex({
           fs,
@@ -414,13 +411,17 @@ export class BrowserAPI {
           filepath,
         });
 
-        [filepath, HEADStatus, workingDirStatus, stageStatus] = await statusMatrix({
-          fs,
-          dir,
-          filepaths: [filepath],
-        });
+        [filepath, HEADStatus, workingDirStatus, stageStatus] =
+          await statusMatrix({
+            fs,
+            dir,
+            filepaths: [filepath],
+          });
 
-        if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
+        if (
+          HEADStatus === workingDirStatus &&
+          workingDirStatus === stageStatus
+        ) {
           // eslint-disable-next-line
           continue;
         }
@@ -437,8 +438,7 @@ export class BrowserAPI {
             dir,
             filepath,
           });
-        }
-        else {
+        } else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import("./lfs.mjs");
@@ -448,8 +448,7 @@ export class BrowserAPI {
               dir,
               filepath,
             });
-          }
-          else {
+          } else {
             await add({
               fs,
               dir,
@@ -459,8 +458,7 @@ export class BrowserAPI {
 
           if (HEADStatus === 1) {
             status = "modified";
-          }
-          else {
+          } else {
             status = "added";
           }
         }
@@ -500,29 +498,33 @@ export class BrowserAPI {
     if (files === undefined) {
       const filenames = await pfs.readdir(`${dir}/${lfsDir}/`);
 
-      assets = (await Promise.all(
-        filenames.map(async (filename) => {
-          const file = await this.fetchFile(`${lfsDir}/${filename}`);
+      assets = (
+        await Promise.all(
+          filenames.map(async (filename) => {
+            const file = await this.fetchFile(`${lfsDir}/${filename}`);
 
-          if (!pointsToLFS(file)) {
-            return file;
-          }
+            if (!pointsToLFS(file)) {
+              return file;
+            }
 
-          return undefined;
-        }),
-      )).filter(Boolean);
-    }
-    else {
+            return undefined;
+          }),
+        )
+      ).filter(Boolean);
+    } else {
       assets = files;
     }
 
-    await uploadBlobs({
-      url: remoteUrl,
-      auth: {
-        username: remoteToken,
-        password: remoteToken,
+    await uploadBlobs(
+      {
+        url: remoteUrl,
+        auth: {
+          username: remoteToken,
+          password: remoteToken,
+        },
       },
-    }, assets);
+      assets,
+    );
   }
 
   async push(remote) {
@@ -530,8 +532,7 @@ export class BrowserAPI {
 
     try {
       await this.uploadBlobsLFS(remote);
-    }
-    catch (e) {
+    } catch (e) {
       console.log("api/browser/uploadBlobsLFS failed", e);
     }
 
@@ -580,15 +581,15 @@ export class BrowserAPI {
 
     const { init, setConfig } = await import("isomorphic-git");
 
-    const existingRepo = (await pfs.readdir("/"))
-      .find(repo => new RegExp(`^${this.uuid}`).test(repo));
+    const existingRepo = (await pfs.readdir("/")).find((repo) =>
+      new RegExp(`^${this.uuid}`).test(repo),
+    );
 
     if (existingRepo === undefined) {
       await pfs.mkdir(dir);
 
       await init({ fs, dir, defaultBranch: "main" });
-    }
-    else if (`/${existingRepo}` !== dir) {
+    } else if (`/${existingRepo}` !== dir) {
       await pfs.rename(`/${existingRepo}`, dir);
     }
 
@@ -600,16 +601,11 @@ export class BrowserAPI {
 
     try {
       await pfs.mkdir(`${dir}/.git`);
-    }
-    catch {
+    } catch {
       // do nothing
     }
 
-    await pfs.writeFile(
-      `${dir}/.git/config`,
-      "\n",
-      "utf8",
-    );
+    await pfs.writeFile(`${dir}/.git/config`, "\n", "utf8");
 
     await setConfig({
       fs,
@@ -653,8 +649,7 @@ export class BrowserAPI {
 
     try {
       files = await pfs.readdir(rimrafpath);
-    }
-    catch {
+    } catch {
       throw Error(`can't read ${rimrafpath} to rimraf it`);
     }
 
@@ -665,8 +660,7 @@ export class BrowserAPI {
 
       if (type === "file") {
         await pfs.unlink(filepath);
-      }
-      else if (type === "dir") {
+      } else if (type === "dir") {
         await this.rimraf(filepath);
       }
     }
@@ -679,8 +673,7 @@ export class BrowserAPI {
 
     try {
       files = await pfs.readdir(lspath);
-    }
-    catch {
+    } catch {
       throw Error(`can't read ${lspath} to list it`);
     }
 
@@ -740,8 +733,7 @@ export class BrowserAPI {
           const content = await pfs.readFile(filepath);
 
           zipDir.file(file, content);
-        }
-        else if (filetype === "dir") {
+        } else if (filetype === "dir") {
           const zipDirNew = zipDir.folder(file);
 
           await addToZip(filepath, zipDirNew);
@@ -765,8 +757,7 @@ export class BrowserAPI {
       const dir = await this.dir();
 
       await this.rimraf(dir);
-    }
-    catch {
+    } catch {
       // do nothing
     }
 
@@ -782,9 +773,7 @@ export class BrowserAPI {
     const dir = await this.dir();
 
     try {
-      const {
-        getConfig,
-      } = await import("isomorphic-git");
+      const { getConfig } = await import("isomorphic-git");
 
       assetEndpoint = await getConfig({
         fs,
@@ -801,8 +790,7 @@ export class BrowserAPI {
         content = await fetch(assetPath);
 
         return content;
-      }
-      catch (e) {
+      } catch (e) {
         // do nothing
       }
 
@@ -810,8 +798,7 @@ export class BrowserAPI {
       content = await fs.promises.readFile(assetPath);
 
       return content;
-    }
-    catch (e) {
+    } catch (e) {
       // do nothing
     }
 
@@ -821,7 +808,9 @@ export class BrowserAPI {
 
     content = await fs.promises.readFile(assetPath, { encoding: "utf8" });
 
-    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import("@fetsorn/isogit-lfs");
+    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import(
+      "@fetsorn/isogit-lfs"
+    );
 
     if (pointsToLFS(content)) {
       const pointer = await readPointer({ dir, content });
@@ -849,8 +838,7 @@ export class BrowserAPI {
           );
 
           return content;
-        }
-        catch (e) {
+        } catch (e) {
           // do nothing
         }
       }
@@ -873,13 +861,13 @@ export class BrowserAPI {
       dir,
     });
 
-    return remotes.map(r => r.remote);
+    return remotes.map((r) => r.remote);
   }
 
   async addRemote(remoteName, remoteUrl, remoteToken) {
-    const {
-      addRemote: addRemoteGit, setConfig,
-    } = await import("isomorphic-git");
+    const { addRemote: addRemoteGit, setConfig } = await import(
+      "isomorphic-git"
+    );
 
     const dir = await this.dir();
 
@@ -901,9 +889,7 @@ export class BrowserAPI {
   }
 
   async getRemote(remoteName) {
-    const {
-      getConfig,
-    } = await import("isomorphic-git");
+    const { getConfig } = await import("isomorphic-git");
 
     const dir = await this.dir();
 
@@ -923,9 +909,7 @@ export class BrowserAPI {
   }
 
   async addAssetPath(assetPath) {
-    const {
-      setConfig,
-    } = await import("isomorphic-git");
+    const { setConfig } = await import("isomorphic-git");
 
     const dir = await this.dir();
 
@@ -938,9 +922,7 @@ export class BrowserAPI {
   }
 
   async listAssetPaths() {
-    const {
-      getConfigAll,
-    } = await import("isomorphic-git");
+    const { getConfigAll } = await import("isomorphic-git");
 
     const dir = await this.dir();
 
@@ -956,16 +938,14 @@ export class BrowserAPI {
 
     const { downloadUrlFromPointer } = await import("@fetsorn/isogit-lfs");
 
-    return downloadUrlFromPointer(
-      {
-        http,
-        url,
-        auth: {
-          username: token,
-          password: token,
-        },
-        info: pointerInfo,
+    return downloadUrlFromPointer({
+      http,
+      url,
+      auth: {
+        username: token,
+        password: token,
       },
-    );
+      info: pointerInfo,
+    });
   }
 }

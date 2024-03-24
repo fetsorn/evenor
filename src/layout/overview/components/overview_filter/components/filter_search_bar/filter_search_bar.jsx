@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import { API } from '../../../../../../../api';
-import { Button } from '../../../../../../../components/index.js';
-import { useStore } from '../../../../../../../components/index.js';
-import styles from './filter_search_bar.module.css';
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { API } from "../../../../../../../api";
+import { Button } from "../../../../../../../components/index.js";
+import { useStore } from "../../../../../../../components/index.js";
+import styles from "./filter_search_bar.module.css";
 
 export function FilterSearchBar({
   queryBranch,
@@ -15,13 +15,7 @@ export function FilterSearchBar({
 
   const [options, setOptions] = useState([]);
 
-  const [
-    queries,
-    schema,
-    base,
-    onQueryAdd,
-    repoUUID,
-  ] = useStore((state) => [
+  const [queries, schema, base, onQueryAdd, repoUUID] = useStore((state) => [
     state.queries,
     state.schema,
     state.base,
@@ -37,30 +31,34 @@ export function FilterSearchBar({
     return trunk !== undefined && (trunk === base || isConnected(trunk));
   }
 
-  const queriesToAdd = Object.keys(schema).filter(
-    (branch) => branch === base || isConnected(branch),
-  ).map(
-    (branch) => {
-      const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+  const queriesToAdd = Object.keys(schema)
+    .filter((branch) => branch === base || isConnected(branch))
+    .map((branch) => {
+      const description =
+        schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
       return {
         branch,
         label: `${description} (${branch})`,
       };
-    },
-  ).concat([
-    { branch: '_', label: t('header.dropdown.base') },
-    { branch: '.group', label: t('header.dropdown.groupby') },
-  ]);
+    })
+    .concat([
+      { branch: "_", label: t("header.dropdown.base") },
+      { branch: ".group", label: t("header.dropdown.groupby") },
+    ]);
 
   async function onFocus() {
-    if (queryBranch === '_') {
+    if (queryBranch === "_") {
       const roots = Object.keys(schema)
-        .filter((branch) => schema[branch].trunk === undefined
-                || schema[branch].type === 'object'
-                || schema[branch].type === 'array')
+        .filter(
+          (branch) =>
+            schema[branch].trunk === undefined ||
+            schema[branch].type === "object" ||
+            schema[branch].type === "array",
+        )
         .map((branch) => {
-          const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+          const description =
+            schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
           return {
             branch,
@@ -69,14 +67,19 @@ export function FilterSearchBar({
         });
 
       setOptions(roots.map((root) => root.branch));
-    } else if (queryBranch === '.group') {
+    } else if (queryBranch === ".group") {
       const leaves = Object.keys(schema)
-        .filter((branch) => (schema[branch].trunk === base
-                             || branch === base
-                             || schema[schema[branch]?.trunk]?.trunk === base)
-                && (branch !== 'schema' && branch !== 'schema_branch'))
+        .filter(
+          (branch) =>
+            (schema[branch].trunk === base ||
+              branch === base ||
+              schema[schema[branch]?.trunk]?.trunk === base) &&
+            branch !== "schema" &&
+            branch !== "schema_branch",
+        )
         .map((branch) => {
-          const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+          const description =
+            schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
           return {
             branch,
@@ -103,7 +106,7 @@ export function FilterSearchBar({
       <select
         name="searchBarDropdown"
         value={queryBranch}
-        title={t('header.dropdown.search', { field: queryBranch })}
+        title={t("header.dropdown.search", { field: queryBranch })}
         onChange={({ target: { value } }) => {
           onQuerySelect(value);
 
@@ -111,7 +114,10 @@ export function FilterSearchBar({
         }}
       >
         {queriesToAdd.map((query) => (
-          <option key={`filteroption-${query.branch ?? Math.random()}`} value={query.branch}>
+          <option
+            key={`filteroption-${query.branch ?? Math.random()}`}
+            value={query.branch}
+          >
             {query.label}
           </option>
         ))}
@@ -127,23 +133,26 @@ export function FilterSearchBar({
           onChange={({ target: { value } }) => {
             onQueryInput(value);
           }}
-          onKeyPress={(({ which }) => {
+          onKeyPress={({ which }) => {
             if (which === 13) {
               onQueryAdd(queryBranch, queryValue);
             }
-          })}
+          }}
         />
 
         <datalist id="panel_list">
           {options.map((option) => (
-            <option key={`panel_list ${option ?? Math.random()}`} value={option} />
+            <option
+              key={`panel_list ${option ?? Math.random()}`}
+              value={option}
+            />
           ))}
         </datalist>
       </div>
 
       <Button
         type="button"
-        title={t('header.button.search')}
+        title={t("header.button.search")}
         onClick={() => onQueryAdd(queryBranch, queryValue)}
       >
         🔎

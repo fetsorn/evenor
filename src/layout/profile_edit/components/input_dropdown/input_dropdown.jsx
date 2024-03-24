@@ -1,11 +1,7 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
+import React from "react";
+import { useTranslation } from "react-i18next";
 
-export function InputDropdown({
-  schema,
-  fields,
-  onFieldAdd,
-}) {
+export function InputDropdown({ schema, fields, onFieldAdd }) {
   const { i18n, t } = useTranslation();
 
   const lang = i18n.resolvedLanguage;
@@ -27,7 +23,7 @@ export function InputDropdown({
           onChange={({ target: { value } }) => onFieldAdd(value)}
         >
           <option hidden disabled value="default">
-            {t('line.dropdown.input')}
+            {t("line.dropdown.input")}
           </option>
           {menuItems.map((field, idx) => (
             <option key={idx} value={field.branch}>

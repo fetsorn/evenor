@@ -1,34 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { API, deepClone } from '../../../../api';
-import { useStore } from '../../../../store/index.js';
-import { EditInput, InputDropdown } from '..';
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { API, deepClone } from "../../../../api";
+import { useStore } from "../../../../store/index.js";
+import { EditInput, InputDropdown } from "..";
 
-async function addField(
-  schema,
-  entryOriginal,
-  branch,
-) {
+async function addField(schema, entryOriginal, branch) {
   // used to use deepClone
   const entry = deepClone(entryOriginal);
 
   let value;
 
-  if (schema[branch].type === 'object' || schema[branch].type === 'array') {
+  if (schema[branch].type === "object" || schema[branch].type === "array") {
     const obj = {};
 
     obj._ = branch;
 
-    const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
+    const { digestMessage, randomUUID } = await import("@fetsorn/csvs-js");
 
     // pick randomUUID until there's a uuid that follows others in alphabetical order
-    let uuid = await randomUUID()
+    let uuid = await randomUUID();
 
     const uuids = entry.items
-          ? entry.items
-                 .sort((a, b) => a.UUID?.localeCompare(b.UUID))
-                 .map((i) => i.UUID)
-          : [];
+      ? entry.items
+          .sort((a, b) => a.UUID?.localeCompare(b.UUID))
+          .map((i) => i.UUID)
+      : [];
 
     const uuidLast = uuids[0];
 
@@ -38,13 +34,13 @@ async function addField(
 
     obj.UUID = await digestMessage(uuid);
 
-    if (schema[branch].type === 'array') {
+    if (schema[branch].type === "array") {
       obj.items = [];
     }
 
     value = obj;
   } else {
-    value = '';
+    value = "";
   }
   const base = entry._;
 
@@ -54,7 +50,7 @@ async function addField(
     return undefined;
   }
 
-  if (schema[base].type === 'array') {
+  if (schema[base].type === "array") {
     if (entry.items === undefined) {
       entry.items = [];
     }
@@ -67,11 +63,7 @@ async function addField(
   return entry;
 }
 
-export function InputArray({
-  schema,
-  entry,
-  onFieldChange,
-}) {
+export function InputArray({ schema, entry, onFieldChange }) {
   const { t } = useTranslation();
 
   const [options, setOptions] = useState([]);
@@ -84,7 +76,9 @@ export function InputArray({
 
   const branch = entry._;
 
-  const leaves = Object.keys(schema).filter((leaf) => schema[leaf].trunk === branch);
+  const leaves = Object.keys(schema).filter(
+    (leaf) => schema[leaf].trunk === branch,
+  );
 
   const items = entry.items
     ? entry.items.sort((a, b) => a.UUID?.localeCompare(b.UUID))
@@ -112,7 +106,7 @@ export function InputArray({
     <div>
       <div>{entry.UUID}</div>
 
-      { options.length > 0 && (
+      {options.length > 0 && (
         <select
           value="default"
           onChange={({ target: { value } }) => {
@@ -120,22 +114,28 @@ export function InputArray({
           }}
         >
           <option hidden disabled value="default">
-            {t('line.dropdown.input')}
+            {t("line.dropdown.input")}
           </option>
 
           {options.map((field) => (
-            <option key={crypto.getRandomValues(new Uint32Array(10)).join('')} value={JSON.stringify(field)}>
+            <option
+              key={crypto.getRandomValues(new Uint32Array(10)).join("")}
+              value={JSON.stringify(field)}
+            >
               {JSON.stringify(field)}
             </option>
           ))}
         </select>
       )}
 
-      <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
+      <InputDropdown
+        {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }}
+      />
 
       {items.map((item, index) => {
         function onFieldChangeArrayItem(itemBranch, itemValue) {
-          const itemsNew = entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
+          const itemsNew =
+            entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
 
           itemsNew.push(itemValue);
 
@@ -148,7 +148,8 @@ export function InputArray({
         }
 
         function onFieldRemoveArrayItem() {
-          const itemsNew = entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
+          const itemsNew =
+            entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
 
           const arrayNew = { _: entry._, UUID: entry.UUID, items: itemsNew };
 
@@ -156,10 +157,10 @@ export function InputArray({
         }
 
         return (
-          <div key={`${entry.UUID ?? ''}${item.UUID}`}>
+          <div key={`${entry.UUID ?? ""}${item.UUID}`}>
             <EditInput
               {...{
-                index: `${entry.UUID ?? ''}${item.UUID}`,
+                index: `${entry.UUID ?? ""}${item.UUID}`,
                 schema,
                 entry: item,
                 onFieldChange: onFieldChangeArrayItem,

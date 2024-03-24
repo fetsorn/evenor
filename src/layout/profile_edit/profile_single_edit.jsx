@@ -1,18 +1,12 @@
-import React from 'react';
-import cn from 'classnames';
-import { useTranslation } from 'react-i18next';
-import { create } from 'zustand';
-import { schemaRoot } from '../../api';
-import {
-  AssetView,
-  Button,
-  Title,
-} from '../../components/index.js';
-import { useStore } from '../../store/index.js';
-import {
-  EditInput,
-} from './components/index.js';
-import styles from './profile_single_edit.module.css';
+import React from "react";
+import cn from "classnames";
+import { useTranslation } from "react-i18next";
+import { create } from "zustand";
+import { schemaRoot } from "../../api";
+import { AssetView, Button, Title } from "../../components/index.js";
+import { useStore } from "../../store/index.js";
+import { EditInput } from "./components/index.js";
+import styles from "./profile_single_edit.module.css";
 
 // TODO: replace with Day.js
 function isDate(title) {
@@ -61,22 +55,37 @@ export function ProfileSingleEdit() {
   const title = formatDate(group);
 
   return (
-    <div className={cn(styles.sidebar, { [styles.invisible]: !entry }, "profile-edit__sidebar edit-sidebar" )}>
+    <div
+      className={cn(
+        styles.sidebar,
+        { [styles.invisible]: !entry },
+        "profile-edit__sidebar edit-sidebar",
+      )}
+    >
       {entry && schema && (
         <div className={cn(styles.container, "edit-sidebar__container")}>
-          <div id="scrollcontainer" className={cn(styles.sticky, "edit-sidebar__sticky")}>
+          <div
+            id="scrollcontainer"
+            className={cn(styles.sticky, "edit-sidebar__sticky")}
+          >
             <Title>
-              {title}
-              {' '}
-              {index}
+              {title} {index}
             </Title>
 
-            <div className={cn( styles.buttonbar,'edit-sidebar__btn-bar')}>
-              <Button type="button" title={t('line.button.save')} onClick={() => onEntrySave()}>
+            <div className={cn(styles.buttonbar, "edit-sidebar__btn-bar")}>
+              <Button
+                type="button"
+                title={t("line.button.save")}
+                onClick={() => onEntrySave()}
+              >
                 💾
               </Button>
 
-              <Button  type="button" title={t('line.button.revert')} onClick={onEntryRevert}>
+              <Button
+                type="button"
+                title={t("line.button.revert")}
+                onClick={onEntryRevert}
+              >
                 ↩
               </Button>
             </div>

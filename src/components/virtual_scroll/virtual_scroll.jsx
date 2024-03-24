@@ -1,7 +1,5 @@
-import React, {
-  useState, useEffect, useMemo, useRef,
-} from 'react';
-import { useMedia, useWindowSize } from '..';
+import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useMedia, useWindowSize } from "..";
 
 const REM_DESKTOP = 0.277777;
 const REM_MOBILE = 0.8;
@@ -21,12 +19,13 @@ export function VirtualScroll({
 }) {
   const { width: viewportWidth } = useWindowSize();
 
-  const isMobile = useMedia('(max-width: 600px)');
+  const isMobile = useMedia("(max-width: 600px)");
 
   const rowHeight = useMemo(
-    () => (isMobile
-      ? Math.round((viewportWidth / 100) * REM_MOBILE * rowHeights.mobile)
-      : Math.round((viewportWidth / 100) * REM_DESKTOP * rowHeights.desktop)),
+    () =>
+      isMobile
+        ? Math.round((viewportWidth / 100) * REM_MOBILE * rowHeights.mobile)
+        : Math.round((viewportWidth / 100) * REM_DESKTOP * rowHeights.desktop),
     [viewportWidth, isMobile],
   );
 
@@ -40,15 +39,17 @@ export function VirtualScroll({
   );
 
   const dataWithKeys = useMemo(
-    () => data.map((elem, index) => ({
-      ...elem,
-      key: index,
-    })),
+    () =>
+      data.map((elem, index) => ({
+        ...elem,
+        key: index,
+      })),
     [data],
   );
 
   const getTopHeight = () => rowHeight * start;
-  const getBottomHeight = () => rowHeight * (dataWithKeys.length - (start + visibleRowCount));
+  const getBottomHeight = () =>
+    rowHeight * (dataWithKeys.length - (start + visibleRowCount));
 
   useEffect(() => {
     const onScroll = () => {
@@ -65,9 +66,9 @@ export function VirtualScroll({
       setStart(shift);
     };
 
-    window.addEventListener('scroll', onScroll);
+    window.addEventListener("scroll", onScroll);
     return () => {
-      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener("scroll", onScroll);
     };
   }, [dataWithKeys, visibleRowCount, rowHeight, tolerance]);
 

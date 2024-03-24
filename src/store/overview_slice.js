@@ -15,21 +15,22 @@ function getDefaultGroupBy(schema, data, searchParams) {
 
   // fallback to first date param present in data
   groupBy = Object.keys(schema).find(
-    branch => schema[branch].task === "date"
-    && Object.prototype.hasOwnProperty.call(car, branch),
+    (branch) =>
+      schema[branch].task === "date" &&
+      Object.prototype.hasOwnProperty.call(car, branch),
   );
 
   // fallback to first param present in data
   if (!groupBy) {
-    groupBy = Object.keys(schema).find(
-      branch => Object.prototype.hasOwnProperty.call(car, branch),
+    groupBy = Object.keys(schema).find((branch) =>
+      Object.prototype.hasOwnProperty.call(car, branch),
     );
   }
 
   // fallback to first date param present in schema
   if (!groupBy) {
     groupBy = Object.keys(schema).find(
-      branch => schema[branch].task === "date",
+      (branch) => schema[branch].task === "date",
     );
   }
 
@@ -49,7 +50,9 @@ function getDefaultGroupBy(schema, data, searchParams) {
 export function queriesToParams(queries) {
   const searchParams = new URLSearchParams();
 
-  Object.keys(queries).map(key => (queries[key] === "" ? null : searchParams.set(key, queries[key])));
+  Object.keys(queries).map((key) =>
+    queries[key] === "" ? null : searchParams.set(key, queries[key]),
+  );
 
   return searchParams;
 }
@@ -117,8 +120,7 @@ export const createOverviewSlice = (set, get) => ({
       const api = new API(repoUUID);
 
       await api.cloneView(remote, token);
-    }
-    else if (repoRoute === undefined) {
+    } else if (repoRoute === undefined) {
       repoUUID = "root";
 
       // eslint-disable-next-line
@@ -127,8 +129,7 @@ export const createOverviewSlice = (set, get) => ({
 
         await apiRoot.ensure(schemaRoot);
       }
-    }
-    else {
+    } else {
       repoName = repoRoute;
 
       const apiRoot = new API("root");
@@ -143,8 +144,7 @@ export const createOverviewSlice = (set, get) => ({
         const [{ UUID }] = await apiRoot.select(searchParamsReponame);
 
         repoUUID = UUID;
-      }
-      catch {
+      } catch {
         // if repoRoute is not in root database
         // try to decode repoRoute as a view url
         // and set uuid to a digest of repoRoute
@@ -173,7 +173,8 @@ export const createOverviewSlice = (set, get) => ({
     const schema = await api.readSchema();
 
     const base = Object.keys(schema).find(
-      branch => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
+      (branch) =>
+        !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
     );
 
     set({
@@ -194,8 +195,7 @@ export const createOverviewSlice = (set, get) => ({
     // close select stream if already running
     try {
       get().closeHandler();
-    }
-    catch {
+    } catch {
       // do nothing
     }
 
@@ -211,9 +211,8 @@ export const createOverviewSlice = (set, get) => ({
 
     searchParams.set("_", base);
 
-    const { strm: fromStrm, closeHandler } = await api.selectStream(
-      searchParams,
-    );
+    const { strm: fromStrm, closeHandler } =
+      await api.selectStream(searchParams);
 
     set({ closeHandler });
 
@@ -223,9 +222,10 @@ export const createOverviewSlice = (set, get) => ({
 
         const schemaBase = Object.fromEntries(
           Object.entries(schema).filter(
-            ([branch, info]) => branch === base
-            || info.trunk === base
-            || schema[info.trunk]?.trunk === base,
+            ([branch, info]) =>
+              branch === base ||
+              info.trunk === base ||
+              schema[info.trunk]?.trunk === base,
           ),
         );
 
@@ -264,8 +264,9 @@ export const createOverviewSlice = (set, get) => ({
       const base = Object.prototype.hasOwnProperty.call(schema, queries._)
         ? queries._
         : Object.keys(schema).find(
-          branch => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
-        );
+            (branch) =>
+              !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
+          );
 
       const searchParams = queriesToParams(queries);
 
@@ -292,8 +293,7 @@ export const createOverviewSlice = (set, get) => ({
     // close select stream if already running
     try {
       get().closeHandler();
-    }
-    catch {
+    } catch {
       // do nothing
     }
 
@@ -303,8 +303,7 @@ export const createOverviewSlice = (set, get) => ({
 
     if (repoUUID === "root" || get().isView) {
       // leave repoName as undefined
-    }
-    else {
+    } else {
       const api = new API("root");
 
       const searchParams = new URLSearchParams();
@@ -330,8 +329,7 @@ export const createOverviewSlice = (set, get) => ({
     // close select stream if already running
     try {
       get().closeHandler();
-    }
-    catch {
+    } catch {
       // do nothing
     }
 

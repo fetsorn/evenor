@@ -81,14 +81,16 @@
 // buf: ArrayBuffer
 async function pptxToHtml(buf) {
   const {
-  // docx,
+    // docx,
     pptx,
-  // xlsx,
-  // drawml
+    // xlsx,
+    // drawml
   } = await import("docx4js");
   const pptxObj = await pptx.load(buf);
 
-  const html = await pptxObj.render((_type, _props, children) => children.join("\n"));
+  const html = await pptxObj.render((_type, _props, children) =>
+    children.join("\n"),
+  );
 
   return html;
 }
@@ -123,13 +125,15 @@ async function pptToHtml(buf) {
 
   // { docs: [ { slideList: [ "" ] } ]
   //   slides: [ { drawing: { groupShape: [ { clientTextbox: { t: "" } } ] } } ] }
-  const textboxes = pptObj.slides.map(slide => slide.drawing?.groupShape
+  const textboxes = pptObj.slides.map((slide) =>
+    slide.drawing?.groupShape
 
-    ?.map(shape => shape.clientTextbox?.t)
+      ?.map((shape) => shape.clientTextbox?.t)
 
-    .join("\n"));
+      .join("\n"),
+  );
 
-  const headings = pptObj.docs.map(doc => doc.slideList?.join("\n"));
+  const headings = pptObj.docs.map((doc) => doc.slideList?.join("\n"));
 
   const html = headings.join("\n") + textboxes.join("\n");
 
@@ -142,11 +146,11 @@ async function rtfToHtml(buf) {
 
   RTFJS.loggingEnabled(false);
 
-  const doc = new (RTFJS.Document)(buf);
+  const doc = new RTFJS.Document(buf);
 
   const divs = await doc.render();
 
-  const html = divs.map(e => e.outerHTML);
+  const html = divs.map((e) => e.outerHTML);
 
   return html;
 }
@@ -202,8 +206,7 @@ export async function convert(filepath, blob) {
     const blobURL = URL.createObjectURL(content);
 
     return blobURL;
-  }
-  catch (e1) {
+  } catch (e1) {
     console.log("handleDoc failed", e1);
 
     // try to fetch plain text
@@ -219,8 +222,7 @@ export async function convert(filepath, blob) {
       const blobURL = URL.createObjectURL(content);
 
       return blobURL;
-    }
-    catch (e2) {
+    } catch (e2) {
       /* console.log("handlePlain failed", e2); */
     }
   }

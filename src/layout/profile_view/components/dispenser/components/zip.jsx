@@ -1,13 +1,13 @@
-import React from 'react';
-import { API } from '../../../../../api/index.js';
+import React from "react";
+import { API } from "../../../../../api/index.js";
 
 export const schemaZip = {
   zip_tag: {
-    trunk: 'tags',
-    type: 'object',
+    trunk: "tags",
+    type: "object",
     description: {
-      en: 'Zip archive tag',
-      ru: 'Тег zip архива',
+      en: "Zip archive tag",
+      ru: "Тег zip архива",
     },
   },
 };
@@ -18,5 +18,9 @@ export function Zip({ baseEntry }) {
 
     await api.zip();
   }
-  return (<button type="button" onClick={onZip}>⬇️</button>);
+  return (
+    <button type="button" onClick={onZip}>
+      ⬇️
+    </button>
+  );
 }

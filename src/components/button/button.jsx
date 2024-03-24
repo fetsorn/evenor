@@ -1,6 +1,6 @@
-import React from 'react';
+import React from "react";
 // import cn from 'classnames';
-import styles from './button.module.css';
+import styles from "./button.module.css";
 
 export function Button(props) {
   const { children, ...other } = props;
@@ -11,6 +11,6 @@ export function Button(props) {
   );
 }
 
-    // <button type="button" className={cn(styles.button, className)} {...other}>
-    //   {children}
-    // </button>
+// <button type="button" className={cn(styles.button, className)} {...other}>
+//   {children}
+// </button>

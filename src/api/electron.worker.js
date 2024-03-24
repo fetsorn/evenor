@@ -12,8 +12,7 @@ import commandExists from "command-exists";
 async function grepCLI(contentFile, patternFile, isInverted) {
   try {
     await fs.promises.mkdir("/tmp/grep");
-  }
-  catch {
+  } catch {
     // do nothing
   }
 
@@ -29,18 +28,16 @@ async function grepCLI(contentFile, patternFile, isInverted) {
 
   try {
     const { stdout, stderr } = await promisify(exec)(
-      "export PATH=$PATH:~/.nix-profile/bin/; "
-      + `rg ${isInverted ? "-v" : ""} -f ${patternFilePath} ${contentFilePath}`,
+      "export PATH=$PATH:~/.nix-profile/bin/; " +
+        `rg ${isInverted ? "-v" : ""} -f ${patternFilePath} ${contentFilePath}`,
     );
 
     if (stderr) {
       // console.log('grep cli failed', stderr);
-    }
-    else {
+    } else {
       output = stdout;
     }
-  }
-  catch (e) {
+  } catch (e) {
     // console.log('grep cli returned empty', e);
   }
 
@@ -56,8 +53,7 @@ async function grep(contentFile, patternFile, isInverted) {
     await commandExists("rg");
 
     return grepCLI(contentFile, patternFile, isInverted);
-  }
-  catch {
+  } catch {
     return wasm.grep(contentFile, patternFile, isInverted ?? false);
   }
 }
@@ -97,12 +93,10 @@ async function writeFile(filepath, content) {
       // try/catch because csvs can call this in parallel and fail with EEXIST
       try {
         await fs.promises.mkdir(path.join(dir, root, pathElement));
-      }
-      catch {
+      } catch {
         // do nothing
       }
-    }
-    else {
+    } else {
       // console.log(`${root} has ${pathElement}`)
     }
 
@@ -126,8 +120,7 @@ async function select() {
     const entries = await query.select(searchParams);
 
     parentPort.postMessage(entries);
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
   }
 }
@@ -155,8 +148,7 @@ async function selectStream() {
     }
 
     parentPort.postMessage({ msg: "selectStream:close" });
-  }
-  catch (e) {
+  } catch (e) {
     console.log(e);
   }
 }

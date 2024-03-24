@@ -1,107 +1,107 @@
-import React from 'react';
-import { API } from '../../../../../api/index.js';
+import React from "react";
+import { API } from "../../../../../api/index.js";
 
 export const schemaRSS = {
   rss_tag: {
-    trunk: 'tags',
-    type: 'object',
+    trunk: "tags",
+    type: "object",
     description: {
-      en: 'Rss git tag',
-      ru: 'Тег удаленного RSS git репозитория',
+      en: "Rss git tag",
+      ru: "Тег удаленного RSS git репозитория",
     },
   },
   rss_tag_search: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Search query',
-      ru: 'Поисковый запрос',
+      en: "Search query",
+      ru: "Поисковый запрос",
     },
   },
   rss_tag_target: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Name of database to sync',
-      ru: 'Название базы данных для синхронизации',
+      en: "Name of database to sync",
+      ru: "Название базы данных для синхронизации",
     },
   },
   rss_tag_token: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Authentication token',
-      ru: 'Токен для синхронизации',
+      en: "Authentication token",
+      ru: "Токен для синхронизации",
     },
   },
   rss_tag_title: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Title of RSS feed',
-      ru: 'Название RSS ленты',
+      en: "Title of RSS feed",
+      ru: "Название RSS ленты",
     },
   },
   rss_tag_description: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Description of RSS feed',
-      ru: 'Описание RSS ленты',
+      en: "Description of RSS feed",
+      ru: "Описание RSS ленты",
     },
   },
   rss_tag_creator: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Creator of RSS feed',
-      ru: 'Создатель RSS ленты',
+      en: "Creator of RSS feed",
+      ru: "Создатель RSS ленты",
     },
   },
   rss_tag_item_title: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Branch for post title',
-      ru: 'Ветка для названия поста',
+      en: "Branch for post title",
+      ru: "Ветка для названия поста",
     },
   },
   rss_tag_item_attribution: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Branch for post attribution',
-      ru: 'Ветка для авторов поста',
+      en: "Branch for post attribution",
+      ru: "Ветка для авторов поста",
     },
   },
   rss_tag_item_description: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Branch for post description',
-      ru: 'Ветка для описания поста',
+      en: "Branch for post description",
+      ru: "Ветка для описания поста",
     },
   },
   rss_tag_item_pubdate: {
-    trunk: 'rss_tag',
-    type: 'string',
+    trunk: "rss_tag",
+    type: "string",
     description: {
-      en: 'Branch for post pubdate',
-      ru: 'Ветка для даты публикации поста',
+      en: "Branch for post pubdate",
+      ru: "Ветка для даты публикации поста",
     },
   },
   rss_tag_item_category: {
-    trunk: 'rss_tag',
+    trunk: "rss_tag",
     description: {
-      en: 'Branch for post category',
-      ru: 'Ветка для категории поста',
+      en: "Branch for post category",
+      ru: "Ветка для категории поста",
     },
   },
   rss_tag_item_link: {
-    trunk: 'rss_tag',
+    trunk: "rss_tag",
     description: {
-      en: 'Branch for post link',
-      ru: 'Ветка для ссылки поста',
+      en: "Branch for post link",
+      ru: "Ветка для ссылки поста",
     },
   },
 };
@@ -130,10 +130,10 @@ xmlns:sy="http://purl.org/rss/1.0/modules/syndication/"
 xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
 `;
 
-  const lastBuildDate = (new Date()).toGMTString();
+  const lastBuildDate = new Date().toGMTString();
 
   const channelHeader = `
-    <title>${feedTitle ?? ''}</title>
+    <title>${feedTitle ?? ""}</title>
     <atom:link href="" rel="self"
     type="application/rss+xml" />
     <link></link>
@@ -143,11 +143,11 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
 `;
 
   function generateAttachment(mimetype, downloadUrl) {
-    if (mimetype.includes('audio')) {
+    if (mimetype.includes("audio")) {
       return `<audio controls><source src="${downloadUrl}" type="${mimetype}" /></audio>`;
     }
 
-    if (mimetype.includes('video')) {
+    if (mimetype.includes("video")) {
       return `<video controls><source src="${downloadUrl}" type="${mimetype}" /></video>`;
     }
 
@@ -159,7 +159,7 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
     <item>
       <title>${entry[itemTitle]}</title>
       <dc:creator>
-        <![CDATA[${entry[itemCreator] ?? 'unknown'}]]>
+        <![CDATA[${entry[itemCreator] ?? "unknown"}]]>
       </dc:creator>
       <pubDate>${entry[itemPubdate]}</pubDate>
       <category>
@@ -168,16 +168,20 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
       <guid isPermaLink="false">${entry.UUID}</guid>
       <description>
         <![CDATA[
-           <div>${entry[itemAttribution] ?? ''}</div>
-           ${mimetype && downloadUrl ? generateAttachment(mimetype, downloadUrl) : ''}
-           <div>${entry[itemDescription] ?? ''}</div>
+           <div>${entry[itemAttribution] ?? ""}</div>
+           ${mimetype && downloadUrl ? generateAttachment(mimetype, downloadUrl) : ""}
+           <div>${entry[itemDescription] ?? ""}</div>
         ]]>
       </description>
-      ${mimetype && downloadUrl && size ? `<enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />` : ''}
+      ${mimetype && downloadUrl && size ? `<enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />` : ""}
     </item>`;
   }
 
-  const items = entries.map((entry, index) => generateItem(entry, mimetypes[index], downloadUrls[index], sizes[index])).join('\n');
+  const items = entries
+    .map((entry, index) =>
+      generateItem(entry, mimetypes[index], downloadUrls[index], sizes[index]),
+    )
+    .join("\n");
 
   const xml = `${header}
 <channel>
@@ -192,7 +196,7 @@ ${items}
 
 export function RSS({ baseEntry, branchEntry }) {
   async function onRSSsync() {
-    const { digestMessage } = await import('@fetsorn/csvs-js');
+    const { digestMessage } = await import("@fetsorn/csvs-js");
 
     const rssUUID = await digestMessage(branchEntry.rss_tag_target);
 
@@ -206,7 +210,10 @@ export function RSS({ baseEntry, branchEntry }) {
     const entries = await baseAPI.select(searchParams);
 
     // clone to ephemeral repo
-    await rssAPI.cloneView(branchEntry.rss_tag_target, branchEntry.rss_tag_token);
+    await rssAPI.cloneView(
+      branchEntry.rss_tag_target,
+      branchEntry.rss_tag_token,
+    );
 
     // find all filenames in the entry
     const fileEntries = entries.map((entry) => {
@@ -215,7 +222,7 @@ export function RSS({ baseEntry, branchEntry }) {
       }
     });
 
-    const mime = await import('mime');
+    const mime = await import("mime");
 
     const mimetypes = fileEntries.map((fileEntry) => {
       if (fileEntry?.filename) {
@@ -225,60 +232,67 @@ export function RSS({ baseEntry, branchEntry }) {
       }
     });
 
-    const files = await Promise.all(fileEntries.map(async (fileEntry) => {
-    // const files = [];
-    // for (const fileEntry of fileEntries) {
-      if (fileEntry?.filehash) {
-        const content = await baseAPI.fetchAsset(fileEntry.filehash);
+    const files = await Promise.all(
+      fileEntries.map(async (fileEntry) => {
+        // const files = [];
+        // for (const fileEntry of fileEntries) {
+        if (fileEntry?.filehash) {
+          const content = await baseAPI.fetchAsset(fileEntry.filehash);
 
-        await rssAPI.putAsset(fileEntry.filehash, content);
+          await rssAPI.putAsset(fileEntry.filehash, content);
 
-        // files.push(content);
+          // files.push(content);
 
-        return content;
-      }
+          return content;
+        }
 
-      return undefined;
-      // }
-    }));
+        return undefined;
+        // }
+      }),
+    );
 
     const sizes = files.map((file) => (file ? file.length : undefined));
 
     // push will try to upload blobs, but we upload them
     // manually here first to get download actions for the template
     if (files.filter(Boolean).length > 0) {
-      await rssAPI.uploadBlobsLFS(
-        'origin',
-        files.filter(Boolean),
-      );
+      await rssAPI.uploadBlobsLFS("origin", files.filter(Boolean));
     }
 
-    const { buildPointerInfo } = await import('@fetsorn/isogit-lfs');
+    const { buildPointerInfo } = await import("@fetsorn/isogit-lfs");
 
     // download actions for rssAPI
-    const downloadUrls = await Promise.all(files.map(async (file) => {
-      if (file) {
-        const pointerInfo = await buildPointerInfo(file);
+    const downloadUrls = await Promise.all(
+      files.map(async (file) => {
+        if (file) {
+          const pointerInfo = await buildPointerInfo(file);
 
-        return rssAPI.downloadUrlFromPointer(
-          branchEntry.rss_tag_target,
-          branchEntry.rss_tag_token,
-          pointerInfo,
-        );
-      }
+          return rssAPI.downloadUrlFromPointer(
+            branchEntry.rss_tag_target,
+            branchEntry.rss_tag_token,
+            pointerInfo,
+          );
+        }
 
-      return undefined;
-    }));
+        return undefined;
+      }),
+    );
 
     // generate xml
-    const xml = generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes);
+    const xml = generateXML(
+      branchEntry,
+      entries,
+      mimetypes,
+      downloadUrls,
+      sizes,
+    );
 
     // write file
     await rssAPI.writeFeed(xml);
 
     await rssAPI.commit();
 
-    await rssAPI.push('origin');
+    await rssAPI.push("origin");
   }
 
   return (
@@ -287,7 +301,9 @@ export function RSS({ baseEntry, branchEntry }) {
       <br />
       <p>{branchEntry.rss_tag_target}</p>
       <br />
-      <button type="button" onClick={onRSSsync}>🔄️</button>
+      <button type="button" onClick={onRSSsync}>
+        🔄️
+      </button>
     </div>
   );
 }

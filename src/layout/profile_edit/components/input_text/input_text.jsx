@@ -1,12 +1,7 @@
-import React from 'react';
-import styles from './input_text.module.css';
+import React from "react";
+import styles from "./input_text.module.css";
 
-export function InputText({
-  branch,
-  value,
-  options,
-  onFieldChange,
-}) {
+export function InputText({ branch, value, options, onFieldChange }) {
   return (
     <div>
       <input

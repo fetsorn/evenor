@@ -36,13 +36,13 @@ export function entryToSchema(schemaEntry) {
       schemaObject[branch].description = {};
 
       if (item.schema_branch_description.schema_branch_description_en) {
-        schemaObject[branch].description.en = item.schema_branch_description
-          .schema_branch_description_en;
+        schemaObject[branch].description.en =
+          item.schema_branch_description.schema_branch_description_en;
       }
 
       if (item.schema_branch_description.schema_branch_description_ru) {
-        schemaObject[branch].description.ru = item.schema_branch_description
-          .schema_branch_description_ru;
+        schemaObject[branch].description.ru =
+          item.schema_branch_description.schema_branch_description_ru;
       }
     }
   }
@@ -90,11 +90,13 @@ export async function schemaToEntry(schema) {
         };
 
         if (schema[key].description.en) {
-          item.schema_branch_description.schema_branch_description_en = schema[key].description.en;
+          item.schema_branch_description.schema_branch_description_en =
+            schema[key].description.en;
         }
 
         if (schema[key].description.ru) {
-          item.schema_branch_description.schema_branch_description_ru = schema[key].description.ru;
+          item.schema_branch_description.schema_branch_description_ru =
+            schema[key].description.ru;
         }
       }
 

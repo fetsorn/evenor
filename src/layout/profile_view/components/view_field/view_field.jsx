@@ -1,21 +1,17 @@
-import React, { useState, Suspense } from 'react';
-import { useTranslation } from 'react-i18next';
-import { AssetView } from '../../../../components/index.js';
-import { useStore } from '../../../../store/index.js';
-import { FieldText } from '..';
+import React, { useState, Suspense } from "react";
+import { useTranslation } from "react-i18next";
+import { AssetView } from "../../../../components/index.js";
+import { useStore } from "../../../../store/index.js";
+import { FieldText } from "..";
 
-const Dispenser = React.lazy(() => import('../dispenser/components/index.js'));
+const Dispenser = React.lazy(() => import("../dispenser/components/index.js"));
 
 export function ViewField({ entry, schema, isBaseObject }) {
   const { i18n } = useTranslation();
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [
-    baseEntry,
-  ] = useStore((state) => [
-    state.entry,
-  ]);
+  const [baseEntry] = useStore((state) => [state.entry]);
 
   const branch = entry._;
 
@@ -23,27 +19,28 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
   const branchTask = schema[branch]?.task;
 
-  const branchDescription = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+  const branchDescription =
+    schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
   const trunk = schema[branch]?.trunk;
 
-  if (trunk === undefined
-      && branchType !== 'array'
-      && isBaseObject) {
+  if (trunk === undefined && branchType !== "array" && isBaseObject) {
     return (
       <div>
         {entry.UUID}
 
-        { Object.keys(entry).map((leaf) => {
-          if (leaf === '_' || leaf === 'UUID') { return; }
+        {Object.keys(entry).map((leaf) => {
+          if (leaf === "_" || leaf === "UUID") {
+            return;
+          }
 
-          const leafEntry = schema[leaf]?.type === 'object'
-                                 || schema[leaf]?.type === 'array'
-            ? entry[leaf]
-            : { _: leaf, [leaf]: entry[leaf] };
+          const leafEntry =
+            schema[leaf]?.type === "object" || schema[leaf]?.type === "array"
+              ? entry[leaf]
+              : { _: leaf, [leaf]: entry[leaf] };
 
           return (
-            <div key={(entry.UUID ?? '') + leaf}>
+            <div key={(entry.UUID ?? "") + leaf}>
               <ViewField entry={leafEntry} schema={schema} />
             </div>
           );
@@ -52,19 +49,23 @@ export function ViewField({ entry, schema, isBaseObject }) {
     );
   }
 
-  if (trunk === 'tags') {
+  if (trunk === "tags") {
     return (
       <div>
         {!isOpen ? (
           <div>
-            <button type="button" onClick={() => setIsOpen(true)}>▶️</button>
+            <button type="button" onClick={() => setIsOpen(true)}>
+              ▶️
+            </button>
 
             {branchDescription}
           </div>
         ) : (
           <div>
             <div>
-              <button type="button" onClick={() => setIsOpen(false)}>🔽</button>
+              <button type="button" onClick={() => setIsOpen(false)}>
+                🔽
+              </button>
 
               {branchDescription}
             </div>
@@ -79,26 +80,30 @@ export function ViewField({ entry, schema, isBaseObject }) {
   }
 
   switch (branchType) {
-    case 'array':
+    case "array":
       return (
         <div>
           {!isOpen ? (
             <div>
-              <button type="button" onClick={() => setIsOpen(true)}>▶️</button>
+              <button type="button" onClick={() => setIsOpen(true)}>
+                ▶️
+              </button>
 
               {branchDescription}
             </div>
           ) : (
             <div>
               <div>
-                <button type="button" onClick={() => setIsOpen(false)}>🔽</button>
+                <button type="button" onClick={() => setIsOpen(false)}>
+                  🔽
+                </button>
 
                 {branchDescription}
               </div>
 
-              { entry.UUID }
+              {entry.UUID}
 
-              { entry.items.map((item) => (
+              {entry.items.map((item) => (
                 <div key={`array_item_${Math.random()}`}>
                   <ViewField entry={item} schema={schema} />
                 </div>
@@ -108,41 +113,46 @@ export function ViewField({ entry, schema, isBaseObject }) {
         </div>
       );
 
-    case 'object':
-      if (branchTask === 'file') {
-        return (
-          <AssetView {...{ entry, schema }} />
-        );
+    case "object":
+      if (branchTask === "file") {
+        return <AssetView {...{ entry, schema }} />;
       }
 
       return (
         <div>
           {!isOpen ? (
             <div>
-              <button type="button" onClick={() => setIsOpen(true)}>▶️</button>
+              <button type="button" onClick={() => setIsOpen(true)}>
+                ▶️
+              </button>
 
               {branchDescription}
             </div>
           ) : (
             <div>
               <div>
-                <button type="button" onClick={() => setIsOpen(false)}>🔽</button>
+                <button type="button" onClick={() => setIsOpen(false)}>
+                  🔽
+                </button>
 
                 {branchDescription}
               </div>
 
               {entry.UUID}
 
-              { Object.keys(entry).map((leaf) => {
-                if (leaf === '_' || leaf === 'UUID') { return <div />; }
+              {Object.keys(entry).map((leaf) => {
+                if (leaf === "_" || leaf === "UUID") {
+                  return <div />;
+                }
 
-                const leafEntry = schema[leaf]?.type === 'object'
-                                 || schema[leaf]?.type === 'array'
-                  ? entry[leaf]
-                  : { _: leaf, [leaf]: entry[leaf] };
+                const leafEntry =
+                  schema[leaf]?.type === "object" ||
+                  schema[leaf]?.type === "array"
+                    ? entry[leaf]
+                    : { _: leaf, [leaf]: entry[leaf] };
 
                 return (
-                  <div key={(entry.UUID ?? '') + leaf}>
+                  <div key={(entry.UUID ?? "") + leaf}>
                     <ViewField entry={leafEntry} schema={schema} />
                   </div>
                 );
@@ -153,10 +163,8 @@ export function ViewField({ entry, schema, isBaseObject }) {
       );
 
     default:
-      if (branchTask === 'filename') {
-        return (
-          <AssetView {...{ entry, schema }} />
-        );
+      if (branchTask === "filename") {
+        return <AssetView {...{ entry, schema }} />;
       }
 
       return (

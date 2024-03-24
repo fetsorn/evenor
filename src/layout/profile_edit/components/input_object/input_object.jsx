@@ -1,37 +1,33 @@
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { API, deepClone } from '../../../..//api';
-import { useStore } from '../../../../store/index.js';
-import { EditInput, InputDropdown } from '..';
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { API, deepClone } from "../../../..//api";
+import { useStore } from "../../../../store/index.js";
+import { EditInput, InputDropdown } from "..";
 
-async function addField(
-  schema,
-  entryOriginal,
-  branch,
-) {
+async function addField(schema, entryOriginal, branch) {
   // used to use deepClone
   const entry = deepClone(entryOriginal);
 
   let value;
 
-  if (schema[branch].type === 'object' || schema[branch].type === 'array') {
+  if (schema[branch].type === "object" || schema[branch].type === "array") {
     const obj = {};
 
     obj._ = branch;
 
-    const { digestMessage, randomUUID } = await import('@fetsorn/csvs-js');
+    const { digestMessage, randomUUID } = await import("@fetsorn/csvs-js");
 
     const uuid = await randomUUID();
 
     obj.UUID = await digestMessage(uuid);
 
-    if (schema[branch].type === 'array') {
+    if (schema[branch].type === "array") {
       obj.items = [];
     }
 
     value = obj;
   } else {
-    value = '';
+    value = "";
   }
   const base = entry._;
 
@@ -41,7 +37,7 @@ async function addField(
     return undefined;
   }
 
-  if (schema[base].type === 'array') {
+  if (schema[base].type === "array") {
     if (entry.items === undefined) {
       entry.items = [];
     }
@@ -54,11 +50,7 @@ async function addField(
   return entry;
 }
 
-export function InputObject({
-  schema,
-  entry,
-  onFieldChange,
-}) {
+export function InputObject({ schema, entry, onFieldChange }) {
   const { t } = useTranslation();
 
   const [options, setOptions] = useState([]);
@@ -71,18 +63,23 @@ export function InputObject({
 
   const branch = entry._;
 
-  const addedLeaves = Object.keys(entry).filter((b) => b !== '_' && b !== 'UUID');
+  const addedLeaves = Object.keys(entry).filter(
+    (b) => b !== "_" && b !== "UUID",
+  );
 
   const notAddedLeaves = entry
     ? Object.keys(schema).filter((leaf) => {
-      const isAdded = Object.prototype.hasOwnProperty.call(entry, leaf);
+        const isAdded = Object.prototype.hasOwnProperty.call(entry, leaf);
 
-      const isNonObjectRoot = leaf === branch && schema[branch].trunk === undefined && schema[branch].type !== 'object';
+        const isNonObjectRoot =
+          leaf === branch &&
+          schema[branch].trunk === undefined &&
+          schema[branch].type !== "object";
 
-      const isLeaf = schema[leaf]?.trunk === branch;
+        const isLeaf = schema[leaf]?.trunk === branch;
 
-      return !isAdded && (isLeaf || isNonObjectRoot);
-    })
+        return !isAdded && (isLeaf || isNonObjectRoot);
+      })
     : [];
 
   async function onAddObjectField(fieldBranch) {
@@ -92,10 +89,7 @@ export function InputObject({
   }
 
   function generateLeaf(leaf) {
-    function onFieldChangeObjectField(
-      fieldBranch,
-      fieldValue,
-    ) {
+    function onFieldChangeObjectField(fieldBranch, fieldValue) {
       const objectNew = { ...entry };
 
       objectNew[fieldBranch] = fieldValue;
@@ -111,15 +105,16 @@ export function InputObject({
       onFieldChange(branch, objectNew);
     }
 
-    const leafEntry = schema[leaf]?.type === 'object' || schema[leaf]?.type === 'array'
-      ? entry[leaf]
-      : { _: leaf, [leaf]: entry[leaf] };
+    const leafEntry =
+      schema[leaf]?.type === "object" || schema[leaf]?.type === "array"
+        ? entry[leaf]
+        : { _: leaf, [leaf]: entry[leaf] };
 
     return (
-      <div key={`${entry.UUID ?? ''}${leaf}`}>
+      <div key={`${entry.UUID ?? ""}${leaf}`}>
         <EditInput
           {...{
-            index: `${entry.UUID ?? ''}${leaf}`,
+            index: `${entry.UUID ?? ""}${leaf}`,
             schema,
             entry: leafEntry,
             onFieldChange: onFieldChangeObjectField,
@@ -144,9 +139,9 @@ export function InputObject({
 
   return (
     <div>
-      <div>{ entry.UUID }</div>
+      <div>{entry.UUID}</div>
 
-      { options.length > 0 && (
+      {options.length > 0 && (
         <select
           value="default"
           onChange={({ target: { value } }) => {
@@ -154,22 +149,27 @@ export function InputObject({
           }}
         >
           <option hidden disabled value="default">
-            {t('line.dropdown.input')}
+            {t("line.dropdown.input")}
           </option>
 
           {options.map((field) => (
-            <option key={crypto.getRandomValues(new Uint32Array(10)).join('')} value={JSON.stringify(field)}>
+            <option
+              key={crypto.getRandomValues(new Uint32Array(10)).join("")}
+              value={JSON.stringify(field)}
+            >
               {JSON.stringify(field)}
             </option>
           ))}
         </select>
       )}
 
-      { notAddedLeaves.length > 0 && (
-        <InputDropdown {...{ schema, fields: notAddedLeaves, onFieldAdd: onAddObjectField }} />
-      ) }
+      {notAddedLeaves.length > 0 && (
+        <InputDropdown
+          {...{ schema, fields: notAddedLeaves, onFieldAdd: onAddObjectField }}
+        />
+      )}
 
-      { addedLeaves.map(generateLeaf) }
+      {addedLeaves.map(generateLeaf)}
     </div>
   );
 }

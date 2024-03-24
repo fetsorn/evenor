@@ -25,18 +25,16 @@ async function grepCallback(contentFile, patternFile, isInverse) {
   try {
     // console.log(`grep ${contentFile} for ${patternFile}`)
     const { stdout, stderr } = await promisify(exec)(
-      "export PATH=$PATH:~/.nix-profile/bin/; "
-      + `rg ${isInverse ? "-v" : ""} -f ${patternFilePath} ${contentFilePath}`,
+      "export PATH=$PATH:~/.nix-profile/bin/; " +
+        `rg ${isInverse ? "-v" : ""} -f ${patternFilePath} ${contentFilePath}`,
     );
 
     if (stderr) {
       console.log("grep cli failed", stderr);
-    }
-    else {
+    } else {
       output = stdout;
     }
-  }
-  catch (e) {
+  } catch (e) {
     // console.log('grep cli returned empty', e);
   }
 
@@ -63,8 +61,7 @@ export class ServerAPI {
       contents = await fs.promises.readFile(realpath, { encoding: "utf8" });
 
       return contents;
-    }
-    catch {
+    } catch {
       throw ("couldn't find file", filepath);
     }
   }
@@ -76,16 +73,12 @@ export class ServerAPI {
       const content = fs.readFileSync(realpath);
 
       return content;
-    }
-    catch {
+    } catch {
       return new Buffer("");
     }
   }
 
-  async writeFile(
-    filepath,
-    content,
-  ) {
+  async writeFile(filepath, content) {
     const realpath = path.join(this.dir, filepath);
 
     // if path doesn't exist, create it
@@ -107,12 +100,10 @@ export class ServerAPI {
       if (!files.includes(pathElement)) {
         try {
           await fs.promises.mkdir(path.join(this.dir, root, pathElement));
-        }
-        catch {
+        } catch {
           // do nothing
         }
-      }
-      else {
+      } else {
         // console.log(`${root} has ${pathElement}`)
       }
 
@@ -132,15 +123,16 @@ export class ServerAPI {
 
     const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-    const hashHexString = hashByteArray.map(b => b.toString(16).padStart(2, "0")).join("");
+    const hashHexString = hashByteArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
     const uploadDir = path.join(this.dir, lfsDir);
 
     if (!fs.existsSync(uploadDir)) {
       fs.mkdirSync(uploadDir);
       console.log(`Directory ${uploadDir} is created.`);
-    }
-    else {
+    } else {
       console.log(`Directory ${uploadDir} already exists.`);
     }
 
@@ -152,10 +144,10 @@ export class ServerAPI {
   }
 
   async select(searchParams) {
-    const overview = await (new CSVS({
+    const overview = await new CSVS({
       readFile: this.fetchCallback.bind(this),
       grep: grepCallback,
-    })).select(searchParams);
+    }).select(searchParams);
 
     return overview;
   }
@@ -183,14 +175,18 @@ export class ServerAPI {
           filepath,
         });
 
-        [filepath, HEADStatus, workingDirStatus, stageStatus] = await git.statusMatrix({
-          fs,
-          dir,
-          filepaths: [filepath],
-        });
+        [filepath, HEADStatus, workingDirStatus, stageStatus] =
+          await git.statusMatrix({
+            fs,
+            dir,
+            filepaths: [filepath],
+          });
 
-        if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
-        // eslint-disable-next-line
+        if (
+          HEADStatus === workingDirStatus &&
+          workingDirStatus === stageStatus
+        ) {
+          // eslint-disable-next-line
           continue;
         }
       }
@@ -206,8 +202,7 @@ export class ServerAPI {
             dir,
             filepath,
           });
-        }
-        else {
+        } else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
             const { addLFS } = await import("./lfs.mjs");
@@ -217,8 +212,7 @@ export class ServerAPI {
               dir,
               filepath,
             });
-          }
-          else {
+          } else {
             await git.add({
               fs,
               dir,
@@ -228,8 +222,7 @@ export class ServerAPI {
 
           if (HEADStatus === 1) {
             status = "modified";
-          }
-          else {
+          } else {
             status = "added";
           }
         }

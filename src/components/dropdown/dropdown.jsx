@@ -1,12 +1,8 @@
-import React, { useState } from 'react';
-import cn from 'classnames';
-import styles from './dropdown.module.css';
+import React, { useState } from "react";
+import cn from "classnames";
+import styles from "./dropdown.module.css";
 
-export function Dropdown({
-  label,
-  title,
-  menuItems,
-}) {
+export function Dropdown({ label, title, menuItems }) {
   const [opened, setOpened] = useState(false);
 
   function onOpen() {

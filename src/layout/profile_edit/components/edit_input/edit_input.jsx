@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   InputTextarea,
   InputText,
@@ -7,10 +7,8 @@ import {
   InputDate,
   InputArray,
   InputObject,
-} from '..';
-import {
-  useEditStore,
-} from '../../profile_single_edit.jsx';
+} from "..";
+import { useEditStore } from "../../profile_single_edit.jsx";
 
 export function EditInput({
   index,
@@ -30,7 +28,8 @@ export function EditInput({
 
   const branchTask = schema[branch]?.task;
 
-  const description = schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
+  const description =
+    schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
   const openIndex = useEditStore((state) => state.openIndex);
 
@@ -56,9 +55,11 @@ export function EditInput({
 
   // if non-array root, treat as object
   // if array root, treat as array later
-  if (schema[branch].trunk === undefined
-        && schema[branch].type !== 'array'
-        && isBaseObject) {
+  if (
+    schema[branch].trunk === undefined &&
+    schema[branch].type !== "array" &&
+    isBaseObject
+  ) {
     return (
       <InputObject
         {...{
@@ -71,7 +72,7 @@ export function EditInput({
   }
 
   switch (branchType) {
-    case 'array':
+    case "array":
       return (
         <div>
           {schema[branch].trunk === undefined ? (
@@ -86,13 +87,15 @@ export function EditInput({
             <div>
               {!isOpen ? (
                 <div>
-                  <button type="button" onClick={open}>▶️</button>
+                  <button type="button" onClick={open}>
+                    ▶️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -100,13 +103,15 @@ export function EditInput({
                 </div>
               ) : (
                 <div>
-                  <button type="button" onClick={close}>🔽️</button>
+                  <button type="button" onClick={close}>
+                    🔽️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -126,20 +131,22 @@ export function EditInput({
         </div>
       );
 
-    case 'object':
+    case "object":
       switch (branchTask) {
-        case 'file':
+        case "file":
           return (
             <div>
               {!isOpen ? (
                 <div>
-                  <button type="button" onClick={open}>▶️</button>
+                  <button type="button" onClick={open}>
+                    ▶️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -147,13 +154,15 @@ export function EditInput({
                 </div>
               ) : (
                 <div>
-                  <button type="button" onClick={close}>🔽️</button>
+                  <button type="button" onClick={close}>
+                    🔽️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -175,13 +184,15 @@ export function EditInput({
             <div>
               {!isOpen ? (
                 <div>
-                  <button type="button" onClick={open}>▶️</button>
+                  <button type="button" onClick={open}>
+                    ▶️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -189,13 +200,15 @@ export function EditInput({
                 </div>
               ) : (
                 <div>
-                  <button type="button" onClick={close}>🔽️</button>
+                  <button type="button" onClick={close}>
+                    🔽️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -216,18 +229,20 @@ export function EditInput({
 
     default:
       switch (branchTask) {
-        case 'text':
+        case "text":
           return (
             <div>
               {!isOpen ? (
                 <div>
-                  <button type="button" onClick={open}>▶️</button>
+                  <button type="button" onClick={open}>
+                    ▶️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -235,13 +250,15 @@ export function EditInput({
                 </div>
               ) : (
                 <div>
-                  <button type="button" onClick={close}>🔽️</button>
+                  <button type="button" onClick={close}>
+                    🔽️
+                  </button>
 
                   {description}
 
                   <button
                     type="button"
-                    title={t('line.button.remove', { field: branch })}
+                    title={t("line.button.remove", { field: branch })}
                     onClick={() => onFieldRemove(branch)}
                   >
                     X
@@ -259,14 +276,14 @@ export function EditInput({
             </div>
           );
 
-        case 'date':
+        case "date":
           return (
             <div>
               {description}
 
               <button
                 type="button"
-                title={t('line.button.remove', { field: branch })}
+                title={t("line.button.remove", { field: branch })}
                 onClick={() => onFieldRemove(branch)}
               >
                 X
@@ -289,7 +306,7 @@ export function EditInput({
 
               <button
                 type="button"
-                title={t('line.button.remove', { field: branch })}
+                title={t("line.button.remove", { field: branch })}
                 onClick={() => onFieldRemove(branch)}
               >
                 X

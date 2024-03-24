@@ -1,8 +1,8 @@
-import React from 'react';
-import cn from 'classnames';
-import { useTranslation } from 'react-i18next';
-import styles from './itinerary_waypoint.module.css';
-import { WaypointEntries } from '..';
+import React from "react";
+import cn from "classnames";
+import { useTranslation } from "react-i18next";
+import styles from "./itinerary_waypoint.module.css";
+import { WaypointEntries } from "..";
 
 // TODO: replace with Day.js
 function isDate(title) {
@@ -37,8 +37,10 @@ export function ItineraryWaypoint({
         <button
           className={styles.add}
           type="button"
-          onClick={() => onEntryCreate(waypoint.date, waypoint.events.length + 1)}
-          title={t('line.button.add')}
+          onClick={() =>
+            onEntryCreate(waypoint.date, waypoint.events.length + 1)
+          }
+          title={t("line.button.add")}
           key="addevent"
         >
           +

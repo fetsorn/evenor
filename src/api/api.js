@@ -97,8 +97,7 @@ export class API {
               function enqueueHandler(event, entry) {
                 try {
                   controller.enqueue(entry);
-                }
-                catch {
+                } catch {
                   // do nothing
                 }
               }
@@ -106,8 +105,7 @@ export class API {
               closeHandler = () => {
                 try {
                   controller.close();
-                }
-                catch {
+                } catch {
                   // do nothing
                 }
               };
@@ -308,7 +306,12 @@ export class API {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.addRemote(this.uuid, remoteName, remoteUrl, remoteToken);
+        return window.electron.addRemote(
+          this.uuid,
+          remoteName,
+          remoteUrl,
+          remoteToken,
+        );
 
       default:
         return this.#browser.addRemote(remoteName, remoteUrl, remoteToken);
@@ -352,7 +355,12 @@ export class API {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.downloadUrlFromPointer(this.uuid, url, token, pointerInfo);
+        return window.electron.downloadUrlFromPointer(
+          this.uuid,
+          url,
+          token,
+          pointerInfo,
+        );
 
       default:
         return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);
@@ -364,7 +372,7 @@ export class API {
 
     searchParams.set("reponame", this.uuid);
 
-    const [entry] = await (new API("root")).select(searchParams);
+    const [entry] = await new API("root").select(searchParams);
 
     return entry;
   }

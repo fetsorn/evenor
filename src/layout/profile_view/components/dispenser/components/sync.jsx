@@ -1,29 +1,29 @@
-import React from 'react';
-import { API } from '../../../../../api/index.js';
+import React from "react";
+import { API } from "../../../../../api/index.js";
 
 export const schemaSync = {
   sync_tag: {
-    trunk: 'tags',
-    type: 'object',
+    trunk: "tags",
+    type: "object",
     description: {
-      en: 'Synchronization tag',
-      ru: 'Тег синхронизации баз данных',
+      en: "Synchronization tag",
+      ru: "Тег синхронизации баз данных",
     },
   },
   sync_tag_search: {
-    trunk: 'sync_tag',
-    type: 'string',
+    trunk: "sync_tag",
+    type: "string",
     description: {
-      en: 'Search query',
-      ru: 'Поисковый запрос',
+      en: "Search query",
+      ru: "Поисковый запрос",
     },
   },
   sync_tag_target: {
-    trunk: 'sync_tag',
-    type: 'string',
+    trunk: "sync_tag",
+    type: "string",
     description: {
-      en: 'Name of database to sync',
-      ru: 'Название базы данных для синхронизации',
+      en: "Name of database to sync",
+      ru: "Название базы данных для синхронизации",
     },
   },
 };
@@ -33,11 +33,11 @@ export function Sync({ baseEntry, branchEntry }) {
     // find UUID of repo to sync from
     const searchParams = new URLSearchParams();
 
-    searchParams.set('_', 'reponame');
+    searchParams.set("_", "reponame");
 
-    searchParams.set('reponame', branchEntry.sync_tag_target);
+    searchParams.set("reponame", branchEntry.sync_tag_target);
 
-    const rootAPI = new API('root');
+    const rootAPI = new API("root");
 
     const [{ UUID: subsetUUID }] = await rootAPI.select(searchParams);
 
@@ -64,7 +64,9 @@ export function Sync({ baseEntry, branchEntry }) {
       <br />
       <p>{branchEntry.sync_tag_search}</p>
       <br />
-      <button type="button" onClick={onSyncRepo}>🔄</button>
+      <button type="button" onClick={onSyncRepo}>
+        🔄
+      </button>
     </div>
   );
 }

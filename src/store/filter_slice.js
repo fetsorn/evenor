@@ -1,9 +1,9 @@
 export const createFilterSlice = (set, get) => ({
   queries: {},
 
-  groupBy: "",
+  sortBy: "",
 
-  onChangeGroupBy: (groupBy) => set({ groupBy }),
+  onChangeSortBy: (sortBy) => set({ sortBy }),
 
   onQueryAdd: async (queryField, queryValue) => {
     const { queries } = get();
@@ -16,7 +16,7 @@ export const createFilterSlice = (set, get) => ({
   },
 
   onQueryRemove: async (queryField) => {
-    if (queryField !== "_" && queryField !== ".group") {
+    if (queryField !== "_" && queryField !== ".sort") {
       const queries = { ...get().queries };
 
       delete queries[queryField];

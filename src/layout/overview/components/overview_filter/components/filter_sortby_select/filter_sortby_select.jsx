@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "../../../../../../store/index.js";
-import styles from "./filter_groupby_select.module.css";
+import styles from "./filter_sortby_select.module.css";
 
 /**
  * return leaves of base
@@ -17,26 +17,26 @@ function filterLeaves(schema, base) {
   return Object.keys(schema).filter((branch) => schema[branch].trunk === base);
 }
 
-export function FilterGroupBySelect({}) {
+export function FilterSortBySelect({}) {
   const { i18n, t } = useTranslation();
 
-  const [groupBy, schema, base, setGroupBy] = useStore((state) => [
-    state.groupBy,
+  const [sortBy, schema, base, setSortBy] = useStore((state) => [
+    state.sortBy,
     state.schema,
     state.base,
-    state.setGroupBy,
+    state.setSortBy,
   ]);
 
   const options = filterLeaves(schema, base).concat([base]);
 
   return (
-    <label htmlFor={`selectGroupBy`}>
-      {t("header.dropdown.groupby")}
+    <label htmlFor={`selectSortBy`}>
+      {t("header.dropdown.sortby")}
       <select
-        id={`selectGroupBy`}
-        value={groupBy}
+        id={`selectSortBy`}
+        value={sortBy}
         onChange={({ target: { value } }) => {
-          setGroupBy(value);
+          setSortBy(value);
         }}
       >
         {options.map((field) => (

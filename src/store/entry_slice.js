@@ -167,7 +167,7 @@ async function saveRepo(repoUUID, entry) {
 }
 
 export const createEntrySlice = (set, get) => ({
-  // entry selected from overview for viewing/editing
+  // entry selected from records for viewing/editing
   entry: undefined,
 
   // entry backup before editing
@@ -209,7 +209,7 @@ export const createEntrySlice = (set, get) => ({
     });
   },
 
-  onEntryEdit: () => set({ isEdit: true, entryOriginal: get().entry }),
+  onEntryEdit: (entry) => set({ entry, isEdit: true, entryOriginal: get().entry }),
 
   onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
 
@@ -227,11 +227,11 @@ export const createEntrySlice = (set, get) => ({
 
     const api = new API(get().repoUUID);
 
-    const overview = await api.updateEntry(entry, get().overview);
+    const records = await api.updateEntry(entry, get().records);
 
     api.commit();
 
-    set({ overview, isEdit: false });
+    set({ records, isEdit: false });
   },
 
   onEntryCommit: async (uuid) => {
@@ -243,11 +243,11 @@ export const createEntrySlice = (set, get) => ({
   onEntryDelete: async () => {
     const api = new API(get().repoUUID);
 
-    const overview = await api.deleteEntry(get().entry, get().overview);
+    const records = await api.deleteEntry(get().entry, get().records);
 
     api.commit();
 
-    set({ overview, entry: undefined });
+    set({ records, entry: undefined });
   },
 
   onEntryClose: () => set({ entry: undefined }),

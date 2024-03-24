@@ -25,11 +25,13 @@ export function InputDropdown({ schema, fields, onFieldAdd }) {
           <option hidden disabled value="default">
             {t("line.dropdown.input")}
           </option>
-          {menuItems.map((field, idx) => (
-            <option key={idx} value={field.branch}>
-              {field.description}
-            </option>
-          ))}
+          {menuItems.map((field, idx) => {
+            return (
+              <option key={idx} value={field.branch}>
+                {field.description}
+              </option>
+            );
+          })}
         </select>
       )}
     </>

@@ -181,10 +181,8 @@ export class BrowserAPI {
   }
 
   async putAsset(filename, buffer) {
-    const dir = await this.dir();
-
     // write buffer to assetEndpoint/filename
-    const assetEndpoint = `${dir}/${lfsDir}`;
+    const assetEndpoint = `${lfsDir}/${filename}`;
 
     await this.writeFile(assetEndpoint, buffer);
   }
@@ -239,7 +237,13 @@ export class BrowserAPI {
       start(controller) {
         const worker = new Worker(new URL("./browser.worker", import.meta.url));
 
-        closeHandler = controller.close;
+        closeHandler = () => {
+          try {
+            controller.close();
+          } catch {
+            // ignore catch
+          }
+        }
 
         worker.onmessage = async (message) => {
           switch (message.data.action) {
@@ -256,12 +260,21 @@ export class BrowserAPI {
               break;
             }
             case "write": {
-              controller.enqueue(message.data.entry);
+              try {
+                controller.enqueue(message.data.entry);
+              } catch {
+                // after stream is interrupted
+                // ReadableStreamDefaultController is not in a state where chunk can be enqueued
+              }
 
               break;
             }
             case "close": {
-              controller.close();
+              try {
+                controller.close();
+              } catch {
+                // ignore catch
+              }
 
               break;
             }
@@ -806,14 +819,16 @@ export class BrowserAPI {
 
     const assetPath = `${assetEndpoint}/${filename}`;
 
-    content = await fs.promises.readFile(assetPath, { encoding: "utf8" });
+    content = await fs.promises.readFile(assetPath);
 
     const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import(
       "@fetsorn/isogit-lfs"
     );
 
-    if (pointsToLFS(content)) {
-      const pointer = await readPointer({ dir, content });
+    const contentUTF8 = (new TextDecoder()).decode(content);
+
+    if (pointsToLFS(contentUTF8)) {
+      const pointer = await readPointer({ dir, content: contentUTF8 });
 
       const remotes = await this.listRemotes();
 

@@ -7,11 +7,13 @@ import { FieldText } from "..";
 const Dispenser = React.lazy(() => import("../dispenser/components/index.js"));
 
 export function ViewField({ entry, schema, isBaseObject }) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const [baseEntry] = useStore((state) => [state.entry]);
+  const [isOpenUUID, setIsOpenUUID] = useState(false);
+
+  const [baseEntry, repoUUID] = useStore((state) => [state.entry, state.repoUUID]);
 
   const branch = entry._;
 
@@ -22,12 +24,32 @@ export function ViewField({ entry, schema, isBaseObject }) {
   const branchDescription =
     schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
 
+  const uuidDescription = t('profile.label.uuid')
+
   const trunk = schema[branch]?.trunk;
 
   if (trunk === undefined && branchType !== "array" && isBaseObject) {
     return (
       <div>
-        {entry.UUID}
+        <div>
+          {!isOpenUUID ? (
+            <div>
+              <button type="button" onClick={() => setIsOpenUUID(true)}>▶️</button>
+
+              {uuidDescription}
+            </div>
+          ) : (
+            <div>
+              <div>
+                <button type="button" onClick={() => setIsOpenUUID(false)}>🔽</button>
+
+                {uuidDescription}
+              </div>
+
+              { entry.UUID }
+            </div>
+          )}
+        </div>
 
         {Object.keys(entry).map((leaf) => {
           if (leaf === "_" || leaf === "UUID") {
@@ -81,7 +103,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
   switch (branchType) {
     case "array":
-      return (
+      return ((repoUUID !== "root" || branch !== "schema") && (
         <div>
           {!isOpen ? (
             <div>
@@ -101,7 +123,25 @@ export function ViewField({ entry, schema, isBaseObject }) {
                 {branchDescription}
               </div>
 
-              {entry.UUID}
+              <div>
+                {!isOpenUUID ? (
+                  <div>
+                    <button type="button" onClick={() => setIsOpenUUID(true)}>▶️</button>
+
+                    {uuidDescription}
+                  </div>
+                ) : (
+                  <div>
+                    <div>
+                      <button type="button" onClick={() => setIsOpenUUID(false)}>🔽</button>
+
+                      {uuidDescription}
+                    </div>
+
+                    { entry.UUID }
+                  </div>
+                )}
+              </div>
 
               {entry.items.map((item) => (
                 <div key={`array_item_${Math.random()}`}>
@@ -111,7 +151,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
             </div>
           )}
         </div>
-      );
+      ));
 
     case "object":
       if (branchTask === "file") {
@@ -138,7 +178,25 @@ export function ViewField({ entry, schema, isBaseObject }) {
                 {branchDescription}
               </div>
 
-              {entry.UUID}
+              <div>
+                {!isOpenUUID ? (
+                  <div>
+                    <button type="button" onClick={() => setIsOpenUUID(true)}>▶️</button>
+
+                    {uuidDescription}
+                  </div>
+                ) : (
+                  <div>
+                    <div>
+                      <button type="button" onClick={() => setIsOpenUUID(false)}>🔽</button>
+
+                      {uuidDescription}
+                    </div>
+
+                    { entry.UUID }
+                  </div>
+                )}
+              </div>
 
               {Object.keys(entry).map((leaf) => {
                 if (leaf === "_" || leaf === "UUID") {

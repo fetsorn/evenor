@@ -1,50 +1,50 @@
 import { API, schemaRoot } from "../api/index.js";
 
 // pick a param to group data by
-function getDefaultGroupBy(schema, data, searchParams) {
-  // fallback to groupBy param from the search query
-  if (searchParams.has(".group")) {
-    const groupBy = searchParams.get(".group");
+function getDefaultSortBy(schema, data, searchParams) {
+  // fallback to sortBy param from the search query
+  if (searchParams.has(".sort")) {
+    const sortBy = searchParams.get(".sort");
 
-    return groupBy;
+    return sortBy;
   }
 
-  let groupBy;
+  let sortBy;
 
   const car = data[0] ?? {};
 
   // fallback to first date param present in data
-  groupBy = Object.keys(schema).find(
+  sortBy = Object.keys(schema).find(
     (branch) =>
       schema[branch].task === "date" &&
       Object.prototype.hasOwnProperty.call(car, branch),
   );
 
   // fallback to first param present in data
-  if (!groupBy) {
-    groupBy = Object.keys(schema).find((branch) =>
+  if (!sortBy) {
+    sortBy = Object.keys(schema).find((branch) =>
       Object.prototype.hasOwnProperty.call(car, branch),
     );
   }
 
   // fallback to first date param present in schema
-  if (!groupBy) {
-    groupBy = Object.keys(schema).find(
+  if (!sortBy) {
+    sortBy = Object.keys(schema).find(
       (branch) => schema[branch].task === "date",
     );
   }
 
   // fallback to first param present in schema
-  if (!groupBy) {
-    [groupBy] = Object.keys(schema);
+  if (!sortBy) {
+    [sortBy] = Object.keys(schema);
   }
 
   // unreachable with a valid scheme
-  if (!groupBy) {
-    throw Error("failed to find default groupBy in the schema");
+  if (!sortBy) {
+    throw Error("failed to find default sortBy in the schema");
   }
 
-  return groupBy;
+  return sortBy;
 }
 
 export function queriesToParams(queries) {
@@ -75,7 +75,7 @@ function paramsToQueries(searchParams) {
 export const createOverviewSlice = (set, get) => ({
   schema: {},
 
-  overview: [],
+  records: [],
 
   isInitialized: false,
 
@@ -89,7 +89,7 @@ export const createOverviewSlice = (set, get) => ({
 
   base: undefined,
 
-  closeHandler: () => {},
+  abortPreviousStream: () => {},
 
   initialize: async (repoRoute, search) => {
     const searchParams = new URLSearchParams(search);
@@ -168,7 +168,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const queries = paramsToQueries(searchParams);
 
-    const groupBy = searchParams.get(".group") ?? undefined;
+    const sortBy = searchParams.get(".sort") ?? undefined;
 
     const schema = await api.readSchema();
 
@@ -181,7 +181,7 @@ export const createOverviewSlice = (set, get) => ({
       schema,
       base,
       queries,
-      groupBy,
+      sortBy,
       isView,
       isInitialized: true,
       repoUUID,
@@ -192,14 +192,20 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   updateOverview: async () => {
-    // close select stream if already running
-    try {
-      get().closeHandler();
-    } catch {
-      // do nothing
-    }
+    // abort previous search stream if it is running
+    get().abortPreviousStream();
 
-    set({ closeHandler: () => {} });
+    let isAborted = false;
+
+    const abort_controller = new AbortController();
+
+    set({
+      abortPreviousStream: async () => {
+        isAborted = true;
+
+        await abort_controller.abort();
+      },
+    });
 
     const { base, queries, repoUUID } = get();
 
@@ -214,11 +220,13 @@ export const createOverviewSlice = (set, get) => ({
     const { strm: fromStrm, closeHandler } =
       await api.selectStream(searchParams);
 
-    set({ closeHandler });
-
     const toStrm = new WritableStream({
       write(chunk) {
-        const overview = [...get().overview, chunk];
+        if (isAborted) {
+          return;
+        }
+
+        const records = [...get().records, chunk];
 
         const schemaBase = Object.fromEntries(
           Object.entries(schema).filter(
@@ -229,28 +237,31 @@ export const createOverviewSlice = (set, get) => ({
           ),
         );
 
-        const groupBy = Object.prototype.hasOwnProperty.call(
+        const sortBy = Object.prototype.hasOwnProperty.call(
           schemaBase,
-          queries[".group"],
+          queries[".sort"],
         )
-          ? queries[".group"]
-          : getDefaultGroupBy(schemaBase, overview, searchParams);
+          ? queries[".sort"]
+          : getDefaultSortBy(schemaBase, records, searchParams);
 
         set({
-          groupBy,
+          sortBy,
           queries,
-          overview,
+          records,
         });
       },
 
       abort(err) {
-        console.error("Sink error:", err);
-      },
+        // stream interrupted
+        // no need to await on the promise, closing api stream for cleanup
+        closeHandler();      },
     });
 
-    await fromStrm.pipeTo(toStrm);
-
-    set({ closeHandler: () => {} });
+    try {
+      await fromStrm.pipeTo(toStrm, { signal: abort_controller.signal });
+    } catch {
+      // stream interrupted
+    }
   },
 
   onQueries: async () => {
@@ -270,18 +281,20 @@ export const createOverviewSlice = (set, get) => ({
 
       const searchParams = queriesToParams(queries);
 
-      const pathname = repoName === undefined ? "/" : `/${repoName}`;
+      const pathname = repoName === undefined ? "/" : `#/${repoName}`;
 
       window.history.replaceState(
         null,
         null,
-        `${pathname}?${searchParams.toString()}`,
+        `${pathname}${
+          searchParams.toString() == "" ? "" : `?${searchParams.toString()}`
+        }`
       );
 
       set({
         base,
         schema,
-        overview: [],
+        records: [],
         queries,
       });
 
@@ -290,14 +303,8 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoUUID: async (repoUUID) => {
-    // close select stream if already running
-    try {
-      get().closeHandler();
-    } catch {
-      // do nothing
-    }
-
-    set({ closeHandler: () => {} });
+    // abort previous search stream if it is running
+    get().abortPreviousStream();
 
     let repoName;
 
@@ -323,17 +330,13 @@ export const createOverviewSlice = (set, get) => ({
       queries: {},
       entry: undefined,
     });
+
+    await get().onQueries();
   },
 
   setRepoName: async (repoName) => {
-    // close select stream if already running
-    try {
-      get().closeHandler();
-    } catch {
-      // do nothing
-    }
-
-    set({ closeHandler: () => {} });
+    // abort previous search stream if it is running
+    get().abortPreviousStream();
 
     const api = new API("root");
 
@@ -357,16 +360,18 @@ export const createOverviewSlice = (set, get) => ({
       queries: {},
       entry: undefined,
     });
+
+    await get().onQueries();
   },
 
-  setGroupBy: async (groupBy) => {
+  setSortBy: async (sortBy) => {
     set({
-      groupBy,
+      sortBy,
     });
   },
 
   setBase: async (base) => {
-    set({ base, overview: [] });
+    set({ base, records: [] });
 
     await get().updateOverview();
   },

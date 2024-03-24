@@ -84,6 +84,8 @@ export function InputArray({ schema, entry, onFieldChange }) {
     ? entry.items.sort((a, b) => a.UUID?.localeCompare(b.UUID))
     : [];
 
+  const isOnlyOption = options.length === 1;
+
   async function onFieldAddArrayItem(itemBranch) {
     const arrayNew = await addField(schema, entry, itemBranch);
 
@@ -106,31 +108,36 @@ export function InputArray({ schema, entry, onFieldChange }) {
     <div>
       <div>{entry.UUID}</div>
 
-      {options.length > 0 && (
-        <select
-          value="default"
-          onChange={({ target: { value } }) => {
-            onFieldChange(branch, JSON.parse(value));
-          }}
-        >
-          <option hidden disabled value="default">
-            {t("line.dropdown.input")}
-          </option>
+      <select
+        value="default"
+        onChange={({ target: { value } }) => {
+          onFieldChange(branch, JSON.parse(value));
+        }}
+      >
+        <option hidden disabled value="default">
+          {t("line.dropdown.input")}
+        </option>
 
-          {options.map((field) => (
-            <option
-              key={crypto.getRandomValues(new Uint32Array(10)).join("")}
-              value={JSON.stringify(field)}
-            >
-              {JSON.stringify(field)}
+        {options.map((field) => (
+          <option
+            key={crypto.getRandomValues(new Uint32Array(10)).join("")}
+            value={JSON.stringify(field)}
+          >
+            {JSON.stringify(field)}
             </option>
-          ))}
-        </select>
-      )}
+        ))}
+      </select>
 
-      <InputDropdown
-        {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }}
-      />
+      { isOnlyOption ? (
+        <button
+          onClick={() => onFieldAddArrayItem(leaves[0])}
+        >
+          {t('line.button.add-field')}
+
+        </button>
+      ) : (
+        <InputDropdown {...{ schema, fields: leaves, onFieldAdd: onFieldAddArrayItem }} />
+      )}
 
       {items.map((item, index) => {
         function onFieldChangeArrayItem(itemBranch, itemValue) {

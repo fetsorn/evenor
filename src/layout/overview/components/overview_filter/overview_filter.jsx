@@ -1,7 +1,7 @@
 import React from "react";
 import {
   FilterBaseSelect,
-  FilterGroupBySelect,
+  FilterSortBySelect,
   FilterQueryList,
   FilterQueryPlus,
 } from "./components/index.js";
@@ -13,7 +13,7 @@ export function OverviewFilter() {
       <FilterBaseSelect />
       <FilterQueryList />
       <FilterQueryPlus />
-      <FilterGroupBySelect />
+      <FilterSortBySelect />
     </div>
   );
 }

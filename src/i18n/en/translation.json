@@ -12,7 +12,7 @@
     },
     "dropdown": {
       "overview": "show events as {{ field }}",
-      "groupby": "Group branch",
+      "sortby": "Group branch",
       "base": "Base branch",
       "search": "search for field {{ field }}"
     },
@@ -23,13 +23,15 @@
   "line": {
     "button": {
       "add": "add event",
+      "add-project": "add project",
       "revert": "revert changes",
       "save": "save event",
       "edit": "edit event",
       "delete": "delete event",
       "remove": "remove {{ field }} field",
-      "upload": "upload",
-      "open": "open project"
+      "upload": "choose file",
+      "open": "open project",
+      "add-field":"add field"
     },
     "dropdown": {
       "input": "add field"
@@ -59,6 +61,11 @@
     "field": {
       "url": "Project name or URL",
       "token": "Authentication token"
+    }
+  },
+  "profile": {
+    "label": {
+      "uuid": "entry code"
     }
   }
 }

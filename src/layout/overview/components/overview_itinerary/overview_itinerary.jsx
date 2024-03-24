@@ -13,22 +13,22 @@ export function OverviewItinerary() {
 
   const [
     entry,
-    overview,
-    groupBy,
+    records,
+    sortBy,
     onEntrySelect,
     onEntryCreate,
     onBatchSelect,
   ] = useStore((state) => [
     state.entry,
-    state.overview,
-    state.groupBy,
+    state.records,
+    state.sortBy,
     state.onEntrySelect,
     state.onEntryCreate,
     state.onBatchSelect,
   ]);
 
   async function onUseEffect() {
-    const itineraryNew = await buildItinerary(overview, groupBy);
+    const itineraryNew = await buildItinerary(records, sortBy);
 
     setItinerary(itineraryNew);
 
@@ -39,7 +39,7 @@ export function OverviewItinerary() {
 
   useEffect(() => {
     onUseEffect();
-  }, [overview, groupBy]);
+  }, [records, sortBy]);
 
   return (
     <div className={styles.timeline}>

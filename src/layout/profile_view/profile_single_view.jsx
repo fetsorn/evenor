@@ -71,7 +71,7 @@ export function ProfileSingleView() {
               <Button
                 type="button"
                 title={t("line.button.edit")}
-                onClick={onEntryEdit}
+                onClick={() => onEntryEdit(entry)}
               >
                 ✏️
               </Button>

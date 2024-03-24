@@ -261,7 +261,7 @@ export class BrowserAPI {
             }
             case "write": {
               try {
-                controller.enqueue(message.data.entry);
+                controller.enqueue(message.data.record);
               } catch {
                 // after stream is interrupted
                 // ReadableStreamDefaultController is not in a state where chunk can be enqueued
@@ -310,29 +310,29 @@ export class BrowserAPI {
     return overview;
   }
 
-  async updateEntry(entry, overview) {
+  async updateRecord(record, overview) {
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     const { deepClone } = await import("./curse_controller.js");
 
-    const entryNew = await new CSVS({
+    const recordNew = await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).update(deepClone(entry));
+    }).update(deepClone(record));
 
-    if (overview.find((e) => e.UUID === entryNew.UUID)) {
+    if (overview.find((e) => e.UUID === recordNew.UUID)) {
       return overview.map((e) => {
-        if (e.UUID === entryNew.UUID) {
-          return entryNew;
+        if (e.UUID === recordNew.UUID) {
+          return recordNew;
         }
         return e;
       });
     }
 
-    return overview.concat([entryNew]);
+    return overview.concat([recordNew]);
   }
 
-  async deleteEntry(entry, overview) {
+  async deleteRecord(record, overview) {
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     const { deepClone } = await import("./curse_controller.js");
@@ -340,9 +340,9 @@ export class BrowserAPI {
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).delete(deepClone(entry));
+    }).delete(deepClone(record));
 
-    return overview.filter((e) => e.UUID !== entry.UUID);
+    return overview.filter((e) => e.UUID !== record.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {

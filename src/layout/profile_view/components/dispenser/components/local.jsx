@@ -20,7 +20,7 @@ export const schemaLocal = {
   },
 };
 
-export function Local({ branchEntry }) {
+export function Local({ branchRecord }) {
   // TODO: add path picker
-  return <p>{branchEntry.local_path}</p>;
+  return <p>{branchRecord.local_path}</p>;
 }

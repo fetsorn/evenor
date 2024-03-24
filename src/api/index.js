@@ -1,8 +1,8 @@
 export { API } from "./api.js";
 export { deepClone } from "./curse_controller.js";
 export {
-  schemaToEntry,
-  entryToSchema,
+  schemaToRecord,
+  recordToSchema,
   schemaRoot,
-  generateDefaultSchemaEntry,
+  generateDefaultSchemaRecord,
 } from "./schema.js";

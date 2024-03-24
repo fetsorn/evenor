@@ -12,9 +12,9 @@ export const schemaZip = {
   },
 };
 
-export function Zip({ baseEntry }) {
+export function Zip({ baseRecord }) {
   async function onZip() {
-    const api = new API(baseEntry.UUID);
+    const api = new API(baseRecord.UUID);
 
     await api.zip();
   }

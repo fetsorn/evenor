@@ -94,9 +94,9 @@ export class API {
         return {
           strm: new ReadableStream({
             start(controller) {
-              function enqueueHandler(event, entry) {
+              function enqueueHandler(event, record) {
                 try {
-                  controller.enqueue(entry);
+                  controller.enqueue(record);
                 } catch {
                   // do nothing
                 }
@@ -136,25 +136,25 @@ export class API {
     }
   }
 
-  async updateEntry(entry, overview = []) {
+  async updateRecord(record, overview = []) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.updateEntry(this.uuid, entry, overview);
+        return window.electron.updateRecord(this.uuid, record, overview);
 
       default:
-        return this.#browser.updateEntry(entry, overview);
+        return this.#browser.updateRecord(record, overview);
     }
   }
 
-  async deleteEntry(entry, overview = []) {
+  async deleteRecord(record, overview = []) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.deleteEntry(this.uuid, entry, overview);
+        return window.electron.deleteRecord(this.uuid, record, overview);
 
       default:
-        return this.#browser.deleteEntry(entry, overview);
+        return this.#browser.deleteRecord(record, overview);
     }
   }
 
@@ -372,8 +372,8 @@ export class API {
 
     searchParams.set("reponame", this.uuid);
 
-    const [entry] = await new API("root").select(searchParams);
+    const [record] = await new API("root").select(searchParams);
 
-    return entry;
+    return record;
   }
 }

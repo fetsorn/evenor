@@ -213,7 +213,7 @@ export class ElectronAPI {
       if (typeof message === "string" && message.startsWith("log")) {
         console.log(message);
       } else if (message.msg === "selectStream:enqueue") {
-        enqueueHandler(message.entry);
+        enqueueHandler(message.record);
       } else if (message.msg === "selectStream:close") {
         closeHandler();
       }
@@ -238,33 +238,33 @@ export class ElectronAPI {
     });
   }
 
-  async updateEntry(entry, overview) {
-    const entryNew = await runWorker({
+  async updateRecord(record, overview) {
+    const recordNew = await runWorker({
       msg: "update",
       dir: this.dir,
-      entry,
+      record,
     });
 
-    if (overview.find((e) => e.UUID === entryNew.UUID)) {
+    if (overview.find((e) => e.UUID === recordNew.UUID)) {
       return overview.map((e) => {
-        if (e.UUID === entryNew.UUID) {
-          return entryNew;
+        if (e.UUID === recordNew.UUID) {
+          return recordNew;
         }
         return e;
       });
     }
 
-    return overview.concat([entryNew]);
+    return overview.concat([recordNew]);
   }
 
-  async deleteEntry(entry, overview) {
+  async deleteRecord(record, overview) {
     await runWorker({
       msg: "delete",
       dir: this.dir,
-      entry,
+      record,
     });
 
-    return overview.filter((e) => e.UUID !== entry.UUID);
+    return overview.filter((e) => e.UUID !== record.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {

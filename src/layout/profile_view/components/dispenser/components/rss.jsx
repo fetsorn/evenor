@@ -106,7 +106,7 @@ export const schemaRSS = {
   },
 };
 
-function generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes) {
+function generateXML(branchRecord, entries, mimetypes, downloadUrls, sizes) {
   const {
     rss_tag_title: feedTitle,
     rss_tag_description: feedDescription,
@@ -118,7 +118,7 @@ function generateXML(branchEntry, entries, mimetypes, downloadUrls, sizes) {
     rss_tag_item_pubdate: itemPubdate,
     rss_tag_item_category: itemCategory,
     // rss_tag_item_link: itemLink,
-  } = branchEntry;
+  } = branchRecord;
 
   const header = `<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0"
@@ -154,23 +154,23 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
     return `<object type="${mimetype}" data="${downloadUrl}" />`;
   }
 
-  function generateItem(entry, mimetype, downloadUrl, size) {
+  function generateItem(record, mimetype, downloadUrl, size) {
     return `
     <item>
-      <title>${entry[itemTitle]}</title>
+      <title>${record[itemTitle]}</title>
       <dc:creator>
-        <![CDATA[${entry[itemCreator] ?? "unknown"}]]>
+        <![CDATA[${record[itemCreator] ?? "unknown"}]]>
       </dc:creator>
-      <pubDate>${entry[itemPubdate]}</pubDate>
+      <pubDate>${record[itemPubdate]}</pubDate>
       <category>
-        <![CDATA[${entry[itemCategory]}]]>
+        <![CDATA[${record[itemCategory]}]]>
       </category>
-      <guid isPermaLink="false">${entry.UUID}</guid>
+      <guid isPermaLink="false">${record.UUID}</guid>
       <description>
         <![CDATA[
-           <div>${entry[itemAttribution] ?? ""}</div>
+           <div>${record[itemAttribution] ?? ""}</div>
            ${mimetype && downloadUrl ? generateAttachment(mimetype, downloadUrl) : ""}
-           <div>${entry[itemDescription] ?? ""}</div>
+           <div>${record[itemDescription] ?? ""}</div>
         ]]>
       </description>
       ${mimetype && downloadUrl && size ? `<enclosure url="${downloadUrl}" length="${size}" type="${mimetype}" />` : ""}
@@ -178,8 +178,8 @@ xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
   }
 
   const items = entries
-    .map((entry, index) =>
-      generateItem(entry, mimetypes[index], downloadUrls[index], sizes[index]),
+    .map((record, index) =>
+      generateItem(record, mimetypes[index], downloadUrls[index], sizes[index]),
     )
     .join("\n");
 
@@ -194,52 +194,52 @@ ${items}
   return xml;
 }
 
-export function RSS({ baseEntry, branchEntry }) {
+export function RSS({ baseRecord, branchRecord }) {
   async function onRSSsync() {
     const { digestMessage } = await import("@fetsorn/csvs-js");
 
-    const rssUUID = await digestMessage(branchEntry.rss_tag_target);
+    const rssUUID = await digestMessage(branchRecord.rss_tag_target);
 
     const rssAPI = new API(rssUUID);
 
-    const baseAPI = new API(baseEntry.UUID);
+    const baseAPI = new API(baseRecord.UUID);
 
-    const searchParams = new URLSearchParams(branchEntry.rss_tag_search);
+    const searchParams = new URLSearchParams(branchRecord.rss_tag_search);
 
     // get array of entries from repo
     const entries = await baseAPI.select(searchParams);
 
     // clone to ephemeral repo
     await rssAPI.cloneView(
-      branchEntry.rss_tag_target,
-      branchEntry.rss_tag_token,
+      branchRecord.rss_tag_target,
+      branchRecord.rss_tag_token,
     );
 
-    // find all filenames in the entry
-    const fileEntries = entries.map((entry) => {
-      if (entry[branchEntry.rss_tag_item_link]?.items) {
-        return entry[branchEntry.rss_tag_item_link].items[0];
+    // find all filenames in the record
+    const fileEntries = entries.map((record) => {
+      if (record[branchRecord.rss_tag_item_link]?.items) {
+        return record[branchRecord.rss_tag_item_link].items[0];
       }
     });
 
     const mime = await import("mime");
 
-    const mimetypes = fileEntries.map((fileEntry) => {
-      if (fileEntry?.filename) {
-        const mimetype = mime.getType(fileEntry.filename);
+    const mimetypes = fileEntries.map((fileRecord) => {
+      if (fileRecord?.filename) {
+        const mimetype = mime.getType(fileRecord.filename);
 
         return mimetype;
       }
     });
 
     const files = await Promise.all(
-      fileEntries.map(async (fileEntry) => {
+      fileEntries.map(async (fileRecord) => {
         // const files = [];
-        // for (const fileEntry of fileEntries) {
-        if (fileEntry?.filehash) {
-          const content = await baseAPI.fetchAsset(fileEntry.filehash);
+        // for (const fileRecord of fileEntries) {
+        if (fileRecord?.filehash) {
+          const content = await baseAPI.fetchAsset(fileRecord.filehash);
 
-          await rssAPI.putAsset(fileEntry.filehash, content);
+          await rssAPI.putAsset(fileRecord.filehash, content);
 
           // files.push(content);
 
@@ -268,8 +268,8 @@ export function RSS({ baseEntry, branchEntry }) {
           const pointerInfo = await buildPointerInfo(file);
 
           return rssAPI.downloadUrlFromPointer(
-            branchEntry.rss_tag_target,
-            branchEntry.rss_tag_token,
+            branchRecord.rss_tag_target,
+            branchRecord.rss_tag_token,
             pointerInfo,
           );
         }
@@ -280,7 +280,7 @@ export function RSS({ baseEntry, branchEntry }) {
 
     // generate xml
     const xml = generateXML(
-      branchEntry,
+      branchRecord,
       entries,
       mimetypes,
       downloadUrls,
@@ -297,9 +297,9 @@ export function RSS({ baseEntry, branchEntry }) {
 
   return (
     <div>
-      <p>{branchEntry.rss_tag_search}</p>
+      <p>{branchRecord.rss_tag_search}</p>
       <br />
-      <p>{branchEntry.rss_tag_target}</p>
+      <p>{branchRecord.rss_tag_target}</p>
       <br />
       <button type="button" onClick={onRSSsync}>
         🔄️

@@ -12,9 +12,9 @@ const rowHeights = {
 export function VirtualScroll({
   data,
   rowComponent: Component,
-  onEntrySelect,
+  onRecordSelect,
   onBatchSelect,
-  onEntryCreate,
+  onRecordCreate,
   tolerance = 2,
 }) {
   const { width: viewportWidth } = useWindowSize();
@@ -80,8 +80,8 @@ export function VirtualScroll({
           data={elem}
           key={elem.key}
           isLast={elem.key === dataWithKeys.length - 1}
-          onEntrySelect={onEntrySelect}
-          onEntryCreate={onEntryCreate}
+          onRecordSelect={onRecordSelect}
+          onRecordCreate={onRecordCreate}
           style={{ height: rowHeight }}
         />
       ))}

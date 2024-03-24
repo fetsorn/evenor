@@ -13,16 +13,16 @@ import { useEditStore } from "../../profile_single_edit.jsx";
 export function EditInput({
   index,
   schema,
-  entry,
+  record,
   onFieldChange,
   onFieldRemove,
   isBaseObject,
 }) {
   const { i18n, t } = useTranslation();
 
-  const branch = entry._;
+  const branch = record._;
 
-  const value = entry[branch];
+  const value = record[branch];
 
   const branchType = schema[branch]?.type;
 
@@ -64,7 +64,7 @@ export function EditInput({
       <InputObject
         {...{
           schema,
-          entry,
+          record,
           onFieldChange,
         }}
       />
@@ -79,7 +79,7 @@ export function EditInput({
             <InputArray
               {...{
                 schema,
-                entry,
+                record,
                 onFieldChange,
               }}
             />
@@ -120,7 +120,7 @@ export function EditInput({
                   <InputArray
                     {...{
                       schema,
-                      entry,
+                      record,
                       onFieldChange,
                     }}
                   />
@@ -171,7 +171,7 @@ export function EditInput({
                   <InputUpload
                     {...{
                       schema,
-                      entry,
+                      record,
                       onFieldChange,
                     }}
                   />
@@ -217,7 +217,7 @@ export function EditInput({
                   <InputObject
                     {...{
                       schema,
-                      entry,
+                      record,
                       onFieldChange,
                     }}
                   />

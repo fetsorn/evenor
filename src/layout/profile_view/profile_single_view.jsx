@@ -21,27 +21,27 @@ export function ProfileSingleView() {
   const { t } = useTranslation();
 
   const [
-    entry,
+    record,
     group,
     index,
     repoUUID,
     setRepoName,
-    onEntryEdit,
-    onEntryClose,
-    onEntryDelete,
-    // onEntryCommit,
+    onRecordEdit,
+    onRecordClose,
+    onRecordDelete,
+    // onRecordCommit,
     isSettings,
     schemaRepo,
   ] = useStore((state) => [
-    state.entry,
+    state.record,
     state.group,
     state.index,
     state.repoUUID,
     state.setRepoName,
-    state.onEntryEdit,
-    state.onEntryClose,
-    state.onEntryDelete,
-    // state.onEntryCommit,
+    state.onRecordEdit,
+    state.onRecordClose,
+    state.onRecordDelete,
+    // state.onRecordCommit,
     state.isSettings,
     state.schema,
   ]);
@@ -53,11 +53,11 @@ export function ProfileSingleView() {
     <div
       className={cn(
         styles.sidebar,
-        { [styles.invisible]: !entry },
+        { [styles.invisible]: !record },
         "profile-view__sidebar view__sidebar",
       )}
     >
-      {entry && (
+      {record && (
         <div className={cn(styles.container, "view-sidebar__container")}>
           <div
             id="scrollcontainer"
@@ -71,13 +71,13 @@ export function ProfileSingleView() {
               <Button
                 type="button"
                 title={t("line.button.edit")}
-                onClick={() => onEntryEdit(entry)}
+                onClick={() => onRecordEdit(record)}
               >
                 ✏️
               </Button>
 
               {/* {(isSettings || repoUUID === 'root') && ( */}
-              {/*   <Button type="button" title={t('line.button.commit')} onClick={() => onEntryCommit(entry.UUID)}> */}
+              {/*   <Button type="button" title={t('line.button.commit')} onClick={() => onRecordCommit(record.UUID)}> */}
               {/*     ⬆️ */}
               {/*   </Button> */}
               {/* )} */}
@@ -85,7 +85,7 @@ export function ProfileSingleView() {
               <Button
                 type="button"
                 title={t("line.button.delete")}
-                onClick={onEntryDelete}
+                onClick={onRecordDelete}
               >
                 🗑️
               </Button>
@@ -93,7 +93,7 @@ export function ProfileSingleView() {
               <Button
                 type="button"
                 title={t("line.button.close")}
-                onClick={onEntryClose}
+                onClick={onRecordClose}
               >
                 X
               </Button>
@@ -103,14 +103,14 @@ export function ProfileSingleView() {
               <button
                 type="button"
                 title={t("line.button.open")}
-                onClick={() => setRepoName(entry.reponame)}
+                onClick={() => setRepoName(record.reponame)}
               >
                 {t("line.button.open")}
               </button>
             )}
             <ViewField
               {...{
-                entry,
+                record,
                 schema,
                 isBaseObject: true,
               }}

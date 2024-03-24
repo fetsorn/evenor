@@ -4,9 +4,9 @@ import { API, deepClone } from "../../../../api";
 import { useStore } from "../../../../store/index.js";
 import { EditInput, InputDropdown } from "..";
 
-async function addField(schema, entryOriginal, branch) {
+async function addField(schema, recordOriginal, branch) {
   // used to use deepClone
-  const entry = deepClone(entryOriginal);
+  const record = deepClone(recordOriginal);
 
   let value;
 
@@ -20,8 +20,8 @@ async function addField(schema, entryOriginal, branch) {
     // pick randomUUID until there's a uuid that follows others in alphabetical order
     let uuid = await randomUUID();
 
-    const uuids = entry.items
-      ? entry.items
+    const uuids = record.items
+      ? record.items
           .sort((a, b) => a.UUID?.localeCompare(b.UUID))
           .map((i) => i.UUID)
       : [];
@@ -42,7 +42,7 @@ async function addField(schema, entryOriginal, branch) {
   } else {
     value = "";
   }
-  const base = entry._;
+  const base = record._;
 
   const { trunk } = schema[branch];
 
@@ -51,19 +51,19 @@ async function addField(schema, entryOriginal, branch) {
   }
 
   if (schema[base].type === "array") {
-    if (entry.items === undefined) {
-      entry.items = [];
+    if (record.items === undefined) {
+      record.items = [];
     }
 
-    entry.items.push({ ...value });
+    record.items.push({ ...value });
   } else {
-    entry[branch] = value;
+    record[branch] = value;
   }
 
-  return entry;
+  return record;
 }
 
-export function InputArray({ schema, entry, onFieldChange }) {
+export function InputArray({ schema, record, onFieldChange }) {
   const { t } = useTranslation();
 
   const [options, setOptions] = useState([]);
@@ -74,20 +74,20 @@ export function InputArray({ schema, entry, onFieldChange }) {
 
   const base = useStore((state) => state.base);
 
-  const branch = entry._;
+  const branch = record._;
 
   const leaves = Object.keys(schema).filter(
     (leaf) => schema[leaf].trunk === branch,
   );
 
-  const items = entry.items
-    ? entry.items.sort((a, b) => a.UUID?.localeCompare(b.UUID))
+  const items = record.items
+    ? record.items.sort((a, b) => a.UUID?.localeCompare(b.UUID))
     : [];
 
   const isOnlyOption = options.length === 1;
 
   async function onFieldAddArrayItem(itemBranch) {
-    const arrayNew = await addField(schema, entry, itemBranch);
+    const arrayNew = await addField(schema, record, itemBranch);
 
     onFieldChange(branch, arrayNew);
   }
@@ -106,7 +106,7 @@ export function InputArray({ schema, entry, onFieldChange }) {
 
   return (
     <div>
-      <div>{entry.UUID}</div>
+      <div>{record.UUID}</div>
 
       <select
         value="default"
@@ -141,34 +141,34 @@ export function InputArray({ schema, entry, onFieldChange }) {
       {items.map((item, index) => {
         function onFieldChangeArrayItem(itemBranch, itemValue) {
           const itemsNew =
-            entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
+            record.items?.filter((i) => i.UUID !== item.UUID) ?? [];
 
           itemsNew.push(itemValue);
 
           // sort so that the order of objects remains the same after push
           itemsNew.sort((a, b) => a.UUID?.localeCompare(b.UUID));
 
-          const arrayNew = { _: entry._, UUID: entry.UUID, items: itemsNew };
+          const arrayNew = { _: record._, UUID: record.UUID, items: itemsNew };
 
           onFieldChange(branch, arrayNew);
         }
 
         function onFieldRemoveArrayItem() {
           const itemsNew =
-            entry.items?.filter((i) => i.UUID !== item.UUID) ?? [];
+            record.items?.filter((i) => i.UUID !== item.UUID) ?? [];
 
-          const arrayNew = { _: entry._, UUID: entry.UUID, items: itemsNew };
+          const arrayNew = { _: record._, UUID: record.UUID, items: itemsNew };
 
           onFieldChange(branch, arrayNew);
         }
 
         return (
-          <div key={`${entry.UUID ?? ""}${item.UUID}`}>
+          <div key={`${record.UUID ?? ""}${item.UUID}`}>
             <EditInput
               {...{
-                index: `${entry.UUID ?? ""}${item.UUID}`,
+                index: `${record.UUID ?? ""}${item.UUID}`,
                 schema,
-                entry: item,
+                record: item,
                 onFieldChange: onFieldChangeArrayItem,
                 onFieldRemove: onFieldRemoveArrayItem,
                 onFieldAdd: onFieldAddArrayItem,

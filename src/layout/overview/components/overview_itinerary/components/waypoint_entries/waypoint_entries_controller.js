@@ -17,7 +17,7 @@ export function colorFile(filename, filetype = "") {
   }
 
   // var re =/(?:\.([^.]+))?$/
-  // var ext = re.exec(entry.FILE_PATH)[1].trim()
+  // var ext = re.exec(record.FILE_PATH)[1].trim()
   const ext = filename.split(".").pop().trim();
 
   const img = [

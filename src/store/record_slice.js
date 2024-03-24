@@ -1,45 +1,45 @@
 import {
   API,
-  generateDefaultSchemaEntry,
-  schemaToEntry,
-  entryToSchema,
+  generateDefaultSchemaRecord,
+  schemaToRecord,
+  recordToSchema,
 } from "../api/index.js";
 
 // TODO: set default values for required fields
-async function createEntry(schema, base) {
-  const entry = {};
+async function createRecord(schema, base) {
+  const record = {};
 
   const { digestMessage, randomUUID } = await import("@fetsorn/csvs-js");
 
   const uuid = await randomUUID();
 
-  entry.UUID = await digestMessage(uuid);
+  record.UUID = await digestMessage(uuid);
 
-  entry._ = base;
+  record._ = base;
 
   if (schema[base].type === "array") {
-    entry.items = [];
+    record.items = [];
   }
 
   if (base === "reponame") {
-    entry.schema = await generateDefaultSchemaEntry();
+    record.schema = await generateDefaultSchemaRecord();
   }
 
-  return entry;
+  return record;
 }
 
-async function selectRepo(repoUUID, entry) {
+async function selectRepo(repoUUID, record) {
   // it's okay to not make a deep clone here
-  const entryNew = entry;
+  const recordNew = record;
 
-  const api = new API(entry.UUID);
+  const api = new API(record.UUID);
 
   try {
     const schema = await api.readSchema();
 
-    const schemaEntry = await schemaToEntry(schema);
+    const schemaRecord = await schemaToRecord(schema);
 
-    entryNew.schema = schemaEntry;
+    recordNew.schema = schemaRecord;
   } catch {
     // do nothing
   }
@@ -52,18 +52,18 @@ async function selectRepo(repoUUID, entry) {
     for (const remoteName of remotes) {
       const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
 
-      if (entryNew.tags === undefined) {
-        entryNew.tags = {
+      if (recordNew.tags === undefined) {
+        recordNew.tags = {
           UUID: await digestMessage(await randomUUID()),
           items: [],
         };
       }
 
-      if (entryNew.tags.items === undefined) {
-        entryNew.tags.items = [];
+      if (recordNew.tags.items === undefined) {
+        recordNew.tags.items = [];
       }
 
-      entryNew.tags.items.push({
+      recordNew.tags.items.push({
         _: "remote_tag",
         UUID: await digestMessage(await randomUUID()),
         remote_name: remoteName,
@@ -79,18 +79,18 @@ async function selectRepo(repoUUID, entry) {
     const assetPaths = await api.listAssetPaths();
 
     for (const assetPath of assetPaths) {
-      if (entryNew.tags === undefined) {
-        entryNew.tags = {
+      if (recordNew.tags === undefined) {
+        recordNew.tags = {
           UUID: await digestMessage(await randomUUID()),
           items: [],
         };
       }
 
-      if (entryNew.tags.items === undefined) {
-        entryNew.tags.items = [];
+      if (recordNew.tags.items === undefined) {
+        recordNew.tags.items = [];
       }
 
-      entryNew.tags.items.push({
+      recordNew.tags.items.push({
         _: "local_tag",
         UUID: await digestMessage(await randomUUID()),
         local_path: assetPath,
@@ -100,19 +100,19 @@ async function selectRepo(repoUUID, entry) {
     // do nothing
   }
 
-  return entryNew;
+  return recordNew;
 }
 
-async function saveRepo(repoUUID, entry) {
-  const api = new API(entry.UUID);
+async function saveRepo(repoUUID, record) {
+  const api = new API(record.UUID);
 
   const remoteTags =
-    entry.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
+    record.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
 
-  let schema = entry.schema ? entryToSchema(entry.schema) : {};
+  let schema = record.schema ? recordToSchema(record.schema) : {};
 
   for (const remoteTag of remoteTags) {
-    // try to clone project to repo directory if entry has a remote tag, will fail if repo exists
+    // try to clone project to repo directory if record has a remote tag, will fail if repo exists
     try {
       // const [remoteTag] = remoteTags;
 
@@ -125,7 +125,7 @@ async function saveRepo(repoUUID, entry) {
   }
 
   // create repo directory with a schema
-  await api.ensure(schema, entry.reponame);
+  await api.ensure(schema, record.reponame);
 
   for (const remoteTag of remoteTags) {
     try {
@@ -140,7 +140,7 @@ async function saveRepo(repoUUID, entry) {
   }
 
   const localTags =
-    entry.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
+    record.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
 
   for (const localTag of localTags) {
     try {
@@ -152,31 +152,31 @@ async function saveRepo(repoUUID, entry) {
 
   // omit to not save schema branch to csvs
   // eslint-disable-next-line
-  const { schema: omitSchema, ...entryNew } = entry;
+  const { schema: omitSchema, ...recordNew } = record;
 
-  if (entryNew.tags?.items) {
+  if (recordNew.tags?.items) {
     // omit to not save remote tags to csvs
-    const filteredTags = entryNew.tags.items.filter(
+    const filteredTags = recordNew.tags.items.filter(
       (item) => item._ !== "remote_tag" && item._ !== "local_tag",
     );
 
-    entryNew.tags.items = filteredTags;
+    recordNew.tags.items = filteredTags;
   }
 
-  return entryNew;
+  return recordNew;
 }
 
-export const createEntrySlice = (set, get) => ({
-  // entry selected from records for viewing/editing
-  entry: undefined,
+export const createRecordSlice = (set, get) => ({
+  // record selected from records for viewing/editing
+  record: undefined,
 
-  // entry backup before editing
-  entryOriginal: undefined,
+  // record backup before editing
+  recordOriginal: undefined,
 
-  // index of selected entry in a group
+  // index of selected record in a group
   index: undefined,
 
-  // title of the group of selected entry
+  // title of the group of selected record
   group: undefined,
 
   isEdit: false,
@@ -187,73 +187,73 @@ export const createEntrySlice = (set, get) => ({
 
   onBatchSelect: () => set({ isBatch: true }),
 
-  onEntrySelect: async (entry, index, group) => {
-    let entryNew = entry;
+  onRecordSelect: async (record, index, group) => {
+    let recordNew = record;
 
     // eslint-disable-next-line
     if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
-      entryNew = await selectRepo(get().repoUUID, entry);
+      recordNew = await selectRepo(get().repoUUID, record);
     }
 
-    set({ entry: entryNew, index, group });
+    set({ record: recordNew, index, group });
   },
 
-  onEntryCreate: async () => {
-    const entry = await createEntry(get().schema, get().base);
+  onRecordCreate: async () => {
+    const record = await createRecord(get().schema, get().base);
 
     set({
       index: "",
       isEdit: true,
       title: "",
-      entry,
+      record,
     });
   },
 
-  onEntryEdit: (entry) =>
-    set({ entry, isEdit: true, entryOriginal: get().entry }),
+  onRecordEdit: (record) =>
+    set({ record, isEdit: true, recordOriginal: get().record }),
 
-  onEntryRevert: () => set({ isEdit: false, entry: get().entryOriginal }),
+  onRecordRevert: () => set({ isEdit: false, record: get().recordOriginal }),
 
-  onEntrySave: async () => {
-    let { entry } = get();
+  onRecordSave: async () => {
+    let { record } = get();
 
-    if (entry[entry._] === undefined) {
-      entry[entry._] = "";
+    if (record[record._] === undefined) {
+      record[record._] = "";
     }
 
     // eslint-disable-next-line
     if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
-      entry = await saveRepo(get().repoUUID, get().entry);
+      record = await saveRepo(get().repoUUID, get().record);
     }
 
     const api = new API(get().repoUUID);
 
-    const records = await api.updateEntry(entry, get().records);
+    const records = await api.updateRecord(record, get().records);
 
     api.commit();
 
     set({ records, isEdit: false });
   },
 
-  onEntryCommit: async (uuid) => {
+  onRecordCommit: async (uuid) => {
     const api = new API(uuid);
 
     api.commit();
   },
 
-  onEntryDelete: async () => {
+  onRecordDelete: async () => {
     const api = new API(get().repoUUID);
 
-    const records = await api.deleteEntry(get().entry, get().records);
+    const records = await api.deleteRecord(get().record, get().records);
 
     api.commit();
 
-    set({ records, entry: undefined });
+    set({ records, record: undefined });
   },
 
-  onEntryClose: () => set({ entry: undefined }),
+  onRecordClose: () => set({ record: undefined }),
 
-  onEntryChange: (_, entry) => set({ entry }),
+  onRecordChange: (_, record) => set({ record }),
 
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);
@@ -261,51 +261,51 @@ export const createEntrySlice = (set, get) => ({
     const baseOld = get().base;
 
     // get current repo settings from root db
-    const entryRepo = await apiRepo.getSettings();
+    const recordRepo = await apiRepo.getSettings();
 
-    const entry = await selectRepo(get().repoUUID, entryRepo);
+    const record = await selectRepo(get().repoUUID, recordRepo);
 
     const apiRoot = new API("root");
 
-    const { onEntrySave, onEntryDelete } = get();
+    const { onRecordSave, onRecordDelete } = get();
 
     const onSettingsClose = () =>
       set({
-        entry: undefined,
+        record: undefined,
         base: baseOld,
-        onEntrySave,
-        onEntryDelete,
+        onRecordSave,
+        onRecordDelete,
         isSettings: false,
       });
 
     const onSettingsSave = async () => {
-      const entryNew = await saveRepo(get().repoUUID, get().entry);
+      const recordNew = await saveRepo(get().repoUUID, get().record);
 
-      await apiRoot.updateEntry(entryNew);
+      await apiRoot.updateRecord(recordNew);
 
       set({ isEdit: false });
     };
 
     const onSettingsDelete = async () => {
-      await apiRoot.deleteEntry(get().entry);
+      await apiRoot.deleteRecord(get().record);
 
       set({
         repoUUID: "root",
-        entry: undefined,
+        record: undefined,
         base: baseOld,
-        onEntrySave,
-        onEntryDelete,
+        onRecordSave,
+        onRecordDelete,
         isSettings: false,
       });
     };
 
     set({
-      entry,
+      record,
       index: "",
       group: `${get().repoName} settings`,
-      onEntryClose: onSettingsClose,
-      onEntrySave: onSettingsSave,
-      onEntryDelete: onSettingsDelete,
+      onRecordClose: onSettingsClose,
+      onRecordSave: onSettingsSave,
+      onRecordDelete: onSettingsDelete,
       isSettings: true,
     });
   },

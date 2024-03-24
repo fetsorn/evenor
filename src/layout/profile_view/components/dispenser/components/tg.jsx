@@ -80,36 +80,36 @@ export const schemaTG = {
   },
 };
 
-async function postEntry(client, baseAPI, isPublished, channelID, entry) {
-  let entryID;
+async function postRecord(client, baseAPI, isPublished, channelID, record) {
+  let recordID;
 
   let fileHandle;
 
-  if (entry.files?.items) {
+  if (record.files?.items) {
     // TODO support multiple files
-    const fileEntry = entry.files.items[0];
+    const fileRecord = record.files.items[0];
 
-    entryID = fileEntry.filehash;
+    recordID = fileRecord.filehash;
   } else {
     const { digestMessage } = await import("@fetsorn/csvs-js");
 
-    entryID = await digestMessage(entry.datum);
+    recordID = await digestMessage(record.datum);
   }
 
-  if (!isPublished.get(entryID)) {
+  if (!isPublished.get(recordID)) {
     let params = { silent: true };
 
-    if (entry.files?.items) {
-      const fileEntry = entry.files.items[0];
+    if (record.files?.items) {
+      const fileRecord = record.files.items[0];
 
-      // send text for each unpublished entry
-      let contents = await baseAPI.fetchAsset(fileEntry.filehash);
+      // send text for each unpublished record
+      let contents = await baseAPI.fetchAsset(fileRecord.filehash);
 
       const mime = await import("mime");
 
-      const mimetypeNew = mime.getType(fileEntry.filename);
+      const mimetypeNew = mime.getType(fileRecord.filename);
 
-      const ext = fileEntry.filename.split(".").pop().trim();
+      const ext = fileRecord.filename.split(".").pop().trim();
 
       if (ext == "mp3") {
         const mp3tag = new MP3Tag(contents.buffer, false);
@@ -120,15 +120,15 @@ async function postEntry(client, baseAPI, isPublished, channelID, entry) {
 
         mp3tag.remove();
 
-        mp3tag.tags.title = entryID;
-        mp3tag.tags.artist = entry.actname ?? undefined;
+        mp3tag.tags.title = recordID;
+        mp3tag.tags.artist = record.actname ?? undefined;
 
         contents = mp3tag.save();
       }
 
       const blob = new Blob([contents], { type: mimetypeNew });
 
-      const file = new File([blob], `${entryID}.${ext}`);
+      const file = new File([blob], `${recordID}.${ext}`);
 
       fileHandle = await client.uploadFile({ file });
 
@@ -136,32 +136,32 @@ async function postEntry(client, baseAPI, isPublished, channelID, entry) {
         params.file = fileHandle;
       }
 
-      params.message = `${entry.attribution}\n${entry.actdate ?? "0000-00-00"}`;
+      params.message = `${record.attribution}\n${record.actdate ?? "0000-00-00"}`;
     } else {
-      params.message = `${entry.datum}\n${entry.actdate ?? "0000-00-00"}`;
+      params.message = `${record.datum}\n${record.actdate ?? "0000-00-00"}`;
     }
 
     await client.sendMessage(`@${channelID}`, params);
   }
 }
 
-export function TG({ baseEntry, branchEntry }) {
+export function TG({ baseRecord, branchRecord }) {
   //  async function onTGsync() {
-  //    const stringSession = new StringSession(branchEntry.tg_tag_session ?? "");
+  //    const stringSession = new StringSession(branchRecord.tg_tag_session ?? "");
 
   //    const client = new TelegramClient(
   //      stringSession,
-  //      parseInt(branchEntry.tg_tag_api_id),
-  //      branchEntry.tg_tag_api_hash,
+  //      parseInt(branchRecord.tg_tag_api_id),
+  //      branchRecord.tg_tag_api_hash,
   //      { connectionRetries: 5, useWSS: true }
   //    );
   //
   //    // if no session token, login and save session token
   //    // TODO check if session token expired
-  //    if (branchEntry.tg_tag_session === undefined) {
+  //    if (branchRecord.tg_tag_session === undefined) {
   //      await client.start({
-  //        phoneNumber: branchEntry.tg_tag_phone,
-  //        password: async () => branchEntry.tg_tag_password,
+  //        phoneNumber: branchRecord.tg_tag_phone,
+  //        password: async () => branchRecord.tg_tag_password,
   //        phoneCode: async () => smalltalk.prompt("Please enter the code you received: ", "OTP code", 1),
   //        onError: (err) => console.log(err),
   //      });
@@ -170,64 +170,64 @@ export function TG({ baseEntry, branchEntry }) {
   //
   //      const rootAPI = new API('root');
   //
-  //      const baseEntryNew = JSON.parse(JSON.stringify(baseEntry))
+  //      const baseRecordNew = JSON.parse(JSON.stringify(baseRecord))
   //
-  //      const itemsNew = baseEntryNew.tags.items.filter((i) => i.UUID != branchEntry)
+  //      const itemsNew = baseRecordNew.tags.items.filter((i) => i.UUID != branchRecord)
   //
-  //      itemsNew.push({tg_tag_session: session, ...branchEntry})
+  //      itemsNew.push({tg_tag_session: session, ...branchRecord})
   //
-  //      baseEntryNew.tags.items = itemsNew;
+  //      baseRecordNew.tags.items = itemsNew;
   //
-  //      await rootAPI.updateEntry(baseEntryNew)
+  //      await rootAPI.updateRecord(baseRecordNew)
   //    }
   //
   //    await client.connect()
   //
   //    const isPublished = new Map()
   //
-  //    const chat = await client.getEntity(`@${branchEntry.tg_tag_channel_id}`);
+  //    const chat = await client.getEntity(`@${branchRecord.tg_tag_channel_id}`);
   //
   //    for await (const message of client.iterMessages(chat,{})) {
-  //      let entryID;
+  //      let recordID;
   //
-  //      // read entryID from attachment name or text hash
+  //      // read recordID from attachment name or text hash
   //      if (message.file) {
-  //        entryID = message.file.name
+  //        recordID = message.file.name
   //
-  //        entryID = entryID.replace(/\.[^/.]+$/, "")
+  //        recordID = recordID.replace(/\.[^/.]+$/, "")
   //      } else {
   //        const { digestMessage } = await import('@fetsorn/csvs-js');
   //
   //        const datum = message.text.substring(0, message.text.length - 11)
   //
-  //        entryID = await digestMessage(datum);
+  //        recordID = await digestMessage(datum);
   //      }
   //
-  //      isPublished.set(entryID, true)
+  //      isPublished.set(recordID, true)
   //    }
   //
-  //    const searchParams = new URLSearchParams(branchEntry.tg_tag_search);
+  //    const searchParams = new URLSearchParams(branchRecord.tg_tag_search);
   //
-  //    const baseAPI = new API(baseEntry.UUID);
+  //    const baseAPI = new API(baseRecord.UUID);
   //
   //    const entries = await baseAPI.select(searchParams);
   //
   //    return Promise.all(
-  //      entries.map(async (entry) => postEntry(
+  //      entries.map(async (record) => postRecord(
   //        client,
   //        baseAPI,
   //        isPublished,
-  //        branchEntry.tg_tag_channel_id,
-  //        entry
+  //        branchRecord.tg_tag_channel_id,
+  //        record
   //      ))
   //    )
   //  }
 
   return (
     <div>
-      <a>{branchEntry.tg_tag_search}</a>
+      <a>{branchRecord.tg_tag_search}</a>
       <br />
-      <a>{branchEntry.tg_tag_channel_id}</a>
+      <a>{branchRecord.tg_tag_channel_id}</a>
       <br />
       <a onClick={onTGsync}>🔄️</a>
     </div>

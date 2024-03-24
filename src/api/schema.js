@@ -8,10 +8,10 @@ import {
   schemaTG,
 } from "../layout/profile_view/components/dispenser/components/index.js";
 
-export function entryToSchema(schemaEntry) {
+export function recordToSchema(schemaRecord) {
   const schemaObject = {};
 
-  for (const item of schemaEntry.items) {
+  for (const item of schemaRecord.items) {
     const branch = item.schema_branch_name;
 
     schemaObject[branch] = {};
@@ -50,8 +50,8 @@ export function entryToSchema(schemaEntry) {
   return schemaObject;
 }
 
-export async function schemaToEntry(schema) {
-  const entry = {
+export async function schemaToRecord(schema) {
+  const record = {
     _: "schema",
     UUID: await digestMessage(await randomUUID()),
     items: [],
@@ -100,14 +100,14 @@ export async function schemaToEntry(schema) {
         }
       }
 
-      entry.items.push(item);
+      record.items.push(item);
     }),
   );
 
-  return entry;
+  return record;
 }
 
-export async function generateDefaultSchemaEntry() {
+export async function generateDefaultSchemaRecord() {
   return {
     _: "schema",
     UUID: await digestMessage(await randomUUID()),
@@ -190,7 +190,7 @@ export async function generateDefaultSchemaEntry() {
         schema_branch_description: {
           _: "schema_branch_description",
           UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Date of entry",
+          schema_branch_description_en: "Date of record",
           schema_branch_description_ru: "Дата записи",
         },
       },
@@ -256,7 +256,7 @@ export async function generateDefaultSchemaEntry() {
         schema_branch_description: {
           _: "schema_branch_description",
           UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Name of the person who made the entry",
+          schema_branch_description_en: "Name of the person who made the record",
           schema_branch_description_ru: "Имя автора записи",
         },
       },
@@ -295,7 +295,7 @@ export const defaultSchema = {
     dir: "date",
     task: "date",
     description: {
-      en: "Date of entry",
+      en: "Date of record",
       ru: "Дата записи",
     },
   },
@@ -303,7 +303,7 @@ export const defaultSchema = {
     trunk: "datum",
     dir: "name",
     description: {
-      en: "Name of the person who made the entry",
+      en: "Name of the person who made the record",
       ru: "Имя автора записи",
     },
   },

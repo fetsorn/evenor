@@ -23,7 +23,7 @@ export function FilterQueryList() {
 
     const optionsNew = await api.queryOptions(field);
 
-    const optionValues = optionsNew.map((entry) => entry[field]);
+    const optionValues = optionsNew.map((record) => record[field]);
 
     setOptions([...new Set(optionValues)]);
   }

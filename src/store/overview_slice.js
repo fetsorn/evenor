@@ -320,16 +320,16 @@ export const createOverviewSlice = (set, get) => ({
 
       searchParams.set("reponame", repoUUID);
 
-      const [entry] = await api.select(searchParams);
+      const [record] = await api.select(searchParams);
 
-      repoName = entry.reponame;
+      repoName = record.reponame;
     }
 
     set({
       repoName,
       repoUUID,
       queries: {},
-      entry: undefined,
+      record: undefined,
     });
 
     await get().onQueries();
@@ -347,19 +347,19 @@ export const createOverviewSlice = (set, get) => ({
 
     searchParams.set("reponame", repoName);
 
-    const [entry] = await api.select(searchParams);
+    const [record] = await api.select(searchParams);
 
-    if (entry === undefined) {
+    if (record === undefined) {
       return;
     }
 
-    const repoUUID = entry.UUID;
+    const repoUUID = record.UUID;
 
     set({
       repoName,
       repoUUID,
       queries: {},
-      entry: undefined,
+      record: undefined,
     });
 
     await get().onQueries();

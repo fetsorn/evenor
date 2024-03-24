@@ -28,14 +28,14 @@ export const schemaSync = {
   },
 };
 
-export function Sync({ baseEntry, branchEntry }) {
+export function Sync({ baseRecord, branchRecord }) {
   async function onSyncRepo() {
     // find UUID of repo to sync from
     const searchParams = new URLSearchParams();
 
     searchParams.set("_", "reponame");
 
-    searchParams.set("reponame", branchEntry.sync_tag_target);
+    searchParams.set("reponame", branchRecord.sync_tag_target);
 
     const rootAPI = new API("root");
 
@@ -45,14 +45,14 @@ export function Sync({ baseEntry, branchEntry }) {
 
     // find entries to sync from subset
     const entries = await subsetAPI.select(
-      new URLSearchParams(branchEntry.sync_tag_search),
+      new URLSearchParams(branchRecord.sync_tag_search),
     );
 
-    const supersetAPI = new API(baseEntry.UUID);
+    const supersetAPI = new API(baseRecord.UUID);
 
     // sync entries to superset
-    for (const entry of entries) {
-      await supersetAPI.updateEntry(entry);
+    for (const record of entries) {
+      await supersetAPI.updateRecord(record);
     }
 
     await supersetAPI.commit();
@@ -60,9 +60,9 @@ export function Sync({ baseEntry, branchEntry }) {
 
   return (
     <div>
-      <p>{branchEntry.sync_tag_target}</p>
+      <p>{branchRecord.sync_tag_target}</p>
       <br />
-      <p>{branchEntry.sync_tag_search}</p>
+      <p>{branchRecord.sync_tag_search}</p>
       <br />
       <button type="button" onClick={onSyncRepo}>
         🔄

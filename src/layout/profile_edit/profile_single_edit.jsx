@@ -33,21 +33,21 @@ export function ProfileSingleEdit() {
   const { t } = useTranslation();
 
   const [
-    entry,
+    record,
     group,
     index,
     isSettings,
-    onEntryRevert,
-    onEntrySave,
-    onEntryChange,
+    onRecordRevert,
+    onRecordSave,
+    onRecordChange,
   ] = useStore((state) => [
-    state.entry,
+    state.record,
     state.group,
     state.index,
     state.isSettings,
-    state.onEntryRevert,
-    state.onEntrySave,
-    state.onEntryChange,
+    state.onRecordRevert,
+    state.onRecordSave,
+    state.onRecordChange,
   ]);
 
   const schema = isSettings ? schemaRoot : useStore((state) => state.schema);
@@ -58,11 +58,11 @@ export function ProfileSingleEdit() {
     <div
       className={cn(
         styles.sidebar,
-        { [styles.invisible]: !entry },
+        { [styles.invisible]: !record },
         "profile-edit__sidebar edit-sidebar",
       )}
     >
-      {entry && schema && (
+      {record && schema && (
         <div className={cn(styles.container, "edit-sidebar__container")}>
           <div
             id="scrollcontainer"
@@ -76,7 +76,7 @@ export function ProfileSingleEdit() {
               <Button
                 type="button"
                 title={t("line.button.save")}
-                onClick={() => onEntrySave()}
+                onClick={() => onRecordSave()}
               >
                 💾
               </Button>
@@ -84,7 +84,7 @@ export function ProfileSingleEdit() {
               <Button
                 type="button"
                 title={t("line.button.revert")}
-                onClick={onEntryRevert}
+                onClick={onRecordRevert}
               >
                 ↩
               </Button>
@@ -92,10 +92,10 @@ export function ProfileSingleEdit() {
 
             <EditInput
               {...{
-                index: entry.UUID,
-                entry,
+                index: record.UUID,
+                record,
                 schema,
-                onFieldChange: onEntryChange,
+                onFieldChange: onRecordChange,
                 isBaseObject: true,
               }}
             />

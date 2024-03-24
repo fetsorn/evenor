@@ -18,7 +18,7 @@ export function InputText({ branch, value, onFieldChange }) {
 
     const optionsNew = await api.queryOptions(branch);
 
-    const optionValues = optionsNew.map((entry) => entry[branch]);
+    const optionValues = optionsNew.map((record) => record[branch]);
 
     setOptions([...new Set(optionValues)]);
 

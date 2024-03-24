@@ -24,7 +24,7 @@ function findBranchItem(obj, itemKey) {
   return undefined;
 }
 
-export function WaypointEntries({ entries, onEntrySelect }) {
+export function WaypointEntries({ entries, onRecordSelect }) {
   const [schema] = useStore((state) => [state.schema]);
 
   const fileBranch =
@@ -45,9 +45,9 @@ export function WaypointEntries({ entries, onEntrySelect }) {
       schema[b].task === "filetype",
   );
 
-  function colorEntry(entry) {
+  function colorRecord(record) {
     if (filenameBranch || filetypeBranch) {
-      const file = findBranchItem(entry, fileBranch);
+      const file = findBranchItem(record, fileBranch);
 
       if (file) {
         return colorFile(file[filenameBranch], file[filetypeBranch]);
@@ -60,17 +60,17 @@ export function WaypointEntries({ entries, onEntrySelect }) {
   return (
     <div className={styles.content}>
       <div className={styles.stars}>
-        {entries.map((entry, index) => (
-          <div key={`waypoint_entry_${Math.random()}`}>
+        {entries.map((record, index) => (
+          <div key={`waypoint_record_${Math.random()}`}>
             <button
               className={styles.star}
               style={{
-                backgroundColor: colorEntry(entry),
+                backgroundColor: colorRecord(record),
               }}
               type="button"
-              onClick={() => onEntrySelect(entry, index + 1)}
-              title={entry?.FILE_PATH}
-              id={entry?.UUID}
+              onClick={() => onRecordSelect(record, index + 1)}
+              title={record?.FILE_PATH}
+              id={record?.UUID}
             >
               {index + 1}
             </button>

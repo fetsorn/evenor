@@ -18,10 +18,10 @@ function UploadButton({ onUpload, title }) {
   return <input type="file" onChange={(e) => onUpload(e.target.files[0])} />;
 }
 
-export function InputUpload({ schema, entry, onFieldChange }) {
+export function InputUpload({ schema, record, onFieldChange }) {
   const { t } = useTranslation();
 
-  const branch = entry._;
+  const branch = record._;
 
   const filehashBranch = Object.keys(schema).find(
     (b) => schema[b].trunk === branch && schema[b].task === "filehash",
@@ -34,11 +34,11 @@ export function InputUpload({ schema, entry, onFieldChange }) {
   const repoUUID = useStore((state) => state.repoUUID);
 
   async function onRename(_, filenameValue) {
-    const entryNew = { ...entry };
+    const recordNew = { ...record };
 
-    entryNew[filenameBranch] = filenameValue;
+    recordNew[filenameBranch] = filenameValue;
 
-    onFieldChange(branch, entryNew);
+    onFieldChange(branch, recordNew);
   }
 
   async function onUpload(file) {
@@ -46,30 +46,30 @@ export function InputUpload({ schema, entry, onFieldChange }) {
 
     const [filehash, filename] = await api.uploadFile(file);
 
-    const entryNew = { ...entry };
+    const recordNew = { ...record };
 
-    entryNew[filehashBranch] = filehash;
+    recordNew[filehashBranch] = filehash;
 
-    entryNew[filenameBranch] = filename;
+    recordNew[filenameBranch] = filename;
 
-    onFieldChange(branch, entryNew);
+    onFieldChange(branch, recordNew);
   }
 
-  const isNotUploaded = entry[filehashBranch] === undefined;
+  const isNotUploaded = record[filehashBranch] === undefined;
 
   return (
     <div>
-      <div>{entry.UUID}</div>
+      <div>{record.UUID}</div>
 
       <InputText
         {...{
           branch: filenameBranch,
-          value: entry[filenameBranch] ?? "",
+          value: record[filenameBranch] ?? "",
           onFieldChange: onRename,
         }}
       />
 
-      {entry[filehashBranch] ?? ""}
+      {record[filehashBranch] ?? ""}
 
       {isNotUploaded && (
         <UploadButton
@@ -78,8 +78,8 @@ export function InputUpload({ schema, entry, onFieldChange }) {
         />
       )}
 
-      {entry[filenameBranch] && entry[filehashBranch] && (
-        <AssetView {...{ entry, schema }} />
+      {record[filenameBranch] && record[filehashBranch] && (
+        <AssetView {...{ record, schema }} />
       )}
     </div>
   );

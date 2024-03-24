@@ -142,9 +142,9 @@ async function selectStream() {
       // parentPort.postMessage(`logapi/electron.worker/selectStream,
       // ${searchParams.toString()}, ${baseUUID}`);
 
-      const entry = await query.buildRecord(base, baseKey);
+      const record = await query.buildRecord(base, baseKey);
 
-      parentPort.postMessage({ msg: "selectStream:enqueue", entry });
+      parentPort.postMessage({ msg: "selectStream:enqueue", record });
     }
 
     parentPort.postMessage({ msg: "selectStream:close" });
@@ -153,26 +153,26 @@ async function selectStream() {
   }
 }
 
-async function updateEntry() {
-  const { entry } = workerData;
+async function updateRecord() {
+  const { record } = workerData;
 
-  const entryNew = await new CSVS({
+  const recordNew = await new CSVS({
     readFile,
     writeFile,
     randomUUID: crypto.randomUUID,
-  }).update(entry);
+  }).update(record);
 
-  parentPort.postMessage(entryNew);
+  parentPort.postMessage(recordNew);
 }
 
-async function deleteEntry() {
-  const { entry } = workerData;
+async function deleteRecord() {
+  const { record } = workerData;
 
   await new CSVS({
     readFile,
     writeFile,
     randomUUID: crypto.randomUUID,
-  }).delete(entry);
+  }).delete(record);
 
   parentPort.postMessage({});
 }
@@ -188,10 +188,10 @@ async function run() {
       return selectStream();
 
     case "update":
-      return updateEntry();
+      return updateRecord();
 
     case "delete":
-      return deleteEntry();
+      return deleteRecord();
 
     default:
       // do nothing

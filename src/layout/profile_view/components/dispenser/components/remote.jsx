@@ -36,38 +36,38 @@ export const schemaRemote = {
   },
 };
 
-export function Remote({ baseEntry, branchEntry }) {
-  const api = new API(baseEntry.UUID);
+export function Remote({ baseRecord, branchRecord }) {
+  const api = new API(baseRecord.UUID);
 
   async function onPullRepo() {
     await api.commit();
 
-    await api.pull(branchEntry.remote_name);
+    await api.pull(branchRecord.remote_name);
   }
 
   async function onPushRepo() {
     await api.commit();
 
-    await api.push(branchEntry.remote_name);
+    await api.push(branchRecord.remote_name);
   }
 
   async function onRemoteSync() {
     await api.commit();
 
     await api.addRemote(
-      branchEntry.remote_name,
-      branchEntry.remote_url,
-      branchEntry.remote_token,
+      branchRecord.remote_name,
+      branchRecord.remote_url,
+      branchRecord.remote_token,
     );
 
-    await api.pull(branchEntry.remote_name);
+    await api.pull(branchRecord.remote_name);
 
-    await api.push(branchEntry.remote_name);
+    await api.push(branchRecord.remote_name);
   }
 
   return (
     <div>
-      <p>{branchEntry.remote_url}</p>
+      <p>{branchRecord.remote_url}</p>
       <br />
       <button type="button" onClick={onPullRepo}>
         ⬇️

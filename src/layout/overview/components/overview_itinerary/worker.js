@@ -2,12 +2,12 @@ function groupArray(data, branch) {
   // [event1, event, event3]
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
-  const objectOfArrays = data.reduce((acc, entry) => {
-    const value = entry[branch] ?? "";
+  const objectOfArrays = data.reduce((acc, record) => {
+    const value = record[branch] ?? "";
 
     acc[value] = acc[value] || [];
 
-    acc[value].push(entry);
+    acc[value].push(record);
 
     return acc;
   }, {});

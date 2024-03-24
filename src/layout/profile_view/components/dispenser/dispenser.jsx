@@ -1,25 +1,25 @@
 import React from "react";
 import { RSS, Remote, Sync, Zip, Local, TG } from "./components/index.js";
 
-export function Dispenser({ baseEntry, branchEntry }) {
-  switch (branchEntry._) {
+export function Dispenser({ baseRecord, branchRecord }) {
+  switch (branchRecord._) {
     case "sync_tag":
-      return <Sync {...{ baseEntry, branchEntry }} />;
+      return <Sync {...{ baseRecord, branchRecord }} />;
 
     case "remote_tag":
-      return <Remote {...{ baseEntry, branchEntry }} />;
+      return <Remote {...{ baseRecord, branchRecord }} />;
 
     case "rss_tag":
-      return <RSS {...{ baseEntry, branchEntry }} />;
+      return <RSS {...{ baseRecord, branchRecord }} />;
 
     case "zip_tag":
-      return <Zip {...{ baseEntry, branchEntry }} />;
+      return <Zip {...{ baseRecord, branchRecord }} />;
 
     case "local_tag":
-      return <Local {...{ baseEntry, branchEntry }} />;
+      return <Local {...{ baseRecord, branchRecord }} />;
 
     case "tg_tag":
-      return <TG {...{ baseEntry, branchEntry }} />;
+      return <TG {...{ baseRecord, branchRecord }} />;
 
     default:
   }

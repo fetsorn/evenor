@@ -6,19 +6,19 @@ import { FieldText } from "..";
 
 const Dispenser = React.lazy(() => import("../dispenser/components/index.js"));
 
-export function ViewField({ entry, schema, isBaseObject }) {
+export function ViewField({ record, schema, isBaseObject }) {
   const { i18n, t } = useTranslation();
 
   const [isOpen, setIsOpen] = useState(false);
 
   const [isOpenUUID, setIsOpenUUID] = useState(false);
 
-  const [baseEntry, repoUUID] = useStore((state) => [
-    state.entry,
+  const [baseRecord, repoUUID] = useStore((state) => [
+    state.record,
     state.repoUUID,
   ]);
 
-  const branch = entry._;
+  const branch = record._;
 
   const branchType = schema[branch]?.type;
 
@@ -53,24 +53,24 @@ export function ViewField({ entry, schema, isBaseObject }) {
                 {uuidDescription}
               </div>
 
-              {entry.UUID}
+              {record.UUID}
             </div>
           )}
         </div>
 
-        {Object.keys(entry).map((leaf) => {
+        {Object.keys(record).map((leaf) => {
           if (leaf === "_" || leaf === "UUID") {
             return;
           }
 
-          const leafEntry =
+          const leafRecord =
             schema[leaf]?.type === "object" || schema[leaf]?.type === "array"
-              ? entry[leaf]
-              : { _: leaf, [leaf]: entry[leaf] };
+              ? record[leaf]
+              : { _: leaf, [leaf]: record[leaf] };
 
           return (
-            <div key={(entry.UUID ?? "") + leaf}>
-              <ViewField entry={leafEntry} schema={schema} />
+            <div key={(record.UUID ?? "") + leaf}>
+              <ViewField record={leafRecord} schema={schema} />
             </div>
           );
         })}
@@ -100,7 +100,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
             </div>
 
             <Suspense>
-              <Dispenser {...{ baseEntry, branchEntry: entry }} />
+              <Dispenser {...{ baseRecord, branchRecord: record }} />
             </Suspense>
           </div>
         )}
@@ -153,14 +153,14 @@ export function ViewField({ entry, schema, isBaseObject }) {
                         {uuidDescription}
                       </div>
 
-                      {entry.UUID}
+                      {record.UUID}
                     </div>
                   )}
                 </div>
 
-                {entry.items.map((item) => (
+                {record.items.map((item) => (
                   <div key={`array_item_${Math.random()}`}>
-                    <ViewField entry={item} schema={schema} />
+                    <ViewField record={item} schema={schema} />
                   </div>
                 ))}
               </div>
@@ -171,7 +171,7 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
     case "object":
       if (branchTask === "file") {
-        return <AssetView {...{ entry, schema }} />;
+        return <AssetView {...{ record, schema }} />;
       }
 
       return (
@@ -216,25 +216,25 @@ export function ViewField({ entry, schema, isBaseObject }) {
                       {uuidDescription}
                     </div>
 
-                    {entry.UUID}
+                    {record.UUID}
                   </div>
                 )}
               </div>
 
-              {Object.keys(entry).map((leaf) => {
+              {Object.keys(record).map((leaf) => {
                 if (leaf === "_" || leaf === "UUID") {
                   return <div />;
                 }
 
-                const leafEntry =
+                const leafRecord =
                   schema[leaf]?.type === "object" ||
                   schema[leaf]?.type === "array"
-                    ? entry[leaf]
-                    : { _: leaf, [leaf]: entry[leaf] };
+                    ? record[leaf]
+                    : { _: leaf, [leaf]: record[leaf] };
 
                 return (
-                  <div key={(entry.UUID ?? "") + leaf}>
-                    <ViewField entry={leafEntry} schema={schema} />
+                  <div key={(record.UUID ?? "") + leaf}>
+                    <ViewField record={leafRecord} schema={schema} />
                   </div>
                 );
               })}
@@ -245,14 +245,14 @@ export function ViewField({ entry, schema, isBaseObject }) {
 
     default:
       if (branchTask === "filename") {
-        return <AssetView {...{ entry, schema }} />;
+        return <AssetView {...{ record, schema }} />;
       }
 
       return (
         <div>
           {branchDescription}
 
-          <FieldText value={entry[branch]} />
+          <FieldText value={record[branch]} />
         </div>
       );
   }

@@ -4,9 +4,9 @@ import { API, deepClone } from "../../../..//api";
 import { useStore } from "../../../../store/index.js";
 import { EditInput, InputDropdown } from "..";
 
-async function addField(schema, entryOriginal, branch) {
+async function addField(schema, recordOriginal, branch) {
   // used to use deepClone
-  const entry = deepClone(entryOriginal);
+  const record = deepClone(recordOriginal);
 
   let value;
 
@@ -29,7 +29,7 @@ async function addField(schema, entryOriginal, branch) {
   } else {
     value = "";
   }
-  const base = entry._;
+  const base = record._;
 
   const { trunk } = schema[branch];
 
@@ -38,19 +38,19 @@ async function addField(schema, entryOriginal, branch) {
   }
 
   if (schema[base].type === "array") {
-    if (entry.items === undefined) {
-      entry.items = [];
+    if (record.items === undefined) {
+      record.items = [];
     }
 
-    entry.items.push({ ...value });
+    record.items.push({ ...value });
   } else {
-    entry[branch] = value;
+    record[branch] = value;
   }
 
-  return entry;
+  return record;
 }
 
-export function InputObject({ schema, entry, onFieldChange }) {
+export function InputObject({ schema, record, onFieldChange }) {
   const { t } = useTranslation();
 
   const [options, setOptions] = useState([]);
@@ -61,15 +61,15 @@ export function InputObject({ schema, entry, onFieldChange }) {
 
   const base = useStore((state) => state.base);
 
-  const branch = entry._;
+  const branch = record._;
 
-  const addedLeaves = Object.keys(entry).filter(
+  const addedLeaves = Object.keys(record).filter(
     (b) => b !== "_" && b !== "UUID",
   );
 
-  const notAddedLeaves = entry
+  const notAddedLeaves = record
     ? Object.keys(schema).filter((leaf) => {
-        const isAdded = Object.prototype.hasOwnProperty.call(entry, leaf);
+        const isAdded = Object.prototype.hasOwnProperty.call(record, leaf);
 
         const isNonObjectRoot =
           leaf === branch &&
@@ -83,14 +83,14 @@ export function InputObject({ schema, entry, onFieldChange }) {
     : [];
 
   async function onAddObjectField(fieldBranch) {
-    const objectNew = await addField(schema, entry, fieldBranch);
+    const objectNew = await addField(schema, record, fieldBranch);
 
     onFieldChange(branch, objectNew);
   }
 
   function generateLeaf(leaf) {
     function onFieldChangeObjectField(fieldBranch, fieldValue) {
-      const objectNew = { ...entry };
+      const objectNew = { ...record };
 
       objectNew[fieldBranch] = fieldValue;
 
@@ -98,25 +98,25 @@ export function InputObject({ schema, entry, onFieldChange }) {
     }
 
     function onFieldRemoveObjectField(fieldBranch) {
-      const objectNew = { ...entry };
+      const objectNew = { ...record };
 
       delete objectNew[fieldBranch];
 
       onFieldChange(branch, objectNew);
     }
 
-    const leafEntry =
+    const leafRecord =
       schema[leaf]?.type === "object" || schema[leaf]?.type === "array"
-        ? entry[leaf]
-        : { _: leaf, [leaf]: entry[leaf] };
+        ? record[leaf]
+        : { _: leaf, [leaf]: record[leaf] };
 
     return (
-      <div key={`${entry.UUID ?? ""}${leaf}`}>
+      <div key={`${record.UUID ?? ""}${leaf}`}>
         <EditInput
           {...{
-            index: `${entry.UUID ?? ""}${leaf}`,
+            index: `${record.UUID ?? ""}${leaf}`,
             schema,
-            entry: leafEntry,
+            record: leafRecord,
             onFieldChange: onFieldChangeObjectField,
             onFieldRemove: onFieldRemoveObjectField,
           }}
@@ -139,7 +139,7 @@ export function InputObject({ schema, entry, onFieldChange }) {
 
   return (
     <div>
-      <div>{entry.UUID}</div>
+      <div>{record.UUID}</div>
 
       {options.length > 0 && (
         <select

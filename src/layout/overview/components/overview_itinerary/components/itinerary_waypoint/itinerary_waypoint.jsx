@@ -16,8 +16,8 @@ function formatDate(title) {
 
 export function ItineraryWaypoint({
   data: waypoint,
-  onEntrySelect,
-  onEntryCreate,
+  onRecordSelect,
+  onRecordCreate,
   isLast,
   ...others
 }) {
@@ -38,7 +38,7 @@ export function ItineraryWaypoint({
           className={styles.add}
           type="button"
           onClick={() =>
-            onEntryCreate(waypoint.date, waypoint.events.length + 1)
+            onRecordCreate(waypoint.date, waypoint.events.length + 1)
           }
           title={t("line.button.add")}
           key="addevent"
@@ -47,7 +47,7 @@ export function ItineraryWaypoint({
         </button>
       </div>
 
-      <WaypointEntries {...{ onEntrySelect }} entries={waypoint.events} />
+      <WaypointEntries {...{ onRecordSelect }} entries={waypoint.events} />
     </section>
   );
 }

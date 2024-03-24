@@ -42,12 +42,12 @@ function FileView({ downloadUrl, mimetype }) {
   return <object aria-label="file view" type={mimetype} data={downloadUrl} />;
 }
 
-export function AssetView({ schema, entry }) {
+export function AssetView({ schema, record }) {
   const [blobURL, setBlobURL] = useState(undefined);
 
   const [mimetype, setMimetype] = useState("");
 
-  const branch = entry._;
+  const branch = record._;
 
   const filehashBranch = Object.keys(schema).find(
     (b) =>
@@ -74,22 +74,22 @@ export function AssetView({ schema, entry }) {
     let contents;
 
     try {
-      contents = await api.fetchAsset(entry[filehashBranch]);
+      contents = await api.fetchAsset(record[filehashBranch]);
     } catch (e) {
       console.log(e);
     }
 
-    // if no contents, try to fetch entry[filenameBranch]
+    // if no contents, try to fetch record[filenameBranch]
     if (contents === undefined) {
       try {
-        contents = await api.fetchAsset(entry[filenameBranch]);
+        contents = await api.fetchAsset(record[filenameBranch]);
       } catch (e) {
         console.log(e);
       }
     }
 
     if (contents === undefined) {
-      console.log("assetView failed", entry);
+      console.log("assetView failed", record);
 
       return;
     }
@@ -101,13 +101,13 @@ export function AssetView({ schema, entry }) {
     let contents = await fetchAsset();
 
     // if cannot be shown in the browser, try to convert to something that can be shown
-    if (!isIFrameable(entry[filenameBranch])) {
-      contents = await convert(entry[filehashBranch], contents);
+    if (!isIFrameable(record[filenameBranch])) {
+      contents = await convert(record[filehashBranch], contents);
     }
 
     const mime = await import("mime");
 
-    const mimetypeNew = mime.getType(entry[filenameBranch]);
+    const mimetypeNew = mime.getType(record[filenameBranch]);
 
     setMimetype(mimetypeNew);
 
@@ -121,16 +121,16 @@ export function AssetView({ schema, entry }) {
   async function onDownload() {
     let contents = await fetchAsset();
 
-    api.downloadAsset(contents, entry[filenameBranch] ?? entry[filehashBranch]);
+    api.downloadAsset(contents, record[filenameBranch] ?? record[filehashBranch]);
   }
 
   if (!blobURL) {
-    if (entry[filehashBranch] || entry[filenameBranch]) {
+    if (record[filehashBranch] || record[filenameBranch]) {
       return (
         <div>
-          <p>{entry[filehashBranch]}</p>
+          <p>{record[filehashBranch]}</p>
 
-          <p>{entry[filenameBranch]}</p>
+          <p>{record[filenameBranch]}</p>
 
           <button type="button" onClick={() => onView()}>
             ▶️
@@ -146,9 +146,9 @@ export function AssetView({ schema, entry }) {
     return (
       <div>
         <div>
-          <p>{entry[filehashBranch]}</p>
+          <p>{record[filehashBranch]}</p>
 
-          <p>{entry[filenameBranch]}</p>
+          <p>{record[filenameBranch]}</p>
 
           <button type="button" onClick={() => setBlobURL(undefined)}>
             🔽

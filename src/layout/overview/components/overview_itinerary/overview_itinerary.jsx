@@ -11,13 +11,13 @@ export function OverviewItinerary() {
 
   const { t } = useTranslation();
 
-  const [entry, records, sortBy, onEntrySelect, onEntryCreate, onBatchSelect] =
+  const [record, records, sortBy, onRecordSelect, onRecordCreate, onBatchSelect] =
     useStore((state) => [
-      state.entry,
+      state.record,
       state.records,
       state.sortBy,
-      state.onEntrySelect,
-      state.onEntryCreate,
+      state.onRecordSelect,
+      state.onRecordCreate,
       state.onBatchSelect,
     ]);
 
@@ -26,8 +26,8 @@ export function OverviewItinerary() {
 
     setItinerary(itineraryNew);
 
-    if (entry?.UUID) {
-      document.getElementById(entry.UUID).scrollIntoView();
+    if (record?.UUID) {
+      document.getElementById(record.UUID).scrollIntoView();
     }
   }
 
@@ -41,7 +41,7 @@ export function OverviewItinerary() {
         <button
           className={styles.star}
           type="button"
-          onClick={() => onEntryCreate("", "1")}
+          onClick={() => onRecordCreate("", "1")}
           title={t("line.button.add")}
           key="addevent"
         >
@@ -49,7 +49,7 @@ export function OverviewItinerary() {
         </button>
       ) : (
         <VirtualScroll
-          {...{ onEntrySelect, onEntryCreate, onBatchSelect }}
+          {...{ onRecordSelect, onRecordCreate, onBatchSelect }}
           data={itinerary}
           rowComponent={ItineraryWaypoint}
         />

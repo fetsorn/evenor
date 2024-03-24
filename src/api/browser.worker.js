@@ -53,14 +53,14 @@ async function selectStream(message) {
     }).selectBaseKeys(searchParams);
 
     for (const baseKey of baseKeys) {
-      const entry = await new CSVS({ readFile, grep }).buildRecord(
+      const record = await new CSVS({ readFile, grep }).buildRecord(
         base,
         baseKey,
       );
 
       postMessage({
         action: "write",
-        entry,
+        record,
       });
     }
 

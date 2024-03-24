@@ -4,19 +4,19 @@ import { useStore } from '../../../../../../store/index.js';
 import styles from './filter_groupby_select.module.css';
 
 /**
-	* return leaves of base
-	* @name filterLeaves
-	* @function 
-	* @param {object} schema - structure data base.
-	* @param {string} base - field of schema.
-	* @returns {string[]} - list of lieaves of base
-	*/
+  * return leaves of base
+  * @name filterLeaves
+  * @function 
+  * @param {object} schema - structure data base.
+  * @param {string} base - field of schema.
+  * @returns {string[]} - list of lieaves of base
+  */
 
   function filterLeaves(schema, base) {
     // how to find all leaves of base. It should return all branches that have trunk === base when you select the plus button(base)
-		return Object.keys(schema).filter((branch) => schema[branch].trunk === base)
-		
-	}
+    return Object.keys(schema).filter((branch) => schema[branch].trunk === base)
+    
+  }
 
 export function FilterGroupBySelect({
   
@@ -24,29 +24,29 @@ export function FilterGroupBySelect({
   const { i18n, t } = useTranslation();
 
   const [
-		groupBy,
+    groupBy,
     schema,
-		base,
-		setGroupBy,
+    base,
+    setGroupBy,
   ] = useStore((state) => [
-		state.groupBy,
+    state.groupBy,
     state.schema,
-		state.base,
-		state.setGroupBy,
+    state.base,
+    state.setGroupBy,
   ]);
   
-	
-	const options = filterLeaves(schema, base).concat([base])
-	
+  
+  const options = filterLeaves(schema, base).concat([base])
+  
 
   return (
-		<label htmlFor={`selectGroupBy`}>
-			{t('header.dropdown.groupby')}
-		<select
-					id={`selectGroupBy`}
+    <label htmlFor={`selectGroupBy`}>
+      {t('header.dropdown.groupby')}
+    <select
+          id={`selectGroupBy`}
           value={groupBy}
           onChange={({ target: { value } }) => {
-						setGroupBy(value)					
+            setGroupBy(value)          
           }}
         >
           {options.map((field) => (
@@ -55,6 +55,6 @@ export function FilterGroupBySelect({
             </option>
           ))}
         </select>
-				</label>
+        </label>
   );
 }

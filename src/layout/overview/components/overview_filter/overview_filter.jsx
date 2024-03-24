@@ -6,10 +6,10 @@ export function OverviewFilter() {
 
   return (
     <div className={styles.panel}>
-			<FilterBaseSelect/>
-      		<FilterQueryList />
-			<FilterQueryPlus/>
-			<FilterGroupBySelect/>
+      <FilterBaseSelect/>
+          <FilterQueryList />
+      <FilterQueryPlus/>
+      <FilterGroupBySelect/>
     </div>
   );
 }

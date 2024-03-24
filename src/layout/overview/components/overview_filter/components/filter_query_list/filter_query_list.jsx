@@ -37,8 +37,8 @@ export function FilterQueryList() {
         <input
           className={styles.input}
           type="text"
-					id={`input-${field}`}
-					value={queries[field]}
+          id={`input-${field}`}
+          value={queries[field]}
           onChange={({ target: { value } }) => {
             onQueryAdd(field, value);
           }}

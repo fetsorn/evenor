@@ -9,26 +9,26 @@ export function FilterBaseSelect({
   const { i18n, t } = useTranslation();
 
   const [
-		base,
+    base,
     schema,
-		setBase,
+    setBase,
   ] = useStore((state) => [
-		state.base,
+    state.base,
     state.schema,
-		state.setBase,
+    state.setBase,
   ]);
-	
+  
 
 const options = Object.keys(schema)
 
   return (
-		<label htmlFor={`selectBase`}>
-			{t('header.dropdown.base')}
-		<select
-					id={`selectBase`}
+    <label htmlFor={`selectBase`}>
+      {t('header.dropdown.base')}
+    <select
+          id={`selectBase`}
           value={base}
           onChange={({ target: { value } }) => {
-						setBase(value)					
+            setBase(value)          
           }}
         >
           {options.map((field) => (
@@ -37,6 +37,6 @@ const options = Object.keys(schema)
             </option>
           ))}
         </select>
-				</label>
+        </label>
   );
 }

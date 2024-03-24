@@ -9,38 +9,38 @@ import {
 const OverviewItinerary = React.lazy(() => import('./components/overview_itinerary/index.js'));
 
 export function Overview() {
-	const { t } = useTranslation();
+  const { t } = useTranslation();
 
-	const [
-		isView,
-		repoUUID,
-		repoName,
-		setRepoUUID,
-		onSettingsOpen,
-	  ] = useStore((state) => [
-		state.isView,
-		state.repoUUID,
-		state.repoName,
-		state.setRepoUUID,
-		state.onSettingsOpen,
-	  ]);
+  const [
+    isView,
+    repoUUID,
+    repoName,
+    setRepoUUID,
+    onSettingsOpen,
+    ] = useStore((state) => [
+    state.isView,
+    state.repoUUID,
+    state.repoName,
+    state.setRepoUUID,
+    state.onSettingsOpen,
+    ]);
 
-	  function onHome() {
+    function onHome() {
     
-		setRepoUUID('root');
-	  }
+    setRepoUUID('root');
+    }
 
       return (
         <div>
-			<div>
-			{ (!isView)
+      <div>
+      { (!isView)
          && repoUUID !== 'root'
         ? (
           <Button
             type="button"
             title={t('header.button.back')}
             onClick={() => onHome()}
-			>
+      >
             {/* &lt;= */}
             🏠
             {repoName}
@@ -48,18 +48,18 @@ export function Overview() {
         )
         : <div />}
 
-		{ repoUUID !== 'root' && (!isView) && (
-				<Button
-				type="button"
-				title={t('header.button.back')}
-				onClick={onSettingsOpen}
-				>
-				⚙️
-				</Button>
-			)}
-			</div>
-			<OverviewFilter/>
-			<Suspense><OverviewItinerary /></Suspense>
+    { repoUUID !== 'root' && (!isView) && (
+        <Button
+        type="button"
+        title={t('header.button.back')}
+        onClick={onSettingsOpen}
+        >
+        ⚙️
+        </Button>
+      )}
+      </div>
+      <OverviewFilter/>
+      <Suspense><OverviewItinerary /></Suspense>
         </div>
       );
 }

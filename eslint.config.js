@@ -6,12 +6,6 @@ import babelParser from "@babel/eslint-parser";
 
 export default [
   js.configs.recommended,
-  stylistic.configs.customize({
-    indent: 2,
-    quotes: "double",
-    semi: true,
-    jsx: true,
-  }),
   {
     languageOptions: {
       globals: {
@@ -29,5 +23,11 @@ export default [
       "no-restricted-syntax": "off",
       "quotes": "off",
     }
-  }
+  },
+  stylistic.configs.customize({
+    indent: 2,
+    quotes: "double",
+    semi: true,
+    jsx: true,
+  }),
 ]

@@ -42,7 +42,7 @@ function Page() {
       <main className={styles.main}>
         <Overview />
 
-		<Suspense>
+    <Suspense>
       { isEdit ? (
         <ProfileSingleEdit />
       ) : (

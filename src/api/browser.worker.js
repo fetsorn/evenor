@@ -1,7 +1,7 @@
-import { CSVS } from '@fetsorn/csvs-js';
+import { CSVS } from "@fetsorn/csvs-js";
 
 async function grep(contentFile, patternFile, isInverted = false) {
-  const wasm = await import('@fetsorn/wasm-grep');
+  const wasm = await import("@fetsorn/wasm-grep");
 
   return wasm.grep(
     contentFile,
@@ -23,7 +23,7 @@ const readFile = (filepath) => new Promise((res, rej) => {
     }
   };
 
-  postMessage({ action: 'readFile', filepath }, [channel.port2]);
+  postMessage({ action: "readFile", filepath }, [channel.port2]);
 });
 
 async function select(message) {
@@ -56,21 +56,21 @@ async function selectStream(message) {
       const entry = await (new CSVS({ readFile, grep })).buildRecord(base, baseKey);
 
       postMessage({
-        action: 'write',
+        action: "write",
         entry,
       });
     }
 
-    postMessage({ action: 'close' }, [channel.port2]);
+    postMessage({ action: "close" }, [channel.port2]);
   } catch (e) {
-    postMessage({ action: 'error', error: e }, [channel.port2]);
+    postMessage({ action: "error", error: e }, [channel.port2]);
   }
 }
 
 onmessage = async (message) => {
-  if (message.data.action === 'select') {
+  if (message.data.action === "select") {
     await select(message);
-  } else if (message.data.action === 'selectStream') {
+  } else if (message.data.action === "selectStream") {
     await selectStream(message);
   }
 };

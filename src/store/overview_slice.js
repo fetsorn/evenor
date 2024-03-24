@@ -1,4 +1,4 @@
-import { API, schemaRoot } from "../api";
+import { API, schemaRoot } from "../api/index.js";
 
 // pick a param to group data by
 function getDefaultGroupBy(schema, data, searchParams) {
@@ -15,22 +15,21 @@ function getDefaultGroupBy(schema, data, searchParams) {
 
   // fallback to first date param present in data
   groupBy = Object.keys(schema).find(
-    (branch) =>
-      schema[branch].task === "date" &&
-      Object.prototype.hasOwnProperty.call(car, branch)
+    (branch) => schema[branch].task === "date"
+      && Object.prototype.hasOwnProperty.call(car, branch),
   );
 
   // fallback to first param present in data
   if (!groupBy) {
-    groupBy = Object.keys(schema).find((branch) =>
-      Object.prototype.hasOwnProperty.call(car, branch)
+    groupBy = Object.keys(schema).find(
+      (branch) => Object.prototype.hasOwnProperty.call(car, branch),
     );
   }
 
   // fallback to first date param present in schema
   if (!groupBy) {
     groupBy = Object.keys(schema).find(
-      (branch) => schema[branch].task === "date"
+      (branch) => schema[branch].task === "date",
     );
   }
 
@@ -50,9 +49,7 @@ function getDefaultGroupBy(schema, data, searchParams) {
 export function queriesToParams(queries) {
   const searchParams = new URLSearchParams();
 
-  Object.keys(queries).map((key) =>
-    queries[key] === "" ? null : searchParams.set(key, queries[key])
-  );
+  Object.keys(queries).map((key) => (queries[key] === "" ? null : searchParams.set(key, queries[key])));
 
   return searchParams;
 }
@@ -60,13 +57,13 @@ export function queriesToParams(queries) {
 function paramsToQueries(searchParams) {
   const searchParamsObject = Array.from(searchParams).reduce(
     (acc, [key, value]) => ({ ...acc, [key]: value }),
-    {}
+    {},
   );
 
   const queries = Object.fromEntries(
     Object.entries(searchParamsObject).filter(
-      ([key]) => key !== "~" && key !== "-" && !key.startsWith(".")
-    )
+      ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
+    ),
   );
 
   return queries;
@@ -162,9 +159,9 @@ export const createOverviewSlice = (set, get) => ({
 
     const api = new API(repoUUID);
 
-    const debugMessage = await api.helloWorld("Hello")
+    const debugMessage = await api.helloWorld("Hello");
 
-    console.log(debugMessage)
+    console.log(debugMessage);
 
     const queries = paramsToQueries(searchParams);
 
@@ -173,7 +170,7 @@ export const createOverviewSlice = (set, get) => ({
     const schema = await api.readSchema();
 
     const base = Object.keys(schema).find(
-      (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
+      (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
     );
 
     set({
@@ -211,7 +208,7 @@ export const createOverviewSlice = (set, get) => ({
     searchParams.set("_", base);
 
     const { strm: fromStrm, closeHandler } = await api.selectStream(
-      searchParams
+      searchParams,
     );
 
     set({ closeHandler });
@@ -222,16 +219,15 @@ export const createOverviewSlice = (set, get) => ({
 
         const schemaBase = Object.fromEntries(
           Object.entries(schema).filter(
-            ([branch, info]) =>
-              branch === base ||
-              info.trunk === base ||
-              schema[info.trunk]?.trunk === base
-          )
+            ([branch, info]) => branch === base
+              || info.trunk === base
+              || schema[info.trunk]?.trunk === base,
+          ),
         );
 
         const groupBy = Object.prototype.hasOwnProperty.call(
           schemaBase,
-          queries[".group"]
+          queries[".group"],
         )
           ? queries[".group"]
           : getDefaultGroupBy(schemaBase, overview, searchParams);
@@ -264,9 +260,8 @@ export const createOverviewSlice = (set, get) => ({
       const base = Object.prototype.hasOwnProperty.call(schema, queries._)
         ? queries._
         : Object.keys(schema).find(
-            (branch) =>
-              !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
-          );
+          (branch) => !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
+        );
 
       const searchParams = queriesToParams(queries);
 
@@ -275,7 +270,7 @@ export const createOverviewSlice = (set, get) => ({
       window.history.replaceState(
         null,
         null,
-        `${pathname}?${searchParams.toString()}`
+        `${pathname}?${searchParams.toString()}`,
       );
 
       set({

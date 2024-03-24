@@ -27,6 +27,7 @@
       "no-await-in-loop": "off",
       "import/no-cycle": "off",
       "no-restricted-syntax": "off",
+      "quotes": "off",
       "@stylistic/quotes": ["warn", "double"]
     }
 }

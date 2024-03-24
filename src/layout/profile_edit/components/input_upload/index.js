@@ -1,1 +1,1 @@
-export { InputUpload } from './input_upload.jsx';
+export { InputUpload } from "./input_upload.jsx";

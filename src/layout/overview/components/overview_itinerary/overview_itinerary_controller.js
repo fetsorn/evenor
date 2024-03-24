@@ -1,33 +1,33 @@
-function queryWorkerInit() {
-  const worker = new Worker(new URL('./worker', import.meta.url));
+// function queryWorkerInit() {
+//   const worker = new Worker(new URL("./worker", import.meta.url));
 
-  const buildLine = (data, branch) => new Promise((res, rej) => {
-    const channel = new MessageChannel();
+//   const buildLine = (data, branch) => new Promise((res, rej) => {
+//     const channel = new MessageChannel();
 
-    channel.port1.onmessage = ({ data: dataNew }) => {
-      channel.port1.close();
+//     channel.port1.onmessage = ({ data: dataNew }) => {
+//       channel.port1.close();
 
-      if (dataNew.error) {
-        rej(dataNew.error);
-      } else {
-        res(dataNew.result);
-      }
-    };
+//       if (dataNew.error) {
+//         rej(dataNew.error);
+//       } else {
+//         res(dataNew.result);
+//       }
+//     };
 
-    worker.postMessage({ action: 'build', data, branch }, [
-      channel.port2,
-    ]);
-  });
+//     worker.postMessage({ action: "build", data, branch }, [
+//       channel.port2,
+//     ]);
+//   });
 
-  return { buildLine };
-}
+//   return { buildLine };
+// }
 
 function groupArray(data, branch) {
   // [event1, event, event3]
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   const objectOfArrays = data.filter(Boolean).reduce((acc, entry) => {
-    const value = entry[branch] ?? '';
+    const value = entry[branch] ?? "";
 
     acc[value] = acc[value] || [];
 
@@ -50,7 +50,7 @@ export async function buildItinerary(overview, groupBy) {
   // const queryWorker = queryWorkerInit();
 
   // const itinerary = await queryWorker.buildLine(overview, groupBy);
-  const itinerary = groupArray(overview, groupBy)
+  const itinerary = groupArray(overview, groupBy);
 
   return itinerary;
 }

@@ -1,23 +1,22 @@
-import fs from 'fs';
-import path from 'path';
-import { URLSearchParams } from 'url';
-import { app, dialog } from 'electron';
-import git from 'isomorphic-git';
-import http from 'isomorphic-git/http/node/index.cjs';
-import { exportPDF, generateLatex } from 'lib/latex';
-import { Worker } from 'node:worker_threads';
-import { ReadableStream } from 'node:stream/web';
+import fs from "fs";
+import path from "path";
+import { URLSearchParams } from "url";
+import { app, dialog } from "electron";
+import git from "isomorphic-git";
+import http from "isomorphic-git/http/node/index.cjs";
+import { exportPDF, generateLatex } from "lib/latex";
+import { Worker } from "node:worker_threads";
 
 const pfs = fs.promises;
 
-if (process.platform === 'linux') {
-  app.setPath("appData", process.env.XDG_DATA_HOME)
+if (process.platform === "linux") {
+  app.setPath("appData", process.env.XDG_DATA_HOME);
 }
 
-let appPath = app.getPath("userData")
+let appPath = app.getPath("userData");
 
-if (process.platform === 'darwin') {
-  appPath = path.join(appPath, 'store');
+if (process.platform === "darwin") {
+  appPath = path.join(appPath, "store");
 }
 
 const lfsDir = "lfs";
@@ -30,7 +29,7 @@ let streamWorker;
 // so we want only one instance of worker running at any time
 // and we terminate the previous instance if worker is still running
 async function runWorker(workerData) {
-  if (workerData.msg === 'select' && readWorker !== undefined) {
+  if (workerData.msg === "select" && readWorker !== undefined) {
     console.log("read worker terminated");
     await readWorker.terminate();
 
@@ -39,33 +38,33 @@ async function runWorker(workerData) {
 
   return new Promise((resolve, reject) => {
     const worker = new Worker(
-      new URL('./electron.worker.js', import.meta.url),
+      new URL("./electron.worker.js", import.meta.url),
       {
         workerData,
       },
     );
 
-    worker.on('message', (message) => {
-      if (typeof message === 'string' && message.startsWith('log')) {
+    worker.on("message", (message) => {
+      if (typeof message === "string" && message.startsWith("log")) {
         // console.log(message);
       } else {
-        if (workerData.msg === 'select') {
+        if (workerData.msg === "select") {
           readWorker = undefined;
         }
         resolve(message);
       }
     });
 
-    worker.on('error', reject);
+    worker.on("error", reject);
 
-    worker.on('exit', (code) => {
-      if (workerData.msg === 'select') {
+    worker.on("exit", (code) => {
+      if (workerData.msg === "select") {
         readWorker = undefined;
       }
       if (code !== 0) { reject(new Error(`Worker stopped with exit code ${code}`)); }
     });
 
-    if (workerData.msg === 'select') {
+    if (workerData.msg === "select") {
       readWorker = worker;
     }
   });
@@ -82,14 +81,14 @@ export class ElectronAPI {
     try {
       // find repo with uuid
       const repoDir = (fs.readdirSync(appPath))
-            .find((repo) => new RegExp(`^${this.uuid}`).test(repo))
+        .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
 
       if (repoDir) {
         this.dir = path.join(appPath, repoDir);
       }
-    } catch(e) {
+    } catch (e) {
       // do nothing
-      console.log(e)
+      console.log(e);
     }
   }
 
@@ -104,7 +103,7 @@ export class ElectronAPI {
   async readFile(filepath) {
     const realpath = path.join(this.dir, filepath);
 
-    const content = fs.readFileSync(realpath, { encoding: 'utf8' });
+    const content = fs.readFileSync(realpath, { encoding: "utf8" });
 
     return content;
   }
@@ -117,7 +116,7 @@ export class ElectronAPI {
     // remove file name
     pathElements.pop();
 
-    let root = '';
+    let root = "";
 
     for (let i = 0; i < pathElements.length; i += 1) {
       const pathElement = pathElements[i];
@@ -129,7 +128,7 @@ export class ElectronAPI {
       if (!files.includes(pathElement)) {
         try {
           await pfs.mkdir(path.join(this.dir, root, pathElement));
-        } catch(e) {
+        } catch (e) {
           // do nothing
         }
       } else {
@@ -152,25 +151,25 @@ export class ElectronAPI {
   }
 
   async uploadFile() {
-    const res = await dialog.showOpenDialog({ properties: ['openFile'] });
+    const res = await dialog.showOpenDialog({ properties: ["openFile"] });
 
     if (res.canceled) {
-      throw Error('cancelled');
+      throw Error("cancelled");
     } else {
       const filepath = res.filePaths[0];
 
       const fileArrayBuffer = fs.readFileSync(filepath);
 
-      const crypto = await import('crypto');
+      const crypto = await import("crypto");
 
       const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
-        'SHA-256',
+        "SHA-256",
         fileArrayBuffer,
       );
 
       const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-      const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, '0')).join('');
+      const hashHexString = hashByteArray.map((b) => b.toString(16).padStart(2, "0")).join("");
 
       await this.putAsset(hashHexString, fileArrayBuffer);
 
@@ -180,7 +179,7 @@ export class ElectronAPI {
 
   async select(searchParams) {
     return runWorker({
-      msg: 'select',
+      msg: "select",
       dir: this.dir,
       searchParamsString: searchParams.toString(),
     });
@@ -196,28 +195,28 @@ export class ElectronAPI {
     }
 
     const worker = new Worker(
-      new URL('./electron.worker.js', import.meta.url),
+      new URL("./electron.worker.js", import.meta.url),
       {
         workerData: {
-          msg: 'selectStream',
+          msg: "selectStream",
           dir: this.dir,
-          searchParamsString: searchParams.toString()
+          searchParamsString: searchParams.toString(),
         },
       },
     );
 
-    worker.on('message', (message) => {
-      if (typeof message === 'string' && message.startsWith('log')) {
+    worker.on("message", (message) => {
+      if (typeof message === "string" && message.startsWith("log")) {
         console.log(message);
-      } else if (message.msg === 'selectStream:enqueue') {
-        enqueueHandler(message.entry)
-      } else if (message.msg === 'selectStream:close') {
-        closeHandler()
+      } else if (message.msg === "selectStream:enqueue") {
+        enqueueHandler(message.entry);
+      } else if (message.msg === "selectStream:close") {
+        closeHandler();
       }
     });
 
-    worker.on('exit', (code) => {
-        streamWorker = undefined;
+    worker.on("exit", () => {
+      streamWorker = undefined;
     });
 
     streamWorker = worker;
@@ -226,10 +225,10 @@ export class ElectronAPI {
   async queryOptions(branch) {
     const searchParams = new URLSearchParams();
 
-    searchParams.set('_', branch);
+    searchParams.set("_", branch);
 
     return runWorker({
-      msg: 'select',
+      msg: "select",
       dir: this.dir,
       searchParamsString: searchParams.toString(),
     });
@@ -237,7 +236,7 @@ export class ElectronAPI {
 
   async updateEntry(entry, overview) {
     const entryNew = await runWorker({
-      msg: 'update',
+      msg: "update",
       dir: this.dir,
       entry,
     });
@@ -256,7 +255,7 @@ export class ElectronAPI {
 
   async deleteEntry(entry, overview) {
     await runWorker({
-      msg: 'delete',
+      msg: "delete",
       dir: this.dir,
       entry,
     });
@@ -267,7 +266,7 @@ export class ElectronAPI {
   async clone(remoteUrl, remoteToken, name) {
     try {
       await pfs.stat(appPath);
-    } catch(e) {
+    } catch (e) {
       await pfs.mkdir(appPath);
     }
 
@@ -296,15 +295,15 @@ export class ElectronAPI {
     await git.setConfig({
       fs,
       dir: this.dir,
-      path: `remote.origin.url`,
-      value: remoteUrl
+      path: "remote.origin.url",
+      value: remoteUrl,
     });
 
     await git.setConfig({
       fs,
       dir: this.dir,
-      path: `remote.origin.token`,
-      value: remoteToken
+      path: "remote.origin.token",
+      value: remoteToken,
     });
   }
 
@@ -357,7 +356,7 @@ export class ElectronAPI {
         let status;
 
         if (workingDirStatus === 0) {
-          status = 'deleted';
+          status = "deleted";
 
           await git.remove({
             fs,
@@ -367,7 +366,7 @@ export class ElectronAPI {
         } else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
-            const { addLFS } = await import('./lfs.mjs');
+            const { addLFS } = await import("./lfs.mjs");
 
             await addLFS({
               fs,
@@ -383,9 +382,9 @@ export class ElectronAPI {
           }
 
           if (HEADStatus === 1) {
-            status = 'modified';
+            status = "modified";
           } else {
-            status = 'added';
+            status = "added";
           }
         }
 
@@ -398,8 +397,8 @@ export class ElectronAPI {
         fs,
         dir,
         author: {
-          name: 'name',
-          email: 'name@mail.com',
+          name: "name",
+          email: "name@mail.com",
         },
         message: message.toString(),
       });
@@ -409,7 +408,7 @@ export class ElectronAPI {
   // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
   async uploadBlobsLFS(remote, files) {
-    const { pointsToLFS, uploadBlobs } = await import('@fetsorn/isogit-lfs');
+    const { pointsToLFS, uploadBlobs } = await import("@fetsorn/isogit-lfs");
 
     const [remoteUrl, remoteToken] = await this.getRemote(remote);
 
@@ -452,7 +451,7 @@ export class ElectronAPI {
     try {
       await this.uploadBlobsLFS(remote);
     } catch (e) {
-      console.log('uploadBlobs failed', e);
+      console.log("uploadBlobs failed", e);
     }
 
     await git.push({
@@ -483,16 +482,6 @@ export class ElectronAPI {
     });
   }
 
-  async addRemote(url) {
-    await git.addRemote({
-      fs,
-      dir: this.dir,
-      remote: 'upstream',
-      url,
-      force: true,
-    });
-  }
-
   async ensure(schema, name) {
     try {
       await pfs.stat(appPath);
@@ -509,12 +498,12 @@ export class ElectronAPI {
     const { dir } = this;
 
     const existingRepo = (await pfs.readdir(appPath))
-          .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
+      .find((repo) => new RegExp(`^${this.uuid}`).test(repo));
 
     if (existingRepo === undefined) {
       await pfs.mkdir(dir);
 
-      await git.init({ fs, dir, defaultBranch: 'main' });
+      await git.init({ fs, dir, defaultBranch: "main" });
     } else {
       await pfs.rename(path.join(appPath, existingRepo), dir);
     }
@@ -522,41 +511,41 @@ export class ElectronAPI {
     await pfs.writeFile(
       `${dir}/.gitattributes`,
       `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
-      'utf8',
+      "utf8",
     );
 
     await git.setConfig({
       fs,
       dir,
-      path: 'filter.lfs.clean',
-      value: 'git-lfs clean -- %f',
+      path: "filter.lfs.clean",
+      value: "git-lfs clean -- %f",
     });
 
     await git.setConfig({
       fs,
       dir,
-      path: 'filter.lfs.smudge',
-      value: 'git-lfs smudge -- %f',
+      path: "filter.lfs.smudge",
+      value: "git-lfs smudge -- %f",
     });
 
     await git.setConfig({
       fs,
       dir,
-      path: 'filter.lfs.process',
-      value: 'git-lfs filter-process',
+      path: "filter.lfs.process",
+      value: "git-lfs filter-process",
     });
 
     await git.setConfig({
       fs,
       dir,
-      path: 'filter.lfs.required',
+      path: "filter.lfs.required",
       value: true,
     });
 
     await pfs.writeFile(
-      path.join(dir, 'metadir.json'),
+      path.join(dir, "metadir.json"),
       JSON.stringify(schema, null, 2),
-      'utf8',
+      "utf8",
     );
 
     await this.commit();
@@ -587,27 +576,17 @@ export class ElectronAPI {
       throw Error(`can't read ${lspath} to list it`);
     }
 
-    console.log('list ', lspath, ':', files);
+    console.log("list ", lspath, ":", files);
 
     for (const file of files) {
       const filepath = path.join(lspath, file);
 
       const { type } = await pfs.stat(filepath);
 
-      if (type === 'dir') {
+      if (type === "dir") {
         await this.ls(filepath);
       }
     }
-  }
-
-  // fails at parseConfig with "cannot split null",
-  // as if it doesn't find the config
-  async getRemote() {
-    return git.getConfig({
-      fs,
-      dir: this.dir,
-      path: 'remote.origin.url',
-    });
   }
 
   static async latex() {
@@ -619,7 +598,7 @@ export class ElectronAPI {
   }
 
   async readSchema() {
-    const schemaString = await this.readFile('metadir.json');
+    const schemaString = await this.readFile("metadir.json");
 
     const schema = JSON.parse(schemaString);
 
@@ -627,22 +606,22 @@ export class ElectronAPI {
   }
 
   async readGedcom() {
-    const gedcom = await this.readFile('index.ged');
+    const gedcom = await this.readFile("index.ged");
 
     return gedcom;
   }
 
   async readIndex() {
-    const index = await this.readFile('index.html');
+    const index = await this.readFile("index.html");
 
     return index;
   }
 
   async downloadAsset(content, filename) {
     const file = await dialog.showSaveDialog({
-      title: 'Select the File Path to save',
+      title: "Select the File Path to save",
       defaultPath: filename,
-      buttonLabel: 'Save',
+      buttonLabel: "Save",
       filters: [],
       properties: [],
     });
@@ -653,7 +632,7 @@ export class ElectronAPI {
   }
 
   async zip() {
-    const { default: JsZip } = await import('jszip');
+    const { default: JsZip } = await import("jszip");
 
     const zip = new JsZip();
 
@@ -679,16 +658,16 @@ export class ElectronAPI {
 
     await addToZip(this.dir, zip);
 
-    zip.generateAsync({ type: 'nodebuffer' }).then(async (content) => {
+    zip.generateAsync({ type: "nodebuffer" }).then(async (content) => {
       const file = await dialog.showSaveDialog({
-        title: 'Select the File Path to save',
+        title: "Select the File Path to save",
         defaultPath: this.uuid,
-        buttonLabel: 'Save',
+        buttonLabel: "Save",
         // Restricting the user to only Text Files.
         filters: [
           {
-            name: 'Zip Files',
-            extensions: ['zip'],
+            name: "Zip Files",
+            extensions: ["zip"],
           }],
         properties: [],
       });
@@ -709,7 +688,7 @@ export class ElectronAPI {
       assetEndpoint = await git.getConfig({
         fs,
         dir: this.dir,
-        path: 'asset.path',
+        path: "asset.path",
       });
 
       const assetPath = path.join(assetEndpoint, filename);
@@ -721,16 +700,16 @@ export class ElectronAPI {
         content = await fetch(assetPath);
 
         return content;
-      } catch(e) {
+      } catch (e) {
         // do nothing
       }
 
       // otherwise try to read from fs
       content = await fs.readFileSync(assetPath);
 
-      return content
-    } catch(e) {
-      console.log(e)
+      return content;
+    } catch (e) {
+      console.log(e);
       // do nothing
     }
 
@@ -740,7 +719,7 @@ export class ElectronAPI {
 
     content = await fs.readFileSync(assetPath);
 
-    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import('@fetsorn/isogit-lfs');
+    const { downloadBlobFromPointer, pointsToLFS, readPointer } = await import("@fetsorn/isogit-lfs");
 
     if (pointsToLFS(content)) {
       const pointer = await readPointer({ dir: this.dir, content });
@@ -765,7 +744,7 @@ export class ElectronAPI {
           );
 
           return content;
-        } catch(e) {
+        } catch (e) {
           // do nothing
         }
       }
@@ -775,7 +754,7 @@ export class ElectronAPI {
   }
 
   async writeFeed(xml) {
-    await this.writeFile('feed.xml', xml);
+    await this.writeFile("feed.xml", xml);
   }
 
   async listRemotes() {
@@ -784,7 +763,7 @@ export class ElectronAPI {
       dir: this.dir,
     });
 
-    return remotes.map((r) => r.remote)
+    return remotes.map((r) => r.remote);
   }
 
   async addRemote(remoteName, remoteUrl, remoteToken) {
@@ -792,19 +771,21 @@ export class ElectronAPI {
       fs,
       dir: this.dir,
       remote: remoteName,
-      url: remoteUrl
-    })
+      url: remoteUrl,
+    });
 
     if (remoteToken) {
       await git.setConfig({
         fs,
         dir: this.dir,
         path: `remote.${remoteName}.token`,
-        value: remoteToken
+        value: remoteToken,
       });
     }
   }
 
+  // fails at parseConfig with "cannot split null",
+  // as if it doesn't find the config
   async getRemote(remoteName) {
     const remoteUrl = await git.getConfig({
       fs,
@@ -818,14 +799,14 @@ export class ElectronAPI {
       path: `remote.${remoteName}.token`,
     });
 
-    return [remoteUrl, remoteToken]
+    return [remoteUrl, remoteToken];
   }
 
   async addAssetPath(assetPath) {
     await git.setConfig({
       fs,
       dir: this.dir,
-      path: `asset.path`,
+      path: "asset.path",
       value: assetPath,
     });
   }
@@ -834,12 +815,12 @@ export class ElectronAPI {
     await git.getConfigAll({
       fs,
       dir: this.dir,
-      path: `asset.path`,
+      path: "asset.path",
     });
   }
 
   static async downloadUrlFromPointer(url, token, pointerInfo) {
-    const { downloadUrlFromPointer } = await import('@fetsorn/isogit-lfs');
+    const { downloadUrlFromPointer } = await import("@fetsorn/isogit-lfs");
 
     return downloadUrlFromPointer(
       {

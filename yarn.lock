@@ -1104,7 +1104,7 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.56.0.tgz#ef20350fec605a7f7035a01764731b2de0f3782b"
   integrity sha512-gMsVel9D7f2HLkBma9VbtzZRehRogVRfbr++f06nL2vnCGCNlzOD+/MUov/F4p8myyAHspEhVobgjpX64q5m6A==
 
-"@fetsorn/csvs-js@0.14.0":
+"@fetsorn/csvs-js@0.15.2":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.14.0.tgz#b5025691e63e18662994323a164517d3751314b3"
   integrity sha512-Yi20czKov5oJC/uYypoZEp3PiLT9RQY9+ZOlgO5eVxzBO2nyd29GISZGcy/vWLNTxv62B6RjsvnvylZPnbXO2Q==

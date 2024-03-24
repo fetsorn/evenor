@@ -1,6 +1,6 @@
 // import axios from "axios";
-import { BrowserAPI } from './browser.js';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke } from "@tauri-apps/api/core";
+import { BrowserAPI } from "./browser.js";
 
 export class API {
   // UUID of repo in the store
@@ -16,11 +16,10 @@ export class API {
   }
 
   async helloWorld(someVariable) {
-    console.log("api helloWorld", __BUILD_MODE__)
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'tauri':
-        return invoke("helloWorld", { someVariable })
+      case "tauri":
+        return invoke("helloWorld", { someVariable });
 
       default:
         return this.#browser.helloWorld(someVariable);
@@ -30,7 +29,7 @@ export class API {
   async fetchAsset(filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.fetchAsset(this.uuid, filename);
 
       default:
@@ -41,7 +40,7 @@ export class API {
   async downloadAsset(content, filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.downloadAsset(this.uuid, content, filename);
 
       default:
@@ -52,7 +51,7 @@ export class API {
   async putAsset(filename, buffer) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.putAsset(this.uuid, filename, buffer);
 
       default:
@@ -63,7 +62,7 @@ export class API {
   async uploadFile(file) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.uploadFile(this.uuid);
 
       default:
@@ -74,7 +73,7 @@ export class API {
   async select(searchParams) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.select(this.uuid, searchParams.toString());
 
       default:
@@ -87,39 +86,39 @@ export class API {
 
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         const { uuid } = this;
 
         let closeHandler;
 
-        let strm = new ReadableStream({
+        const strm = new ReadableStream({
           start(controller) {
             function enqueueHandler(event, entry) {
               try {
-                controller.enqueue(entry)
+                controller.enqueue(entry);
               } catch {
                 // do nothing
               }
             }
 
-            closeHandler = (event, value) => {
+            closeHandler = () => {
               try {
-                controller.close()
+                controller.close();
               } catch {
                 // do nothing
               }
-            }
+            };
 
             return window.electron.selectStream(
               uuid,
               searchParams.toString(),
               enqueueHandler,
-              closeHandler
+              closeHandler,
             );
           },
         });
 
-        return { strm, closeHandler }
+        return { strm, closeHandler };
       default:
         return this.#browser.selectStream(searchParams);
     }
@@ -128,7 +127,7 @@ export class API {
   async queryOptions(branch) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.queryOptions(this.uuid, branch);
 
       default:
@@ -139,7 +138,7 @@ export class API {
   async updateEntry(entry, overview = []) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.updateEntry(this.uuid, entry, overview);
 
       default:
@@ -150,7 +149,7 @@ export class API {
   async deleteEntry(entry, overview = []) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.deleteEntry(this.uuid, entry, overview);
 
       default:
@@ -161,7 +160,7 @@ export class API {
   async ensure(schema, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.ensure(this.uuid, schema, name);
 
       default:
@@ -172,7 +171,7 @@ export class API {
   async commit() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.commit(this.uuid);
 
       default:
@@ -184,7 +183,7 @@ export class API {
   async clone(remoteUrl, remoteToken, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.clone(this.uuid, remoteUrl, remoteToken, name);
 
       default:
@@ -195,7 +194,7 @@ export class API {
   async push(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.push(this.uuid, remote);
 
       default:
@@ -206,7 +205,7 @@ export class API {
   async pull(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.pull(this.uuid, remote);
 
       default:
@@ -217,7 +216,7 @@ export class API {
   async readSchema() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.readSchema(this.uuid);
 
       default:
@@ -228,7 +227,7 @@ export class API {
   async readGedcom() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.readGedcom(this.uuid);
 
       default:
@@ -239,7 +238,7 @@ export class API {
   async readIndex() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.readIndex(this.uuid);
 
       default:
@@ -250,7 +249,7 @@ export class API {
   async cloneView(remoteUrl, remoteToken) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.cloneView(this.uuid, remoteUrl, remoteToken);
 
       default:
@@ -261,7 +260,7 @@ export class API {
   async writeFeed(xml) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.writeFeed(this.uuid, xml);
 
       default:
@@ -272,7 +271,7 @@ export class API {
   async uploadBlobsLFS(remote, files) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.uploadBlobsLFS(this.uuid, remote, files);
 
       default:
@@ -283,7 +282,7 @@ export class API {
   async zip() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.zip(this.uuid);
 
       default:
@@ -294,7 +293,7 @@ export class API {
   async listRemotes() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.listRemotes(this.uuid);
 
       default:
@@ -305,7 +304,7 @@ export class API {
   async addRemote(remoteName, remoteUrl, remoteToken) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.addRemote(this.uuid, remoteName, remoteUrl, remoteToken);
 
       default:
@@ -316,7 +315,7 @@ export class API {
   async getRemote(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.getRemote(this.uuid, remote);
 
       default:
@@ -327,7 +326,7 @@ export class API {
   async addAssetPath(assetPath) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.addAssetPath(this.uuid, assetPath);
 
       default:
@@ -338,7 +337,7 @@ export class API {
   async listAssetPaths() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.listAssetPaths(this.uuid);
 
       default:
@@ -349,7 +348,7 @@ export class API {
   async downloadUrlFromPointer(url, token, pointerInfo) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case 'electron':
+      case "electron":
         return window.electron.downloadUrlFromPointer(this.uuid, url, token, pointerInfo);
 
       default:
@@ -360,9 +359,9 @@ export class API {
   async getSettings() {
     const searchParams = new URLSearchParams();
 
-    searchParams.set('reponame', this.uuid);
+    searchParams.set("reponame", this.uuid);
 
-    const [entry] = await (new API('root')).select(searchParams);
+    const [entry] = await (new API("root")).select(searchParams);
 
     return entry;
   }

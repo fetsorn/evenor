@@ -3,7 +3,7 @@ import {
   generateDefaultSchemaEntry,
   schemaToEntry,
   entryToSchema,
-} from "../api";
+} from "../api/index.js";
 
 // TODO: set default values for required fields
 async function createEntry(schema, base) {
@@ -43,6 +43,8 @@ async function selectRepo(repoUUID, entry) {
   } catch {
     // do nothing
   }
+
+  const { digestMessage, randomUUID } = await import("@fetsorn/csvs-js");
 
   try {
     const remotes = await api.listRemotes();
@@ -104,15 +106,14 @@ async function selectRepo(repoUUID, entry) {
 async function saveRepo(repoUUID, entry) {
   const api = new API(entry.UUID);
 
-  const remoteTags =
-    entry.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
+  const remoteTags = entry.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
 
   let schema = entry.schema ? entryToSchema(entry.schema) : {};
 
   for (const remoteTag of remoteTags) {
     // try to clone project to repo directory if entry has a remote tag, will fail if repo exists
     try {
-      const [remoteTag] = remoteTags;
+      // const [remoteTag] = remoteTags;
 
       await api.clone(remoteTag.remote_url, remoteTag.remote_token);
 
@@ -130,17 +131,16 @@ async function saveRepo(repoUUID, entry) {
       api.addRemote(
         remoteTag.remote_name,
         remoteTag.remote_url,
-        remoteTag.remote_token
+        remoteTag.remote_token,
       );
     } catch {
       // do nothing
     }
   }
 
-  const localTags =
-    entry.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
+  const localTags = entry.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
 
-  for (const local of localTags) {
+  for (const localTag of localTags) {
     try {
       api.addAssetPath(localTag.local_path);
     } catch {
@@ -154,7 +154,7 @@ async function saveRepo(repoUUID, entry) {
   if (entryNew.tags?.items) {
     // omit to not save remote tags to csvs
     const filteredTags = entryNew.tags.items.filter(
-      (item) => item._ !== "remote_tag" && item._ !== "local_tag"
+      (item) => item._ !== "remote_tag" && item._ !== "local_tag",
     );
 
     entryNew.tags.items = filteredTags;
@@ -265,14 +265,13 @@ export const createEntrySlice = (set, get) => ({
 
     const { onEntrySave, onEntryDelete } = get();
 
-    const onSettingsClose = () =>
-      set({
-        entry: undefined,
-        base: baseOld,
-        onEntrySave,
-        onEntryDelete,
-        isSettings: false,
-      });
+    const onSettingsClose = () => set({
+      entry: undefined,
+      base: baseOld,
+      onEntrySave,
+      onEntryDelete,
+      isSettings: false,
+    });
 
     const onSettingsSave = async () => {
       const entryNew = await saveRepo(get().repoUUID, get().entry);

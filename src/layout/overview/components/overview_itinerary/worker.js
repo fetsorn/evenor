@@ -3,7 +3,7 @@ function groupArray(data, branch) {
 
   // { "YYYY-MM-DD": [event1, event2, event3] }
   const objectOfArrays = data.reduce((acc, entry) => {
-    const value = entry[branch] ?? '';
+    const value = entry[branch] ?? "";
 
     acc[value] = acc[value] || [];
 
@@ -33,7 +33,7 @@ async function buildLine(message) {
     try {
       result = groupArray(message.data.data, message.data.branch);
     } catch (e) {
-      console.log('buildLine fails', e);
+      console.log("buildLine fails", e);
 
       result = [];
     }
@@ -51,7 +51,7 @@ async function buildLine(message) {
 onmessage = async (message) => {
   // console.log("query worker received message", message)
 
-  if (message.data.action === 'build') {
+  if (message.data.action === "build") {
     await buildLine(message);
   }
 };

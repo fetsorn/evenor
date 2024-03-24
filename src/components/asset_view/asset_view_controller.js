@@ -85,10 +85,10 @@ async function pptxToHtml(buf) {
     pptx,
   // xlsx,
   // drawml
-  } = await import('docx4js');
+  } = await import("docx4js");
   const pptxObj = await pptx.load(buf);
 
-  const html = await pptxObj.render((_type, _props, children) => children.join('\n'));
+  const html = await pptxObj.render((_type, _props, children) => children.join("\n"));
 
   return html;
 }
@@ -112,12 +112,12 @@ async function docToHtml(buf) {
 async function pptToHtml(buf) {
   const b = Buffer.from(buf);
 
-  const cfb = await import('cfb');
+  const cfb = await import("cfb");
 
   // ppt requires cfb^0.10.0
-  const cfbObj = cfb.read(b, { type: 'buffer' });
+  const cfbObj = cfb.read(b, { type: "buffer" });
 
-  const PPT = await import('@fetsorn/ppt');
+  const PPT = await import("@fetsorn/ppt");
 
   const pptObj = PPT.parse_pptcfb(cfbObj);
 
@@ -127,18 +127,18 @@ async function pptToHtml(buf) {
 
     ?.map((shape) => shape.clientTextbox?.t)
 
-    .join('\n'));
+    .join("\n"));
 
-  const headings = pptObj.docs.map((doc) => doc.slideList?.join('\n'));
+  const headings = pptObj.docs.map((doc) => doc.slideList?.join("\n"));
 
-  const html = headings.join('\n') + textboxes.join('\n');
+  const html = headings.join("\n") + textboxes.join("\n");
 
   return html;
 }
 
 // buf: ArrayBuffer
 async function rtfToHtml(buf) {
-  const { RTFJS } = await import('rtf.js');
+  const { RTFJS } = await import("rtf.js");
 
   RTFJS.loggingEnabled(false);
 
@@ -187,7 +187,7 @@ async function toHtml(path, buf) {
     return rtfToHtml(buf);
   }
 
-  throw Error('unknown extension');
+  throw Error("unknown extension");
 }
 
 export async function convert(filepath, blob) {
@@ -203,7 +203,7 @@ export async function convert(filepath, blob) {
 
     return blobURL;
   } catch (e1) {
-    console.log('handleDoc failed', e1);
+    console.log("handleDoc failed", e1);
 
     // try to fetch plain text
     try {
@@ -211,7 +211,7 @@ export async function convert(filepath, blob) {
       /* new TextDecoder("windows-1251").decode(window.buf); */
       window.buf = abuf;
 
-      const text = new TextDecoder('utf-8').decode(abuf);
+      const text = new TextDecoder("utf-8").decode(abuf);
 
       const content = new Blob([text]);
 
@@ -236,71 +236,71 @@ export function isIFrameable(path) {
   }
 
   const img = [
-    'BMP',
-    'GIF',
-    'ICO',
-    'JPEG',
-    'JPG',
-    'NPO',
-    'PNG',
-    'TIF',
-    'bmp',
-    'eps',
-    'gif',
-    'ico',
-    'jpeg',
-    'jpg',
-    'png',
-    'svg',
-    'tif',
-    'webp',
-    'MPO',
+    "BMP",
+    "GIF",
+    "ICO",
+    "JPEG",
+    "JPG",
+    "NPO",
+    "PNG",
+    "TIF",
+    "bmp",
+    "eps",
+    "gif",
+    "ico",
+    "jpeg",
+    "jpg",
+    "png",
+    "svg",
+    "tif",
+    "webp",
+    "MPO",
   ];
 
   const vid = [
-    'AVI',
-    'BUP',
-    'IFO',
-    'MOV',
-    'MP4',
-    'VOB',
-    'avi',
-    'flv',
-    'm2v',
-    'm4v',
-    'mov',
-    'mp4',
-    'swf',
-    'webm',
+    "AVI",
+    "BUP",
+    "IFO",
+    "MOV",
+    "MP4",
+    "VOB",
+    "avi",
+    "flv",
+    "m2v",
+    "m4v",
+    "mov",
+    "mp4",
+    "swf",
+    "webm",
   ];
 
-  const src = ['PDF', 'Pdf', 'acsm', 'mobi', 'pdf', 'xps'];
+  const src = ["PDF", "Pdf", "acsm", "mobi", "pdf", "xps"];
 
   const wav = [
-    'caf',
-    'MOD',
-    'aac',
-    'm3u',
-    'm4a',
-    'mid',
-    'mp3',
-    'ogg',
-    'pk',
-    'flac',
+    "caf",
+    "MOD",
+    "aac",
+    "m3u",
+    "m4a",
+    "mid",
+    "mp3",
+    "ogg",
+    "pk",
+    "flac",
   ];
 
   const web = [
-    'less',
-    'sass',
-    'scss',
-    'css',
-    'htm',
-    'html',
-    'js',
-    'mht',
-    'url',
-    'xml',
-    'txt'
+    "less",
+    "sass",
+    "scss",
+    "css",
+    "htm",
+    "html",
+    "js",
+    "mht",
+    "url",
+    "xml",
+    "txt",
   ];
 
   const iframeable = img.concat(vid, src, wav, web);

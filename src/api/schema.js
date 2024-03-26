@@ -410,7 +410,7 @@ export const defaultSchema = {
 
 const schemaSchema = {
   schema: {
-    trunk: "reponame",
+    trunk: "repo",
     description: {
       en: "Schema of the repo",
       ru: "Структура проекта",
@@ -454,14 +454,21 @@ const schemaSchema = {
 };
 
 export const schemaRoot = {
+  repo: {
+    description: {
+      en: "Name of the repo",
+      ru: "Название проекта",
+    },
+  },
   reponame: {
+    trunk: "repo",
     description: {
       en: "Name of the repo",
       ru: "Название проекта",
     },
   },
   category: {
-    trunk: "reponame",
+    trunk: "repo",
     description: {
       en: "Category of the repo",
       ru: "Категория проекта",
@@ -469,7 +476,7 @@ export const schemaRoot = {
   },
   ...schemaSchema,
   tags: {
-    trunk: "reponame",
+    trunk: "repo",
   },
   ...schemaSync,
   ...schemaRemote,

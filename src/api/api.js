@@ -370,7 +370,7 @@ export class API {
   async getSettings() {
     const searchParams = new URLSearchParams();
 
-    searchParams.set("reponame", this.uuid);
+    searchParams.set("repo", this.uuid);
 
     const [record] = await new API("root").select(searchParams);
 

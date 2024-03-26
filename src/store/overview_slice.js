@@ -136,9 +136,9 @@ export const createOverviewSlice = (set, get) => ({
 
       const searchParamsReponame = new URLSearchParams();
 
-      searchParamsReponame.set("_", "reponame");
+      searchParamsReponame.set("_", "repo");
 
-      searchParamsReponame.set("reponame", repoName);
+      searchParamsReponame.set("repo", repoName);
 
       try {
         const [{ UUID }] = await apiRoot.select(searchParamsReponame);
@@ -316,13 +316,13 @@ export const createOverviewSlice = (set, get) => ({
 
       const searchParams = new URLSearchParams();
 
-      searchParams.set("_", "reponame");
+      searchParams.set("_", "repo");
 
-      searchParams.set("reponame", repoUUID);
+      searchParams.set("repo", repoUUID);
 
       const [record] = await api.select(searchParams);
 
-      repoName = record.reponame;
+      repoName = record.repo;
     }
 
     set({
@@ -343,9 +343,9 @@ export const createOverviewSlice = (set, get) => ({
 
     const searchParams = new URLSearchParams();
 
-    searchParams.set("_", "reponame");
+    searchParams.set("_", "repo");
 
-    searchParams.set("reponame", repoName);
+    searchParams.set("repo", repoName);
 
     const [record] = await api.select(searchParams);
 

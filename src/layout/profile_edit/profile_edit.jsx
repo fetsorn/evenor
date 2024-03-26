@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { schemaRoot } from "../../api";
 import { AssetView, Button, Title } from "../../components/index.js";
 import { useStore } from "../../store/index.js";
-import { EditRecord } from "./components/index.js";
+import { EditRecord, EditPlus } from "./components/index.js";
 import styles from "./profile_edit.module.css";
 
 export function ProfileEdit() {
@@ -73,6 +73,8 @@ export function ProfileEdit() {
                 onRecordChange,
               }}
             />
+
+            <EditPlus />
           </div>
         </div>
       )}

@@ -35,6 +35,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   // TODO: if schema[base].task === file, show this
+  // TODO: rename InputUpload to RecordUpload or refactor to merge here
   // <InputUpload
   //   {...{
   //     schema,

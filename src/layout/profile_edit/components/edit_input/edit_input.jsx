@@ -17,6 +17,7 @@ export function EditInput({
   //     onFieldChange,
   //   }}
   // />
+  // TODO: fetch options for base, add datalist
   return (
     <div key={index}>
       <label>{description}:</label>

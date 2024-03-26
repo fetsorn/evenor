@@ -15,6 +15,8 @@ export function EditField({
 
   const isTwig = !isTrunk;
 
+  // TODO: write onFieldAddItem and pass it to onRecordChange
+
   // TODO handle error when value is not array
   // TODO: disambiguate on dispensers
   return isTwig ? (

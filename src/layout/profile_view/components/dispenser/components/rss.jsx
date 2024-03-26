@@ -4,7 +4,6 @@ import { API } from "../../../../../api/index.js";
 export const schemaRSS = {
   rss_tag: {
     trunk: "tags",
-    type: "object",
     description: {
       en: "Rss git tag",
       ru: "Тег удаленного RSS git репозитория",
@@ -12,7 +11,6 @@ export const schemaRSS = {
   },
   rss_tag_search: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Search query",
       ru: "Поисковый запрос",
@@ -20,7 +18,6 @@ export const schemaRSS = {
   },
   rss_tag_target: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Name of database to sync",
       ru: "Название базы данных для синхронизации",
@@ -28,7 +25,6 @@ export const schemaRSS = {
   },
   rss_tag_token: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Authentication token",
       ru: "Токен для синхронизации",
@@ -36,7 +32,6 @@ export const schemaRSS = {
   },
   rss_tag_title: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Title of RSS feed",
       ru: "Название RSS ленты",
@@ -44,7 +39,6 @@ export const schemaRSS = {
   },
   rss_tag_description: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Description of RSS feed",
       ru: "Описание RSS ленты",
@@ -52,7 +46,6 @@ export const schemaRSS = {
   },
   rss_tag_creator: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Creator of RSS feed",
       ru: "Создатель RSS ленты",
@@ -60,7 +53,6 @@ export const schemaRSS = {
   },
   rss_tag_item_title: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Branch for post title",
       ru: "Ветка для названия поста",
@@ -68,7 +60,6 @@ export const schemaRSS = {
   },
   rss_tag_item_attribution: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Branch for post attribution",
       ru: "Ветка для авторов поста",
@@ -76,7 +67,6 @@ export const schemaRSS = {
   },
   rss_tag_item_description: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Branch for post description",
       ru: "Ветка для описания поста",
@@ -84,7 +74,6 @@ export const schemaRSS = {
   },
   rss_tag_item_pubdate: {
     trunk: "rss_tag",
-    type: "string",
     description: {
       en: "Branch for post pubdate",
       ru: "Ветка для даты публикации поста",

@@ -8,7 +8,6 @@ import { API } from "../../../../../api/index.js";
 export const schemaTG = {
   tg_tag: {
     trunk: "tags",
-    type: "object",
     description: {
       en: "Tag TG channel",
       ru: "Тег TG канала",
@@ -16,7 +15,6 @@ export const schemaTG = {
   },
   tg_tag_api_id: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Authentication api ID",
       ru: "API ID токен",
@@ -24,7 +22,6 @@ export const schemaTG = {
   },
   tg_tag_api_hash: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Authentication api hash",
       ru: "API хэш",
@@ -32,7 +29,6 @@ export const schemaTG = {
   },
   tg_tag_phone: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Телефонный номер",
       ru: "Phone number",
@@ -40,7 +36,6 @@ export const schemaTG = {
   },
   tg_tag_password: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Password",
       ru: "Пароль",
@@ -48,7 +43,6 @@ export const schemaTG = {
   },
   tg_tag_otp: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Verification code",
       ru: "Код подтверждения",
@@ -56,7 +50,6 @@ export const schemaTG = {
   },
   tg_tag_session: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Session string",
       ru: "Токен сессии",
@@ -64,7 +57,6 @@ export const schemaTG = {
   },
   tg_tag_search: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "Search query",
       ru: "Поисковый запрос",
@@ -72,7 +64,6 @@ export const schemaTG = {
   },
   tg_tag_channel_id: {
     trunk: "tg_tag",
-    type: "string",
     description: {
       en: "TG channel handle",
       ru: "Адрес TG канала",

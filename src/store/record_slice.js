@@ -9,20 +9,12 @@ import {
 async function createRecord(schema, base) {
   const record = {};
 
-  const { digestMessage, randomUUID } = await import("@fetsorn/csvs-js");
-
-  const uuid = await randomUUID();
-
-  record.UUID = await digestMessage(uuid);
-
   record._ = base;
 
-  if (schema[base].type === "array") {
-    record.items = [];
-  }
-
   if (base === "reponame") {
-    record.schema = await generateDefaultSchemaRecord();
+    record.reponame = "";
+
+    record.schema = [await generateDefaultSchemaRecord()];
   }
 
   return record;
@@ -217,20 +209,23 @@ export const createRecordSlice = (set, get) => ({
   onRecordSave: async () => {
     let { record } = get();
 
+    // TODO: remove this or add comments
     if (record[record._] === undefined) {
       record[record._] = "";
     }
 
     // eslint-disable-next-line
     if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
-      record = await saveRepo(get().repoUUID, get().record);
+      // record = await saveRepo(get().repoUUID, get().record);
     }
 
     const api = new API(get().repoUUID);
 
-    const records = await api.updateRecord(record, get().records);
+    // const records = await api.updateRecord(record, get().records);
 
-    api.commit();
+    // api.commit();
+
+    const records = [record, ...get().records];
 
     set({ records, isEdit: false });
   },
@@ -253,7 +248,10 @@ export const createRecordSlice = (set, get) => ({
 
   onRecordClose: () => set({ record: undefined }),
 
-  onRecordChange: (_, record) => set({ record }),
+  onRecordChange: (_, record) => {
+    console.log(record);
+    set({ record });
+  },
 
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);

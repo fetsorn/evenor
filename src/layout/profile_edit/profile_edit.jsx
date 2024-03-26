@@ -1,35 +1,13 @@
 import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
-import { create } from "zustand";
 import { schemaRoot } from "../../api";
 import { AssetView, Button, Title } from "../../components/index.js";
 import { useStore } from "../../store/index.js";
-import { EditInput } from "./components/index.js";
-import styles from "./profile_single_edit.module.css";
+import { EditRecord } from "./components/index.js";
+import styles from "./profile_edit.module.css";
 
-// TODO: replace with Day.js
-function isDate(title) {
-  return true;
-}
-
-// TODO: replace with Day.js
-function formatDate(title) {
-  return isDate(title) ? title : title;
-}
-
-export const useEditStore = create()((set, get) => ({
-  mapIsOpen: {},
-  openIndex: (index, isOpen) => {
-    const { mapIsOpen } = get();
-
-    mapIsOpen[index] = isOpen;
-
-    set({ mapIsOpen });
-  },
-}));
-
-export function ProfileSingleEdit() {
+export function ProfileEdit() {
   const { t } = useTranslation();
 
   const [
@@ -52,7 +30,7 @@ export function ProfileSingleEdit() {
 
   const schema = isSettings ? schemaRoot : useStore((state) => state.schema);
 
-  const title = formatDate(group);
+  const title = group;
 
   return (
     <div
@@ -68,10 +46,6 @@ export function ProfileSingleEdit() {
             id="scrollcontainer"
             className={cn(styles.sticky, "edit-sidebar__sticky")}
           >
-            <Title>
-              {title} {index}
-            </Title>
-
             <div className={cn(styles.buttonbar, "edit-sidebar__btn-bar")}>
               <Button
                 type="button"
@@ -90,13 +64,13 @@ export function ProfileSingleEdit() {
               </Button>
             </div>
 
-            <EditInput
+            <EditRecord
               {...{
-                index: record.UUID,
-                record,
                 schema,
-                onFieldChange: onRecordChange,
-                isBaseObject: true,
+                index: "_",
+                base: record._,
+                record,
+                onRecordChange,
               }}
             />
           </div>

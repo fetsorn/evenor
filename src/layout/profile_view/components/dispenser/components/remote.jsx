@@ -4,7 +4,6 @@ import { API } from "../../../../../api/index.js";
 export const schemaRemote = {
   remote_tag: {
     trunk: "tags",
-    type: "object",
     description: {
       en: "Remote git tag",
       ru: "Тег удаленного git репозитория",
@@ -12,7 +11,6 @@ export const schemaRemote = {
   },
   remote_name: {
     trunk: "remote_tag",
-    type: "string",
     description: {
       en: "Name of git remote",
       ru: "Название remote .git",
@@ -20,7 +18,6 @@ export const schemaRemote = {
   },
   remote_url: {
     trunk: "remote_tag",
-    type: "string",
     description: {
       en: "Name of database to sync",
       ru: "Название базы данных для синхронизации",
@@ -28,7 +25,6 @@ export const schemaRemote = {
   },
   remote_token: {
     trunk: "remote_tag",
-    type: "string",
     description: {
       en: "Authentication token",
       ru: "Токен для синхронизации",

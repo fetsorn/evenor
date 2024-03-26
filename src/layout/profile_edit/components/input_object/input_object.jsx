@@ -29,6 +29,7 @@ async function addField(schema, recordOriginal, branch) {
   } else {
     value = "";
   }
+
   const base = record._;
 
   const { trunk } = schema[branch];

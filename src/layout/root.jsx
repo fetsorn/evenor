@@ -21,8 +21,8 @@ export function Root() {
   );
 }
 
-const ProfileSingleEdit = React.lazy(() => import("./profile_edit/index.js"));
-const ProfileSingleView = React.lazy(() => import("./profile_view/index.js"));
+const ProfileEdit = React.lazy(() => import("./profile_edit/index.js"));
+const ProfileView = React.lazy(() => import("./profile_view/index.js"));
 
 function Page() {
   const { repoRoute } = useParams();
@@ -43,9 +43,7 @@ function Page() {
       <main className={styles.main}>
         <Overview />
 
-        <Suspense>
-          {isEdit ? <ProfileSingleEdit /> : <ProfileSingleView />}
-        </Suspense>
+        <Suspense>{isEdit ? <ProfileEdit /> : <ProfileView />}</Suspense>
       </main>
     </>
   );

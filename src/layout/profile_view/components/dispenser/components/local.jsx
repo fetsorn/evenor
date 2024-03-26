@@ -3,7 +3,6 @@ import React from "react";
 export const schemaLocal = {
   local_tag: {
     trunk: "tags",
-    type: "object",
     description: {
       en: "Local archive tag",
       ru: "Тег локального архива",
@@ -11,7 +10,6 @@ export const schemaLocal = {
   },
   local_path: {
     trunk: "local_tag",
-    type: "string",
     task: "directory",
     description: {
       en: "Path to asset archive",

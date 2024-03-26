@@ -121,7 +121,10 @@ export function AssetView({ schema, record }) {
   async function onDownload() {
     let contents = await fetchAsset();
 
-    api.downloadAsset(contents, record[filenameBranch] ?? record[filehashBranch]);
+    api.downloadAsset(
+      contents,
+      record[filenameBranch] ?? record[filehashBranch],
+    );
   }
 
   if (!blobURL) {

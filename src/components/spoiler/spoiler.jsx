@@ -37,20 +37,22 @@ export function Spoiler({ index, title, description, children, onRemove }) {
   }
 
   return isOpen ? (
-    <div>
+    <div key={`${index}spoiler`}>
       <button type="button" onClick={close}>
         🔽️
       </button>
 
       {description}
 
-      <button
-        type="button"
-        title={t("line.button.remove", { field: title })}
-        onClick={onRemove}
-      >
-        X
-      </button>
+      {onRemove && (
+        <button
+          type="button"
+          title={t("line.button.remove", { field: title })}
+          onClick={onRemove}
+        >
+          X
+        </button>
+      )}
 
       {children}
     </div>
@@ -62,13 +64,15 @@ export function Spoiler({ index, title, description, children, onRemove }) {
 
       {description}
 
-      <button
-        type="button"
-        title={t("line.button.remove", { field: title })}
-        onClick={onRemove}
-      >
-        X
-      </button>
+      {onRemove && (
+        <button
+          type="button"
+          title={t("line.button.remove", { field: title })}
+          onClick={onRemove}
+        >
+          X
+        </button>
+      )}
     </div>
   );
 }

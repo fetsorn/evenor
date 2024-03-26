@@ -18,7 +18,6 @@ export function EditField({
   // TODO: write onFieldAddItem and pass it to onRecordChange
 
   // TODO handle error when value is not array
-  // TODO: disambiguate on dispensers
   return isTwig ? (
     <EditInput
       schema={schema}
@@ -30,9 +29,10 @@ export function EditField({
       onFieldChange={onFieldChange}
     />
   ) : (
-    <div key={index}>
-      {value.map((record) => (
+    <div>
+      {value.map((record, idx) => (
         <EditRecord
+          key={idx}
           index={`${index}${base}${record[base]}`}
           schema={schema}
           base={base}

@@ -19,7 +19,7 @@ export function EditInput({
   // />
   // TODO: fetch options for base, add datalist
   return (
-    <div key={index}>
+    <div>
       <label>{description}:</label>
       <InputText {...{ branch: base, value, onFieldChange }} />
     </div>

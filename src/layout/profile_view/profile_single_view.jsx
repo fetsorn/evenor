@@ -4,7 +4,7 @@ import cn from "classnames";
 import { schemaRoot } from "../../api/index.js";
 import { Button, Title } from "../../components/index.js";
 import { useStore } from "../../store/index.js";
-import { ViewField } from "./components/index.js";
+import { ViewRecord } from "./components/index.js";
 import styles from "./profile_single_view.module.css";
 
 // TODO: replace with Day.js
@@ -108,11 +108,13 @@ export function ProfileSingleView() {
                 {t("line.button.open")}
               </button>
             )}
-            <ViewField
+
+            <ViewRecord
               {...{
-                record,
                 schema,
-                isBaseObject: true,
+                index: "_",
+                base: record._,
+                record,
               }}
             />
           </div>

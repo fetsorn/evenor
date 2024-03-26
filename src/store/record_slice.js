@@ -209,6 +209,7 @@ export const createRecordSlice = (set, get) => ({
   onRecordSave: async () => {
     let { record } = get();
 
+    console.log("onRecordSave", record)
     // TODO: remove this or add comments
     if (record[record._] === undefined) {
       record[record._] = "";
@@ -249,7 +250,6 @@ export const createRecordSlice = (set, get) => ({
   onRecordClose: () => set({ record: undefined }),
 
   onRecordChange: (_, record) => {
-    console.log(record);
     set({ record });
   },
 

@@ -1,4 +1,4 @@
-import { digestMessage, randomUUID } from "@fetsorn/csvs-js";
+import { digestMessage, randomUUID, expand, condense } from "@fetsorn/csvs-js";
 import {
   schemaSync,
   schemaRemote,
@@ -9,6 +9,7 @@ import {
 } from "../layout/profile_view/components/dispenser/components/index.js";
 
 export function recordToSchema(schemaRecord) {
+  // TODO: rewrite to destructuring and ternaries
   const schemaObject = {};
 
   for (const item of schemaRecord.schema_branch) {
@@ -49,278 +50,138 @@ export function recordToSchema(schemaRecord) {
 }
 
 export async function schemaToRecord(schema) {
+  const schema_branches = await Promise.all(Object.keys(schema).map(async (key) => {
+    const trunk = schema[key].trunk ? { schema_branch_trunk: schema[key].trunk } : {};
+
+    const task = schema[key].task ? { schema_branch_task: schema[key].task } : {};
+
+    const description_en = schema[key].description?.en ? {
+      schema_branch_description_en: schema[key].description.en
+    } : {};
+
+    const description_ru = schema[key].description?.ru ? {
+      schema_branch_description_ru: schema[key].description.ru
+    } : {};
+
+    const description = schema[key].description ? {
+      ...description_en,
+      ...description_ru,
+    } : {};
+
+    const item = {
+      _: "schema_branch",
+      schema_branch: key,
+      ...trunk,
+      ...task,
+      ...description,
+    };
+
+    return item;
+  }));
+
   const record = {
     _: "schema",
     UUID: await digestMessage(await randomUUID()),
-    schema_branch: [],
+    schema_branch: schema_branches,
   };
-
-  await Promise.all(
-    Object.keys(schema).map(async (key) => {
-      const item = {};
-
-      item._ = "schema_branch";
-
-      item.schema_branch = key;
-
-      if (schema[key].trunk) {
-        item.schema_branch_trunk = schema[key].trunk;
-      }
-
-      if (schema[key].task) {
-        item.schema_branch_task = schema[key].task;
-      }
-
-      if (schema[key].description) {
-        if (schema[key].description.en) {
-          item.schema_branch_description_en = schema[key].description.en;
-        }
-
-        if (schema[key].description.ru) {
-          item.schema_branch_description_ru = schema[key].description.ru;
-        }
-      }
-
-      record.items.push(item);
-    }),
-  );
 
   return record;
 }
 
 export async function generateDefaultSchemaRecord() {
-  return {
+  const recordCondensed = {
     _: "schema",
     schema: await digestMessage(await randomUUID()),
     schema_branch: [
       {
         _: "schema_branch",
-        schema_branch: "files",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Digital assets",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Файлы",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "file",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "files" },
-        ],
-        schema_branch_task: [
-          { _: "schema_branch_task", schema_branch_task: "file" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Digital asset",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Файл",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "filename",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "file" },
-        ],
-        schema_branch_task: [
-          { _: "schema_branch_task", schema_branch_task: "filename" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Path to a digital asset",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Путь к файлу",
-          },
-        ],
+        schema_branch: "datum",
+        schema_branch_task: "text",
+        schema_branch_description_en: "Description of the event",
+        schema_branch_description_ru: "Описание события",
       },
       {
         _: "schema_branch",
         schema_branch: "actdate",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_task: [
-          { _: "schema_branch_task", schema_branch_task: "date" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Date of the event",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Дата события",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "datum",
-        schema_branch_task: [
-          { _: "schema_branch_task", schema_branch_task: "text" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Description of the event",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Описание события",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "saydate",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_task: [
-          { _: "schema_branch_task", schema_branch_task: "date" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Date of record",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Дата записи",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "filehash",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "file" },
-        ],
-        schema_branch_task: [
-          { _: "schema_branch_task", schema_branch_task: "filehash" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Hashsum of the file",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Хэш файла",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "category",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Category",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Категория",
-          },
-        ],
-      },
-      {
-        _: "schema_branch",
-        schema_branch: "privacy",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Privacy",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Публичность",
-          },
-        ],
+        schema_branch_trunk: "datum",
+        schema_branch_task: "date",
+        schema_branch_description_en: "Date of the event",
+        schema_branch_description_ru: "Дата события",
       },
       {
         _: "schema_branch",
         schema_branch: "actname",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en: "Name of the person in the event",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru:
-              "Имя человека участвовавшего в событии",
-          },
-        ],
+        schema_branch_trunk: "datum",
+        schema_branch_description_en: "Name of the person in the event",
+        schema_branch_description_ru: "Имя человека участвовавшего в событии",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "saydate",
+        schema_branch_trunk: "datum",
+        schema_branch_task: "date",
+        schema_branch_description_en: "Date of record",
+        schema_branch_description_ru: "Дата записи",
       },
       {
         _: "schema_branch",
         schema_branch: "sayname",
-        schema_branch_trunk: [
-          { _: "schema_branch_trunk", schema_branch_trunk: "datum" },
-        ],
-        schema_branch_description_en: [
-          {
-            _: "schema_branch_description_en",
-            schema_branch_description_en:
-              "Name of the person who made the record",
-          },
-        ],
-        schema_branch_description_ru: [
-          {
-            _: "schema_branch_description_ru",
-            schema_branch_description_ru: "Имя автора записи",
-          },
-        ],
+        schema_branch_trunk: "datum",
+        schema_branch_description_en: "Name of the person who made the record",
+        schema_branch_description_ru: "Имя автора записи",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "category",
+        schema_branch_trunk: "datum",
+        schema_branch_description_en: "Category",
+        schema_branch_description_ru: "Категория",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "privacy",
+        schema_branch_trunk: "datum",
+        schema_branch_description_en: "Privacy",
+        schema_branch_description_ru: "Публичность",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "file",
+        schema_branch_trunk: "datum",
+        schema_branch_task: "file",
+        schema_branch_description_en: "Digital asset",
+        schema_branch_description_ru: "Файл",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "filename",
+        schema_branch_trunk: "file",
+        schema_branch_task: "filename",
+        schema_branch_description_en: "Path to a digital asset",
+        schema_branch_description_ru: "Путь к файлу",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "fileext",
+        schema_branch_trunk: "file",
+        schema_branch_task: "fileext",
+        schema_branch_description_en: "Extension of the file",
+        schema_branch_description_ru: "Расширение файла",
+      },
+      {
+        _: "schema_branch",
+        schema_branch: "filehash",
+        schema_branch_trunk: "file",
+        schema_branch_task: "filehash",
+        schema_branch_description_en: "Hashsum of the file",
+        schema_branch_description_ru: "Хэш файла",
       },
     ],
   };
+
+  const recordExpanded = expand(recordCondensed);
+
+  return recordExpanded
 }
 
 export const defaultSchema = {
@@ -331,7 +192,7 @@ export const defaultSchema = {
       ru: "Описание события",
     },
   },
-  hostdate: {
+  actdate: {
     trunk: "datum",
     task: "date",
     description: {
@@ -339,14 +200,14 @@ export const defaultSchema = {
       ru: "Дата события",
     },
   },
-  hostname: {
+  actname: {
     trunk: "datum",
     description: {
       en: "Name of the person in the event",
       ru: "Имя человека участвовавшего в событии",
     },
   },
-  guestdate: {
+  saydate: {
     trunk: "datum",
     task: "date",
     description: {
@@ -354,7 +215,7 @@ export const defaultSchema = {
       ru: "Дата записи",
     },
   },
-  guestname: {
+  sayname: {
     trunk: "datum",
     description: {
       en: "Name of the person who made the record",
@@ -375,15 +236,8 @@ export const defaultSchema = {
       ru: "Публичность",
     },
   },
-  files: {
-    trunk: "datum",
-    description: {
-      en: "Digital assets",
-      ru: "Файлы",
-    },
-  },
   file: {
-    trunk: "files",
+    trunk: "datum",
     task: "file",
     description: {
       en: "Digital asset",
@@ -398,6 +252,14 @@ export const defaultSchema = {
       ru: "Путь к файлу",
     },
   },
+  fileext: {
+    trunk: "file",
+    task: "fileext",
+    description: {
+      en: "Extension of the file",
+      ru: "Расширение файла",
+    },
+  },
   filehash: {
     trunk: "file",
     task: "filehash",
@@ -408,11 +270,31 @@ export const defaultSchema = {
   },
 };
 
-const schemaSchema = {
+export const schemaRoot = {
+  repo: {
+    description: {
+      en: "Dataset",
+      ru: "Проект",
+    },
+  },
+  reponame: {
+    trunk: "repo",
+    description: {
+      en: "Name of the dataset",
+      ru: "Название проекта",
+    },
+  },
+  category: {
+    trunk: "repo",
+    description: {
+      en: "Category of the dataset",
+      ru: "Категория проекта",
+    },
+  },
   schema: {
     trunk: "repo",
     description: {
-      en: "Schema of the repo",
+      en: "Schema of the dataset",
       ru: "Структура проекта",
     },
   },
@@ -451,30 +333,6 @@ const schemaSchema = {
       ru: "Описание ветки на русском",
     },
   },
-};
-
-export const schemaRoot = {
-  repo: {
-    description: {
-      en: "Name of the repo",
-      ru: "Название проекта",
-    },
-  },
-  reponame: {
-    trunk: "repo",
-    description: {
-      en: "Name of the repo",
-      ru: "Название проекта",
-    },
-  },
-  category: {
-    trunk: "repo",
-    description: {
-      en: "Category of the repo",
-      ru: "Категория проекта",
-    },
-  },
-  ...schemaSchema,
   tags: {
     trunk: "repo",
   },

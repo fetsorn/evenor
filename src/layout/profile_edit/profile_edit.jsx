@@ -2,7 +2,7 @@ import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
 import { schemaRoot } from "../../api";
-import { AssetView, Button, Title } from "../../components/index.js";
+import { AssetView, Button } from "../../components/index.js";
 import { useStore } from "../../store/index.js";
 import { EditRecord, EditPlus } from "./components/index.js";
 import styles from "./profile_edit.module.css";
@@ -12,25 +12,23 @@ export function ProfileEdit() {
 
   const [
     record,
-    group,
-    index,
     isSettings,
-    onRecordRevert,
+    onRecordSelect,
     onRecordSave,
     onRecordChange,
+    schemaRepo,
   ] = useStore((state) => [
     state.record,
-    state.group,
-    state.index,
     state.isSettings,
-    state.onRecordRevert,
+    state.onRecordSelect,
     state.onRecordSave,
     state.onRecordChange,
+    state.schema
   ]);
 
-  const schema = isSettings ? schemaRoot : useStore((state) => state.schema);
+  const recordBackup = structuredClone(record);
 
-  const title = group;
+  const schema = isSettings ? schemaRoot : schemaRepo;
 
   return (
     <div
@@ -58,7 +56,7 @@ export function ProfileEdit() {
               <Button
                 type="button"
                 title={t("line.button.revert")}
-                onClick={onRecordRevert}
+                onClick={() => onRecordSelect(recordBackup)}
               >
                 ↩
               </Button>

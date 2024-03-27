@@ -63,10 +63,7 @@ export function AssetView({ schema, record }) {
       schema[b].task === "filename",
   );
 
-  const [repoUUID, isView] = useStore((state) => [
-    state.repoUUID,
-    state.isView,
-  ]);
+  const repoUUID = useStore((state) => state.repoUUID);
 
   const api = new API(repoUUID);
 

@@ -37,9 +37,7 @@ export function ItineraryWaypoint({
         <button
           className={styles.add}
           type="button"
-          onClick={() =>
-            onRecordCreate(waypoint.date, waypoint.events.length + 1)
-          }
+          onClick={() => onRecordCreate()}
           title={t("line.button.add")}
           key="addevent"
         >

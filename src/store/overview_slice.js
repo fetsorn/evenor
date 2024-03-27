@@ -1,76 +1,5 @@
 import { API, schemaRoot } from "../api/index.js";
-
-// pick a param to group data by
-function getDefaultSortBy(schema, data, searchParams) {
-  // fallback to sortBy param from the search query
-  if (searchParams.has(".sort")) {
-    const sortBy = searchParams.get(".sort");
-
-    return sortBy;
-  }
-
-  let sortBy;
-
-  const car = data[0] ?? {};
-
-  // fallback to first date param present in data
-  sortBy = Object.keys(schema).find(
-    (branch) =>
-      schema[branch].task === "date" &&
-      Object.prototype.hasOwnProperty.call(car, branch),
-  );
-
-  // fallback to first param present in data
-  if (!sortBy) {
-    sortBy = Object.keys(schema).find((branch) =>
-      Object.prototype.hasOwnProperty.call(car, branch),
-    );
-  }
-
-  // fallback to first date param present in schema
-  if (!sortBy) {
-    sortBy = Object.keys(schema).find(
-      (branch) => schema[branch].task === "date",
-    );
-  }
-
-  // fallback to first param present in schema
-  if (!sortBy) {
-    [sortBy] = Object.keys(schema);
-  }
-
-  // unreachable with a valid scheme
-  if (!sortBy) {
-    throw Error("failed to find default sortBy in the schema");
-  }
-
-  return sortBy;
-}
-
-export function queriesToParams(queries) {
-  const searchParams = new URLSearchParams();
-
-  Object.keys(queries).map((key) =>
-    queries[key] === "" ? null : searchParams.set(key, queries[key]),
-  );
-
-  return searchParams;
-}
-
-function paramsToQueries(searchParams) {
-  const searchParamsObject = Array.from(searchParams).reduce(
-    (acc, [key, value]) => ({ ...acc, [key]: value }),
-    {},
-  );
-
-  const queries = Object.fromEntries(
-    Object.entries(searchParamsObject).filter(
-      ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
-    ),
-  );
-
-  return queries;
-}
+import { getDefaultSortBy, queriesToParams, paramsToQueries } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
   schema: {},
@@ -322,7 +251,7 @@ export const createOverviewSlice = (set, get) => ({
 
       const [record] = await api.select(searchParams);
 
-      repoName = record.repo;
+      repoName = record.reponame;
     }
 
     set({

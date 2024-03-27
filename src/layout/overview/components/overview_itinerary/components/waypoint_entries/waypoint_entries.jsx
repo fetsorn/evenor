@@ -68,7 +68,7 @@ export function WaypointEntries({ entries, onRecordSelect }) {
                 backgroundColor: colorRecord(record),
               }}
               type="button"
-              onClick={() => onRecordSelect(record, index + 1)}
+              onClick={() => onRecordSelect(record)}
               title={record?.FILE_PATH}
               id={record?.UUID}
             >

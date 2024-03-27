@@ -3,8 +3,6 @@ export const createFilterSlice = (set, get) => ({
 
   sortBy: "",
 
-  onChangeSortBy: (sortBy) => set({ sortBy }),
-
   onQueryAdd: async (queryField, queryValue) => {
     const { queries } = get();
 

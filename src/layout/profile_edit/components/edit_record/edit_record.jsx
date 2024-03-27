@@ -19,7 +19,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
 
     objectNew[fieldBranch] = fieldValue;
 
-    onRecordChange(base, objectNew);
+    onRecordChange(objectNew);
   }
 
   function onFieldRemove(fieldBranch) {
@@ -28,7 +28,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
     // TODO replace with destructuring omit
     delete objectNew[fieldBranch];
 
-    onRecordChange(branch, objectNew);
+    onRecordChange(objectNew);
   }
 
   const description =

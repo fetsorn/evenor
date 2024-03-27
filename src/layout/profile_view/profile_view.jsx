@@ -2,51 +2,33 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import { schemaRoot } from "../../api/index.js";
-import { Button, Title } from "../../components/index.js";
+import { Button } from "../../components/index.js";
 import { useStore } from "../../store/index.js";
 import { ViewRecord } from "./components/index.js";
-import styles from "./profile_single_view.module.css";
+import styles from "./profile_view.module.css";
 
-// TODO: replace with Day.js
-function isDate(title) {
-  return true;
-}
-
-// TODO: replace with Day.js
-function formatDate(title) {
-  return isDate(title) ? title : title;
-}
-
-export function ProfileSingleView() {
+export function ProfileView() {
   const { t } = useTranslation();
 
   const [
     record,
-    group,
-    index,
     repoUUID,
     setRepoName,
-    onRecordEdit,
-    onRecordClose,
+    onRecordChange,
+    onRecordSelect,
     onRecordDelete,
-    // onRecordCommit,
     isSettings,
     schemaRepo,
   ] = useStore((state) => [
     state.record,
-    state.group,
-    state.index,
     state.repoUUID,
     state.setRepoName,
-    state.onRecordEdit,
-    state.onRecordClose,
+    state.onRecordChange,
+    state.onRecordSelect,
     state.onRecordDelete,
-    // state.onRecordCommit,
     state.isSettings,
     state.schema,
   ]);
-
-  const title = formatDate(group);
 
   const schema = isSettings ? schemaRoot : schemaRepo;
   return (
@@ -63,24 +45,14 @@ export function ProfileSingleView() {
             id="scrollcontainer"
             className={cn(styles.sticky, "view-sidebar__sticky")}
           >
-            <Title>
-              {title} {index}
-            </Title>
-
             <div className={cn(styles.buttonbar, "view-sidebar__btn-bar")}>
               <Button
                 type="button"
                 title={t("line.button.edit")}
-                onClick={() => onRecordEdit(record)}
+                onClick={() => onRecordChange(record)}
               >
                 ✏️
               </Button>
-
-              {/* {(isSettings || repoUUID === 'root') && ( */}
-              {/*   <Button type="button" title={t('line.button.commit')} onClick={() => onRecordCommit(record.UUID)}> */}
-              {/*     ⬆️ */}
-              {/*   </Button> */}
-              {/* )} */}
 
               <Button
                 type="button"
@@ -93,7 +65,7 @@ export function ProfileSingleView() {
               <Button
                 type="button"
                 title={t("line.button.close")}
-                onClick={onRecordClose}
+                onClick={() => onRecordSelect(undefined)}
               >
                 X
               </Button>

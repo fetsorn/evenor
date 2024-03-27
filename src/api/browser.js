@@ -311,14 +311,13 @@ export class BrowserAPI {
   }
 
   async updateRecord(record, overview) {
+    console.log("api/browser")
     const { CSVS } = await import("@fetsorn/csvs-js");
-
-    const { deepClone } = await import("./curse_controller.js");
 
     const recordNew = await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).update(deepClone(record));
+    }).update(structuredClone(record));
 
     if (overview.find((e) => e.UUID === recordNew.UUID)) {
       return overview.map((e) => {
@@ -335,12 +334,10 @@ export class BrowserAPI {
   async deleteRecord(record, overview) {
     const { CSVS } = await import("@fetsorn/csvs-js");
 
-    const { deepClone } = await import("./curse_controller.js");
-
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).delete(deepClone(record));
+    }).delete(structuredClone(record));
 
     return overview.filter((e) => e.UUID !== record.UUID);
   }
@@ -649,10 +646,12 @@ export class BrowserAPI {
     });
 
     await pfs.writeFile(
-      `${dir}/metadir.json`,
-      JSON.stringify(schema, null, 2),
+      `${dir}/.csvs.csv`,
+      "csvs,0.0.2",
       "utf8",
     );
+
+    // TODO: pass schema record to csvs.update
 
     await this.commit();
   }

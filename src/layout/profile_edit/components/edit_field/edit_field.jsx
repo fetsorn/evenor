@@ -1,14 +1,19 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { EditInput, EditRecord } from "../index.js";
 
 export function EditField({
   schema,
   index,
-  description,
   base,
   value,
   onFieldChange,
 }) {
+  const { i18n } = useTranslation();
+
+  const description =
+    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
+
   const isTrunk =
     Object.keys(schema).find((branch) => schema[branch].trunk === base) ??
     false;
@@ -25,7 +30,7 @@ export function EditField({
       base={base}
       description={description}
       // TODO: replace with sane accessor
-      value={value[0][base]}
+      value={Array.isArray(value) ? value[0][base] : value[base]}
       onFieldChange={onFieldChange}
     />
   ) : (
@@ -37,7 +42,7 @@ export function EditField({
           schema={schema}
           base={base}
           record={record}
-          onRecordChange={onFieldChange}
+          onRecordChange={(recordNew) => onFieldChange(base, recordNew)}
         />
       ))}
     </div>

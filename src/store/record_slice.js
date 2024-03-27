@@ -1,131 +1,118 @@
+import { condense } from "@fetsorn/csvs-js";
 import {
   API,
   generateDefaultSchemaRecord,
-  schemaToRecord,
-  recordToSchema,
 } from "../api/index.js";
-
-import { saveRepo, selectRepo, createRecord } from "./bin.js";
+import { saveRepoRecord, loadRepoRecord, createRecord, newUUID } from "./bin.js";
 
 export const createRecordSlice = (set, get) => ({
   // record selected from records for viewing/editing
   record: undefined,
 
-  // record backup before editing
-  recordOriginal: undefined,
-
-  // index of selected record in a group
-  index: undefined,
-
-  // title of the group of selected record
-  group: undefined,
-
   isEdit: false,
-
-  isBatch: false,
 
   isSettings: false,
 
-  onBatchSelect: () => set({ isBatch: true }),
-
-  onRecordSelect: async (record, index, group) => {
-    let recordNew = record;
-
+  // open view, close view or revert edit
+  onRecordSelect: async (recordNew) => {
     // eslint-disable-next-line
-    if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
-      recordNew = await selectRepo(get().repoUUID, record);
-    }
+    const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
 
-    set({ record: recordNew, index, group });
+    const isNewRecord = recordNew !== undefined;
+
+    const canSelectRepo = isHomeScreen && isNewRecord;
+
+    // when selecting a repo, load git state and schema from dataset into the record
+    const record = canSelectRepo ? await loadRepoRecord("root", recordNew) : recordNew;
+
+    set({ record, isEdit: false });
   },
 
-  onRecordCreate: async () => {
-    const record = await createRecord(get().schema, get().base);
+  // create new record or update old record
+  onRecordChange: async (recordNew) => {
+    const { repoUUID, base } = get();
 
-    set({
-      index: "",
-      isEdit: true,
-      title: "",
-      record,
-    });
+    // if new repo record, set default values for required fields
+    const isRepoRecord = repoUUID === "root" && base === "repo"
+
+    const defaults = isRepoRecord ? {
+      reponame: "",
+      schema: [await generateDefaultSchemaRecord()],
+    } : {};
+
+    const record = recordNew ?? {
+      _: base,
+      [base]: await newUUID(),
+      ...defaults
+    };
+
+    set({ record, isEdit: true });
   },
 
-  onRecordEdit: (record) =>
-    set({ record, isEdit: true, recordOriginal: get().record }),
-
-  onRecordRevert: () => set({ isEdit: false, record: get().recordOriginal }),
-
+  // write record to the dataset
   onRecordSave: async () => {
-    // TODO: remove let
-    let { record } = get();
+    const { repoUUID } = get();
 
-    console.log("onRecordSave", record)
-    // TODO: remove this or add comments
-    if (record[record._] === undefined) {
-      record[record._] = "";
-    }
+    const isHomeScreen = repoUUID === "root";
 
     // eslint-disable-next-line
-    if (get().repoUUID === "root" && __BUILD_MODE__ !== "server") {
-      record = await saveRepo(get().repoUUID, get().record);
-    }
+    const isNotServer = __BUILD_MODE__ !== "server";
 
-    const api = new API(get().repoUUID);
+    const canSaveRepo = isHomeScreen && isNotServer;
+
+    const record = canSaveRepo
+          ? await saveRepoRecord(repoUUID, condense(get().schema, get().record))
+          : get().record;
+
+    const api = new API(repoUUID);
 
     const records = await api.updateRecord(record, get().records);
 
-    api.commit();
+    await api.commit();
 
-    set({ records, isEdit: false });
+    set({ records, record, isEdit: false });
   },
 
-  onRecordCommit: async (uuid) => {
-    const api = new API(uuid);
-
-    api.commit();
-  },
-
+  // delete record form the dataset
   onRecordDelete: async () => {
     const api = new API(get().repoUUID);
 
     const records = await api.deleteRecord(get().record, get().records);
 
-    api.commit();
+    await api.commit();
 
-    set({ records, record: undefined });
-  },
-
-  onRecordClose: () => set({ record: undefined }),
-
-  onRecordChange: (_, record) => {
-    set({ record });
+    set({ records, record: undefined, isEdit: false });
   },
 
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);
 
-    const baseOld = get().base;
+    const baseBackup = get().base;
 
     // get current repo settings from root db
     const recordRepo = await apiRepo.getSettings();
 
-    const record = await selectRepo(get().repoUUID, recordRepo);
+    const record = await loadRepoRecord(get().repoUUID, recordRepo);
 
     const apiRoot = new API("root");
 
     const { onRecordSave, onRecordDelete } = get();
 
-    const onSettingsClose = () =>
-      set({
-        record: undefined,
-        base: baseOld,
-        onRecordSave,
-        onRecordDelete,
-        isSettings: false,
-      });
+    const onSettingsSelect = (recordNew) => {
+      if (recordNew === undefined) {
+        set({
+          base: baseBackup,
+          onRecordSave,
+          onRecordDelete,
+          isSettings: false,
+        });
+      }
+
+      set({ isEdit: false, record: recordNew })
+    }
 
     const onSettingsSave = async () => {
-      const recordNew = await saveRepo(get().repoUUID, get().record);
+      const recordNew = await saveRepoRecord(get().repoUUID, get().record);
 
       await apiRoot.updateRecord(recordNew);
 
@@ -138,7 +125,9 @@ export const createRecordSlice = (set, get) => ({
       set({
         repoUUID: "root",
         record: undefined,
-        base: baseOld,
+        // makes no sense to set base back to that of deleted project's record
+        // TODO: set default base of "root" repo
+        base: baseBackup,
         onRecordSave,
         onRecordDelete,
         isSettings: false,
@@ -147,18 +136,10 @@ export const createRecordSlice = (set, get) => ({
 
     set({
       record,
-      index: "",
-      group: `${get().repoName} settings`,
-      onRecordClose: onSettingsClose,
+      onRecordSelect: onSettingsSelect,
       onRecordSave: onSettingsSave,
       onRecordDelete: onSettingsDelete,
       isSettings: true,
     });
-  },
-
-  onRepoCommit: async (repoUUID) => {
-    const api = new API(repoUUID);
-
-    await api.commit();
   },
 });

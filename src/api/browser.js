@@ -651,7 +651,13 @@ export class BrowserAPI {
       "utf8",
     );
 
-    // TODO: pass schema record to csvs.update
+    // TODO update relations
+    // await api.update({ _: _, entry: "datum", entry: "actdate", branch: [ "branch_description", "branch_task" ] })
+    // TODO update meta entities
+    // TODO break the schema record into the update calls
+    // await api.update({ _: "branch", branch: "entry", branch_description: "An event" })
+    // await api.update({ _: "branch", branch: "datum", branch_description: "A text", branch_task: "text" })
+    // await api.update({ _: "branch", branch: "actdate", branch_description: "A date of event", branch_task: "date" })
 
     await this.commit();
   }

@@ -49,8 +49,8 @@ export function recordToSchema(schemaRecord) {
   return schemaObject;
 }
 
-export async function schemaToRecord(schema) {
-  const schema_branches = await Promise.all(Object.keys(schema).map(async (key) => {
+export function schemaToRecord(schema) {
+  const schema_branches = Object.keys(schema).map((key) => {
     const trunk = schema[key].trunk ? { schema_branch_trunk: schema[key].trunk } : {};
 
     const task = schema[key].task ? { schema_branch_task: schema[key].task } : {};
@@ -77,13 +77,7 @@ export async function schemaToRecord(schema) {
     };
 
     return item;
-  }));
-
-  const record = {
-    _: "schema",
-    UUID: await digestMessage(await randomUUID()),
-    schema_branch: schema_branches,
-  };
+  });
 
   return record;
 }

@@ -2,7 +2,7 @@ import React from "react";
 
 export const schemaLocal = {
   local_tag: {
-    trunk: "tags",
+    trunk: "repo",
     description: {
       en: "Local archive tag",
       ru: "Тег локального архива",

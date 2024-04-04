@@ -89,7 +89,14 @@ export async function generateDefaultSchemaRecord() {
     schema_branch: [
       {
         _: "schema_branch",
+        schema_branch: "entry",
+        schema_branch_description_en: "Record",
+        schema_branch_description_ru: "Запись",
+      },
+      {
+        _: "schema_branch",
         schema_branch: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_task: "text",
         schema_branch_description_en: "Description of the event",
         schema_branch_description_ru: "Описание события",
@@ -105,14 +112,14 @@ export async function generateDefaultSchemaRecord() {
       {
         _: "schema_branch",
         schema_branch: "actname",
-        schema_branch_trunk: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_description_en: "Name of the person in the event",
         schema_branch_description_ru: "Имя человека участвовавшего в событии",
       },
       {
         _: "schema_branch",
         schema_branch: "saydate",
-        schema_branch_trunk: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_task: "date",
         schema_branch_description_en: "Date of record",
         schema_branch_description_ru: "Дата записи",
@@ -120,28 +127,28 @@ export async function generateDefaultSchemaRecord() {
       {
         _: "schema_branch",
         schema_branch: "sayname",
-        schema_branch_trunk: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_description_en: "Name of the person who made the record",
         schema_branch_description_ru: "Имя автора записи",
       },
       {
         _: "schema_branch",
         schema_branch: "category",
-        schema_branch_trunk: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_description_en: "Category",
         schema_branch_description_ru: "Категория",
       },
       {
         _: "schema_branch",
         schema_branch: "privacy",
-        schema_branch_trunk: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_description_en: "Privacy",
         schema_branch_description_ru: "Публичность",
       },
       {
         _: "schema_branch",
         schema_branch: "file",
-        schema_branch_trunk: "datum",
+        schema_branch_trunk: "entry",
         schema_branch_task: "file",
         schema_branch_description_en: "Digital asset",
         schema_branch_description_ru: "Файл",
@@ -179,7 +186,14 @@ export async function generateDefaultSchemaRecord() {
 }
 
 export const defaultSchema = {
+  entry: {
+    description: {
+      en: "Entry",
+      ru: "Запись",
+    },
+  },
   datum: {
+    trunk: "entry",
     task: "text",
     description: {
       en: "Description of the event",
@@ -187,7 +201,7 @@ export const defaultSchema = {
     },
   },
   actdate: {
-    trunk: "datum",
+    trunk: "entry",
     task: "date",
     description: {
       en: "Date of the event",
@@ -195,14 +209,14 @@ export const defaultSchema = {
     },
   },
   actname: {
-    trunk: "datum",
+    trunk: "entry",
     description: {
       en: "Name of the person in the event",
       ru: "Имя человека участвовавшего в событии",
     },
   },
   saydate: {
-    trunk: "datum",
+    trunk: "entry",
     task: "date",
     description: {
       en: "Date of record",
@@ -210,28 +224,28 @@ export const defaultSchema = {
     },
   },
   sayname: {
-    trunk: "datum",
+    trunk: "entry",
     description: {
       en: "Name of the person who made the record",
       ru: "Имя автора записи",
     },
   },
   category: {
-    trunk: "datum",
+    trunk: "entry",
     description: {
       en: "Category",
       ru: "Категория",
     },
   },
   privacy: {
-    trunk: "datum",
+    trunk: "entry",
     description: {
       en: "Privacy",
       ru: "Публичность",
     },
   },
   file: {
-    trunk: "datum",
+    trunk: "entry",
     task: "file",
     description: {
       en: "Digital asset",
@@ -285,50 +299,40 @@ export const schemaRoot = {
       ru: "Категория проекта",
     },
   },
-  schema: {
+  branch: {
     trunk: "repo",
-    description: {
-      en: "Schema of the dataset",
-      ru: "Структура проекта",
-    },
-  },
-  schema_branch: {
-    trunk: "schema",
     description: {
       en: "Branch name",
       ru: "Название ветки",
     },
   },
-  schema_branch_trunk: {
-    trunk: "schema_branch",
+  trunk: {
+    trunk: "branch",
     description: {
       en: "Branch trunk",
       ru: "Ствол ветки",
     },
   },
-  schema_branch_task: {
-    trunk: "schema_branch",
+  task: {
+    trunk: "branch",
     description: {
       en: "Branch task",
       ru: "Предназначение ветки",
     },
   },
-  schema_branch_description_en: {
-    trunk: "schema_branch_description",
+  description_en: {
+    trunk: "branch",
     description: {
       en: "Branch description EN",
       ru: "Описание ветки на английском",
     },
   },
-  schema_branch_description_ru: {
-    trunk: "schema_branch_description",
+  description_ru: {
+    trunk: "branch",
     description: {
       en: "Branch description RU",
       ru: "Описание ветки на русском",
     },
-  },
-  tags: {
-    trunk: "repo",
   },
   ...schemaSync,
   ...schemaRemote,

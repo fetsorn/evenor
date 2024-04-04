@@ -168,12 +168,10 @@ export async function saveRepoRecord(repoUUID, record) {
   // or collapse into api.ensure
   const recordNew = await clone(repoUUID, record);
 
-  const schema = recordToSchema(recordNew.schema);
-
   const api = new API(repoUUID);
 
   // create repo directory with a schema
-  await api.ensure(schema, recordNew.reponame);
+  await api.ensure(recordNew.schema, recordName.reponame);
 
   await writeGitTags(repoUUID, record);
 

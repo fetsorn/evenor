@@ -3,7 +3,7 @@ import { API } from "../../../../../api/index.js";
 
 export const schemaRSS = {
   rss_tag: {
-    trunk: "tags",
+    trunk: "repo",
     description: {
       en: "Rss git tag",
       ru: "Тег удаленного RSS git репозитория",

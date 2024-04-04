@@ -7,7 +7,7 @@ import { API } from "../../../../../api/index.js";
 
 export const schemaTG = {
   tg_tag: {
-    trunk: "tags",
+    trunk: "repo",
     description: {
       en: "Tag TG channel",
       ru: "Тег TG канала",

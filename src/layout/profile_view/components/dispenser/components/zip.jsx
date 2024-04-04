@@ -3,7 +3,7 @@ import { API } from "../../../../../api/index.js";
 
 export const schemaZip = {
   zip_tag: {
-    trunk: "tags",
+    trunk: "repo",
     type: "object",
     description: {
       en: "Zip archive tag",

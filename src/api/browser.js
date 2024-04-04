@@ -6,6 +6,43 @@ const pfs = fs.promises;
 
 const lfsDir = "lfs";
 
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+// [ {_: "_", entry: [ "datum" ]},
+//   {_: branch, branch: "entry", description_en: "", description_ru: ""},
+//   {_: branch, branch: "datum"}
+// ]
+function schemaToRecords(schema) {
+  const branches = Object.keys(schema);
+
+  const records = branches.reduce((acc, branch) => {
+    const { trunk, task, description } = schema[branch];
+    const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+    const schemaRecord = trunk !== undefined
+          ? { ...acc.schemaRecord, [trunk]: [ branch, ...accLeaves ] }
+          : acc.schemaRecord;
+
+    const partialEn = description && description.en
+          ? { description_en: description.en }
+          : {};
+
+    const partialRu = description && description.ru
+          ? { description_ru: description.ru }
+          : {};
+
+    const partialTask = task ? { task } : {};
+
+    const metaRecords = [
+      { _: 'branch', branch, ...partialTask, ...partialEn, ...partialRu },
+      ...acc.metaRecords
+    ];
+
+    return { schemaRecord, metaRecords }
+  }, { schemaRecord: { _: '_' }, metaRecords: []})
+
+  return [ records.schemaRecord, ...records.metaRecords ]
+}
+
 async function runWorker(readFile, searchParams) {
   const worker = new Worker(new URL("./browser.worker", import.meta.url));
 
@@ -311,7 +348,6 @@ export class BrowserAPI {
   }
 
   async updateRecord(record, overview) {
-    console.log("api/browser")
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     const recordNew = await new CSVS({
@@ -651,13 +687,11 @@ export class BrowserAPI {
       "utf8",
     );
 
-    // TODO update relations
-    // await api.update({ _: _, entry: "datum", entry: "actdate", branch: [ "branch_description", "branch_task" ] })
-    // TODO update meta entities
-    // TODO break the schema record into the update calls
-    // await api.update({ _: "branch", branch: "entry", branch_description: "An event" })
-    // await api.update({ _: "branch", branch: "datum", branch_description: "A text", branch_task: "text" })
-    // await api.update({ _: "branch", branch: "actdate", branch_description: "A date of event", branch_task: "date" })
+    const records = schemaToRecords(schema);
+
+    for (const record of records) {
+      await this.updateRecord(record, []);
+    }
 
     await this.commit();
   }

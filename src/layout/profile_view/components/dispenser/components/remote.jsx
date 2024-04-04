@@ -3,7 +3,7 @@ import { API } from "../../../../../api/index.js";
 
 export const schemaRemote = {
   remote_tag: {
-    trunk: "tags",
+    trunk: "repo",
     description: {
       en: "Remote git tag",
       ru: "Тег удаленного git репозитория",

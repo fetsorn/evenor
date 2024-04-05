@@ -15,14 +15,14 @@ export function ProfileEdit() {
     isSettings,
     onRecordSelect,
     onRecordCreate,
-    onRecordChange,
+    onRecordUpdate,
     schemaRepo,
   ] = useStore((state) => [
     state.record,
     state.isSettings,
     state.onRecordSelect,
     state.onRecordCreate,
-    state.onRecordChange,
+    state.onRecordUpdate,
     state.schema
   ]);
 
@@ -38,7 +38,7 @@ export function ProfileEdit() {
         "profile-edit__sidebar edit-sidebar",
       )}
     >
-      {record && schema && (
+      {record && (
         <div className={cn(styles.container, "edit-sidebar__container")}>
           <div
             id="scrollcontainer"
@@ -68,7 +68,7 @@ export function ProfileEdit() {
                 index: "_",
                 base: record._,
                 record,
-                onRecordChange,
+                onRecordChange: onRecordUpdate,
               }}
             />
 

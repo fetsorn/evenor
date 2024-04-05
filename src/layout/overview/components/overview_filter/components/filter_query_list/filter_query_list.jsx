@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./filter_query_list.module.css";
-import { useStore } from "../../../../../../store/index.js";
+import { useStore, paramsToQueries } from "../../../../../../store/index.js";
 import { API } from "../../../../../../api/index.js";
 
 export function FilterQueryList() {

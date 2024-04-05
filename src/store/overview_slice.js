@@ -1,14 +1,14 @@
-import { API } from "../api/index.js";
+import { API, schemaRoot } from "../api/index.js";
 import { queriesToParams } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
   queries: {},
 
-  base: undefined,
+  base: "repo",
 
   sortBy: "",
 
-  schema: {},
+  schema: schemaRoot,
 
   records: [],
 
@@ -32,6 +32,8 @@ export const createOverviewSlice = (set, get) => ({
 
       set({ queries });
     }
+
+    set({ records: [] })
 
     // abort previous search stream if it is running
     get().abortPreviousStream();
@@ -90,17 +92,18 @@ export const createOverviewSlice = (set, get) => ({
     }
   },
 
-  setSortBy: async (sortBy) => {
-    set({
-      sortBy,
-    });
-  },
+  setSortBy: async (sortBy) => set({ sortBy }),
 
   setRepoUUID: async (repoUUID) => {
     // abort previous search stream if it is running
     get().abortPreviousStream();
 
+    if (repoUUID === "root") {
+      set({ schema: schemaRoot, base: "repo" })
+    }
+
     set({
+      record: undefined,
       repoUUID,
     });
 
@@ -109,7 +112,7 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setBase: async (base) => {
-    set({ base, records: [] });
+    set({ base });
 
     // reset all queries
     await get().setQuery(undefined, undefined);

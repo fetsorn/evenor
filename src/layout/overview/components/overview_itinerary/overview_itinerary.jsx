@@ -16,13 +16,13 @@ export function OverviewItinerary() {
     records,
     sortBy,
     onRecordSelect,
-    onRecordChange,
+    onRecordUpdate,
   ] = useStore((state) => [
     state.record,
     state.records,
     state.sortBy,
     state.onRecordSelect,
-    state.onRecordChange,
+    state.onRecordUpdate,
   ]);
 
   async function onUseEffect() {
@@ -45,7 +45,7 @@ export function OverviewItinerary() {
         <button
           className={styles.star}
           type="button"
-          onClick={() => onRecordChange()}
+          onClick={() => onRecordUpdate()}
           title={t("line.button.add")}
           key="addevent"
         >
@@ -55,7 +55,7 @@ export function OverviewItinerary() {
         <VirtualScroll
           {...{
             onRecordSelect,
-            onRecordCreate: async () => onRecordChange(),
+            onRecordCreate: async () => onRecordUpdate(),
             data: itinerary,
             rowComponent: ItineraryWaypoint
           }}

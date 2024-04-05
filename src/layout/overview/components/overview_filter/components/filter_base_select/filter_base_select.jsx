@@ -7,8 +7,9 @@ import styles from "./filter_base_select.module.css";
 export function FilterBaseSelect({}) {
   const { i18n, t } = useTranslation();
 
-  const [base, schema, setBase] = useStore((state) => [
+  const [base, queries, schema, setBase] = useStore((state) => [
     state.base,
+    state.queries,
     state.schema,
     state.setBase,
   ]);
@@ -36,8 +37,7 @@ export function FilterBaseSelect({}) {
       {t("header.dropdown.base")}
       <select
         id={`selectBase`}
-        value={base}
-        defaultValue={baseDefault}
+        value={base ?? baseDefault}
         onChange={({ target: { value } }) => {
           setBase(value);
         }}

@@ -6,41 +6,51 @@ const pfs = fs.promises;
 
 const lfsDir = "lfs";
 
-// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+import { expand } from "@fetsorn/csvs-js";
+
 // [ {_: "_", entry: [ "datum" ]},
 //   {_: branch, branch: "entry", description_en: "", description_ru: ""},
 //   {_: branch, branch: "datum"}
 // ]
-function schemaToRecords(schema) {
-  const branches = Object.keys(schema);
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+function branchRecordsToSchema(schemaRecord, branchRecords) {
 
-  const records = branches.reduce((acc, branch) => {
-    const { trunk, task, description } = schema[branch];
-    const accLeaves = acc.schemaRecord[trunk] ?? [];
+  const schemaRecordExpanded = expand(schemaRecord);
 
-    const schemaRecord = trunk !== undefined
-          ? { ...acc.schemaRecord, [trunk]: [ branch, ...accLeaves ] }
-          : acc.schemaRecord;
+  // TODO validate against the case when branch has multiple trunks
+  return metaRecords.reduce((acc, branchRecord) => {
+    const { branch, task, description_en, description_ru } = branchRecord;
 
-    const partialEn = description && description.en
-          ? { description_en: description.en }
+    const trunk = Object.keys(schemaRecord).find(
+      (key) => schemaRecordExpanded[key].includes(branch)
+    );
+
+    const trunkPartial = trunk !== undefined
+          ? { trunk }
           : {};
 
-    const partialRu = description && description.ru
-          ? { description_ru: description.ru }
+    const taskPartial = task !== undefined
+          ? { task }
           : {};
 
-    const partialTask = task ? { task } : {};
+    const enPartial = description_en !== undefined
+          ? { en: description_en }
+          : undefined;
 
-    const metaRecords = [
-      { _: 'branch', branch, ...partialTask, ...partialEn, ...partialRu },
-      ...acc.metaRecords
-    ];
+    const ruPartial = description_ru !== undefined
+          ? { ru: description_ru }
+          : undefined;
 
-    return { schemaRecord, metaRecords }
-  }, { schemaRecord: { _: '_' }, metaRecords: []})
+    const descriptionPartial = enPartial || ruPartial
+          ? { description: { ...enPartial, ...ruPartial } }
+          : {};
 
-  return [ records.schemaRecord, ...records.metaRecords ]
+    const branchPartial = {
+      [branch]: {...trunkPartial, ...taskPartial, ...descriptionPartial}
+    };
+
+    return { ...acc, ...branchPartial }
+  })
 }
 
 async function runWorker(readFile, searchParams) {
@@ -355,12 +365,12 @@ export class BrowserAPI {
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).update(structuredClone(record));
 
-    if (overview.find((e) => e.UUID === recordNew.UUID)) {
-      return overview.map((e) => {
-        if (e.UUID === recordNew.UUID) {
+    if (overview.find((recordOld) => recordOld.UUID === recordNew.UUID)) {
+      return overview.map((recordOld) => {
+        if (recordOld.UUID === recordNew.UUID) {
           return recordNew;
         }
-        return e;
+        return recordOld;
       });
     }
 
@@ -622,7 +632,7 @@ export class BrowserAPI {
     });
   }
 
-  async ensure(schema, name) {
+  async ensure(name) {
     const dir = `/${this.uuid}${name !== undefined ? `-${name}` : ""}`;
 
     const { init, setConfig } = await import("isomorphic-git");
@@ -686,14 +696,6 @@ export class BrowserAPI {
       "csvs,0.0.2",
       "utf8",
     );
-
-    const records = schemaToRecords(schema);
-
-    for (const record of records) {
-      await this.updateRecord(record, []);
-    }
-
-    await this.commit();
   }
 
   async rimraf(rimrafpath) {
@@ -743,9 +745,11 @@ export class BrowserAPI {
   }
 
   async readSchema() {
-    const schemaString = await this.readFile("metadir.json");
+    const schemaRecord = await this.select(new URLSearchParams("?_=_"));
 
-    const schema = JSON.parse(schemaString);
+    const branchRecords = await this.select(new URLSearchParams("?_=branch"));
+
+    const schema = branchRecordsToSchema(schemaRecord, branchRecords);
 
     return schema;
   }

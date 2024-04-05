@@ -13,8 +13,8 @@ export function ProfileView() {
   const [
     record,
     repoUUID,
-    setRepoName,
-    onRecordChange,
+    setRepoUUID,
+    onRecordUpdate,
     onRecordSelect,
     onRecordDelete,
     isSettings,
@@ -22,8 +22,8 @@ export function ProfileView() {
   ] = useStore((state) => [
     state.record,
     state.repoUUID,
-    state.setRepoName,
-    state.onRecordChange,
+    state.setRepoUUID,
+    state.onRecordUpdate,
     state.onRecordSelect,
     state.onRecordDelete,
     state.isSettings,
@@ -31,6 +31,15 @@ export function ProfileView() {
   ]);
 
   const schema = isSettings ? schemaRoot : schemaRepo;
+
+  const isHomeScreen = repoUUID === "root";
+
+  const isMultipleRepos = __BUILD_MODE__ !== "server";
+
+  const canOpenRepo = isHomeScreen && isMultipleRepos;
+
+  const onRepoOpen = () => setRepoUUID(record.repo);
+
   return (
     <div
       className={cn(
@@ -49,7 +58,7 @@ export function ProfileView() {
               <Button
                 type="button"
                 title={t("line.button.edit")}
-                onClick={() => onRecordChange(record)}
+                onClick={() => onRecordUpdate(record)}
               >
                 ✏️
               </Button>
@@ -71,11 +80,11 @@ export function ProfileView() {
               </Button>
             </div>
 
-            {repoUUID === "root" && __BUILD_MODE__ !== "server" && (
+            {canOpenRepo && (
               <button
                 type="button"
                 title={t("line.button.open")}
-                onClick={() => setRepoName(record.reponame)}
+                onClick={() => onRepoOpen()}
               >
                 {t("line.button.open")}
               </button>

@@ -11,15 +11,15 @@ const OverviewItinerary = React.lazy(
 export function Overview() {
   const { t } = useTranslation();
 
-  const [isView, repoUUID, repoName, setRepoUUID, onSettingsOpen] = useStore(
+  const [repoUUID, setRepoUUID, onSettingsOpen] = useStore(
     (state) => [
-      state.isView,
       state.repoUUID,
-      state.repoName,
       state.setRepoUUID,
       state.onSettingsOpen,
     ],
   );
+
+  const isRepo = repoUUID !== "root";
 
   function onHome() {
     setRepoUUID("root");
@@ -28,7 +28,7 @@ export function Overview() {
   return (
     <div>
       <div>
-        {!isView && repoUUID !== "root" ? (
+        {isRepo ? (
           <Button
             type="button"
             title={t("header.button.back")}
@@ -36,13 +36,12 @@ export function Overview() {
           >
             {/* &lt;= */}
             🏠
-            {repoName}
           </Button>
         ) : (
           <div />
         )}
 
-        {repoUUID !== "root" && !isView && (
+        {isRepo && (
           <Button
             type="button"
             title={t("header.button.back")}

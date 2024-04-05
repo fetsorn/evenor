@@ -1,7 +1,7 @@
 import { condense } from "@fetsorn/csvs-js";
 import {
   API,
-  generateDefaultSchemaRecord,
+  generateDefaultRepoRecord,
 } from "../api/index.js";
 import { saveRepoRecord, loadRepoRecord, createRecord, newUUID } from "./bin.js";
 
@@ -59,15 +59,12 @@ export const createProfileSlice = (set, get) => ({
     // if new repo record, set default values for required fields
     const isRepoRecord = repoUUID === "root" && base === "repo"
 
-    const defaults = isRepoRecord ? {
-      reponame: "",
-      schema: [await generateDefaultSchemaRecord()],
-    } : {};
+    const defaults = isRepoRecord ? generateDefaultRepoRecord() : {};
 
     const record = recordNew ?? {
+      ...defaults,
       _: base,
       [base]: await newUUID(),
-      ...defaults
     };
 
     set({ record, isEdit: true });

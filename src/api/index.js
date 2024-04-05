@@ -1,7 +1,5 @@
 export { API } from "./api.js";
 export {
-  schemaToRecord,
-  recordToSchema,
   schemaRoot,
-  generateDefaultSchemaRecord,
+  generateDefaultRepoRecord,
 } from "./schema.js";

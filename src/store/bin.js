@@ -1,10 +1,8 @@
 import {
   API,
-  schemaToRecord,
-  recordToSchema,
 } from "../api/index.js";
 
-import { digestMessage, randomUUID } from "@fetsorn/csvs-js";
+import { digestMessage, randomUUID, expand } from "@fetsorn/csvs-js";
 
 export async function newUUID() {
   return digestMessage(await randomUUID())
@@ -62,21 +60,86 @@ async function readLocalTags(repoUUID, record) {
   return {}
 }
 
+// turns [{_:_, branch1: branch2}, {_:branch, branch: "branch2", task: "date"}]
+// into [{_:branch, branch: "branch2", trunk: "branch1", task: "date"}]
+function enrichBranchRecords(schemaRecord, metaRecords) {
+  const schemaRecordExpanded = expand(schemaRecord);
+
+  // TODO validate against the case when branch has multiple trunks
+  return metaRecords.map((branchRecord) => {
+    const { branch } = branchRecord;
+
+    const trunk = Object.keys(schemaRecord).find(
+      (key) => schemaRecordExpanded[key].includes(branch)
+    );
+
+    const trunkPartial = trunk !== undefined
+          ? { trunk }
+          : {};
+
+    return { ...branchRecord, ...trunkPartial }
+  })
+}
+
+
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+function schemaToPartial(schema) {
+  const branches = Object.keys(schema).map((key) => {
+    const trunkPartial = schema[key].trunk ? { trunk: schema[key].trunk } : {};
+
+    const taskPartial = schema[key].task ? { task: schema[key].task } : {};
+
+    const enPartial = schema[key].description?.en ? {
+      description_en: schema[key].description.en
+    } : {};
+
+    const ruPartial = schema[key].description?.ru ? {
+      description_ru: schema[key].description.ru
+    } : {};
+
+    const descriptionPartial = schema[key].description ? {
+      ...enPartial,
+      ...ruPartial,
+    } : {};
+
+    const item = {
+      _: "branch",
+      branch: key,
+      ...trunkPartial,
+      ...taskPartial,
+      ...descriptionPartial,
+    };
+
+    return item;
+  });
+
+  return { branch: branches };
+}
+
 // load git state and schema from dataset into the record
 export async function loadRepoRecord(repoUUID, record) {
   const remoteTags = await readRemoteTags(repoUUID, record);
 
   const localTags = await readLocalTags(repoUUID, record);
 
-  const schema = await api.readSchema();
+  const api = new API(repoUUID);
 
-  const schemaRecord = await schemaToRecord(schema);
+  // const schema = await api.readSchema();
 
-  const defaultTags = record.tags.UUID ? { UUID: await newUUID() } : record.tags;
+  // const branchPartial = await schemaToPartial(schema);
+
+  const [ schemaRecord ] = api.select(new URLSearchParams("?_=_"));
+  // query {_:branch}
+  const metaRecords = this.select(new URLSearchParams("?_=branch"));
+
+  const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
+
+  const branchPartial = { branch: branchRecords };
 
   const recordNew = {
-    schema: schemaRecord,
-    tags: { ...defaults, ...remoteTags, ...localTags },
+    ...branchPartial,
+    ...remoteTags,
+    ...localTags,
     ...record
   };
 
@@ -85,59 +148,59 @@ export async function loadRepoRecord(repoUUID, record) {
 
 // TODO collapse into api.ensure
 async function clone(repoUUID, record) {
-  const api = new API(repoUUID);
+  //const api = new API(repoUUID);
 
   // TODO: replace with new tag schema
-  const remoteTags =
-    record.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
+  //const remoteTags =
+  //  record.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
 
-  for (const remoteTag of remoteTags) {
-    // try to clone project to repo directory if record has a remote tag,
-    // will fail if repo exists
-    try {
-      // const [remoteTag] = remoteTags;
+  //for (const remoteTag of remoteTags) {
+  //  // try to clone project to repo directory if record has a remote tag,
+  //  // will fail if repo exists
+  //  try {
+  //    // const [remoteTag] = remoteTags;
 
-      await api.clone(remoteTag.remote_url, remoteTag.remote_token);
+  //    await api.clone(remoteTag.remote_url, remoteTag.remote_token);
 
-      const schema = await api.readSchema();
+  //    const schema = await api.readSchema();
 
-      return { schema, ...record }
-    } catch {
-      // do nothing
-    }
-  }
+  //    return { schema, ...record }
+  //  } catch {
+  //    // do nothing
+  //  }
+  //}
 
   return record
 }
 
 async function writeGitTags(repoUUID, record) {
-  const api = new API(repoUUID);
+  //const api = new API(repoUUID);
 
-  const remoteTags =
-    record.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
+  //const remoteTags =
+  //  record.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
 
-  for (const remoteTag of remoteTags) {
-    try {
-      api.addRemote(
-        remoteTag.remote_name,
-        remoteTag.remote_url,
-        remoteTag.remote_token,
-      );
-    } catch {
-      // do nothing
-    }
-  }
+  //for (const remoteTag of remoteTags) {
+  //  try {
+  //    api.addRemote(
+  //      remoteTag.remote_name,
+  //      remoteTag.remote_url,
+  //      remoteTag.remote_token,
+  //    );
+  //  } catch {
+  //    // do nothing
+  //  }
+  //}
 
-  const localTags =
-    record.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
+  //const localTags =
+  //  record.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
 
-  for (const localTag of localTags) {
-    try {
-      api.addAssetPath(localTag.local_path);
-    } catch {
-      // do nothing
-    }
-  }
+  //for (const localTag of localTags) {
+  //  try {
+  //    api.addAssetPath(localTag.local_path);
+  //  } catch {
+  //    // do nothing
+  //  }
+  //}
 }
 
 function omitRepoRecord(record) {
@@ -146,18 +209,38 @@ function omitRepoRecord(record) {
   const { schema: omitSchema, ...recordNew } = record;
 
   // TODO fix tags accessor for new schema
-  const tagsFiltered = recordNew.tags?.filter(
-    (item) => item._ !== "remote_tag" && item._ !== "local_tag"
-  );
+  //const tagsFiltered = recordNew.tags?.filter(
+  //  (item) => item._ !== "remote_tag" && item._ !== "local_tag"
+  //);
 
-  const tags = tagsFiltered
-        ? { tags: tagsFiltered }
-        : {};
+  //const tags = tagsFiltered
+  //      ? { tags: tagsFiltered }
+  //      : {};
 
   return {
-    ...tags,
+    // ...tags,
     ...recordNew
   }
+}
+
+// turns [{_:branch, branch: "branch2", trunk: "branch1", task: "date"}]
+// into [{_:_, branch1: branch2}, {_:branch, branch: "branch2", task: "date"}]
+function extractSchemaRecords(branchRecords) {
+  const records = branchRecords.reduce((acc, branchRecord) => {
+    const { trunk, ...branchRecordOmitted } = branchRecord;
+
+    const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+    const schemaRecord = trunk !== undefined
+          ? { ...acc.schemaRecord, [trunk]: [ branchRecord.branch, ...accLeaves ] }
+          : acc.schemaRecord;
+
+    const metaRecords = [ branchRecordOmitted, ...acc.metaRecords ];
+
+    return { schemaRecord, metaRecords }
+  }, { schemaRecord: { _: '_' }, metaRecords: []});
+
+  return [ records.schemaRecord, ...records.metaRecords ]
 }
 
 // clone or populate repo, write git state
@@ -171,9 +254,17 @@ export async function saveRepoRecord(repoUUID, record) {
   const api = new API(repoUUID);
 
   // create repo directory with a schema
-  await api.ensure(recordNew.schema, recordName.reponame);
+  await api.ensure(recordNew.reponame);
 
-  await writeGitTags(repoUUID, record);
+  const records = extractSchemaRecords(recordNew.branch);
+
+  for (const record of records) {
+    await api.updateRecord(record, []);
+  }
+
+  await writeGitTags(repoUUID, recordNew);
+
+  await api.commit();
 
   const recordOmitted = omitRepoRecord(recordNew);
 

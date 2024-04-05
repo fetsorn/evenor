@@ -12,7 +12,7 @@ import { Dropdown } from "../../../../../../components/index.js";
  * @param {string} base - field of schema.
  * @returns {string[]} - list of lieaves of base
  */
-function filterLeaves(schema, base) {
+function findLeaves(schema, base) {
   // how to find all leaves of base. It should return all branches that have trunk === base when you select the plus button(base)
   return Object.keys(schema).filter((branch) => schema[branch].trunk === base);
 }
@@ -28,7 +28,7 @@ export function FilterQueryPlus({}) {
   ]);
 
   // find all fields name
-  const leafFields = filterLeaves(schema, base).concat([base]);
+  const leafFields = findLeaves(schema, base).concat([base]);
   // find field name which added to filterqueries
   const addedFields = Object.keys(queries);
   // find name fields which is not added to filterqueries

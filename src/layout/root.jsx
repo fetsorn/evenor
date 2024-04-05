@@ -3,7 +3,7 @@ import {
   HashRouter as Router,
   Routes,
   Route,
-  useParams,
+  // useParams,
 } from "react-router-dom";
 import { useStore } from "../store/index.js";
 import { Overview } from "./overview/index.js";

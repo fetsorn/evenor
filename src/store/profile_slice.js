@@ -81,6 +81,7 @@ export const createProfileSlice = (set, get) => ({
     set({ records, record: undefined, isEdit: false });
   },
 
+  // override all record store functions to act on the root repo
   onSettingsOpen: async () => {
     const apiRepo = new API(get().repoUUID);
 

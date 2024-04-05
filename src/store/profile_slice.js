@@ -13,44 +13,8 @@ export const createProfileSlice = (set, get) => ({
 
   isSettings: false,
 
-  // open view, close view or revert edit
-  onRecordSelect: async (recordNew) => {
-    // eslint-disable-next-line
-    const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
-
-    const isNewRecord = recordNew !== undefined;
-
-    const canSelectRepo = isHomeScreen && isNewRecord;
-
-    // when selecting a repo, load git state and schema from dataset into the record
-    const record = canSelectRepo ? await loadRepoRecord("root", recordNew) : recordNew;
-
-    set({ record, isEdit: false });
-  },
-
-  // create new record or update old record
-  onRecordChange: async (recordNew) => {
-    const { repoUUID, base } = get();
-
-    // if new repo record, set default values for required fields
-    const isRepoRecord = repoUUID === "root" && base === "repo"
-
-    const defaults = isRepoRecord ? {
-      reponame: "",
-      schema: [await generateDefaultSchemaRecord()],
-    } : {};
-
-    const record = recordNew ?? {
-      _: base,
-      [base]: await newUUID(),
-      ...defaults
-    };
-
-    set({ record, isEdit: true });
-  },
-
   // write record to the dataset
-  onRecordSave: async () => {
+  onRecordCreate: async () => {
     const { repoUUID } = get();
 
     const isHomeScreen = repoUUID === "root";
@@ -73,6 +37,42 @@ export const createProfileSlice = (set, get) => ({
     set({ records, record, isEdit: false });
   },
 
+  // open view, close view or revert edit
+  onRecordSelect: async (recordNew) => {
+    // eslint-disable-next-line
+    const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
+
+    const isNewRecord = recordNew !== undefined;
+
+    const canSelectRepo = isHomeScreen && isNewRecord;
+
+    // when selecting a repo, load git state and schema from dataset into the record
+    const record = canSelectRepo ? await loadRepoRecord("root", recordNew) : recordNew;
+
+    set({ record, isEdit: false });
+  },
+
+  // create new record or update old record
+  onRecordUpdate: async (recordNew) => {
+    const { repoUUID, base } = get();
+
+    // if new repo record, set default values for required fields
+    const isRepoRecord = repoUUID === "root" && base === "repo"
+
+    const defaults = isRepoRecord ? {
+      reponame: "",
+      schema: [await generateDefaultSchemaRecord()],
+    } : {};
+
+    const record = recordNew ?? {
+      _: base,
+      [base]: await newUUID(),
+      ...defaults
+    };
+
+    set({ record, isEdit: true });
+  },
+
   // delete record form the dataset
   onRecordDelete: async () => {
     const api = new API(get().repoUUID);
@@ -90,28 +90,19 @@ export const createProfileSlice = (set, get) => ({
     const baseBackup = get().base;
 
     // get current repo settings from root db
-    const recordRepo = await apiRepo.getSettings();
+    const recordRepo = await apiRepo.getSettings()
 
-    const record = await loadRepoRecord(get().repoUUID, recordRepo);
+    // load git state and schema from dataset into the record
+    const recordSettings = await loadRepoRecord(get().repoUUID, recordRepo);
 
     const apiRoot = new API("root");
 
-    const { onRecordSave, onRecordDelete } = get();
+    const {
+      onRecordCreate: onRecordCreateBackup,
+      onRecordDelete: onRecordDeleteBackup
+    } = get();
 
-    const onSettingsSelect = (recordNew) => {
-      if (recordNew === undefined) {
-        set({
-          base: baseBackup,
-          onRecordSave,
-          onRecordDelete,
-          isSettings: false,
-        });
-      }
-
-      set({ isEdit: false, record: recordNew })
-    }
-
-    const onSettingsSave = async () => {
+    const onRecordCreateSettings = async () => {
       const recordNew = await saveRepoRecord(get().repoUUID, get().record);
 
       await apiRoot.updateRecord(recordNew);
@@ -119,27 +110,38 @@ export const createProfileSlice = (set, get) => ({
       set({ isEdit: false });
     };
 
-    const onSettingsDelete = async () => {
+    const onRecordSelectSettings = (recordNew) => {
+      if (recordNew === undefined) {
+        set({
+          base: baseBackup,
+          isSettings: false,
+          onRecordCreate: onRecordCreateBackup,
+          onRecordDelete: onRecordDeleteBackup,
+        });
+      }
+
+      set({ isEdit: false, record: recordNew });
+    };
+
+    const onRecordDeleteSettings = async () => {
       await apiRoot.deleteRecord(get().record);
 
       set({
+        base: "repo",
         repoUUID: "root",
         record: undefined,
-        // makes no sense to set base back to that of deleted project's record
-        // TODO: set default base of "root" repo
-        base: baseBackup,
-        onRecordSave,
-        onRecordDelete,
         isSettings: false,
+        onRecordCreate: onRecordCreateBackup,
+        onRecordDelete: onRecordDeleteBackup,
       });
     };
 
     set({
-      record,
-      onRecordSelect: onSettingsSelect,
-      onRecordSave: onSettingsSave,
-      onRecordDelete: onSettingsDelete,
       isSettings: true,
+      record: recordSettings,
+      onRecordSelect: onRecordSelectSettings,
+      onRecordDelete: onRecordDeleteSettings,
+      onRecordCreate: onRecordCreateSettings,
     });
   },
 });

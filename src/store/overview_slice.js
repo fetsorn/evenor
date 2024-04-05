@@ -22,6 +22,7 @@ export const createOverviewSlice = (set, get) => ({
     if (queryField === undefined) {
       set({ queries: {} })
     } else {
+      // TODO: validate queryField
 
       if (queryValue === undefined) {
         delete queries[queryField];
@@ -68,7 +69,7 @@ export const createOverviewSlice = (set, get) => ({
 
         const records = [...get().records, chunk];
 
-        // TODO: should we reset base and sort by here?
+        // TODO: reset base and sort here
 
         set({
           records,

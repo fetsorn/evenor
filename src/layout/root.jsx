@@ -25,18 +25,7 @@ const ProfileEdit = React.lazy(() => import("./profile_edit/index.js"));
 const ProfileView = React.lazy(() => import("./profile_view/index.js"));
 
 function Page() {
-  const { repoRoute } = useParams();
-
-  const location = window.location;
-
-  const [initialize, isEdit] = useStore((state) => [
-    state.initialize,
-    state.isEdit,
-  ]);
-
-  useEffect(() => {
-    initialize(repoRoute, location.search);
-  }, []);
+  const isEdit = useStore((state) => state.isEdit);
 
   return (
     <>

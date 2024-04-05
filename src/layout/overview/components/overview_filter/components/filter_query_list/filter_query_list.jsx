@@ -7,16 +7,21 @@ import { API } from "../../../../../../api/index.js";
 export function FilterQueryList() {
   const { t } = useTranslation();
 
-  const [queries, onQueryRemove, onQueryAdd, repoUUID] = useStore((state) => [
+  const [queries, setQuery, repoUUID] = useStore((state) => [
     state.queries,
-    state.onQueryRemove,
-    state.onQueryAdd,
+    state.setQuery,
     state.repoUUID,
   ]);
 
   const api = new API(repoUUID);
 
   const [options, setOptions] = useState([]);
+
+  const searchParams = new URLSearchParams(window.location.search);
+
+  const queriesDefault = paramsToQueries(searchParams);
+
+  // TODO: set queries from location here
 
   async function onFocus(field) {
     setOptions([]);
@@ -41,7 +46,7 @@ export function FilterQueryList() {
             <button
               type="button"
               title={t("header.button.remove", { field })}
-              onClick={() => onQueryRemove(field)}
+              onClick={() => setQuery(field, undefined)}
               style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
             >
               X
@@ -57,7 +62,7 @@ export function FilterQueryList() {
               list={`panel_list-${field ?? Math.random()}`}
               onFocus={() => onFocus(field)}
               onChange={({ target: { value } }) => {
-                onQueryAdd(field, value);
+                setQuery(field, value);
               }}
             />
           </label>

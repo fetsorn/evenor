@@ -20,11 +20,11 @@ function filterLeaves(schema, base) {
 export function FilterQueryPlus({}) {
   const { i18n, t } = useTranslation();
 
-  const [base, queries, schema, onQueryAdd] = useStore((state) => [
+  const [base, queries, schema, setQuery] = useStore((state) => [
     state.base,
     state.queries,
     state.schema,
-    state.onQueryAdd,
+    state.setQuery,
   ]);
 
   // find all fields name
@@ -36,7 +36,7 @@ export function FilterQueryPlus({}) {
   // transform list of fieldnames(array of strings) to list of objects in dropdown
   const menuItems = notAddedFields.map((key) => ({
     onClick: () => {
-      onQueryAdd(key, "");
+      setQuery(key, "");
     },
     label: key,
   }));

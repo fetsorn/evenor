@@ -29,12 +29,17 @@ export function FilterSortBySelect({}) {
 
   const options = filterLeaves(schema, base).concat([base]);
 
+  const sortByDefault = Object.prototype.hasOwnProperty.call(base, queries[".sort"],)
+        ? queries[".sort"]
+        : getDefaultSortBy(base, records, searchParams);
+
   return (
     <label htmlFor={`selectSortBy`}>
       {t("header.dropdown.sortby")}
       <select
         id={`selectSortBy`}
         value={sortBy}
+        defaultValue={sortByDefault}
         onChange={({ target: { value } }) => {
           setSortBy(value);
         }}

@@ -5,7 +5,7 @@ import {
 } from "../api/index.js";
 import { saveRepoRecord, loadRepoRecord, createRecord, newUUID } from "./bin.js";
 
-export const createRecordSlice = (set, get) => ({
+export const createProfileSlice = (set, get) => ({
   // record selected from records for viewing/editing
   record: undefined,
 

@@ -128,9 +128,9 @@ export async function loadRepoRecord(repoUUID, record) {
 
   // const branchPartial = await schemaToPartial(schema);
 
-  const [ schemaRecord ] = api.select(new URLSearchParams("?_=_"));
+  const [ schemaRecord ] = await api.select(new URLSearchParams("?_=_"));
   // query {_:branch}
-  const metaRecords = this.select(new URLSearchParams("?_=branch"));
+  const metaRecords = await api.select(new URLSearchParams("?_=branch"));
 
   const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
 
@@ -250,6 +250,10 @@ export async function saveRepoRecord(repoUUID, record) {
   // TODO clone only if there is no repo
   // or collapse into api.ensure
   const recordNew = await clone(repoUUID, record);
+
+  const apiRoot = new API("root");
+
+  await apiRoot.updateRecord(recordNew);
 
   const api = new API(repoUUID);
 

@@ -14,11 +14,24 @@ import { expand } from "@fetsorn/csvs-js";
 // ]
 // { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
 function branchRecordsToSchema(schemaRecord, branchRecords) {
+  const trunks = Object.keys(schemaRecord).filter((key) => key !== "_");
+
+  const schemaTrunks = trunks.reduce((accTrunk, trunk) => {
+    const accTrunkNew = { ...accTrunk, [trunk]: {} }
+
+    // for each value of trunk, set acc[value].trunk = trunk
+    const leaves = schemaRecord[trunk];
+
+    // play differently with description
+    return leaves.reduce((accLeaf, leaf) => {
+      return { ...accLeaf, [leaf]: { trunk } }
+    }, accTrunkNew)
+  }, {})
 
   const schemaRecordExpanded = expand(schemaRecord);
 
   // TODO validate against the case when branch has multiple trunks
-  return metaRecords.reduce((acc, branchRecord) => {
+  return branchRecords.reduce((acc, branchRecord) => {
     const { branch, task, description_en, description_ru } = branchRecord;
 
     const trunk = Object.keys(schemaRecord).find(
@@ -50,7 +63,7 @@ function branchRecordsToSchema(schemaRecord, branchRecords) {
     };
 
     return { ...acc, ...branchPartial }
-  })
+  }, schemaTrunks)
 }
 
 async function runWorker(readFile, searchParams) {
@@ -745,8 +758,9 @@ export class BrowserAPI {
   }
 
   async readSchema() {
-    const schemaRecord = await this.select(new URLSearchParams("?_=_"));
+    const [ schemaRecord ] = await this.select(new URLSearchParams("?_=_"));
 
+    // TODO: why returns empty
     const branchRecords = await this.select(new URLSearchParams("?_=branch"));
 
     const schema = branchRecordsToSchema(schemaRecord, branchRecords);

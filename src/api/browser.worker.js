@@ -47,16 +47,13 @@ async function selectStream(message) {
   try {
     const searchParams = new URLSearchParams(message.data.searchParams);
 
-    const { base, baseKeys } = await new CSVS({
-      readFile,
-      grep,
-    }).selectBaseKeys(searchParams);
+    const client = new CSVS({readFile,grep})
 
+    const { base, baseKeys } = await client.selectBaseKeys(searchParams);
+
+    // must keep a common client instance here to reuse cache
     for (const baseKey of baseKeys) {
-      const record = await new CSVS({ readFile, grep }).buildRecord(
-        base,
-        baseKey,
-      );
+      const record = await client.buildRecord(base, baseKey);
 
       postMessage({
         action: "write",

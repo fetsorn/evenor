@@ -1,5 +1,4 @@
 import React from "react";
-import { InputText } from "../index.js";
 
 export function ViewValue({
   schema,

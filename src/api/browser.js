@@ -8,6 +8,8 @@ const lfsDir = "lfs";
 
 import { expand } from "@fetsorn/csvs-js";
 
+const __BUILD_MODE__ = "browser";
+
 // [ {_: "_", entry: [ "datum" ]},
 //   {_: branch, branch: "entry", description_en: "", description_ru: ""},
 //   {_: branch, branch: "datum"}
@@ -67,7 +69,7 @@ function branchRecordsToSchema(schemaRecord, branchRecords) {
 }
 
 async function runWorker(readFile, searchParams) {
-  const worker = new Worker(new URL("./browser.worker", import.meta.url));
+  const worker = new Worker(new URL("./browser.worker.js", import.meta.url), { type: 'module' });
 
   worker.onmessage = async (message) => {
     switch (message.data.action) {
@@ -295,7 +297,7 @@ export class BrowserAPI {
 
     const strm = new ReadableStream({
       start(controller) {
-        const worker = new Worker(new URL("./browser.worker", import.meta.url));
+        const worker = new Worker(new URL("./browser.worker", import.meta.url), { type: 'module' });
 
         closeHandler = () => {
           try {

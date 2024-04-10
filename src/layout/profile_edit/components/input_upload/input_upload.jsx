@@ -4,16 +4,16 @@ import { API } from "../../../../api";
 import { useStore } from "../../../../store/index.js";
 import { Button, AssetView } from "../../../../components/index.js";
 import styles from "./input_upload.module.css";
-import { InputText } from "..";
+import { InputText } from "../index.js";
 
 function UploadButton({ onUpload, title }) {
-  if (__BUILD_MODE__ === "electron") {
-    return (
-      <Button type="button" onClick={() => onUpload()}>
-        {title}
-      </Button>
-    );
-  }
+  // if (__BUILD_MODE__ === "electron") {
+  //   return (
+  //     <Button type="button" onClick={() => onUpload()}>
+  //       {title}
+  //     </Button>
+  //   );
+  // }
 
   return <input type="file" onChange={(e) => onUpload(e.target.files[0])} />;
 }

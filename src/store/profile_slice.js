@@ -3,7 +3,7 @@ import {
   API,
   generateDefaultRepoRecord,
 } from "../api/index.js";
-import { saveRepoRecord, loadRepoRecord, createRecord, newUUID } from "./bin.js";
+import { saveRepoRecord, loadRepoRecord, newUUID } from "./bin.js";
 
 export const createProfileSlice = (set, get) => ({
   // record selected from records for viewing/editing
@@ -20,9 +20,10 @@ export const createProfileSlice = (set, get) => ({
     const isHomeScreen = repoUUID === "root";
 
     // eslint-disable-next-line
-    const isNotServer = __BUILD_MODE__ !== "server";
+    // const isNotServer = __BUILD_MODE__ !== "server";
 
-    const canSaveRepo = isHomeScreen && isNotServer;
+    // const canSaveRepo = isHomeScreen && isNotServer;
+    const canSaveRepo = isHomeScreen;
 
     const record = canSaveRepo
           ? await saveRepoRecord(repoUUID, condense(get().schema, get().record))
@@ -40,7 +41,8 @@ export const createProfileSlice = (set, get) => ({
   // open view, close view or revert edit
   onRecordSelect: async (recordNew) => {
     // eslint-disable-next-line
-    const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
+    // const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
+    const isHomeScreen = get().repoUUID === "root";
 
     const isNewRecord = recordNew !== undefined;
 

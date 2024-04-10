@@ -2,6 +2,10 @@
 import { invoke } from "@tauri-apps/api/core";
 import { BrowserAPI } from "./browser.js";
 
+const isTauri = import.meta.env.TAURI_ENV_ARCH != undefined
+
+const __BUILD_MODE__ = isTauri ? "tauri" : "browser";
+
 export class API {
   // UUID of repo in the store
   uuid;

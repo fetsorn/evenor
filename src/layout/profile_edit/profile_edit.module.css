@@ -19,11 +19,11 @@
   transition: width 0.3s ease;
 }
 
-@media (max-width: 600px) {
-  .sidebar {
-    display: none;
-  }
-}
+/* @media (max-width: 600px) { */
+/*   .sidebar { */
+/*     display: none; */
+/*   } */
+/* } */
 
 .container {
   height: 100%;

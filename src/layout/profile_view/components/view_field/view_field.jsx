@@ -1,18 +1,23 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ViewValue, ViewRecord } from "../index.js";
 
 export function ViewField({
   schema,
   index,
-  description,
   base,
   value,
 }) {
+  const { i18n } = useTranslation();
+
   const isTrunk =
     Object.keys(schema).find((branch) => schema[branch].trunk === base) ??
     false;
 
   const isTwig = !isTrunk;
+
+  const description =
+    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   // TODO handle error when value is not array
 
@@ -37,8 +42,7 @@ export function ViewField({
       index={index}
       base={base}
       description={description}
-      // TODO: replace with sane accessor
-      value={value[0][base]}
+      value={value}
     />
   ) : (
     <div>

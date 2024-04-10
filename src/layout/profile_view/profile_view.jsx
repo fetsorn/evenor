@@ -34,9 +34,9 @@ export function ProfileView() {
 
   const isHomeScreen = repoUUID === "root";
 
-  const isMultipleRepos = __BUILD_MODE__ !== "server";
+  const notSingleRepo = __BUILD_MODE__ !== "server";
 
-  const canOpenRepo = isHomeScreen && isMultipleRepos;
+  const canOpenRepo = isHomeScreen && notSingleRepo;
 
   const onRepoOpen = () => setRepoUUID(record.repo);
 

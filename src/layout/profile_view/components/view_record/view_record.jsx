@@ -6,6 +6,9 @@ import { Spoiler } from "../../../../components/index.js";
 export function ViewRecord({ schema, index, base, record }) {
   const { i18n } = useTranslation();
 
+  const description =
+    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
+
   const leaves = Object.keys(schema).filter(
     (leaf) => schema[leaf].trunk === base,
   );
@@ -13,9 +16,6 @@ export function ViewRecord({ schema, index, base, record }) {
   function recordHasLeaf(leaf) {
     return Object.prototype.hasOwnProperty.call(record, leaf);
   }
-
-  const description =
-    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   return (
     <Spoiler
@@ -44,7 +44,6 @@ export function ViewRecord({ schema, index, base, record }) {
               index,
               base: leaf,
               value: record[leaf],
-              description,
             }}
           />
         ))}

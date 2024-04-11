@@ -62,7 +62,7 @@
             buildPhase = ''
               yarn run build
             '';
-            installPhase = "cp -r ./deps/${name}/release/renderer $out";
+            installPhase = "cp -r ./deps/${name}/dist $out";
             distPhase = "true";
           };
         webapp = webappDrv "webapp";

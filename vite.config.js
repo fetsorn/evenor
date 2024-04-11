@@ -9,7 +9,11 @@ export default defineConfig(async () => {
 
   /** @type {import('vite').UserConfig} */
   const config = {
-    plugins: [react(), nodePolyfills()],
+    plugins: [react({
+      presets: [
+        [ "@babel/preset-env", { "useBuiltins": "usage" } ]
+      ]
+    }), nodePolyfills()],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //

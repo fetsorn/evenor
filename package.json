@@ -28,6 +28,7 @@
     "vite": "^4.4.4"
   },
   "dependencies": {
+    "core-js": "^3.36.1",
     "@fetsorn/csvs-js": "0.16.0",
     "@babel/preset-env": "^7.24.4",
     "@fetsorn/ged2dot": "0.2.0",

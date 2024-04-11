@@ -11,7 +11,7 @@ export default defineConfig(async () => {
   const config = {
     plugins: [react({
       presets: [
-        [ "@babel/preset-env", { "useBuiltins": "usage" } ]
+        [ "@babel/preset-env", { "useBuiltins": "entry", "corejs": "3.36" } ]
       ]
     }), nodePolyfills()],
 

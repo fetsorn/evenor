@@ -12,7 +12,11 @@ export default defineConfig(async () => {
     plugins: [react({
       presets: [
         [ "@babel/preset-env", { "useBuiltins": "entry", "corejs": "3.36" } ]
-      ]
+      ],
+      // Use .babelrc files
+      babelrc: false,
+      // Use babel.config.js files
+      configFile: false,
     }), nodePolyfills()],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

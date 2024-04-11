@@ -57,6 +57,13 @@ export function Overview() {
       <Suspense>
         <OverviewItinerary />
       </Suspense>
+
+      <button
+        type="button"
+        title={t("line.button.add")}
+        onClick={() => onRecordUpdate()}>
+        +
+      </button>
     </div>
   );
 }

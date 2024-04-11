@@ -28,7 +28,7 @@
     "vite": "^4.4.4"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "0.15.2",
+    "@fetsorn/csvs-js": "0.16.0",
     "@fetsorn/ged2dot": "0.2.0",
     "@fetsorn/isogit-lfs": "^0.4.1",
     "@fetsorn/ppt": "0.0.1",

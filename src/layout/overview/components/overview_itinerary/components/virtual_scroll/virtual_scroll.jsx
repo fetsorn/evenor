@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
-import { useMedia, useWindowSize } from "..";
+import { useMedia } from "./use_media.js";
+import { useWindowSize } from "./use_window_size.js";
 
 const REM_DESKTOP = 0.277777;
 const REM_MOBILE = 0.8;

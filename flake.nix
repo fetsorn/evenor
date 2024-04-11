@@ -56,11 +56,11 @@
             name = package.name;
             version = package.version;
             src = pkgs.nix-gitignore.gitignoreSource [ ".git" ] ./.;
-            preConfigure = ''
-              substituteInPlace package.json --replace "webpack --config webpack.web.config.mjs" "yarn exec webpack-cli -- --mode=development --config webpack.web.config.mjs --env buildMode=${buildMode}"
-            '';
+            # preConfigure = ''
+            #   substituteInPlace package.json --replace "webpack --config webpack.web.config.mjs" "yarn exec webpack-cli -- --mode=development --config webpack.web.config.mjs --env buildMode=${buildMode}"
+            # '';
             buildPhase = ''
-              yarn run build:webapp
+              yarn run build
             '';
             installPhase = "cp -r ./deps/${name}/release/renderer $out";
             distPhase = "true";

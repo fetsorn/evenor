@@ -11,11 +11,12 @@ const OverviewItinerary = React.lazy(
 export function Overview() {
   const { t } = useTranslation();
 
-  const [repoUUID, setRepoUUID, onSettingsOpen] = useStore(
+  const [repoUUID, setRepoUUID, onSettingsOpen, onRecordUpdate] = useStore(
     (state) => [
       state.repoUUID,
       state.setRepoUUID,
       state.onSettingsOpen,
+      state.onRecordUpdate
     ],
   );
 

@@ -29,9 +29,9 @@ export function OverviewItinerary() {
 
     setItinerary(itineraryNew);
 
-    if (record?.UUID) {
-      document.getElementById(record.UUID).scrollIntoView();
-    }
+    // if (record?.UUID) {
+    //   document.getElementById(record.UUID).scrollIntoView();
+    // }
   }
 
   useEffect(() => {

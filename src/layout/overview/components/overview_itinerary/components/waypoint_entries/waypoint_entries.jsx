@@ -70,7 +70,7 @@ export function WaypointEntries({ entries, onRecordSelect }) {
               type="button"
               onClick={() => onRecordSelect(record)}
               title={record?.FILE_PATH}
-              id={record?.UUID}
+              /* id={record?.UUID} */
             >
               {index + 1}
             </button>

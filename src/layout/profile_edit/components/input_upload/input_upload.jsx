@@ -59,7 +59,7 @@ export function InputUpload({ schema, record, onFieldChange }) {
 
   return (
     <div>
-      <div>{record.UUID}</div>
+      {/* <div>{record.UUID}</div> */}
 
       <InputText
         {...{

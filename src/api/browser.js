@@ -372,35 +372,37 @@ export class BrowserAPI {
     return overview;
   }
 
-  async updateRecord(record, overview) {
-    const { CSVS } = await import("@fetsorn/csvs-js");
-
-    const recordNew = await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).update(structuredClone(record));
-
-    if (overview.find((recordOld) => recordOld.UUID === recordNew.UUID)) {
-      return overview.map((recordOld) => {
-        if (recordOld.UUID === recordNew.UUID) {
-          return recordNew;
-        }
-        return recordOld;
-      });
-    }
-
-    return overview.concat([recordNew]);
-  }
-
-  async deleteRecord(record, overview) {
+  async updateRecord(recordNew, overview) {
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).delete(structuredClone(record));
+    }).update(structuredClone(recordNew));
 
-    return overview.filter((e) => e.UUID !== record.UUID);
+    // if (overview.find((recordOld) => recordOld.UUID === recordNew.UUID)) {
+    //   return overview.map((recordOld) => {
+    //     if (recordOld.UUID === recordNew.UUID) {
+    //       return recordNew;
+    //     }
+    //     return recordOld;
+    //   });
+    // }
+
+    return overview.concat([recordNew]);
+  }
+
+  async deleteRecord(recordOld, overview) {
+    const { CSVS } = await import("@fetsorn/csvs-js");
+
+    await new CSVS({
+      readFile: (filepath) => this.readFile(filepath),
+      writeFile: (filepath, content) => this.writeFile(filepath, content),
+    }).delete(structuredClone(recordOld));
+
+    const base = record._;
+
+    return overview.filter((record) => record[base] !== recordOld[base]);
   }
 
   async clone(remoteUrl, remoteToken, name) {

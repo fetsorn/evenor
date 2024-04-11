@@ -11,9 +11,11 @@ export default defineConfig(async () => {
   const config = {
     build: {
       target: 'safari13',
+    },
+    worker: {
       rollupOptions: {
         output: {
-          format: "iife"
+          inlineDynamicImports: true,
         }
       }
     },
@@ -52,10 +54,7 @@ export default defineConfig(async () => {
     // optimizeDeps: { exclude: {} },
     // 3. to make use of `TAURI_DEBUG` and other env variables
     // https://tauri.app/v1/api/config#buildconfig.beforedevcommand
-    envPrefix: ["VITE_", "TAURI_"],
-    worker: {
-      format: "es"
-    }
+    envPrefix: ["VITE_", "TAURI_"]
   };
 
   return config;

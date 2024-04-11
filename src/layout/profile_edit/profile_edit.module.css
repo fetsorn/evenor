@@ -43,7 +43,7 @@
 .input {
   height: 40;
   margin: 12;
-  borderwidth: 1;
+  border-width: 1;
   padding: 10;
 }
 
@@ -51,7 +51,7 @@
   height: 40vh;
   width: 100%;
   margin: 12;
-  borderwidth: 1;
+  border-width: 1;
   padding: 10;
 }
 

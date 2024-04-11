@@ -9,6 +9,14 @@ export default defineConfig(async () => {
 
   /** @type {import('vite').UserConfig} */
   const config = {
+    build: {
+      target: 'safari13',
+      rollupOptions: {
+        output: {
+          format: "iife"
+        }
+      }
+    },
     plugins: [react({
       presets: [
         [ "@babel/preset-env", { "useBuiltins": "entry", "corejs": "3.36" } ]

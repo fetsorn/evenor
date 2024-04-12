@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { Spoiler } from "../../../../components/index.js";
+import { isTwig } from "@fetsorn/csvs-js";
 
 export function EditRecord({ schema, index, base, record, onRecordChange }) {
   const { i18n } = useTranslation();
@@ -29,6 +30,22 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
     delete objectNew[fieldBranch];
 
     onRecordChange(objectNew);
+  }
+
+  function addLeafValue(branch) {
+    const value = isTwig(schema, branch)
+          ? ""
+          : { _: branch };
+
+    const valuesOld = record[branch];
+
+    const valuesNew = valuesOld === undefined
+          ? [ value ]
+          : [ valuesOld, value ].flat();
+
+    const objectNew = { ...record, [branch]: valuesNew };
+
+    onRecordChange(objectNew)
   }
 
   const description =
@@ -64,6 +81,21 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
         }}
       />
 
+      <select
+        value="default"
+        onChange={({ target: { value: leaf } }) => addLeafValue(leaf)}
+      >
+        <option hidden disabled value="default">
+          +
+        </option>
+
+        {leaves.map((leaf) => (
+          <option key={leaf} value={leaf}>
+            {leaf}
+          </option>
+        ))}
+      </select>
+
       <div>
         {leaves.filter(recordHasLeaf).map((leaf, idx) => (
           <EditField
@@ -72,10 +104,9 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
               schema,
               index,
               base: leaf,
-              value: record[leaf],
+              items: Array.isArray(record[leaf]) ? record[leaf] : [record[leaf]],
               description,
               onFieldChange,
-              onFieldRemove,
             }}
           />
         ))}

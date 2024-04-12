@@ -5,4 +5,3 @@ export { InputUpload } from "./input_upload/index.js";
 export { EditInput } from "./edit_input/index.js";
 export { EditRecord } from "./edit_record/index.js";
 export { EditField } from "./edit_field/index.js";
-export { EditPlus } from "./edit_plus/index.js";

@@ -1,12 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditRecord } from "../index.js";
+import { isTwig } from "@fetsorn/csvs-js";
 
 export function EditField({
   schema,
   index,
   base,
-  value,
+  items,
   onFieldChange,
 }) {
   const { i18n } = useTranslation();
@@ -14,37 +15,37 @@ export function EditField({
   const description =
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
-  const isTrunk =
-    Object.keys(schema).find((branch) => schema[branch].trunk === base) ??
-    false;
+  const baseIsTwig = isTwig(schema, base);
 
-  const isTwig = !isTrunk;
+  function onFieldItemChange(index, itemNew) {
+    // replace the new item at index
+    const itemsNew = Object.assign([], items, {[index]: itemNew});
 
-  // TODO: write onFieldAddItem and pass it to onRecordChange
+    onFieldChange(base, itemsNew);
+  }
 
-  // TODO handle error when value is not array
-  return isTwig ? (
-    <EditInput
-      schema={schema}
-      index={index}
-      base={base}
-      description={description}
-      // TODO: replace with sane accessor
-      value={Array.isArray(value) ? value[0][base] : value[base]}
-      onFieldChange={onFieldChange}
-    />
-  ) : (
+  // TODO handle error when items is not array
+  return (
     <div>
-      {value.map((record, idx) => (
-        <EditRecord
-          key={idx}
-          index={`${index}${base}${record[base]}`}
-          schema={schema}
-          base={base}
-          record={record}
-          onRecordChange={(recordNew) => onFieldChange(base, recordNew)}
-        />
-      ))}
+    {items.map((item, idx) => baseIsTwig
+                ? <EditInput
+                    key={idx}
+                    schema={schema}
+                    index={index}
+                    base={base}
+                    description={description}
+                    value={item}
+                    onFieldValueChange={(valueNew) => onFieldItemChange(idx, valueNew)}
+                  />
+                : <EditRecord
+                    key={idx}
+                    index={`${index}${base}${item[base]}`}
+                    schema={schema}
+                    base={base}
+                    record={item}
+                    onRecordChange={(recordNew) => onFieldItemChange(idx, recordNew)}
+                />)}
     </div>
-  );
+
+  )
 }

@@ -7,7 +7,7 @@ export function EditInput({
   description,
   base,
   value,
-  onFieldChange,
+  onFieldValueChange,
 }) {
   // TODO: if schema[base].task === text, show this
   // <InputTextarea
@@ -21,7 +21,7 @@ export function EditInput({
   return (
     <div>
       <label>{description}:</label>
-      <InputText {...{ branch: base, value, onFieldChange }} />
+      <InputText {...{ branch: base, value, onFieldChange: onFieldValueChange }} />
     </div>
   );
 }

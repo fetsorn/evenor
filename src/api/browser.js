@@ -1,5 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
+import { schemaRoot } from "./index.js";
 
 if (!self.ReadableStream) {
   self.ReadableStream = ReadableStreamPolyfill;
@@ -767,6 +768,10 @@ export class BrowserAPI {
   }
 
   async readSchema() {
+    if (this.uuid === "root") {
+      return schemaRoot
+    }
+
     const [ schemaRecord ] = await this.select(new URLSearchParams("?_=_"));
 
     // TODO: why returns empty

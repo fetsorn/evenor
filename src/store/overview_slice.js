@@ -11,7 +11,7 @@ export const createOverviewSlice = (set, get) => ({
 
   base: "repo",
 
-  sortBy: "",
+  sortBy: "reponame",
 
   schema: schemaRoot,
 
@@ -55,15 +55,29 @@ export const createOverviewSlice = (set, get) => ({
       },
     });
 
-    const { base, repoUUID } = get();
+    // TODO what if setQuery is called from repoUUID and base is changed?
+    const { base: baseStore, sortBy: sortByStore, repoUUID } = get();
 
     const api = new API(repoUUID);
 
     const schema = await api.readSchema();
 
+    const base = Object.prototype.hasOwnProperty.call(schema, baseStore)
+          ? baseStore
+          : Object.keys(schema).find(
+            (branch) =>
+            !Object.prototype.hasOwnProperty.call(schema[branch], "trunk")
+          );
+
+    set({ schema });
+
     const searchParams = queriesToParams(queries);
 
     searchParams.set("_", base);
+
+    const sortBy = sortByStore ?? getDefaultSortBy(base, [], searchParams);
+
+    set({ schema, base, sortBy });
 
     const { strm: fromStrm, closeHandler } =
       await api.selectStream(searchParams);
@@ -105,6 +119,8 @@ export const createOverviewSlice = (set, get) => ({
 
     if (repoUUID === "root") {
       set({ schema: schemaRoot, base: "repo" })
+    } else {
+      set({ schema: {}, base: undefined })
     }
 
     set({

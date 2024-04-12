@@ -35,7 +35,7 @@ export function EditField({
                     base={base}
                     description={description}
                     value={item}
-                    onFieldValueChange={(valueNew) => onFieldItemChange(idx, valueNew)}
+                    onFieldValueChange={(_, valueNew) => onFieldItemChange(idx, valueNew)}
                   />
                 : <EditRecord
                     key={idx}

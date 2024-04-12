@@ -1,4 +1,3 @@
-import { expand } from "@fetsorn/csvs-js";
 import {
   schemaSync,
   schemaRemote,
@@ -9,7 +8,7 @@ import {
 } from "../layout/profile_view/components/dispenser/components/index.js";
 
 export function generateDefaultRepoRecord() {
-  const recordCondensed = {
+  const record = {
     _: "repo",
     reponame: "",
     branch: [
@@ -30,7 +29,7 @@ export function generateDefaultRepoRecord() {
       {
         _: "branch",
         branch: "actdate",
-        trunk: "datum",
+        trunk: "entry",
         task: "date",
         description_en: "Date of the event",
         description_ru: "Дата события",
@@ -106,9 +105,7 @@ export function generateDefaultRepoRecord() {
     ],
   };
 
-  const recordExpanded = expand(recordCondensed);
-
-  return recordExpanded
+  return record
 }
 
 export const schemaRoot = {

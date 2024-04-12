@@ -316,7 +316,8 @@ export function getDefaultSortBy(schema, data, searchParams) {
 
   // unreachable with a valid scheme
   if (!sortBy) {
-    throw Error("failed to find default sortBy in the schema");
+    return ""
+    // throw Error("failed to find default sortBy in the schema");
   }
 
   return sortBy;

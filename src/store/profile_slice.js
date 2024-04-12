@@ -26,7 +26,7 @@ export const createProfileSlice = (set, get) => ({
     const canSaveRepo = isHomeScreen;
 
     const record = canSaveRepo
-          ? await saveRepoRecord(repoUUID, condense(get().schema, get().record))
+          ? await saveRepoRecord(get().record.repo, condense(get().schema, get().record))
           : get().record;
 
     const api = new API(repoUUID);
@@ -59,7 +59,7 @@ export const createProfileSlice = (set, get) => ({
     const { repoUUID, base } = get();
 
     // if new repo record, set default values for required fields
-    const isRepoRecord = repoUUID === "root" && base === "repo"
+    const isRepoRecord = repoUUID === "root" && base === "repo";
 
     const defaults = isRepoRecord ? generateDefaultRepoRecord() : {};
 

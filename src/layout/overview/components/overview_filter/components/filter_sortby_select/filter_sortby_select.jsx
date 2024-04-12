@@ -37,9 +37,9 @@ export function FilterSortBySelect({}) {
 
   searchParams.set("_", base);
 
-  const sortByDefault = Object.prototype.hasOwnProperty.call(base, queries[".sort"],)
+  const sortByDefault = Object.prototype.hasOwnProperty.call(schema, queries[".sort"],)
         ? queries[".sort"]
-        : getDefaultSortBy(base, records, searchParams);
+        : getDefaultSortBy(schema, records, searchParams);
 
   return (
     <label htmlFor={`selectSortBy`}>

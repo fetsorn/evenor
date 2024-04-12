@@ -1,4 +1,9 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
+import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
+
+if (!self.ReadableStream) {
+  self.ReadableStream = ReadableStreamPolyfill;
+}
 
 const fs = new LightningFS("fs");
 

@@ -1,6 +1,11 @@
 // import axios from "axios";
 import { invoke } from "@tauri-apps/api/core";
 import { BrowserAPI } from "./browser.js";
+import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
+
+if (!self.ReadableStream) {
+  self.ReadableStream = ReadableStreamPolyfill;
+}
 
 const isTauri = import.meta.env.TAURI_ENV_ARCH != undefined
 

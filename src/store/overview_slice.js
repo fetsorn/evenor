@@ -1,5 +1,10 @@
 import { API, schemaRoot } from "../api/index.js";
 import { queriesToParams } from "./bin.js";
+import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
+
+if (!self.WritableStream) {
+  self.WritableStream = WritableStreamPolyfill;
+}
 
 export const createOverviewSlice = (set, get) => ({
   queries: {},

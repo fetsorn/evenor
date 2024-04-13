@@ -30,7 +30,7 @@
   "dependencies": {
     "@babel/preset-env": "^7.24.4",
     "@babel/preset-react": "^7.24.1",
-    "@fetsorn/csvs-js": "0.16.0",
+    "@fetsorn/csvs-js": "0.16.1",
     "@fetsorn/isogit-lfs": "^0.4.1",
     "@fetsorn/ppt": "0.0.1",
     "@isomorphic-git/lightning-fs": "4.6.0",

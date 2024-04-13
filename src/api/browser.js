@@ -347,7 +347,11 @@ export class BrowserAPI {
     return overview.concat([recordNew]);
   }
 
-  async deleteRecord(recordOld, overview) {
+  async deleteRecord(recordOld, records) {
+    const base = recordOld._;
+
+    const valueOld = recordOld[base];
+
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     await new CSVS({
@@ -355,9 +359,7 @@ export class BrowserAPI {
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).delete(structuredClone(recordOld));
 
-    const base = record._;
-
-    return overview.filter((record) => record[base] !== recordOld[base]);
+    return records.filter((record) => record[base] !== valueOld);
   }
 
   async clone(remoteUrl, remoteToken, name) {

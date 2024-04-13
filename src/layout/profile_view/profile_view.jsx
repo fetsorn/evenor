@@ -69,7 +69,7 @@ export function ProfileView() {
               <Button
                 type="button"
                 title={t("line.button.delete")}
-                onClick={onRecordDelete}
+                onClick={() => onRecordDelete()}
               >
                 🗑️
               </Button>

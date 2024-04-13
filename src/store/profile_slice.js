@@ -83,17 +83,17 @@ export const createProfileSlice = (set, get) => ({
 
   // delete record form the dataset
   onRecordDelete: async () => {
-    const { repo } = get();
+    const { repo, record, records } = get();
 
     const { repo: repoUUID } = repo;
 
     const api = new API(repoUUID);
 
-    const records = await api.deleteRecord(get().record, get().records);
+    const recordsNew = await api.deleteRecord(record, records);
 
     await api.commit();
 
-    set({ records, record: undefined, isEdit: false });
+    set({ records: recordsNew, record: undefined, isEdit: false });
   },
 
   // override all record store functions to act on the root repo

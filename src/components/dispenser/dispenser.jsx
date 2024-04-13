@@ -82,16 +82,17 @@ export function dispenserHookBeforeSave(repoUUID, baseRecord) {
   // TODO clone only if there is no repo
   // or collapse into api.ensure
   // const recordNew = await clone(repoUUID, record);
+  return baseRecord
 }
 
 export function dispenserHookAfterSave(repoUUID, baseRecord) {
   // writeTags
+  return baseRecord
 }
 
 export function dispenserHookAfterLoad(repoUUID, baseRecord) {
-  const partial = {};
   // load remote tags, load local tags
-  return partial;
+  return baseRecord;
 }
 
 // async function readRemoteTags(repoUUID, record) {

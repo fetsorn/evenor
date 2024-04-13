@@ -47,18 +47,18 @@ export function ProfileEdit() {
             <div className={cn(styles.buttonbar, "edit-sidebar__btn-bar")}>
               <Button
                 type="button"
-                title={t("line.button.save")}
-                onClick={() => onRecordCreate()}
+                title={t("line.button.revert")}
+                onClick={() => onRecordSelect(recordBackup)}
               >
-                💾
+                {"<"}
               </Button>
 
               <Button
                 type="button"
-                title={t("line.button.revert")}
-                onClick={() => onRecordSelect(recordBackup)}
+                title={t("line.button.save")}
+                onClick={() => onRecordCreate()}
               >
-                ↩
+                💾
               </Button>
             </div>
 

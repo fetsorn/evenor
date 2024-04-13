@@ -58,10 +58,10 @@ export function ProfileView() {
             <div className={cn(styles.buttonbar, "view-sidebar__btn-bar")}>
               <Button
                 type="button"
-                title={t("line.button.edit")}
-                onClick={() => onRecordUpdate(record)}
+                title={t("line.button.close")}
+                onClick={() => onRecordSelect(undefined)}
               >
-                ✏️
+                {"<"}
               </Button>
 
               <Button
@@ -74,10 +74,10 @@ export function ProfileView() {
 
               <Button
                 type="button"
-                title={t("line.button.close")}
-                onClick={() => onRecordSelect(undefined)}
+                title={t("line.button.edit")}
+                onClick={() => onRecordUpdate(record)}
               >
-                X
+                ✏️
               </Button>
             </div>
 

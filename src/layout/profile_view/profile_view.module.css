@@ -19,11 +19,16 @@
   transition: width 0.3s ease;
 }
 
-/* @media (max-width: 600px) { */
-/*   .sidebar { */
-/*     display: none; */
-/*   } */
-/* } */
+@media (max-width: 600px) {
+  .sidebar {
+    width: 100vw;
+    z-index: 999998;
+  }
+
+  .sidebar.invisible {
+    display: none;
+  }
+}
 
 .container {
   height: 100%;
@@ -34,7 +39,7 @@
   top: calc(var(--rem) * 48);
   padding-left: calc(var(--col) * 2);
   padding-right: calc(var(--col) * 2);
-  width: calc(var(--col) * 16);
+  /* width: calc(var(--col) * 16); */
 
   overflow-y: auto;
   max-height: 60vh;

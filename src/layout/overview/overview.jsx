@@ -3,6 +3,7 @@ import { OverviewFilter } from "./components/overview_filter/overview_filter.jsx
 import { useTranslation } from "react-i18next";
 import { useStore } from "../../store/index.js";
 import { Button } from "../../components/index.js";
+import styles from "./overview.module.css";
 
 const OverviewItinerary = React.lazy(
   () => import("./components/overview_itinerary/index.js"),
@@ -11,8 +12,9 @@ const OverviewItinerary = React.lazy(
 export function Overview() {
   const { t } = useTranslation();
 
-  const [repoUUID, setRepoUUID, onSettingsOpen, onRecordUpdate] = useStore(
+  const [record, repoUUID, setRepoUUID, onSettingsOpen, onRecordUpdate] = useStore(
     (state) => [
+      state.record,
       state.repoUUID,
       state.setRepoUUID,
       state.onSettingsOpen,
@@ -27,8 +29,10 @@ export function Overview() {
   }
 
   return (
-    <div>
-      <div>
+    <div
+      className={ record ? styles.invisible : "" }
+    >
+      <div className={styles.buttonbar}>
         {isRepo ? (
           <Button
             type="button"
@@ -36,7 +40,7 @@ export function Overview() {
             onClick={() => onHome()}
           >
             {/* &lt;= */}
-            🏠
+            {"<"}
           </Button>
         ) : (
           <div />

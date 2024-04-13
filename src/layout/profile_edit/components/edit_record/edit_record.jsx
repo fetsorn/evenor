@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { Spoiler } from "../../../../components/index.js";
+import { newUUID } from "../../../../store/bin.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
 export function EditRecord({ schema, index, base, record, onRecordChange }) {
@@ -33,9 +34,15 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
   }
 
   function addLeafValue(branch) {
+    const needsUUID = schema[branch].task === "dispenser";
+
+    const valueDefault = needsUUID
+          ? newUUID()
+          : "";
+
     const value = isTwig(schema, branch)
-          ? ""
-          : { _: branch };
+          ? valueDefault
+          : { _: branch, [branch]: valueDefault };
 
     const valuesOld = record[branch];
 

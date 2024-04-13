@@ -5,6 +5,7 @@ export const schemaZip = {
   zip_tag: {
     trunk: "repo",
     type: "object",
+    task: "dispenser",
     description: {
       en: "Zip archive tag",
       ru: "Тег zip архива",

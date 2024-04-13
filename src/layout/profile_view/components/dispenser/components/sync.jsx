@@ -4,6 +4,7 @@ import { API } from "../../../../../api/index.js";
 export const schemaSync = {
   sync_tag: {
     trunk: "repo",
+    task: "dispenser",
     description: {
       en: "Synchronization tag",
       ru: "Тег синхронизации баз данных",

@@ -1,7 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ViewValue, ViewRecord } from "../index.js";
+import { ViewValue, ViewRecord, Dispenser } from "../index.js";
 import { AssetView } from "../../../../components/index.js";
+import { useStore } from "../../../../store/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
 export function ViewField({
@@ -10,6 +11,8 @@ export function ViewField({
   base,
   items,
 }) {
+  const record = useStore((state) => state.record);
+
   const { i18n } = useTranslation();
 
   const baseIsTwig = isTwig(schema, base);
@@ -18,14 +21,6 @@ export function ViewField({
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   const task = schema[base].task;
-
-  // TODO handle error when items is not array
-
-  // TODO: disambiguate on dispensers
-  // if (trunk === "tags") {
-  // <Suspense>
-  // <Dispenser {...{ baseRecord, branchRecord: record }} />
-  // </Suspense>
 
   function Foo({ item, idx }) {
     if (baseIsTwig) {
@@ -42,6 +37,10 @@ export function ViewField({
       return <AssetView {...{ record: item, schema }} />
     }
 
+    if (task === "dispenser") {
+      return <Dispenser {...{ baseRecord: record, branchRecord: item }} />
+    }
+
     return <ViewRecord
              key={idx}
              index={`${index}${base}${item[base]}`}
@@ -51,6 +50,7 @@ export function ViewField({
            />
   }
 
+  // TODO handle error when items is not array
   return (
     <div>
       {items.map((item, idx) => <Foo key={idx} {...{item, idx}} />)}

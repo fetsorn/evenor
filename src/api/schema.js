@@ -1,11 +1,6 @@
 import {
-  schemaSync,
-  schemaRemote,
-  schemaRSS,
-  schemaLocal,
-  schemaZip,
-  schemaTG,
-} from "../layout/profile_view/components/dispenser/components/index.js";
+  schemaDispenser,
+} from "../layout/profile_view/components/dispenser/index.js";
 
 export function generateDefaultRepoRecord() {
   const record = {
@@ -191,10 +186,5 @@ export const schemaRoot = {
       ru: "Описание ветки на русском",
     },
   },
-  ...schemaSync,
-  ...schemaRemote,
-  ...schemaRSS,
-  ...schemaLocal,
-  ...schemaZip,
-  ...schemaTG,
+  ...schemaDispenser,
 };

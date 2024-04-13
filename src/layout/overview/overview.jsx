@@ -22,7 +22,6 @@ export function Overview() {
     ],
   );
 
-  console.log("overview", repo)
   const { repo: repoUUID } = repo;
 
   const isRepo = repoUUID !== "root";

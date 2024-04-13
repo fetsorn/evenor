@@ -1,11 +1,13 @@
 import {
   API,
 } from "../api/index.js";
+import { v4 as uuidv4 } from 'uuid';
+import { sha256 } from 'js-sha256';
 
-import { digestMessage, randomUUID, expand } from "@fetsorn/csvs-js";
+import { digestMessage, randomUUID, expand, findCrown } from "@fetsorn/csvs-js";
 
-export async function newUUID() {
-  return digestMessage(await randomUUID())
+export function newUUID() {
+  return sha256(uuidv4())
 }
 
 async function readRemoteTags(repoUUID, record) {
@@ -276,47 +278,43 @@ export async function saveRepoRecord(repoUUID, record) {
 }
 
 // pick a param to group data by
-export function getDefaultSortBy(schema, data, searchParams) {
-  // fallback to sortBy param from the search query
-  if (searchParams.has(".sort")) {
-    const sortBy = searchParams.get(".sort");
-
-    return sortBy;
-  }
-
+export function getDefaultSortBy(schema, base, records) {
+  // TODO rewrite to const and tertials
   let sortBy;
 
-  const car = data[0] ?? {};
+  const crown = findCrown(schema, base);
+
+  const record = records[0] ?? {};
 
   // fallback to first date param present in data
-  sortBy = Object.keys(schema).find(
+  sortBy = crown.find(
     (branch) =>
       schema[branch].task === "date" &&
-      Object.prototype.hasOwnProperty.call(car, branch),
+      Object.prototype.hasOwnProperty.call(record, branch),
   );
 
   // fallback to first param present in data
   if (!sortBy) {
-    sortBy = Object.keys(schema).find((branch) =>
-      Object.prototype.hasOwnProperty.call(car, branch),
+    sortBy = crown.find((branch) =>
+      Object.prototype.hasOwnProperty.call(record, branch),
     );
   }
 
   // fallback to first date param present in schema
   if (!sortBy) {
-    sortBy = Object.keys(schema).find(
+    sortBy = crown.find(
       (branch) => schema[branch].task === "date",
     );
   }
 
   // fallback to first param present in schema
   if (!sortBy) {
-    [sortBy] = Object.keys(schema);
+    [sortBy] = crown;
   }
 
   // unreachable with a valid scheme
   if (!sortBy) {
-    return ""
+    return base
     // throw Error("failed to find default sortBy in the schema");
   }
 
@@ -358,7 +356,7 @@ export function paramsToQueries(searchParams) {
 
   const queries = Object.fromEntries(
     Object.entries(searchParamsObject).filter(
-      ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
+      ([key]) => key !== "_" && key !== "~" && key !== "-" && !key.startsWith("."),
     ),
   );
 

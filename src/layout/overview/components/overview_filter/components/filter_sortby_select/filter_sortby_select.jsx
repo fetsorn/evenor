@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useStore, getDefaultSortBy, queriesToParams } from "../../../../../../store/index.js";
+import { useStore } from "../../../../../../store/index.js";
 import styles from "./filter_sortby_select.module.css";
 
 /**
@@ -22,33 +22,25 @@ function findLeaves(schema, base) {
 export function FilterSortBySelect({}) {
   const { i18n, t } = useTranslation();
 
-  const [sortBy, queries, schema, base, setSortBy, records] = useStore((state) => [
+  const [sortBy, queries, schema, base, setQuery, records] = useStore((state) => [
     state.sortBy,
     state.queries,
     state.schema,
     state.base,
-    state.setSortBy,
+    state.setQuery,
     state.records,
   ]);
 
   const options = findLeaves(schema, base).concat([base]);
-
-  const searchParams = queriesToParams(queries);
-
-  searchParams.set("_", base);
-
-  const sortByDefault = Object.prototype.hasOwnProperty.call(schema, queries[".sort"],)
-        ? queries[".sort"]
-        : getDefaultSortBy(schema, records, searchParams);
 
   return (
     <label htmlFor={`selectSortBy`}>
       {t("header.dropdown.sortby")}
       <select
         id={`selectSortBy`}
-        value={sortBy ?? sortByDefault}
+        value={sortBy}
         onChange={({ target: { value } }) => {
-          setSortBy(value);
+          setQuery(".sortBy", value);
         }}
       >
         {options.map((field) => (

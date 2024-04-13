@@ -3,6 +3,7 @@ import React from "react";
 export const schemaLocal = {
   local_tag: {
     trunk: "repo",
+    task: "dispenser",
     description: {
       en: "Local archive tag",
       ru: "Тег локального архива",

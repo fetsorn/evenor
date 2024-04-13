@@ -1,1 +1,1 @@
-export { Dispenser } from "./dispenser.jsx";
+export { Dispenser, schemaDispenser } from "./dispenser.jsx";

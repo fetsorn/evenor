@@ -68,9 +68,15 @@ export const createOverviewSlice = (set, get) => ({
         await api.cloneView(remote, token);
 
         // set queries from
-        await get().setRepoUUID(repoUUID)
+        const [{ repo }] = await apiRoot.select(
+          new URLSearchParams(`?_=repo&reponame=${repoRoute}`)
+        );
 
-        set({ queries, base, sortBy })
+        const schema = await api.readSchema();
+
+        const base = getDefaultBase(schema);
+
+        set({ queries, base, sortBy, schema, repo })
 
         // run queries from the store
         await get().setQuery("", undefined);
@@ -84,15 +90,19 @@ export const createOverviewSlice = (set, get) => ({
     const repoRoute = history.location.pathname.replace("/", "");
 
     if (repoRoute !== "") {
-      // if repo is in root, set
+      // if repo is in store, find uuid in root dataset
       try {
         const [{ repo }] = await apiRoot.select(
           new URLSearchParams(`?_=repo&reponame=${repoRoute}`)
         );
 
-        await get().setRepoUUID(repo)
+        const api = new API(repoUUID);
 
-        set({ queries, base, sortBy })
+        const schema = await api.readSchema();
+
+        const base = getDefaultBase(schema);
+
+        set({ queries, base, sortBy, schema, repo })
 
         // run queries from the store
         await get().setQuery("", undefined);
@@ -103,24 +113,19 @@ export const createOverviewSlice = (set, get) => ({
       }
     }
 
-    await get().setRepoUUID("root")
-
-    set({ queries, base, sortBy })
+    set({
+      schema: schemaRoot,
+      base: "repo",
+      sortBy: undefined,
+      queries,
+      repo: { _: "repo", repo: "root" }
+    });
 
     // run queries from the store
     await get().setQuery("", undefined);
 
     return undefined
   },
-
-  setBase: async (base) => {
-    set({ base });
-
-    // reset all queries
-    await get().setQuery(undefined, undefined);
-  },
-
-  setSortBy: async (sortBy) => set({ sortBy }),
 
   setRepoUUID: async (repoUUID) => {
     // abort previous search stream if it is running
@@ -155,27 +160,6 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setQuery: async (queryField, queryValue) => {
-    const { queries } = get();
-
-    // if query field is undefined, delete queries
-    if (queryField === undefined) {
-      set({ queries: {} })
-      // if query field is empty, don't change queries
-    } else if (queryField !== "") {
-      // if query field is defined, update queries
-      // TODO: validate queryField
-
-      // if query value is undefined, remove query field
-      if (queryValue === undefined) {
-        delete queries[queryField];
-      } else {
-        // if query value is defined, set query field
-        queries[queryField] = queryValue;
-      }
-
-      set({ queries });
-    }
-
     set({ records: [] })
 
     // abort previous search stream if it is running
@@ -193,7 +177,36 @@ export const createOverviewSlice = (set, get) => ({
       },
     });
 
-    const { base, sortBy, repo: { repo: repoUUID, reponame } } = get();
+    const { schema } = get();
+
+    // if query field is undefined, delete queries
+    if (queryField === undefined) {
+      set({ queries: {} })
+      // if query field is empty, don't change queries
+    } else if (queryField === "_") {
+      const sortBy = getDefaultSortBy(schema, queryValue, [])
+
+      set({ base: queryValue, sortBy, queries: {} });
+    } else if (queryField === ".sortBy") {
+      set({ sortBy: queryValue });
+    } else if (queryField !== "") {
+      // if query field is defined, update queries
+
+      const { queries } = get();
+
+      // TODO: validate queryField
+      // if query value is undefined, remove query field
+      if (queryValue === undefined) {
+        delete queries[queryField];
+      } else {
+        // if query value is defined, set query field
+        queries[queryField] = queryValue;
+      }
+
+      set({ queries });
+    }
+
+    const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
 
     const searchParams = queriesToParams(queries);
 
@@ -226,7 +239,9 @@ export const createOverviewSlice = (set, get) => ({
 
         // reset sort here
         try {
-          const sortByNew = sortBy ?? getDefaultSortBy(base, records, searchParams);
+          const sortByNew = sortBy !== undefined && sortBy !== "" && sortBy !== null
+                ? sortBy
+                : getDefaultSortBy(schema, base, records);
 
           set({ sortBy: sortByNew });
         } catch {

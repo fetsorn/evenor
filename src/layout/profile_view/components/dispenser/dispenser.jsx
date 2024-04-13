@@ -1,5 +1,26 @@
 import React from "react";
-import { RSS, Remote, Sync, Zip, Local, TG } from "./components/index.js";
+import {
+  RSS,
+  schemaRSS,
+  Remote,
+  schemaRemote,
+  Sync,
+  schemaSync,
+  Zip,
+  schemaZip,
+  Local,
+  schemaLocal,
+  TG,
+  schemaTG
+} from "./components/index.js";
+
+export const schemaDispenser = {
+  ...schemaRemote,
+  ...schemaRSS,
+  ...schemaLocal,
+  ...schemaZip,
+  ...schemaTG,
+}
 
 export function Dispenser({ baseRecord, branchRecord }) {
   switch (branchRecord._) {

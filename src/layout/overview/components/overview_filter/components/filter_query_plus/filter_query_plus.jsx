@@ -33,23 +33,23 @@ export function FilterQueryPlus({}) {
   const addedFields = Object.keys(queries);
   // find name fields which is not added to filterqueries
   const notAddedFields = leafFields.filter((key) => !addedFields.includes(key));
-  // transform list of fieldnames(array of strings) to list of objects in dropdown
-  const menuItems = notAddedFields.map((key) => ({
-    onClick: () => {
-      setQuery(key, "");
-    },
-    label: key,
-  }));
 
   return (
     <div className={styles.search}>
-      <Dropdown
-        {...{
-          label: "+",
-          title: "title",
-          menuItems,
-        }}
-      />
+      <select
+        value="default"
+        onChange={({ target: { value: leaf } }) => setQuery(leaf, "")}
+      >
+        <option hidden disabled value="default">
+          +
+        </option>
+
+        {notAddedFields.map((leaf) => (
+          <option key={leaf} value={leaf}>
+            {leaf}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

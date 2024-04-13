@@ -847,6 +847,8 @@ export class BrowserAPI {
     }
 
     await this.clone(remoteUrl, remoteToken);
+    // TODO add new repo to root
+    // TODO return a repo record
   }
 
   // returns Uint8Array file contents

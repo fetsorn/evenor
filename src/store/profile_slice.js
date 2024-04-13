@@ -15,7 +15,9 @@ export const createProfileSlice = (set, get) => ({
 
   // write record to the dataset
   onRecordCreate: async () => {
-    const { repoUUID } = get();
+    const { repo } = get();
+
+    const { repo: repoUUID } = repo;
 
     const isHomeScreen = repoUUID === "root";
 
@@ -40,9 +42,12 @@ export const createProfileSlice = (set, get) => ({
 
   // open view, close view or revert edit
   onRecordSelect: async (recordNew) => {
+    const { repo } = get();
+
+    const { repo: repoUUID } = repo;
     // eslint-disable-next-line
     // const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
-    const isHomeScreen = get().repoUUID === "root";
+    const isHomeScreen = repoUUID === "root";
 
     const isNewRecord = recordNew !== undefined;
 
@@ -56,7 +61,9 @@ export const createProfileSlice = (set, get) => ({
 
   // create new record or update old record
   onRecordUpdate: async (recordNew) => {
-    const { repoUUID, base } = get();
+    const { repo, base } = get();
+
+    const { repo: repoUUID } = repo;
 
     // if new repo record, set default values for required fields
     const isRepoRecord = repoUUID === "root" && base === "repo";
@@ -74,7 +81,11 @@ export const createProfileSlice = (set, get) => ({
 
   // delete record form the dataset
   onRecordDelete: async () => {
-    const api = new API(get().repoUUID);
+    const { repo } = get();
+
+    const { repo: repoUUID } = repo;
+
+    const api = new API(repoUUID);
 
     const records = await api.deleteRecord(get().record, get().records);
 
@@ -85,7 +96,11 @@ export const createProfileSlice = (set, get) => ({
 
   // override all record store functions to act on the root repo
   onSettingsOpen: async () => {
-    const apiRepo = new API(get().repoUUID);
+    const { repo } = get();
+
+    const { repo: repoUUID } = repo;
+
+    const apiRepo = new API(repoUUID);
 
     const baseBackup = get().base;
 
@@ -93,7 +108,7 @@ export const createProfileSlice = (set, get) => ({
     const recordRepo = await apiRepo.getSettings()
 
     // load git state and schema from dataset into the record
-    const recordSettings = await loadRepoRecord(get().repoUUID, recordRepo);
+    const recordSettings = await loadRepoRecord(repoUUID, recordRepo);
 
     const apiRoot = new API("root");
 
@@ -103,7 +118,7 @@ export const createProfileSlice = (set, get) => ({
     } = get();
 
     const onRecordCreateSettings = async () => {
-      const recordNew = await saveRepoRecord(get().repoUUID, get().record);
+      const recordNew = await saveRepoRecord(repoUUID, get().record);
 
       await apiRoot.updateRecord(recordNew);
 
@@ -128,7 +143,7 @@ export const createProfileSlice = (set, get) => ({
 
       set({
         base: "repo",
-        repoUUID: "root",
+        repo: { _: "repo", repo: "root" },
         record: undefined,
         isSettings: false,
         onRecordCreate: onRecordCreateBackup,

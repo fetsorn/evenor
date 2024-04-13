@@ -12,7 +12,7 @@ export function ProfileView() {
 
   const [
     record,
-    repoUUID,
+    repo,
     setRepoUUID,
     onRecordUpdate,
     onRecordSelect,
@@ -21,7 +21,7 @@ export function ProfileView() {
     schemaRepo,
   ] = useStore((state) => [
     state.record,
-    state.repoUUID,
+    state.repo,
     state.setRepoUUID,
     state.onRecordUpdate,
     state.onRecordSelect,
@@ -29,6 +29,8 @@ export function ProfileView() {
     state.isSettings,
     state.schema,
   ]);
+
+  const { repo: repoUUID } = repo;
 
   const schema = isSettings ? schemaRoot : schemaRepo;
 

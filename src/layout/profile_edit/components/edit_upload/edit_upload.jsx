@@ -35,7 +35,7 @@ export function EditUpload({ schema, record, onFieldChange }) {
     (b) => schema[b].trunk === branch && schema[b].task === "filename",
   );
 
-  const repoUUID = useStore((state) => state.repoUUID);
+  const { repo: repoUUID } = useStore((state) => state.repo);
 
   async function onRename(_, filenameValue) {
     const recordNew = { ...record };

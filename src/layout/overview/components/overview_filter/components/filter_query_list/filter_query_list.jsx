@@ -7,11 +7,13 @@ import { API } from "../../../../../../api/index.js";
 export function FilterQueryList() {
   const { t } = useTranslation();
 
-  const [queries, setQuery, repoUUID] = useStore((state) => [
+  const [queries, setQuery, repo] = useStore((state) => [
     state.queries,
     state.setQuery,
-    state.repoUUID,
+    state.repo,
   ]);
+
+  const { repo: repoUUID } = repo;
 
   const api = new API(repoUUID);
 

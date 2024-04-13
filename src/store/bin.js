@@ -323,6 +323,23 @@ export function getDefaultSortBy(schema, data, searchParams) {
   return sortBy;
 }
 
+export function getDefaultBase(schema) {
+  // find a sane default branch to select
+  const base = Object.keys(schema).find(
+    (branch) => {
+      // does not have a trunk
+      const isRoot = !Object.prototype.hasOwnProperty.call(schema[branch], "trunk");
+
+      // not the metadata schema branch
+      const isData = branch !== "branch";
+
+      return isRoot && isData
+    }
+  );
+
+  return base
+}
+
 export function queriesToParams(queries) {
   const searchParams = new URLSearchParams();
 

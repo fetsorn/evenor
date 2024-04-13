@@ -69,7 +69,7 @@ export function AssetView({ schema, record }) {
 
   const filenameFull = `${record[filenameBranch]}.${record[fileextBranch]}`
 
-  const repoUUID = useStore((state) => state.repoUUID);
+  const { repo: repoUUID } = useStore((state) => state.repo);
 
   const api = new API(repoUUID);
 

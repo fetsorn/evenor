@@ -1,5 +1,5 @@
 import React from "react";
-import { API } from "../../../../../api/index.js";
+import { API } from "../../../api/index.js";
 
 export const schemaSync = {
   sync_tag: {
@@ -58,6 +58,7 @@ export function Sync({ baseRecord, branchRecord }) {
 
   return (
     <div>
+      <p>Sync</p>
       <p>{branchRecord.sync_tag_target}</p>
       <br />
       <p>{branchRecord.sync_tag_search}</p>

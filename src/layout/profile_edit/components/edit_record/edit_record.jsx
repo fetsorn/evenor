@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { Spoiler } from "../../../../components/index.js";
-import { newUUID } from "../../../../store/bin.js";
+import { newUUID } from "../../../../api/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
 export function EditRecord({ schema, index, base, record, onRecordChange }) {
@@ -73,7 +73,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
         index,
         title: base,
         description,
-        onRemove: onFieldRemove,
+        onRemove: () => onFieldRemove(base),
       }}
     >
       <EditInput

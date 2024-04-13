@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./filter_query_list.module.css";
-import { useStore, paramsToQueries } from "../../../../../../store/index.js";
+import { useStore } from "../../../../../../store/index.js";
 import { API } from "../../../../../../api/index.js";
 
 export function FilterQueryList() {
@@ -18,12 +18,6 @@ export function FilterQueryList() {
   const api = new API(repoUUID);
 
   const [options, setOptions] = useState([]);
-
-  const searchParams = new URLSearchParams(window.location.search);
-
-  const queriesDefault = paramsToQueries(searchParams);
-
-  // TODO: set queries from location here
 
   async function onFocus(field) {
     setOptions([]);

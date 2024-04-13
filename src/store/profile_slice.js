@@ -2,8 +2,9 @@ import { condense } from "@fetsorn/csvs-js";
 import {
   API,
   generateDefaultRepoRecord,
+  newUUID,
 } from "../api/index.js";
-import { saveRepoRecord, loadRepoRecord, newUUID } from "./bin.js";
+import { saveRepoRecord, loadRepoRecord } from "./bin.js";
 
 export const createProfileSlice = (set, get) => ({
   // record selected from records for viewing/editing

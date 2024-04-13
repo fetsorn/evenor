@@ -1,5 +1,5 @@
 import React from "react";
-import { API } from "../../../../../api/index.js";
+import { API } from "../../../api/index.js";
 
 export const schemaRSS = {
   rss_tag: {
@@ -287,6 +287,7 @@ export function RSS({ baseRecord, branchRecord }) {
 
   return (
     <div>
+      <p>RSS</p>
       <p>{branchRecord.rss_tag_search}</p>
       <br />
       <p>{branchRecord.rss_tag_target}</p>

@@ -1,6 +1,8 @@
+import { v4 as uuidv4 } from 'uuid';
+import { sha256 } from 'js-sha256';
 import {
   schemaDispenser,
-} from "../layout/profile_view/components/dispenser/index.js";
+} from "../components/index.js";
 
 export function generateDefaultRepoRecord() {
   const record = {
@@ -188,3 +190,146 @@ export const schemaRoot = {
   },
   ...schemaDispenser,
 };
+
+export function newUUID() {
+  return sha256(uuidv4())
+}
+
+// add trunk field from schema record to branch records
+// turn [{_:_, branch1: branch2}, {_:branch, branch: "branch2", task: "date"}]
+// into [{_:branch, branch: "branch2", trunk: "branch1", task: "date"}]
+export function enrichBranchRecords(schemaRecord, metaRecords) {
+  // TODO validate against the case when branch has multiple trunks
+  return metaRecords.map((branchRecord) => {
+    const { branch } = branchRecord;
+
+    const trunk = Object.keys(schemaRecord).find(
+      (key) => schemaRecord[key].includes(branch)
+    );
+
+    const trunkPartial = trunk !== undefined
+          ? { trunk }
+          : {};
+
+    return { ...branchRecord, ...trunkPartial }
+  })
+}
+
+// extract schema record with trunks from branch records
+// turn [{_:branch, branch: "branch2", trunk: "branch1", task: "date"}]
+// into [{_:_, branch1: branch2}, {_:branch, branch: "branch2", task: "date"}]
+export function extractSchemaRecords(branchRecords) {
+  const records = branchRecords.reduce((acc, branchRecord) => {
+    const { trunk, ...branchRecordOmitted } = branchRecord;
+
+    const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+    const schemaRecord = trunk !== undefined
+          ? { ...acc.schemaRecord, [trunk]: [ branchRecord.branch, ...accLeaves ] }
+          : acc.schemaRecord;
+
+    const metaRecords = [ branchRecordOmitted, ...acc.metaRecords ];
+
+    return { schemaRecord, metaRecords }
+  }, { schemaRecord: { _: '_' }, metaRecords: []});
+
+  return [ records.schemaRecord, ...records.metaRecords ]
+}
+
+// turn
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+// into
+// [ {_: "_", entry: [ "datum" ]},
+//   {_: branch, branch: "entry", description_en: "", description_ru: ""},
+//   {_: branch, branch: "datum"}
+// ]
+export function schemaToBranchRecords(schema) {
+  const branches = Object.keys(schema);
+
+  const records = branches.reduce((acc, branch) => {
+    const { trunk, task, description } = schema[branch];
+
+    const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+    const schemaRecord = trunk !== undefined
+          ? { ...acc.schemaRecord, [trunk]: [ branch, ...accLeaves ] }
+          : acc.schemaRecord;
+
+    const partialEn = description && description.en
+          ? { description_en: description.en }
+          : {};
+
+    const partialRu = description && description.ru
+          ? { description_ru: description.ru }
+          : {};
+
+    const partialTask = task ? { task } : {};
+
+    const metaRecords = [
+      { _: 'branch', branch, ...partialTask, ...partialEn, ...partialRu },
+      ...acc.metaRecords
+    ];
+
+    return { schemaRecord, metaRecords }
+  }, { schemaRecord: { _: '_' }, metaRecords: []})
+
+  return [ records.schemaRecord, ...records.metaRecords ]
+}
+
+// turn
+// [ {_: "_", entry: [ "datum" ]},
+//   {_: branch, branch: "entry", description_en: "", description_ru: ""},
+//   {_: branch, branch: "datum"}
+// ]
+// into
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+export function branchRecordsToSchema(schemaRecord, branchRecords) {
+  const trunks = Object.keys(schemaRecord).filter((key) => key !== "_");
+
+  const schemaTrunks = trunks.reduce((accTrunk, trunk) => {
+    const accTrunkNew = { ...accTrunk, [trunk]: {} }
+
+    // for each value of trunk, set acc[value].trunk = trunk
+    const leaves = schemaRecord[trunk];
+
+    // play differently with description
+    return leaves.reduce((accLeaf, leaf) => {
+      return { ...accLeaf, [leaf]: { trunk } }
+    }, accTrunkNew)
+  }, {})
+
+  // TODO validate against the case when branch has multiple trunks
+  return branchRecords.reduce((acc, branchRecord) => {
+    const { branch, task, description_en, description_ru } = branchRecord;
+
+    const trunk = Object.keys(schemaRecord).find(
+      (key) => schemaRecord[key].includes(branch)
+    );
+
+    const trunkPartial = trunk !== undefined
+          ? { trunk }
+          : {};
+
+    const taskPartial = task !== undefined
+          ? { task }
+          : {};
+
+    const enPartial = description_en !== undefined
+          ? { en: description_en }
+          : undefined;
+
+    const ruPartial = description_ru !== undefined
+          ? { ru: description_ru }
+          : undefined;
+
+    const descriptionPartial = enPartial || ruPartial
+          ? { description: { ...enPartial, ...ruPartial } }
+          : {};
+
+    const branchPartial = {
+      [branch]: {...trunkPartial, ...taskPartial, ...descriptionPartial}
+    };
+
+    return { ...acc, ...branchPartial }
+  }, schemaTrunks)
+}

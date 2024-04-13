@@ -1,5 +1,5 @@
 import React from "react";
-import { API } from "../../../../../api/index.js";
+import { API } from "../../../api/index.js";
 
 export const schemaRemote = {
   remote_tag: {
@@ -64,6 +64,7 @@ export function Remote({ baseRecord, branchRecord }) {
 
   return (
     <div>
+      <p>Remote git</p>
       <p>{branchRecord.remote_url}</p>
       <br />
       <button type="button" onClick={onPullRepo}>

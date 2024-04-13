@@ -1,9 +1,8 @@
-import { API, schemaRoot } from "../api/index.js";
-import { queriesToParams } from "./bin.js";
-import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
-import { schemaToBranchRecords, paramsToQueries, getDefaultBase, getDefaultSortBy } from "./bin.js";
 import history from 'history/hash';
+import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
 import { digestMessage } from "@fetsorn/csvs-js";
+import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
+import { getDefaultBase, getDefaultSortBy } from "./bin.js";
 
 if (!self.WritableStream) {
   self.WritableStream = WritableStreamPolyfill;
@@ -24,6 +23,7 @@ export const createOverviewSlice = (set, get) => ({
 
   abortPreviousStream: () => {},
 
+  // TODO: refactor this away somehow
   initialize: async () => {
     // first initialize root
     const apiRoot = new API("root");
@@ -43,9 +43,24 @@ export const createOverviewSlice = (set, get) => ({
 
     const searchParams = new URLSearchParams(searchString);
 
-    const base = searchParams.get("_")
+    const baseURL = searchParams.get("_")
 
-    const sortBy = searchParams.get(".sortBy")
+    const sortByURL = searchParams.get(".sortBy")
+
+    function paramsToQueries(searchParamsSet) {
+      const searchParamsObject = Array.from(searchParamsSet).reduce(
+        (acc, [key, value]) => ({ ...acc, [key]: value }),
+        {},
+      );
+
+      const queries = Object.fromEntries(
+        Object.entries(searchParamsObject).filter(
+          ([key]) => key !== "_" && key !== "~" && key !== "-" && !key.startsWith("."),
+        ),
+      );
+
+      return queries;
+    }
 
     // convert to object, skip reserved fields
     const queries = paramsToQueries(searchParams);
@@ -74,9 +89,9 @@ export const createOverviewSlice = (set, get) => ({
 
         const schema = await api.readSchema();
 
-        const base = getDefaultBase(schema);
+        const baseDefault = getDefaultBase(schema);
 
-        set({ queries, base, sortBy, schema, repo })
+        set({ queries, base: baseURL ?? baseDefault, schema, repo })
 
         // run queries from the store
         await get().setQuery("", undefined);
@@ -100,9 +115,9 @@ export const createOverviewSlice = (set, get) => ({
 
         const schema = await api.readSchema();
 
-        const base = getDefaultBase(schema);
+        const baseDefault = getDefaultBase(schema);
 
-        set({ queries, base, sortBy, schema, repo })
+        set({ queries, base: baseURL ?? baseDefault, schema, repo })
 
         // run queries from the store
         await get().setQuery("", undefined);
@@ -115,8 +130,7 @@ export const createOverviewSlice = (set, get) => ({
 
     set({
       schema: schemaRoot,
-      base: "repo",
-      sortBy: undefined,
+      base: baseURL ?? "repo",
       queries,
       repo: { _: "repo", repo: "root" }
     });
@@ -160,6 +174,12 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setQuery: async (queryField, queryValue) => {
+    if (queryField === ".sortBy") {
+      set({ sortBy: queryValue });
+
+      return
+    }
+
     set({ records: [] })
 
     // abort previous search stream if it is running
@@ -182,15 +202,12 @@ export const createOverviewSlice = (set, get) => ({
     // if query field is undefined, delete queries
     if (queryField === undefined) {
       set({ queries: {} })
-      // if query field is empty, don't change queries
     } else if (queryField === "_") {
       const sortBy = getDefaultSortBy(schema, queryValue, [])
 
       set({ base: queryValue, sortBy, queries: {} });
-    } else if (queryField === ".sortBy") {
-      set({ sortBy: queryValue });
-    } else if (queryField !== "") {
       // if query field is defined, update queries
+    } else if (queryField !== "") {
 
       const { queries } = get();
 
@@ -208,6 +225,16 @@ export const createOverviewSlice = (set, get) => ({
 
     const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
 
+    function queriesToParams(queriesObject) {
+      const searchParams = new URLSearchParams();
+
+      Object.keys(queriesObject).map((key) =>
+        queriesObject[key] === "" ? null : searchParams.set(key, queriesObject[key]),
+      );
+
+      return searchParams;
+    }
+
     const searchParams = queriesToParams(queries);
 
     searchParams.set("_", base);
@@ -224,6 +251,8 @@ export const createOverviewSlice = (set, get) => ({
 
     window.history.replaceState(null, null, urlNew);
 
+    searchParams.delete(".sortBy");
+
     const api = new API(repoUUID);
 
     const { strm: fromStrm, closeHandler } =
@@ -237,19 +266,7 @@ export const createOverviewSlice = (set, get) => ({
 
         const records = [...get().records, chunk];
 
-        // reset sort here
-        try {
-          const sortByNew = sortBy !== undefined && sortBy !== "" && sortBy !== null
-                ? sortBy
-                : getDefaultSortBy(schema, base, records);
-
-          set({ sortBy: sortByNew });
-        } catch {
-        }
-
-        set({
-          records,
-        });
+        set({ records });
       },
 
       abort() {

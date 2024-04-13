@@ -1,6 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
-import { schemaRoot } from "./index.js";
+import { schemaRoot, branchRecordsToSchema } from "./index.js";
 
 if (!self.ReadableStream) {
   self.ReadableStream = ReadableStreamPolyfill;
@@ -12,65 +12,7 @@ const pfs = fs.promises;
 
 const lfsDir = "lfs";
 
-import { expand } from "@fetsorn/csvs-js";
-
 const __BUILD_MODE__ = "browser";
-
-// [ {_: "_", entry: [ "datum" ]},
-//   {_: branch, branch: "entry", description_en: "", description_ru: ""},
-//   {_: branch, branch: "datum"}
-// ]
-// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
-function branchRecordsToSchema(schemaRecord, branchRecords) {
-  const trunks = Object.keys(schemaRecord).filter((key) => key !== "_");
-
-  const schemaTrunks = trunks.reduce((accTrunk, trunk) => {
-    const accTrunkNew = { ...accTrunk, [trunk]: {} }
-
-    // for each value of trunk, set acc[value].trunk = trunk
-    const leaves = schemaRecord[trunk];
-
-    // play differently with description
-    return leaves.reduce((accLeaf, leaf) => {
-      return { ...accLeaf, [leaf]: { trunk } }
-    }, accTrunkNew)
-  }, {})
-
-  // TODO validate against the case when branch has multiple trunks
-  return branchRecords.reduce((acc, branchRecord) => {
-    const { branch, task, description_en, description_ru } = branchRecord;
-
-    const trunk = Object.keys(schemaRecord).find(
-      (key) => schemaRecord[key].includes(branch)
-    );
-
-    const trunkPartial = trunk !== undefined
-          ? { trunk }
-          : {};
-
-    const taskPartial = task !== undefined
-          ? { task }
-          : {};
-
-    const enPartial = description_en !== undefined
-          ? { en: description_en }
-          : undefined;
-
-    const ruPartial = description_ru !== undefined
-          ? { ru: description_ru }
-          : undefined;
-
-    const descriptionPartial = enPartial || ruPartial
-          ? { description: { ...enPartial, ...ruPartial } }
-          : {};
-
-    const branchPartial = {
-      [branch]: {...trunkPartial, ...taskPartial, ...descriptionPartial}
-    };
-
-    return { ...acc, ...branchPartial }
-  }, schemaTrunks)
-}
 
 async function runWorker(readFile, searchParams) {
   const worker = new Worker(new URL("./browser.worker.js", import.meta.url), { type: 'module' });

@@ -21,5 +21,10 @@ export const schemaLocal = {
 
 export function Local({ branchRecord }) {
   // TODO: add path picker
-  return <p>{branchRecord.local_path}</p>;
+  return (
+    <div>
+      <p>Local</p>
+      <p>{branchRecord.local_path}</p>
+    </div>
+  )
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { ViewValue, ViewRecord, Dispenser } from "../index.js";
-import { AssetView } from "../../../../components/index.js";
+import { ViewValue, ViewRecord } from "../index.js";
+import { AssetView, Dispenser } from "../../../../components/index.js";
 import { useStore } from "../../../../store/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 

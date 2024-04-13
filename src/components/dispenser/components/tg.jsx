@@ -3,7 +3,7 @@ import smalltalk from "smalltalk";
 //import { TelegramClient } from "telegram";
 //import { StringSession } from "telegram/sessions";
 import MP3Tag from "mp3tag.js";
-import { API } from "../../../../../api/index.js";
+import { API } from "../../../api/index.js";
 
 export const schemaTG = {
   tg_tag: {
@@ -217,6 +217,7 @@ export function TG({ baseRecord, branchRecord }) {
 
   return (
     <div>
+      <p>TG</p>
       <a>{branchRecord.tg_tag_search}</a>
       <br />
       <a>{branchRecord.tg_tag_channel_id}</a>

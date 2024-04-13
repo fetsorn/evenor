@@ -48,7 +48,7 @@ export function Spoiler({ index, title, description, children, onRemove }) {
         <button
           type="button"
           title={t("line.button.remove", { field: title })}
-          onClick={onRemove}
+          onClick={() => onRemove()}
         >
           X
         </button>
@@ -68,7 +68,7 @@ export function Spoiler({ index, title, description, children, onRemove }) {
         <button
           type="button"
           title={t("line.button.remove", { field: title })}
-          onClick={onRemove}
+          onClick={() => onRemove()}
         >
           X
         </button>

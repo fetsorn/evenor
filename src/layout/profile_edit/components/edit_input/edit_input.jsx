@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { InputText, InputTextarea } from "../index.js";
 
 export function EditInput({
@@ -8,8 +9,9 @@ export function EditInput({
   base,
   value,
   onFieldValueChange,
+  onFieldValueRemove,
 }) {
-  // TODO: fetch options for base, add datalist
+  const { i18n, t } = useTranslation();
 
   const task = schema[base].task;
 
@@ -18,6 +20,15 @@ export function EditInput({
       return (
         <div>
           <label>{description}:</label>
+          {onFieldValueRemove && (
+            <button
+              type="button"
+              title={t("line.button.remove", { field: base })}
+              onClick={() => onFieldValueRemove()}
+            >
+              X
+            </button>
+          )}
           <InputTextarea
             {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />
@@ -28,6 +39,15 @@ export function EditInput({
       return (
         <div>
           <label>{description}:</label>
+          {onFieldValueRemove && (
+            <button
+              type="button"
+              title={t("line.button.remove", { field: base })}
+              onClick={() => onFieldValueRemove()}
+            >
+              X
+            </button>
+          )}
           <InputText
             {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />

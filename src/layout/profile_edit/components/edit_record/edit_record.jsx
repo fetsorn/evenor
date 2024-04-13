@@ -5,7 +5,7 @@ import { Spoiler } from "@/components/index.js";
 import { newUUID } from "@/api/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
-export function EditRecord({ schema, index, base, record, onRecordChange }) {
+export function EditRecord({ schema, index, base, record, onRecordChange, onRecordRemove }) {
   const { i18n } = useTranslation();
 
   const leaves = Object.keys(schema).filter(
@@ -27,7 +27,6 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
   function onFieldRemove(fieldBranch) {
     const objectNew = { ...record };
 
-    // TODO replace with destructuring omit
     delete objectNew[fieldBranch];
 
     onRecordChange(objectNew);
@@ -55,22 +54,13 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
   const description =
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
-  // TODO: if schema[base].task === file, show this
-  // TODO: rename InputUpload to RecordUpload or refactor to merge here
-  // <InputUpload
-  //   {...{
-  //     schema,
-  //     record,
-  //     onFieldChange,
-  //   }}
-  // />
   return (
     <Spoiler
       {...{
         index,
         title: base,
         description,
-        onRemove: () => onFieldRemove(base),
+        onRemove: () => onRecordRemove(),
       }}
     >
       <EditInput
@@ -112,6 +102,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
                 : [record[leaf]],
               description,
               onFieldChange,
+              onFieldRemove,
             }}
           />
         ))}

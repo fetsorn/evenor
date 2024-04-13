@@ -19,48 +19,49 @@ export function EditField({
 
   const task = schema[base].task;
 
-  function onFieldItemChange(index, itemNew) {
+  function onFieldItemChange(idx, itemNew) {
     // replace the new item at index
-    const itemsNew = Object.assign([], items, {[index]: itemNew});
+    const itemsNew = Object.assign([], items, {[idx]: itemNew});
 
     onFieldChange(base, itemsNew);
-  }
-
-  function Foo({ item, idx }) {
-    if (baseIsTwig) {
-      return <EditInput
-               schema={schema}
-               index={index}
-               base={base}
-               description={description}
-               value={item}
-               onFieldValueChange={(_, valueNew) => onFieldItemChange(idx, valueNew)}
-             />
-    }
-
-    if (task === "file") {
-      return <EditUpload {...{
-        schema,
-        index: `${index}${base}${item[base]}`,
-        base,
-        record: item,
-        onFieldChange: (_, valueNew) => onFieldItemChange(idx, valueNew)
-      }} />
-    }
-
-    return <EditRecord
-             index={`${index}${base}${item[base]}`}
-             schema={schema}
-             base={base}
-             record={item}
-             onRecordChange={(recordNew) => onFieldItemChange(idx, recordNew)}
-           />
   }
 
   // TODO handle error when items is not array
   return (
     <div>
-      {items.map((item, idx) =>  <Foo key={idx} {...{item, idx}}/>)}
+      {items.map((item, idx) => {
+        if (baseIsTwig) {
+          return <EditInput
+                   schema={schema}
+                   key={idx}
+                   index={index}
+                   base={base}
+                   description={description}
+                   value={item}
+                   onFieldValueChange={(_, valueNew) => onFieldItemChange(idx, valueNew)}
+                 />
+        }
+
+        if (task === "file") {
+          return <EditUpload {...{
+            key: idx,
+            schema,
+            index: `${index}${base}${item[base]}`,
+            base,
+            record: item,
+            onFieldChange: (_, valueNew) => onFieldItemChange(idx, valueNew)
+          }} />
+        }
+
+        return <EditRecord
+                 index={`${index}${base}${item[base]}`}
+                 key={idx}
+                 schema={schema}
+                 base={base}
+                 record={item}
+                 onRecordChange={(recordNew) => onFieldItemChange(idx, recordNew)}
+               />
+      })}
     </div>
 
   )

@@ -83,8 +83,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
           index,
           value: record[base],
           description,
-          onFieldChange,
-          onFieldRemove,
+          onFieldValueChange: onFieldChange,
         }}
       />
 

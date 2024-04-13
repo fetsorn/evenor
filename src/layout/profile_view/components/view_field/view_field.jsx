@@ -1,25 +1,25 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ViewValue, ViewRecord } from "../index.js";
+import { AssetView } from "../../../../components/index.js";
+import { isTwig } from "@fetsorn/csvs-js";
 
 export function ViewField({
   schema,
   index,
   base,
-  value,
+  items,
 }) {
   const { i18n } = useTranslation();
 
-  const isTrunk =
-    Object.keys(schema).find((branch) => schema[branch].trunk === base) ??
-    false;
-
-  const isTwig = !isTrunk;
+  const baseIsTwig = isTwig(schema, base);
 
   const description =
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
-  // TODO handle error when value is not array
+  const task = schema[base].task;
+
+  // TODO handle error when items is not array
 
   // TODO: disambiguate on dispensers
   // if (trunk === "tags") {
@@ -27,34 +27,33 @@ export function ViewField({
   // <Dispenser {...{ baseRecord, branchRecord: record }} />
   // </Suspense>
 
-  // TODO: render file
-  // handle file extension
-  // if (branchTask === "file") {
-  // return <AssetView {...{ record, schema }} />;
-  // }
-  // if (branchTask === "filename") {
-  // return <AssetView {...{ record, schema }} />;
-  // }
+  function Foo({ item, idx }) {
+    if (baseIsTwig) {
+      return <ViewValue
+               schema={schema}
+               index={index}
+               base={base}
+               description={description}
+               value={item}
+             />
+    }
 
-  return isTwig ? (
-    <ViewValue
-      schema={schema}
-      index={index}
-      base={base}
-      description={description}
-      value={value}
-    />
-  ) : (
+    if (task === "file") {
+      return <AssetView {...{ record: item, schema }} />
+    }
+
+    return <ViewRecord
+             key={idx}
+             index={`${index}${base}${item[base]}`}
+             schema={schema}
+             base={base}
+             record={item}
+           />
+  }
+
+  return (
     <div>
-      {value.map((record, idx) => (
-        <ViewRecord
-          key={idx}
-          index={`${index}${base}${record[base]}`}
-          schema={schema}
-          base={base}
-          record={record}
-        />
-      ))}
+      {items.map((item, idx) => <Foo key={idx} {...{item, idx}} />)}
     </div>
   );
 }

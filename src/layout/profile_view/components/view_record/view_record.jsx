@@ -43,7 +43,7 @@ export function ViewRecord({ schema, index, base, record }) {
               schema,
               index,
               base: leaf,
-              value: record[leaf],
+              items: Array.isArray(record[leaf]) ? record[leaf] : [record[leaf]],
             }}
           />
         ))}

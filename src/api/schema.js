@@ -102,6 +102,33 @@ export function generateDefaultRepoRecord() {
         description_en: "Hashsum of the file",
         description_ru: "Хэш файла",
       },
+      {
+        _: "branch",
+        branch: "branch",
+        description_en: "Branch name",
+        description_ru: "Название ветки",
+      },
+      {
+        _: "branch",
+        branch: "task",
+        trunk: "branch",
+        description_en: "Branch task",
+        description_ru: "Предназначение ветки",
+      },
+      {
+        _: "branch",
+        branch: "description_en",
+        trunk: "branch",
+        description_en: "Branch description EN",
+        description_ru: "Описание ветки на английском",
+      },
+      {
+        _: "branch",
+        branch: "description_ru",
+        trunk: "branch",
+        description_en: "Branch description RU",
+        description_ru: "Описание ветки на русском",
+      },
     ],
   };
 

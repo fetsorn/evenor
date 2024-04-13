@@ -55,6 +55,10 @@ export function AssetView({ schema, record }) {
       schema[b].task === "filehash",
   );
 
+  const fileextBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === branch && schema[b].task === "fileext",
+  );
+
   const filenameBranch = Object.keys(schema).find(
     // when file is object, filename is a leaf
     // when file is a string, it is also a filename
@@ -62,6 +66,8 @@ export function AssetView({ schema, record }) {
       (schema[b].trunk === branch || b === branch) &&
       schema[b].task === "filename",
   );
+
+  const filenameFull = `${record[filenameBranch]}.${record[fileextBranch]}`
 
   const repoUUID = useStore((state) => state.repoUUID);
 
@@ -79,7 +85,7 @@ export function AssetView({ schema, record }) {
     // if no contents, try to fetch record[filenameBranch]
     if (contents === undefined) {
       try {
-        contents = await api.fetchAsset(record[filenameBranch]);
+        contents = await api.fetchAsset(filenameFull);
       } catch (e) {
         console.log(e);
       }
@@ -98,13 +104,13 @@ export function AssetView({ schema, record }) {
     let contents = await fetchAsset();
 
     // if cannot be shown in the browser, try to convert to something that can be shown
-    if (!isIFrameable(record[filenameBranch])) {
+    if (!isIFrameable(filenameFull)) {
       contents = await convert(record[filehashBranch], contents);
     }
 
     const mime = await import("mime");
 
-    const mimetypeNew = mime.getType(record[filenameBranch]);
+    const mimetypeNew = mime.getType(filenameFull);
 
     setMimetype(mimetypeNew);
 
@@ -120,17 +126,17 @@ export function AssetView({ schema, record }) {
 
     api.downloadAsset(
       contents,
-      record[filenameBranch] ?? record[filehashBranch],
+      filenameFull ?? record[filehashBranch],
     );
   }
 
   if (!blobURL) {
-    if (record[filehashBranch] || record[filenameBranch]) {
+    if (record[filehashBranch] || filenameFull) {
       return (
         <div>
           <p>{record[filehashBranch]}</p>
 
-          <p>{record[filenameBranch]}</p>
+          <p>{filenameFull}</p>
 
           <button type="button" onClick={() => onView()}>
             ▶️
@@ -148,7 +154,7 @@ export function AssetView({ schema, record }) {
         <div>
           <p>{record[filehashBranch]}</p>
 
-          <p>{record[filenameBranch]}</p>
+          <p>{filenameFull}</p>
 
           <button type="button" onClick={() => setBlobURL(undefined)}>
             🔽

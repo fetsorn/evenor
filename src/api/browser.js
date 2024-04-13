@@ -36,14 +36,12 @@ function branchRecordsToSchema(schemaRecord, branchRecords) {
     }, accTrunkNew)
   }, {})
 
-  const schemaRecordExpanded = expand(schemaRecord);
-
   // TODO validate against the case when branch has multiple trunks
   return branchRecords.reduce((acc, branchRecord) => {
     const { branch, task, description_en, description_ru } = branchRecord;
 
     const trunk = Object.keys(schemaRecord).find(
-      (key) => schemaRecordExpanded[key].includes(branch)
+      (key) => schemaRecord[key].includes(branch)
     );
 
     const trunkPartial = trunk !== undefined
@@ -287,7 +285,11 @@ export class BrowserAPI {
 
     await this.putAsset(hashHexString, fileArrayBuffer);
 
-    return [hashHexString, file.name];
+    const name = file.name.replace(/\.[^/.]+$/, "");
+
+    const ext = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
+
+    return [hashHexString, name, ext];
   }
 
   async select(searchParams) {
@@ -774,7 +776,6 @@ export class BrowserAPI {
 
     const [ schemaRecord ] = await this.select(new URLSearchParams("?_=_"));
 
-    // TODO: why returns empty
     const branchRecords = await this.select(new URLSearchParams("?_=branch"));
 
     const schema = branchRecordsToSchema(schemaRecord, branchRecords);

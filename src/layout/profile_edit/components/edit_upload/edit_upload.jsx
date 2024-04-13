@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { API } from "../../../../api";
 import { useStore } from "../../../../store/index.js";
 import { Button, AssetView } from "../../../../components/index.js";
-import styles from "./input_upload.module.css";
+import styles from "./edit_upload.module.css";
 import { InputText } from "../index.js";
 
 function UploadButton({ onUpload, title }) {
@@ -18,13 +18,17 @@ function UploadButton({ onUpload, title }) {
   return <input type="file" onChange={(e) => onUpload(e.target.files[0])} />;
 }
 
-export function InputUpload({ schema, record, onFieldChange }) {
+export function EditUpload({ schema, record, onFieldChange }) {
   const { t } = useTranslation();
 
   const branch = record._;
 
   const filehashBranch = Object.keys(schema).find(
     (b) => schema[b].trunk === branch && schema[b].task === "filehash",
+  );
+
+  const fileextBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === branch && schema[b].task === "fileext",
   );
 
   const filenameBranch = Object.keys(schema).find(
@@ -41,10 +45,18 @@ export function InputUpload({ schema, record, onFieldChange }) {
     onFieldChange(branch, recordNew);
   }
 
+  async function onExtension(_, fileextValue) {
+    const recordNew = { ...record };
+
+    recordNew[fileextBranch] = fileextValue;
+
+    onFieldChange(branch, recordNew);
+  }
+
   async function onUpload(file) {
     const api = new API(repoUUID);
 
-    const [filehash, filename] = await api.uploadFile(file);
+    const [filehash, filename, fileext] = await api.uploadFile(file);
 
     const recordNew = { ...record };
 
@@ -52,10 +64,12 @@ export function InputUpload({ schema, record, onFieldChange }) {
 
     recordNew[filenameBranch] = filename;
 
+    recordNew[fileextBranch] = fileext;
+
     onFieldChange(branch, recordNew);
   }
 
-  const isNotUploaded = record[filehashBranch] === undefined;
+  const notUploaded = record[filehashBranch] === undefined;
 
   return (
     <div>
@@ -69,11 +83,19 @@ export function InputUpload({ schema, record, onFieldChange }) {
         }}
       />
 
+      <InputText
+        {...{
+          branch: fileextBranch,
+          value: record[fileextBranch] ?? "",
+          onFieldChange: onExtension,
+        }}
+      />
+
       {record[filehashBranch] ?? ""}
 
-      {isNotUploaded && (
+      {notUploaded && (
         <UploadButton
-          onUpload={() => onUpload()}
+          onUpload={(file) => onUpload(file)}
           title={t("line.button.upload")}
         />
       )}

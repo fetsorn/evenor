@@ -1,8 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../../../../../store/index.js";
+import { useStore } from "@/store/index.js";
 import styles from "./filter_base_select.module.css";
-
 
 export function FilterBaseSelect({}) {
   const { i18n, t } = useTranslation();
@@ -24,11 +23,11 @@ export function FilterBaseSelect({}) {
   // );
 
   const baseDefault = Object.prototype.hasOwnProperty.call(schema, queries._)
-        ? queries._
-        : Object.keys(schema).find(
-          (branch) =>
+    ? queries._
+    : Object.keys(schema).find(
+        (branch) =>
           !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
-        );
+      );
 
   const options = Object.keys(schema);
 

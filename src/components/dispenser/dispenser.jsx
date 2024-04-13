@@ -11,7 +11,7 @@ import {
   Local,
   schemaLocal,
   TG,
-  schemaTG
+  schemaTG,
 } from "./components/index.js";
 
 export const schemaDispenser = {
@@ -21,7 +21,7 @@ export const schemaDispenser = {
   // ...schemaSync,
   // ...schemaTG,
   ...schemaZip,
-}
+};
 
 // TODO collapse into api.ensure
 async function clone(repoUUID, record) {
@@ -47,15 +47,13 @@ async function clone(repoUUID, record) {
   //  }
   //}
 
-  return record
+  return record;
 }
 
 async function writeGitTags(repoUUID, record) {
   //const api = new API(repoUUID);
-
   //const remoteTags =
   //  record.tags?.items?.filter((item) => item._ === "remote_tag") ?? [];
-
   //for (const remoteTag of remoteTags) {
   //  try {
   //    api.addRemote(
@@ -67,10 +65,8 @@ async function writeGitTags(repoUUID, record) {
   //    // do nothing
   //  }
   //}
-
   //const localTags =
   //  record.tags?.items?.filter((item) => item._ === "local_tag") ?? [];
-
   //for (const localTag of localTags) {
   //  try {
   //    api.addAssetPath(localTag.local_path);
@@ -83,7 +79,6 @@ async function writeGitTags(repoUUID, record) {
 export function dispenserHookBeforeSave(repoUUID, baseRecord) {
   // TODO check if there is a dataset with given repoUUID
   // clone for remote tag
-
   // TODO clone only if there is no repo
   // or collapse into api.ensure
   // const recordNew = await clone(repoUUID, record);
@@ -94,9 +89,9 @@ export function dispenserHookAfterSave(repoUUID, baseRecord) {
 }
 
 export function dispenserHookAfterLoad(repoUUID, baseRecord) {
-  const partial = {}
+  const partial = {};
   // load remote tags, load local tags
-  return partial
+  return partial;
 }
 
 // async function readRemoteTags(repoUUID, record) {
@@ -150,7 +145,6 @@ export function dispenserHookAfterLoad(repoUUID, baseRecord) {
 
 //   return {}
 // }
-
 
 export function Dispenser({ baseRecord, branchRecord }) {
   switch (branchRecord._) {

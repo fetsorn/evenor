@@ -1,8 +1,8 @@
 import React, { Suspense } from "react";
 import { OverviewFilter } from "./components/overview_filter/overview_filter.jsx";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../store/index.js";
-import { Button } from "../../components/index.js";
+import { useStore } from "@/store/index.js";
+import { Button } from "@/components/index.js";
 import styles from "./overview.module.css";
 
 const OverviewItinerary = React.lazy(
@@ -18,7 +18,7 @@ export function Overview() {
       state.repo,
       state.setRepoUUID,
       state.onSettingsOpen,
-      state.onRecordUpdate
+      state.onRecordUpdate,
     ],
   );
 
@@ -31,9 +31,7 @@ export function Overview() {
   }
 
   return (
-    <div
-      className={ record ? styles.invisible : "" }
-    >
+    <div className={record ? styles.invisible : ""}>
       <div className={styles.buttonbar}>
         {isRepo ? (
           <Button
@@ -68,7 +66,8 @@ export function Overview() {
       <button
         type="button"
         title={t("line.button.add")}
-        onClick={() => onRecordUpdate()}>
+        onClick={() => onRecordUpdate()}
+      >
         +
       </button>
     </div>

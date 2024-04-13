@@ -41,7 +41,7 @@ async function runWorker(workerData) {
       new URL("./electron.worker.js", import.meta.url),
       {
         workerData,
-        type: "module"
+        type: "module",
       },
     );
 
@@ -207,7 +207,7 @@ export class ElectronAPI {
           dir: this.dir,
           searchParamsString: searchParams.toString(),
         },
-        type: "module"
+        type: "module",
       },
     );
 

@@ -1,9 +1,5 @@
 import { condense } from "@fetsorn/csvs-js";
-import {
-  API,
-  generateDefaultRepoRecord,
-  newUUID,
-} from "../api/index.js";
+import { API, generateDefaultRepoRecord, newUUID } from "../api/index.js";
 import { saveRepoRecord, loadRepoRecord } from "./bin.js";
 
 export const createProfileSlice = (set, get) => ({
@@ -29,8 +25,11 @@ export const createProfileSlice = (set, get) => ({
     const canSaveRepo = isHomeScreen;
 
     const record = canSaveRepo
-          ? await saveRepoRecord(get().record.repo, condense(get().schema, get().record))
-          : get().record;
+      ? await saveRepoRecord(
+          get().record.repo,
+          condense(get().schema, get().record),
+        )
+      : get().record;
 
     const api = new API(repoUUID);
 
@@ -55,7 +54,9 @@ export const createProfileSlice = (set, get) => ({
     const canSelectRepo = isHomeScreen && isNewRecord;
 
     // when selecting a repo, load git state and schema from dataset into the record
-    const record = canSelectRepo ? await loadRepoRecord("root", recordNew) : recordNew;
+    const record = canSelectRepo
+      ? await loadRepoRecord("root", recordNew)
+      : recordNew;
 
     set({ record, isEdit: false });
   },
@@ -106,7 +107,7 @@ export const createProfileSlice = (set, get) => ({
     const baseBackup = get().base;
 
     // get current repo settings from root db
-    const recordRepo = await apiRepo.getSettings()
+    const recordRepo = await apiRepo.getSettings();
 
     // load git state and schema from dataset into the record
     const recordSettings = await loadRepoRecord(repoUUID, recordRepo);
@@ -115,7 +116,7 @@ export const createProfileSlice = (set, get) => ({
 
     const {
       onRecordCreate: onRecordCreateBackup,
-      onRecordDelete: onRecordDeleteBackup
+      onRecordDelete: onRecordDeleteBackup,
     } = get();
 
     const onRecordCreateSettings = async () => {

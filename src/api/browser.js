@@ -15,7 +15,9 @@ const lfsDir = "lfs";
 const __BUILD_MODE__ = "browser";
 
 async function runWorker(readFile, searchParams) {
-  const worker = new Worker(new URL("./browser.worker.js", import.meta.url), { type: 'module' });
+  const worker = new Worker(new URL("./browser.worker.js", import.meta.url), {
+    type: "module",
+  });
 
   worker.onmessage = async (message) => {
     switch (message.data.action) {
@@ -247,7 +249,10 @@ export class BrowserAPI {
 
     const strm = new ReadableStream({
       start(controller) {
-        const worker = new Worker(new URL("./browser.worker", import.meta.url), { type: 'module' });
+        const worker = new Worker(
+          new URL("./browser.worker", import.meta.url),
+          { type: "module" },
+        );
 
         closeHandler = () => {
           try {
@@ -658,11 +663,7 @@ export class BrowserAPI {
       value: true,
     });
 
-    await pfs.writeFile(
-      `${dir}/.csvs.csv`,
-      "csvs,0.0.2",
-      "utf8",
-    );
+    await pfs.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
   }
 
   async rimraf(rimrafpath) {
@@ -713,10 +714,10 @@ export class BrowserAPI {
 
   async readSchema() {
     if (this.uuid === "root") {
-      return schemaRoot
+      return schemaRoot;
     }
 
-    const [ schemaRecord ] = await this.select(new URLSearchParams("?_=_"));
+    const [schemaRecord] = await this.select(new URLSearchParams("?_=_"));
 
     const branchRecords = await this.select(new URLSearchParams("?_=branch"));
 

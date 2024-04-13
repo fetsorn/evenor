@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { ViewValue, ViewField } from "../index.js";
-import { Spoiler } from "../../../../components/index.js";
+import { Spoiler } from "@/components/index.js";
 
 export function ViewRecord({ schema, index, base, record }) {
   const { i18n } = useTranslation();
@@ -43,7 +43,9 @@ export function ViewRecord({ schema, index, base, record }) {
               schema,
               index,
               base: leaf,
-              items: Array.isArray(record[leaf]) ? record[leaf] : [record[leaf]],
+              items: Array.isArray(record[leaf])
+                ? record[leaf]
+                : [record[leaf]],
             }}
           />
         ))}

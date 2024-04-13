@@ -1,13 +1,10 @@
 import React, { useState } from "react";
-import { API } from "../../../../api/index.js";
-import { useStore } from "../../../../store/index.js";
+import { API } from "@/api/index.js";
+import { useStore } from "@/store/index.js";
 import styles from "./input_text.module.css";
 
 export function InputText({ branch, value, onFieldChange }) {
-  const [repo, queries] = useStore((state) => [
-    state.repo,
-    state.queries,
-  ]);
+  const [repo, queries] = useStore((state) => [state.repo, state.queries]);
 
   const { repo: repoUUID } = repo;
 

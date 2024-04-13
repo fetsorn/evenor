@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import styles from "./overview_itinerary.module.css";
-import { useStore } from "../../../../store/index.js";
+import { useStore } from "@/store/index.js";
 import { ItineraryWaypoint, VirtualScroll } from "./components/index.js";
 import { buildItinerary } from "./overview_itinerary_controller.js";
 
@@ -10,19 +10,15 @@ export function OverviewItinerary() {
 
   const { t } = useTranslation();
 
-  const [
-    record,
-    records,
-    sortBy,
-    onRecordSelect,
-    onRecordUpdate,
-  ] = useStore((state) => [
-    state.record,
-    state.records,
-    state.sortBy,
-    state.onRecordSelect,
-    state.onRecordUpdate,
-  ]);
+  const [record, records, sortBy, onRecordSelect, onRecordUpdate] = useStore(
+    (state) => [
+      state.record,
+      state.records,
+      state.sortBy,
+      state.onRecordSelect,
+      state.onRecordUpdate,
+    ],
+  );
 
   async function onUseEffect() {
     const itineraryNew = await buildItinerary(records, sortBy);
@@ -45,7 +41,7 @@ export function OverviewItinerary() {
           onRecordSelect,
           onRecordCreate: async () => onRecordUpdate(),
           data: itinerary,
-          rowComponent: ItineraryWaypoint
+          rowComponent: ItineraryWaypoint,
         }}
       />
     </div>

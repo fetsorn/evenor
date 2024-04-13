@@ -7,7 +7,7 @@ if (!self.ReadableStream) {
   self.ReadableStream = ReadableStreamPolyfill;
 }
 
-const isTauri = import.meta.env.TAURI_ENV_ARCH != undefined
+const isTauri = import.meta.env.TAURI_ENV_ARCH != undefined;
 
 const __BUILD_MODE__ = isTauri ? "tauri" : "browser";
 

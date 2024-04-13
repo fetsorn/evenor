@@ -26,5 +26,5 @@ export function Local({ branchRecord }) {
       <p>Local</p>
       <p>{branchRecord.local_path}</p>
     </div>
-  )
+  );
 }

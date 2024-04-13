@@ -14,11 +14,12 @@ export function EditInput({
   const task = schema[base].task;
 
   switch (task) {
-    case 'text':
+    case "text":
       return (
         <div>
           <label>{description}:</label>
-          <InputTextarea {...{ branch: base, value, onFieldChange: onFieldValueChange}}
+          <InputTextarea
+            {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />
         </div>
       );
@@ -27,9 +28,10 @@ export function EditInput({
       return (
         <div>
           <label>{description}:</label>
-          <InputText {...{ branch: base, value, onFieldChange: onFieldValueChange }} />
+          <InputText
+            {...{ branch: base, value, onFieldChange: onFieldValueChange }}
+          />
         </div>
       );
   }
-
 }

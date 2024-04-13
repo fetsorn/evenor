@@ -1,9 +1,9 @@
 import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
-import { schemaRoot } from "../../api";
-import { AssetView, Button } from "../../components/index.js";
-import { useStore } from "../../store/index.js";
+import { schemaRoot } from "@/api";
+import { AssetView, Button } from "@/components/index.js";
+import { useStore } from "@/store/index.js";
 import { EditRecord } from "./components/index.js";
 import styles from "./profile_edit.module.css";
 
@@ -23,7 +23,7 @@ export function ProfileEdit() {
     state.onRecordSelect,
     state.onRecordCreate,
     state.onRecordUpdate,
-    state.schema
+    state.schema,
   ]);
 
   const recordBackup = structuredClone(record);

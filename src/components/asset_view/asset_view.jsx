@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { API } from "../../api";
-import { useStore } from "../../store/index.js";
+import { API } from "@/api";
+import { useStore } from "@/store/index.js";
 import { convert, isIFrameable } from "./asset_view_controller.js";
 
 function FileView({ downloadUrl, mimetype }) {
@@ -67,7 +67,7 @@ export function AssetView({ schema, record }) {
       schema[b].task === "filename",
   );
 
-  const filenameFull = `${record[filenameBranch]}.${record[fileextBranch]}`
+  const filenameFull = `${record[filenameBranch]}.${record[fileextBranch]}`;
 
   const { repo: repoUUID } = useStore((state) => state.repo);
 
@@ -124,10 +124,7 @@ export function AssetView({ schema, record }) {
   async function onDownload() {
     let contents = await fetchAsset();
 
-    api.downloadAsset(
-      contents,
-      filenameFull ?? record[filehashBranch],
-    );
+    api.downloadAsset(contents, filenameFull ?? record[filehashBranch]);
   }
 
   if (!blobURL) {

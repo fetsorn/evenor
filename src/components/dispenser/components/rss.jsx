@@ -1,5 +1,5 @@
 import React from "react";
-import { API } from "../../../api/index.js";
+import { API } from "@/api/index.js";
 
 export const schemaRSS = {
   rss_tag: {

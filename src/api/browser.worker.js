@@ -41,7 +41,7 @@ async function selectStream(message) {
   try {
     const searchParams = new URLSearchParams(message.data.searchParams);
 
-    const client = new CSVS({readFile})
+    const client = new CSVS({ readFile });
 
     const { base, baseKeys } = await client.selectBaseKeys(searchParams);
 

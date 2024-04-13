@@ -1,3 +1,4 @@
+import path from "path";
 import { defineConfig } from "vite";
 import { internalIpV4 } from "internal-ip";
 import react from '@vitejs/plugin-react'
@@ -54,7 +55,12 @@ export default defineConfig(async () => {
     // optimizeDeps: { exclude: {} },
     // 3. to make use of `TAURI_DEBUG` and other env variables
     // https://tauri.app/v1/api/config#buildconfig.beforedevcommand
-    envPrefix: ["VITE_", "TAURI_"]
+    envPrefix: ["VITE_", "TAURI_"],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src/"),
+      }
+    }
   };
 
   return config;

@@ -4,5 +4,5 @@ import "normalize.css";
 import "./i18n/config.js";
 
 export default function App() {
-  return <Root />
+  return <Root />;
 }

@@ -1,9 +1,9 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
-import { schemaRoot } from "../../api/index.js";
-import { Button } from "../../components/index.js";
-import { useStore } from "../../store/index.js";
+import { schemaRoot } from "@/api/index.js";
+import { Button } from "@/components/index.js";
+import { useStore } from "@/store/index.js";
 import { ViewRecord } from "./components/index.js";
 import styles from "./profile_view.module.css";
 

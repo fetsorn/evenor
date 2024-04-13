@@ -1,26 +1,31 @@
 import { findCrown } from "@fetsorn/csvs-js";
-import { API, enrichBranchRecords, extractSchemaRecords } from "../api/index.js";
+import {
+  API,
+  enrichBranchRecords,
+  extractSchemaRecords,
+} from "../api/index.js";
 import {
   dispenserHookAfterLoad,
   dispenserHookBeforeSave,
-  dispenserHookAfterSave
+  dispenserHookAfterSave,
 } from "../components/index.js";
 
 export function getDefaultBase(schema) {
   // find a sane default branch to select
-  const base = Object.keys(schema).find(
-    (branch) => {
-      // does not have a trunk
-      const isRoot = !Object.prototype.hasOwnProperty.call(schema[branch], "trunk");
+  const base = Object.keys(schema).find((branch) => {
+    // does not have a trunk
+    const isRoot = !Object.prototype.hasOwnProperty.call(
+      schema[branch],
+      "trunk",
+    );
 
-      // not the metadata schema branch
-      const isData = branch !== "branch";
+    // not the metadata schema branch
+    const isData = branch !== "branch";
 
-      return isRoot && isData
-    }
-  );
+    return isRoot && isData;
+  });
 
-  return base
+  return base;
 }
 
 // pick a param to group data by
@@ -48,9 +53,7 @@ export function getDefaultSortBy(schema, base, records) {
 
   // fallback to first date param present in schema
   if (!sortBy) {
-    sortBy = crown.find(
-      (branch) => schema[branch].task === "date",
-    );
+    sortBy = crown.find((branch) => schema[branch].task === "date");
   }
 
   // fallback to first param present in schema
@@ -60,7 +63,7 @@ export function getDefaultSortBy(schema, base, records) {
 
   // unreachable with a valid scheme
   if (!sortBy) {
-    return base
+    return base;
     // throw Error("failed to find default sortBy in the schema");
   }
 
@@ -71,7 +74,7 @@ export function getDefaultSortBy(schema, base, records) {
 export async function loadRepoRecord(repoUUID, record) {
   const api = new API(repoUUID);
 
-  const [ schemaRecord ] = await api.select(new URLSearchParams("?_=_"));
+  const [schemaRecord] = await api.select(new URLSearchParams("?_=_"));
   // query {_:branch}
   const metaRecords = await api.select(new URLSearchParams("?_=branch"));
 
@@ -88,7 +91,7 @@ export async function loadRepoRecord(repoUUID, record) {
     ...dispenserPartial,
   };
 
-  return recordNew
+  return recordNew;
 }
 
 // clone or populate repo, write git state

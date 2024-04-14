@@ -1,6 +1,7 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import { schemaRoot, branchRecordsToSchema } from "./index.js";
+import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
 
@@ -736,10 +737,8 @@ export class BrowserAPI {
     return index;
   }
 
-  async downloadAsset(content, filename) {
-    const { saveAs } = await import("file-saver");
-
-    await saveAs(content, filename);
+  downloadAsset(content, filename) {
+    saveAs(content, filename);
   }
 
   async zip() {

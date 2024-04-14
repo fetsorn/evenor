@@ -22,7 +22,9 @@ export default defineConfig(async () => {
     },
     plugins: [react({
       presets: [
-        [ "@babel/preset-env", { "useBuiltins": "entry", "corejs": "3.36" } ]
+        [ "@babel/preset-env", { targets: "safari13", useBuiltins: "entry", corejs: "3.36"
+                               } ],
+        "@babel/preset-react"
       ],
       // Use .babelrc files
       babelrc: false,

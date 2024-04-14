@@ -67,7 +67,7 @@ export function AssetView({ schema, record }) {
       schema[b].task === "filename",
   );
 
-  const filenameFull = `${record[filenameBranch]}.${record[fileextBranch]}`;
+  const filenameFull = `${record[filehashBranch]}.${record[fileextBranch]}`;
 
   const { repo: repoUUID } = useStore((state) => state.repo);
 
@@ -124,7 +124,7 @@ export function AssetView({ schema, record }) {
   async function onDownload() {
     let contents = await fetchAsset();
 
-    api.downloadAsset(contents, filenameFull ?? record[filehashBranch]);
+    api.downloadAsset(new Blob([contents]), filenameFull);
   }
 
   if (!blobURL) {

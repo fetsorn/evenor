@@ -31,7 +31,7 @@ async function select(message) {
 
     message.ports[0].postMessage({ result });
   } catch (e) {
-    message.ports[0].postMessage({ error: e });
+    message.ports[0].postMessage({ error: JSON.stringify(e) });
   }
 }
 
@@ -43,21 +43,25 @@ async function selectStream(message) {
 
     const client = new CSVS({ readFile });
 
-    const { base, baseKeys } = await client.selectBaseKeys(searchParams);
+    const result = await client.selectBaseKeys(searchParams);
 
-    // must keep a common client instance here to reuse cache
-    for (const baseKey of baseKeys) {
-      const record = await client.buildRecord(base, baseKey);
+    if (result) {
+      const { base, baseKeys } = result;
 
-      postMessage({
-        action: "write",
-        record,
-      });
+      // must keep a common client instance here to reuse cache
+      for (const baseKey of baseKeys) {
+        const record = await client.buildRecord(base, baseKey);
+
+        postMessage({
+          action: "write",
+          record,
+        });
+      }
     }
 
     postMessage({ action: "close" }, [channel.port2]);
   } catch (e) {
-    postMessage({ action: "error", error: e }, [channel.port2]);
+    postMessage({ action: "error", error: JSON.stringify(e) }, [channel.port2]);
   }
 }
 

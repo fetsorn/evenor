@@ -26,10 +26,6 @@ export function Overview() {
 
   const isRepo = repoUUID !== "root";
 
-  function onHome() {
-    setRepoUUID("root");
-  }
-
   return (
     <div className={record ? styles.invisible : ""}>
       <div className={styles.buttonbar}>
@@ -37,7 +33,7 @@ export function Overview() {
           <Button
             type="button"
             title={t("header.button.back")}
-            onClick={() => onHome()}
+            onClick={() => setRepoUUID("root")}
           >
             {/* &lt;= */}
             {"<"}

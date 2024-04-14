@@ -2,10 +2,6 @@ import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import { schemaRoot, branchRecordsToSchema } from "./index.js";
 
-if (!self.ReadableStream) {
-  self.ReadableStream = ReadableStreamPolyfill;
-}
-
 const fs = new LightningFS("fs");
 
 const pfs = fs.promises;

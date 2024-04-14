@@ -1,12 +1,7 @@
 import history from "history/hash";
-import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
 import { digestMessage } from "@fetsorn/csvs-js";
 import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
 import { getDefaultBase, getDefaultSortBy } from "./bin.js";
-
-if (!self.WritableStream) {
-  self.WritableStream = WritableStreamPolyfill;
-}
 
 export const createOverviewSlice = (set, get) => ({
   queries: {},
@@ -108,9 +103,11 @@ export const createOverviewSlice = (set, get) => ({
     if (repoRoute !== "") {
       // if repo is in store, find uuid in root dataset
       try {
-        const [{ repo }] = await apiRoot.select(
+        const [repo] = await apiRoot.select(
           new URLSearchParams(`?_=repo&reponame=${repoRoute}`),
         );
+
+        const { repo: repoUUID } = repo;
 
         const api = new API(repoUUID);
 
@@ -129,6 +126,7 @@ export const createOverviewSlice = (set, get) => ({
       }
     }
 
+
     set({
       schema: schemaRoot,
       base: baseURL ?? "repo",
@@ -143,9 +141,6 @@ export const createOverviewSlice = (set, get) => ({
   },
 
   setRepoUUID: async (repoUUID) => {
-    // abort previous search stream if it is running
-    get().abortPreviousStream();
-
     set({ record: undefined });
 
     if (repoUUID === "root") {

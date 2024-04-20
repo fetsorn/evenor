@@ -1,31 +1,6 @@
 import React from "react";
 import { API } from "@/api/index.js";
 
-export const schemaSync = {
-  sync_tag: {
-    trunk: "repo",
-    task: "dispenser",
-    description: {
-      en: "Synchronization tag",
-      ru: "Тег синхронизации баз данных",
-    },
-  },
-  sync_tag_search: {
-    trunk: "sync_tag",
-    description: {
-      en: "Search query",
-      ru: "Поисковый запрос",
-    },
-  },
-  sync_tag_target: {
-    trunk: "sync_tag",
-    description: {
-      en: "Name of database to sync",
-      ru: "Название базы данных для синхронизации",
-    },
-  },
-};
-
 export function Sync({ baseRecord, branchRecord }) {
   async function onSyncRepo() {
     // find UUID of repo to sync from

@@ -33,7 +33,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
   }
 
   function addLeafValue(branch) {
-    const needsUUID = schema[branch].task === "dispenser";
+    const needsUUID = false;
 
     const valueDefault = needsUUID ? newUUID() : "";
 

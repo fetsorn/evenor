@@ -419,7 +419,6 @@ export class ElectronAPI {
     }
   }
 
-  // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
   async uploadBlobsLFS(remote, files) {
     const { pointsToLFS, uploadBlobs } = await import("@fetsorn/isogit-lfs");

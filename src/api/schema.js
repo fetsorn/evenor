@@ -1,6 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
 import { sha256 } from "js-sha256";
-import { schemaDispenser } from "../components/index.js";
 
 export function generateDefaultRepoRecord() {
   const record = {
@@ -186,7 +185,70 @@ export const schemaRoot = {
       ru: "Описание ветки на русском",
     },
   },
-  ...schemaDispenser,
+  local_tag: {
+    trunk: "repo",
+    description: {
+      en: "Local archive tag",
+      ru: "Тег локального архива",
+    },
+  },
+  local_path: {
+    trunk: "local_tag",
+    task: "directory",
+    description: {
+      en: "Path to asset archive",
+      ru: "Путь к локальному архиву",
+    },
+  },
+  remote_tag: {
+    trunk: "repo",
+    description: {
+      en: "Remote git tag",
+      ru: "Тег удаленного git репозитория",
+    },
+  },
+  remote_name: {
+    trunk: "remote_tag",
+    description: {
+      en: "Name of git remote",
+      ru: "Название remote .git",
+    },
+  },
+  remote_url: {
+    trunk: "remote_tag",
+    description: {
+      en: "Name of database to sync",
+      ru: "Название базы данных для синхронизации",
+    },
+  },
+  remote_token: {
+    trunk: "remote_tag",
+    description: {
+      en: "Authentication token",
+      ru: "Токен для синхронизации",
+    },
+  },
+  sync_tag: {
+    trunk: "repo",
+    description: {
+      en: "Synchronization tag",
+      ru: "Тег синхронизации баз данных",
+    },
+  },
+  sync_tag_search: {
+    trunk: "sync_tag",
+    description: {
+      en: "Search query",
+      ru: "Поисковый запрос",
+    },
+  },
+  sync_tag_target: {
+    trunk: "sync_tag",
+    description: {
+      en: "Name of database to sync",
+      ru: "Название базы данных для синхронизации",
+    },
+  },
 };
 
 export function newUUID() {

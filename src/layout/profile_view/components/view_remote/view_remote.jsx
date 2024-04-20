@@ -1,39 +1,7 @@
 import React from "react";
 import { API } from "@/api/index.js";
 
-export const schemaRemote = {
-  remote_tag: {
-    trunk: "repo",
-    task: "dispenser",
-    description: {
-      en: "Remote git tag",
-      ru: "Тег удаленного git репозитория",
-    },
-  },
-  remote_name: {
-    trunk: "remote_tag",
-    description: {
-      en: "Name of git remote",
-      ru: "Название remote .git",
-    },
-  },
-  remote_url: {
-    trunk: "remote_tag",
-    description: {
-      en: "Name of database to sync",
-      ru: "Название базы данных для синхронизации",
-    },
-  },
-  remote_token: {
-    trunk: "remote_tag",
-    description: {
-      en: "Authentication token",
-      ru: "Токен для синхронизации",
-    },
-  },
-};
-
-export function Remote({ baseRecord, branchRecord }) {
+export function ViewRemote({ baseRecord, branchRecord }) {
   const api = new API(baseRecord.UUID);
 
   async function onPullRepo() {

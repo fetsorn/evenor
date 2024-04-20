@@ -4,11 +4,6 @@ import {
   enrichBranchRecords,
   extractSchemaRecords,
 } from "../api/index.js";
-import {
-  dispenserHookAfterLoad,
-  dispenserHookBeforeSave,
-  dispenserHookAfterSave,
-} from "../components/index.js";
 
 export function getDefaultBase(schema) {
   // find a sane default branch to select
@@ -83,20 +78,19 @@ export async function loadRepoRecord(repoUUID, record) {
 
   const branchPartial = { branch: branchRecords };
 
-  const dispenserPartial = await dispenserHookAfterLoad(repoUUID, record);
+  // read from git
 
   const recordNew = {
     ...record,
     ...branchPartial,
-    ...dispenserPartial,
   };
 
   return recordNew;
 }
 
 // clone or populate repo, write git state
-export async function saveRepoRecord(repoUUID, record) {
-  const recordNew = await dispenserHookBeforeSave(repoUUID, record);
+export async function saveRepoRecord(repoUUID, recordNew) {
+  // write to git
 
   const apiRoot = new API("root");
 
@@ -116,7 +110,7 @@ export async function saveRepoRecord(repoUUID, record) {
 
   await api.commit();
 
-  await dispenserHookAfterSave(repoUUID, recordNew);
+  // write to git
 
   const { schema: omitSchema, ...recordOmitted } = recordNew;
 

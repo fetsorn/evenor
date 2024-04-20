@@ -1,0 +1,34 @@
+.row {
+  position: relative;
+}
+
+.row.last::before {
+  display: none;
+}
+
+.date {
+  position: relative;
+
+  display: block;
+  padding-left: calc(var(--rem) * 12);
+
+  background-image: radial-gradient(
+    circle at calc(var(--rem) * 4.5) 50%,
+    var(--color-background) calc(var(--rem) * 2),
+    var(--color-font-base) calc(calc(var(--rem) * 2) + 1px),
+    var(--color-font-base) calc(var(--rem) * 4),
+    var(--color-background) calc(calc(var(--rem) * 4) + 1px),
+    var(--color-background) calc(var(--rem) * 4.5),
+    transparent calc(calc(var(--rem) * 4.5) + 1px)
+  );
+
+  font-family: var(--title-font);
+  font-weight: 700;
+  font-size: calc(var(--rem) * 10);
+  line-height: 1.2em;
+  color: var(--color-font-base);
+}
+
+.content {
+  padding-left: calc(var(--rem) * 10);
+}

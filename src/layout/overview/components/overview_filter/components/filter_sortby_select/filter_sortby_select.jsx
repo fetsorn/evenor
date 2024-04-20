@@ -38,9 +38,11 @@ export function FilterSortBySelect({}) {
   return (
     <label htmlFor={`selectSortBy`}>
       {t("header.dropdown.sortby")}
+      <br/>
       <select
         id={`selectSortBy`}
         value={sortBy}
+        style={{width: 100}}
         onChange={({ target: { value } }) => {
           setQuery(".sortBy", value);
         }}

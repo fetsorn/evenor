@@ -12,10 +12,8 @@ const rowHeights = {
 
 export function VirtualScroll({
   data,
-  rowComponent: Component,
+  OverviewItem,
   onRecordSelect,
-  onBatchSelect,
-  onRecordCreate,
   tolerance = 2,
 }) {
   const { width: viewportWidth } = useWindowSize();
@@ -31,7 +29,9 @@ export function VirtualScroll({
   );
 
   const topSpacer = useRef();
+
   const [start, setStart] = useState(0);
+
   const { height: viewportHeight } = useWindowSize();
 
   const visibleRowCount = useMemo(
@@ -49,6 +49,7 @@ export function VirtualScroll({
   );
 
   const getTopHeight = () => rowHeight * start;
+
   const getBottomHeight = () =>
     rowHeight * (dataWithKeys.length - (start + visibleRowCount));
 
@@ -68,8 +69,9 @@ export function VirtualScroll({
     };
 
     window.addEventListener("scroll", onScroll);
+
     return () => {
-      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("scroll", onScroll)
     };
   }, [dataWithKeys, visibleRowCount, rowHeight, tolerance]);
 
@@ -77,13 +79,12 @@ export function VirtualScroll({
     <>
       <div style={{ height: getTopHeight() }} ref={topSpacer} />
       {dataWithKeys.slice(start, start + visibleRowCount).map((elem) => (
-        <Component
-          data={elem}
+        <OverviewItem
+          record={elem}
           key={elem.key}
-          isLast={elem.key === dataWithKeys.length - 1}
-          onRecordSelect={onRecordSelect}
-          onRecordCreate={onRecordCreate}
           style={{ height: rowHeight }}
+          onRecordSelect={onRecordSelect}
+          isLast={elem.key === dataWithKeys.length - 1}
         />
       ))}
       <div style={{ height: getBottomHeight() }} />

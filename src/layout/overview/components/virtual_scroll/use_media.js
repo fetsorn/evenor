@@ -5,22 +5,27 @@ export const useMedia = (query) => {
 
   useEffect(() => {
     let mounted = true;
-    const mql = window.matchMedia(query);
+
+    const mediaQueryList = window.matchMedia(query);
+
     const onChange = () => {
       if (!mounted) {
         return;
       }
-      setState(!!mql.matches);
+
+      setState(!!mediaQueryList.matches);
     };
 
-    mql.addListener(onChange);
-    setState(mql.matches);
+    mediaQueryList.addListener(onChange);
+
+    setState(mediaQueryList.matches);
 
     return () => {
       mounted = false;
-      mql.removeListener(onChange);
-    };
+
+      mediaQueryList.removeListener(onChange);
+    }
   }, [query]);
 
-  return state;
+  return state
 };

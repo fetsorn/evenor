@@ -34,9 +34,11 @@ export function FilterBaseSelect({}) {
   return (
     <label htmlFor={`selectBase`}>
       {t("header.dropdown.base")}
+      <br/>
       <select
         id={`selectBase`}
         value={base ?? baseDefault}
+        style={{width: 100}}
         onChange={({ target: { value } }) => {
           setQuery("_", value);
         }}

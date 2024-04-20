@@ -38,6 +38,7 @@ export function FilterQueryPlus({}) {
     <div className={styles.search}>
       <select
         value="default"
+        style={{width: 40}}
         onChange={({ target: { value: leaf } }) => setQuery(leaf, "")}
       >
         <option hidden disabled value="default">

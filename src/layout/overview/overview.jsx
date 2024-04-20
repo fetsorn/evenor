@@ -1,23 +1,29 @@
 import React, { Suspense } from "react";
-import { OverviewFilter } from "./components/overview_filter/overview_filter.jsx";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store/index.js";
 import { Button } from "@/components/index.js";
 import styles from "./overview.module.css";
-
-const OverviewItinerary = React.lazy(
-  () => import("./components/overview_itinerary/index.js"),
-);
+import { OverviewFilter, OverviewItem, VirtualScroll } from "./components/index.js";
 
 export function Overview() {
   const { t } = useTranslation();
 
-  const [record, repo, setRepoUUID, onSettingsOpen, onRecordUpdate] = useStore(
+  const [
+    record,
+    records,
+    repo,
+    setRepoUUID,
+    onSettingsOpen,
+    onRecordSelect,
+    onRecordUpdate
+  ] = useStore(
     (state) => [
       state.record,
+      state.records,
       state.repo,
       state.setRepoUUID,
       state.onSettingsOpen,
+      state.onRecordSelect,
       state.onRecordUpdate,
     ],
   );
@@ -55,9 +61,15 @@ export function Overview() {
 
       <OverviewFilter />
 
-      <Suspense>
-        <OverviewItinerary />
-      </Suspense>
+      <div className={styles.overview}>
+        <VirtualScroll
+          {...{
+            data: records,
+            onRecordSelect,
+            OverviewItem,
+          }}
+        />
+      </div>
 
       <button
         type="button"

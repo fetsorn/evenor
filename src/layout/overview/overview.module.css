@@ -8,3 +8,18 @@
     display: none;
   }
 }
+
+.overview {
+  margin-left: auto;
+  margin-right: auto;
+  width: calc(var(--col) * 16);
+
+  flex-grow: 0;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .overview {
+    width: calc(var(--rem) * 109);
+  }
+}

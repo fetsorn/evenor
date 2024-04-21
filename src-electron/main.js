@@ -1,5 +1,5 @@
 import path from "path";
-import url from "url";
+import { fileURLToPath } from "url";
 import { app, BrowserWindow, ipcMain, shell, Menu } from "electron";
 import { ElectronAPI as API } from "../src/api/electron.js";
 
@@ -7,19 +7,20 @@ let windows = {};
 
 const createWindow = async () => {
   // NOTE: any use of dirname will fail nt
-  const RESOURCES_PATH = app.isPackaged
-    ? path.join(process.resourcesPath, "app/.webpack/renderer/public")
-    : path.join(process.resourcesPath, "../../../../../../src-electron/");
+  // const RESOURCES_PATH = app.isPackaged
+  //   ? path.join(process.resourcesPath, "app/.webpack/renderer/public")
+  //   : path.join(process.resourcesPath, "../../../../../../src-electron/");
 
-  const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
+  // const getAssetPath = (...paths) => path.join(RESOURCES_PATH, ...paths);
 
   const window = new BrowserWindow({
     show: false,
     width: 1024,
     height: 728,
-    icon: getAssetPath("icon"),
+    // icon: fileURLToPath(new URL('../public/icon.png', import.meta.url)),
     webPreferences: {
-      preload: getAssetPath("preload.js"),
+      preload: path.join(__dirname, 'preload.js'),
+      // preload: fileURLToPath(new URL('preload.cjs', import.meta.url)),
       contextIsolation: true,
     },
   });
@@ -28,8 +29,23 @@ const createWindow = async () => {
 
   windows[windowID] = window;
 
-  // eslint-disable-next-line
-  window.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
+  if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
+    window.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL);
+  } else {
+    window.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+    // window.loadFile(fileURLToPath(
+    //   new URL(`../index.html`, import.meta.url)
+    // ));
+  }
+  // const isDev = !app.isPackaged;
+
+  // if (isDev && process.env['ELECTRON_RENDERER_URL']) {
+  //   mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
+  // } else {
+  //   window.loadFile(fileURLToPath(
+  //     new URL(`../index.html`, import.meta.url)
+  //   ));
+  // }
 
   window.on("ready-to-show", () => {
     if (!windows[windowID]) {
@@ -115,9 +131,9 @@ app
     ipcMain.handle("selectStream", async (_event, dir, searchParams) => {
       const windowID = _event.sender.id;
 
-      function enqueueHandler(entry) {
+      function enqueueHandler(record) {
         try {
-          windows[windowID].send("selectStream:enqueue", entry);
+          windows[windowID].send("selectStream:enqueue", record);
         } catch {
           // do nothing
         }
@@ -142,12 +158,12 @@ app
       new API(dir).queryOptions(branch)
     );
 
-    ipcMain.handle("updateEntry", async (_event, dir, entry, overview) =>
-      new API(dir).updateEntry(entry, overview)
+    ipcMain.handle("updateRecord", async (_event, dir, record, overview) =>
+      new API(dir).updateRecord(record, overview)
     );
 
-    ipcMain.handle("deleteEntry", async (_event, dir, entry, overview) =>
-      new API(dir).deleteEntry(entry, overview)
+    ipcMain.handle("deleteRecord", async (_event, dir, record, overview) =>
+      new API(dir).deleteRecord(record, overview)
     );
 
     ipcMain.handle("ensure", async (_event, dir, schema, name) =>

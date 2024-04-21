@@ -90,3 +90,4 @@ out/
 .idea
 
 /src-tauri/gen/
+/.vite/

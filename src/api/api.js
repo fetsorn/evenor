@@ -25,10 +25,6 @@ if (!window.WritableStream) {
   }
 })();
 
-const isTauri = import.meta.env.TAURI_ENV_ARCH != undefined;
-
-const __BUILD_MODE__ = isTauri ? "tauri" : "browser";
-
 export class API {
   // UUID of repo in the store
   uuid;
@@ -42,11 +38,14 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
-  async helloWorld(someVariable) {
+  async helloWorld(someVariable = "") {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
+      case "electron":
+        return
+
       case "tauri":
-        return invoke("helloWorld", { someVariable });
+        return invoke("hello_world", { someVariable });
 
       default:
         return this.#browser.helloWorld(someVariable);

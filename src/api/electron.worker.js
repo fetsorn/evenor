@@ -1,10 +1,12 @@
 import fs from "fs";
 import path from "path";
 import { URLSearchParams } from "url";
-import { CSVS } from "@fetsorn/csvs-js";
+// do not import csvs here, instead use await import()
+// because vite needs inline imports in cjs
+// import { CSVS } from "@fetsorn/csvs-js";
 import crypto from "crypto";
 import { workerData, parentPort } from "worker_threads";
-import wasm from "@fetsorn/wasm-grep/pkg/nodejs/index.js";
+// import wasm from "@fetsorn/wasm-grep/pkg/nodejs/index.js";
 import { promisify } from "util";
 import { exec } from "child_process";
 import commandExists from "command-exists";
@@ -54,7 +56,7 @@ async function grep(contentFile, patternFile, isInverted) {
 
     return grepCLI(contentFile, patternFile, isInverted);
   } catch {
-    return wasm.grep(contentFile, patternFile, isInverted ?? false);
+    // return wasm.grep(contentFile, patternFile, isInverted ?? false);
   }
 }
 
@@ -111,6 +113,8 @@ async function select() {
 
   const searchParams = new URLSearchParams(searchParamsString);
 
+  const { CSVS } = await import("@fetsorn/csvs-js");
+
   const query = await new CSVS({
     readFile,
     grep,
@@ -129,6 +133,8 @@ async function selectStream() {
   const { searchParamsString } = workerData;
 
   const searchParams = new URLSearchParams(searchParamsString);
+
+  const { CSVS } = await import("@fetsorn/csvs-js");
 
   const query = await new CSVS({
     readFile,
@@ -156,17 +162,21 @@ async function selectStream() {
 async function updateRecord() {
   const { record } = workerData;
 
-  const recordNew = await new CSVS({
+  const { CSVS } = await import("@fetsorn/csvs-js");
+
+  await new CSVS({
     readFile,
     writeFile,
     randomUUID: crypto.randomUUID,
   }).update(record);
 
-  parentPort.postMessage(recordNew);
+  parentPort.postMessage({});
 }
 
 async function deleteRecord() {
   const { record } = workerData;
+
+  const { CSVS } = await import("@fetsorn/csvs-js");
 
   await new CSVS({
     readFile,

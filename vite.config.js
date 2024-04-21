@@ -1,8 +1,11 @@
 import path from "path";
+import process from "process";
 import { defineConfig } from "vite";
 import { internalIpV4 } from "internal-ip";
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+
+const isTauri = process.env.TAURI_ENV_ARCH != undefined;
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
@@ -62,6 +65,9 @@ export default defineConfig(async () => {
       alias: {
         "@": path.resolve(__dirname, "./src/"),
       }
+    },
+    define: {
+      __BUILD_MODE__: isTauri ? `"tauri"` : `"browser"`
     }
   };
 

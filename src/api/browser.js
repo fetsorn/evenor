@@ -1,6 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
-import { schemaRoot, branchRecordsToSchema } from "./index.js";
+import { schemaRoot, branchRecordsToSchema } from "./schema.js";
 import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
@@ -662,6 +662,8 @@ export class BrowserAPI {
     });
 
     await pfs.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
+
+    await this.commit();
   }
 
   async rimraf(rimrafpath) {

@@ -2,10 +2,12 @@ import fs from "fs";
 import path from "path";
 import { URLSearchParams } from "url";
 import { app, dialog } from "electron";
+import { schemaRoot, branchRecordsToSchema } from "./schema.js";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
-import { exportPDF, generateLatex } from "lib/latex";
-import { Worker } from "node:worker_threads";
+// import { exportPDF, generateLatex } from "lib/latex";
+// import { Worker } from "node:worker_threads";
+import Worker from './electron.worker.js?nodeWorker'
 
 const pfs = fs.promises;
 
@@ -37,8 +39,14 @@ async function runWorker(workerData) {
   }
 
   return new Promise((resolve, reject) => {
+    //const worker = new Worker(
+    //  new URL("./electron.worker.js", import.meta.url),
+    //  {
+    //    workerData,
+    //    type: "module",
+    //  },
+    //);
     const worker = new Worker(
-      new URL("./electron.worker.js", import.meta.url),
       {
         workerData,
         type: "module",
@@ -199,8 +207,18 @@ export class ElectronAPI {
       // do nothing
     }
 
+    //const worker = new Worker(
+    //  new URL("./electron.worker.js", import.meta.url),
+    //  {
+    //    workerData: {
+    //      msg: "selectStream",
+    //      dir: this.dir,
+    //      searchParamsString: searchParams.toString(),
+    //    },
+    //    type: "module",
+    //  },
+    //);
     const worker = new Worker(
-      new URL("./electron.worker.js", import.meta.url),
       {
         workerData: {
           msg: "selectStream",
@@ -241,22 +259,22 @@ export class ElectronAPI {
   }
 
   async updateRecord(record, overview) {
-    const recordNew = await runWorker({
+    await runWorker({
       msg: "update",
       dir: this.dir,
       record,
     });
 
-    if (overview.find((e) => e.UUID === recordNew.UUID)) {
-      return overview.map((e) => {
-        if (e.UUID === recordNew.UUID) {
-          return recordNew;
-        }
-        return e;
-      });
-    }
+    //if (overview.find((e) => e.UUID === recordNew.UUID)) {
+    //  return overview.map((e) => {
+    //    if (e.UUID === recordNew.UUID) {
+    //      return recordNew;
+    //    }
+    //    return e;
+    //  });
+    //}
 
-    return overview.concat([recordNew]);
+    return overview.concat([record]);
   }
 
   async deleteRecord(record, overview) {
@@ -500,7 +518,7 @@ export class ElectronAPI {
     });
   }
 
-  async ensure(schema, name) {
+  async ensure(name) {
     try {
       await pfs.stat(appPath);
     } catch {
@@ -561,11 +579,7 @@ export class ElectronAPI {
       value: true,
     });
 
-    await pfs.writeFile(
-      path.join(dir, "metadir.json"),
-      JSON.stringify(schema, null, 2),
-      "utf8",
-    );
+    await pfs.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
 
     await this.commit();
   }
@@ -608,18 +622,24 @@ export class ElectronAPI {
     }
   }
 
-  static async latex() {
-    const text = generateLatex([]);
+  // static async latex() {
+  //   const text = generateLatex([]);
 
-    const pdfURL = await exportPDF(text);
+  //   const pdfURL = await exportPDF(text);
 
-    return pdfURL;
-  }
+  //   return pdfURL;
+  // }
 
   async readSchema() {
-    const schemaString = await this.readFile("metadir.json");
+    if (this.uuid === "root") {
+      return schemaRoot;
+    }
 
-    const schema = JSON.parse(schemaString);
+    const [schemaRecord] = await this.select(new URLSearchParams("?_=_"));
+
+    const branchRecords = await this.select(new URLSearchParams("?_=branch"));
+
+    const schema = branchRecordsToSchema(schemaRecord, branchRecords);
 
     return schema;
   }

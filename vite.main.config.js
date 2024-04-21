@@ -8,9 +8,7 @@ import {
 import { workerPlugin } from '@fetsorn/vite-node-worker';
 
 // https://vitejs.dev/config
-export default defineConfig((env) => {
-  /** @type {import('vite').ConfigEnv<'build'>} */
-  const forgeEnv = env;
+export default defineConfig((forgeEnv) => {
   const { forgeConfigSelf } = forgeEnv;
   const config = {
     build: {

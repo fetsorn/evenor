@@ -6,6 +6,7 @@ import { Button } from "@/components/index.js";
 import { useStore } from "@/store/index.js";
 import { ViewRecord } from "./components/index.js";
 import styles from "./profile_view.module.css";
+import { API } from '../../api/index.js';
 
 export function ProfileView() {
   const { t } = useTranslation();
@@ -34,14 +35,21 @@ export function ProfileView() {
 
   const schema = isSettings ? schemaRoot : schemaRepo;
 
-  const isHomeScreen = repoUUID === "root";
-
   // const notSingleRepo = __BUILD_MODE__ !== "server";
+
+  const isHomeScreen = repoUUID === "root";
 
   // const canOpenRepo = isHomeScreen && notSingleRepo;
   const canOpenRepo = isHomeScreen;
 
   const onRepoOpen = () => setRepoUUID(record.repo);
+
+
+  const onZip = async () => {
+    const api = new API(repoUUID);
+
+    await api.zip();
+  }
 
   return (
     <div
@@ -90,6 +98,16 @@ export function ProfileView() {
                 onClick={() => onRepoOpen()}
               >
                 {t("line.button.open")}
+              </button>
+            )}
+
+            {canOpenRepo && (
+              <button
+                type="button"
+                title="zip"
+                onClick={() => onRepoOpen()}
+              >
+               zip
               </button>
             )}
 

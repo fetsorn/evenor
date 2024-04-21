@@ -187,13 +187,6 @@ export const schemaRoot = {
   },
   local_tag: {
     trunk: "repo",
-    description: {
-      en: "Local archive tag",
-      ru: "Тег локального архива",
-    },
-  },
-  local_path: {
-    trunk: "local_tag",
     task: "directory",
     description: {
       en: "Path to asset archive",
@@ -203,15 +196,8 @@ export const schemaRoot = {
   remote_tag: {
     trunk: "repo",
     description: {
-      en: "Remote git tag",
-      ru: "Тег удаленного git репозитория",
-    },
-  },
-  remote_name: {
-    trunk: "remote_tag",
-    description: {
-      en: "Name of git remote",
-      ru: "Название remote .git",
+      en: "Name of remote git repository",
+      ru: "Название удаленного git репозитория",
     },
   },
   remote_url: {
@@ -230,9 +216,10 @@ export const schemaRoot = {
   },
   sync_tag: {
     trunk: "repo",
+    task: "sync",
     description: {
-      en: "Synchronization tag",
-      ru: "Тег синхронизации баз данных",
+      en: "Name of database to sync",
+      ru: "Название базы данных для синхронизации",
     },
   },
   sync_tag_search: {
@@ -240,13 +227,6 @@ export const schemaRoot = {
     description: {
       en: "Search query",
       ru: "Поисковый запрос",
-    },
-  },
-  sync_tag_target: {
-    trunk: "sync_tag",
-    description: {
-      en: "Name of database to sync",
-      ru: "Название базы данных для синхронизации",
     },
   },
 };

@@ -50,7 +50,7 @@
     "vite-plugin-node-polyfills": "^0.21.0"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "0.16.2",
+    "@fetsorn/csvs-js": "0.16.3",
     "@fetsorn/isogit-lfs": "^0.4.1",
     "@fetsorn/vite-node-worker": "1.0.0",
     "@isomorphic-git/lightning-fs": "4.6.0",

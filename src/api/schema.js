@@ -77,8 +77,8 @@ export function generateDefaultRepoRecord() {
         branch: "filename",
         trunk: "file",
         task: "filename",
-        description_en: "Path to a digital asset",
-        description_ru: "Путь к файлу",
+        description_en: "Name of digital asset",
+        description_ru: "Название файла",
       },
       {
         _: "branch",

@@ -77,18 +77,9 @@ export function AssetView({ schema, record }) {
     let contents;
 
     try {
-      contents = await api.fetchAsset(record[filehashBranch]);
+      contents = await api.fetchAsset(filenameFull);
     } catch (e) {
       console.log(e);
-    }
-
-    // if no contents, try to fetch record[filenameBranch]
-    if (contents === undefined) {
-      try {
-        contents = await api.fetchAsset(filenameFull);
-      } catch (e) {
-        console.log(e);
-      }
     }
 
     if (contents === undefined) {

@@ -14,15 +14,15 @@ export function ProfileEdit() {
     record,
     isSettings,
     onRecordSelect,
-    onRecordCreate,
     onRecordUpdate,
+    onRecordEdit,
     schemaRepo,
   ] = useStore((state) => [
     state.record,
     state.isSettings,
     state.onRecordSelect,
-    state.onRecordCreate,
     state.onRecordUpdate,
+    state.onRecordEdit,
     state.schema,
   ]);
 
@@ -56,7 +56,7 @@ export function ProfileEdit() {
               <Button
                 type="button"
                 title={t("line.button.save")}
-                onClick={() => onRecordCreate()}
+                onClick={() => onRecordUpdate(recordBackup, record)}
               >
                 💾
               </Button>
@@ -68,7 +68,7 @@ export function ProfileEdit() {
                 index: "_",
                 base: record._,
                 record,
-                onRecordChange: onRecordUpdate,
+                onRecordChange: onRecordEdit,
               }}
             />
           </div>

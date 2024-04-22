@@ -162,25 +162,25 @@ export class API {
     }
   }
 
-  async updateRecord(record, overview = []) {
+  async updateRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.updateRecord(this.uuid, record, overview);
+        return window.electron.updateRecord(this.uuid, record);
 
       default:
-        return this.#browser.updateRecord(record, overview);
+        return this.#browser.updateRecord(record);
     }
   }
 
-  async deleteRecord(record, overview = []) {
+  async deleteRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.deleteRecord(this.uuid, record, overview);
+        return window.electron.deleteRecord(this.uuid, record);
 
       default:
-        return this.#browser.deleteRecord(record, overview);
+        return this.#browser.deleteRecord(record);
     }
   }
 

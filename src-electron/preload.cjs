@@ -16,9 +16,9 @@ contextBridge.exposeInMainWorld('electron', {
 
   queryOptions: (dir, branch) => ipcRenderer.invoke('queryOptions', dir, branch),
 
-  updateRecord: (dir, record, overview) => ipcRenderer.invoke('updateRecord', dir, record, overview),
+  updateRecord: (dir, record) => ipcRenderer.invoke('updateRecord', dir, record),
 
-  deleteRecord: (dir, record, overview) => ipcRenderer.invoke('deleteRecord', dir, record, overview),
+  deleteRecord: (dir, record) => ipcRenderer.invoke('deleteRecord', dir, record),
 
   ensure: (dir, schema, name) => ipcRenderer.invoke('ensure', dir, schema, name),
 

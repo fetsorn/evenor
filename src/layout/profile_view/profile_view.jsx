@@ -15,7 +15,7 @@ export function ProfileView() {
     record,
     repo,
     setRepoUUID,
-    onRecordUpdate,
+    onRecordEdit,
     onRecordSelect,
     onRecordDelete,
     isSettings,
@@ -24,7 +24,7 @@ export function ProfileView() {
     state.record,
     state.repo,
     state.setRepoUUID,
-    state.onRecordUpdate,
+    state.onRecordEdit,
     state.onRecordSelect,
     state.onRecordDelete,
     state.isSettings,
@@ -85,7 +85,7 @@ export function ProfileView() {
               <Button
                 type="button"
                 title={t("line.button.edit")}
-                onClick={() => onRecordUpdate(record)}
+                onClick={() => onRecordEdit(record)}
               >
                 ✏️
               </Button>

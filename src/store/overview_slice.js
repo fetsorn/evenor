@@ -25,10 +25,10 @@ export const createOverviewSlice = (set, get) => ({
 
     await apiRoot.ensure();
 
-    const records = schemaToBranchRecords(schemaRoot);
+    const branchRecords = schemaToBranchRecords(schemaRoot);
 
-    for (const record of records) {
-      await apiRoot.updateRecord(record, []);
+    for (const branchRecord of branchRecords) {
+      await apiRoot.updateRecord(branchRecord);
     }
 
     await apiRoot.commit();

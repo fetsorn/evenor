@@ -15,7 +15,7 @@ export function Overview() {
     setRepoUUID,
     onSettingsOpen,
     onRecordSelect,
-    onRecordUpdate
+    onRecordEdit
   ] = useStore(
     (state) => [
       state.record,
@@ -24,7 +24,7 @@ export function Overview() {
       state.setRepoUUID,
       state.onSettingsOpen,
       state.onRecordSelect,
-      state.onRecordUpdate,
+      state.onRecordEdit,
     ],
   );
 
@@ -74,7 +74,7 @@ export function Overview() {
       <button
         type="button"
         title={t("line.button.add")}
-        onClick={() => onRecordUpdate()}
+        onClick={() => onRecordEdit()}
       >
         +
       </button>

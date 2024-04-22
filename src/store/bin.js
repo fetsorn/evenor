@@ -3,6 +3,7 @@ import {
   API,
   enrichBranchRecords,
   extractSchemaRecords,
+  branchRecordsToSchema,
 } from "../api/index.js";
 
 export function getDefaultBase(schema) {
@@ -183,33 +184,23 @@ async function writeLocals(api, tags) {
 }
 
 // clone or populate repo, write git state
-export async function saveRepoRecord(repoUUID, record) {
-  const apiRoot = new API("root");
-
-  await apiRoot.updateRecord(record);
+export async function saveRepoRecord(record) {
+  const repoUUID = record.repo;
 
   const api = new API(repoUUID);
 
-  // omit remote and local tags from root record
-  // to keep .git/config as single source of truth
-  const { remote_tag: tagsRemote, local_tag: tagsLocal, ...recordNoTags } = record;
-
-  // omit schema from root record to keep _-_.csv as single source of truth
-  const { schema: omitSchema, ...recordNoSchema } = recordNoTags;
-
   // extract schema record with trunks from branch records
-  const branchRecords = extractSchemaRecords(recordNoTags.branch);
+  const [ schemaRecord, ...branchRecords ] = extractSchemaRecords(record.branch);
 
-  const schema = branchRecordsToSchema(branchRecords);
-
-  // TODO try to clone
-  // const schema = await cloneRemote(api, record.remote_tag)
+  const schema = branchRecordsToSchema(schemaRecord, branchRecords);
 
   // create repo directory with a schema
   await api.ensure(record.reponame);
 
+  await api.updateRecord(schemaRecord);
+
   for (const branchRecord of branchRecords) {
-    await api.updateRecord(branchRecord, []);
+    await api.updateRecord(branchRecord);
   }
 
   // write remotes to .git/config
@@ -220,5 +211,5 @@ export async function saveRepoRecord(repoUUID, record) {
 
   await api.commit();
 
-  return recordNoSchema;
+  return
 }

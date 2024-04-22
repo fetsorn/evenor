@@ -158,12 +158,12 @@ app
       new API(dir).queryOptions(branch)
     );
 
-    ipcMain.handle("updateRecord", async (_event, dir, record, overview) =>
-      new API(dir).updateRecord(record, overview)
+    ipcMain.handle("updateRecord", async (_event, dir, record) =>
+      new API(dir).updateRecord(record)
     );
 
-    ipcMain.handle("deleteRecord", async (_event, dir, record, overview) =>
-      new API(dir).deleteRecord(record, overview)
+    ipcMain.handle("deleteRecord", async (_event, dir, record) =>
+      new API(dir).deleteRecord(record)
     );
 
     ipcMain.handle("ensure", async (_event, dir, schema, name) =>

@@ -184,9 +184,17 @@ export class ElectronAPI {
         .map((b) => b.toString(16).padStart(2, "0"))
         .join("");
 
-      await this.putAsset(hashHexString, fileArrayBuffer);
+      const filename = path.basename(filepath);
 
-      return [hashHexString, path.basename(filepath)];
+      const name = filename.replace(/\.[^/.]+$/, "");
+
+      const ext = /(?:\.([^.]+))?$/.exec(filename)[1]?.trim();
+
+      const assetname = `${hashHexString}.${ext}`;
+
+      await this.putAsset(assetname, fileArrayBuffer);
+
+      return [hashHexString, name, ext];
     }
   }
 
@@ -258,33 +266,20 @@ export class ElectronAPI {
     });
   }
 
-  async updateRecord(record, overview) {
+  async updateRecord(record) {
     await runWorker({
       msg: "update",
       dir: this.dir,
       record,
     });
-
-    //if (overview.find((e) => e.UUID === recordNew.UUID)) {
-    //  return overview.map((e) => {
-    //    if (e.UUID === recordNew.UUID) {
-    //      return recordNew;
-    //    }
-    //    return e;
-    //  });
-    //}
-
-    return overview.concat([record]);
   }
 
-  async deleteRecord(record, overview) {
+  async deleteRecord(record) {
     await runWorker({
       msg: "delete",
       dir: this.dir,
-      record,
+      record: record,
     });
-
-    return overview.filter((e) => e.UUID !== record.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {
@@ -731,23 +726,25 @@ export class ElectronAPI {
         path: "asset.path",
       });
 
-      const assetPath = path.join(assetEndpoint, filename);
+      if (assetEndpoint) {
+        const assetPath = path.join(assetEndpoint, filename);
 
-      // if URL, try to fetch
-      try {
-        new URL(assetPath);
+        // if URL, try to fetch
+        try {
+          new URL(assetPath);
 
-        content = await fetch(assetPath);
+          content = await fetch(assetPath);
+
+          return content;
+        } catch (e) {
+          // do nothing
+        }
+
+        // otherwise try to read from fs
+        content = await fs.readFileSync(assetPath);
 
         return content;
-      } catch (e) {
-        // do nothing
       }
-
-      // otherwise try to read from fs
-      content = await fs.readFileSync(assetPath);
-
-      return content;
     } catch (e) {
       console.log(e);
       // do nothing

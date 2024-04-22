@@ -224,11 +224,13 @@ export class BrowserAPI {
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
 
-    await this.putAsset(hashHexString, fileArrayBuffer);
-
     const name = file.name.replace(/\.[^/.]+$/, "");
 
     const ext = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
+
+    const assetname = `${hashHexString}.${ext}`;
+
+    await this.putAsset(assetname, fileArrayBuffer);
 
     return [hashHexString, name, ext];
   }
@@ -324,39 +326,22 @@ export class BrowserAPI {
     return overview;
   }
 
-  async updateRecord(recordNew, overview) {
+  async updateRecord(record) {
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).update(structuredClone(recordNew));
-
-    // if (overview.find((recordOld) => recordOld.UUID === recordNew.UUID)) {
-    //   return overview.map((recordOld) => {
-    //     if (recordOld.UUID === recordNew.UUID) {
-    //       return recordNew;
-    //     }
-    //     return recordOld;
-    //   });
-    // }
-
-    return overview.concat([recordNew]);
+    }).update(structuredClone(record));
   }
 
-  async deleteRecord(recordOld, records) {
-    const base = recordOld._;
-
-    const valueOld = recordOld[base];
-
+  async deleteRecord(record) {
     const { CSVS } = await import("@fetsorn/csvs-js");
 
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
     }).delete(structuredClone(recordOld));
-
-    return records.filter((record) => record[base] !== valueOld);
   }
 
   async clone(remoteUrl, remoteToken, name) {
@@ -809,23 +794,25 @@ export class BrowserAPI {
         path: "asset.path",
       });
 
-      const assetPath = `${assetEndpoint}/${filename}`;
+      if (assetEndpoint) {
+        const assetPath = `${assetEndpoint}/${filename}`;
 
-      // if URL, try to fetch
-      try {
-        new URL(assetPath);
+        // if URL, try to fetch
+        try {
+          new URL(assetPath);
 
-        content = await fetch(assetPath);
+          content = await fetch(assetPath);
+
+          return content;
+        } catch (e) {
+          // do nothing
+        }
+
+        // otherwise try to read from fs
+        content = await fs.promises.readFile(assetPath);
 
         return content;
-      } catch (e) {
-        // do nothing
       }
-
-      // otherwise try to read from fs
-      content = await fs.promises.readFile(assetPath);
-
-      return content;
     } catch (e) {
       // do nothing
     }

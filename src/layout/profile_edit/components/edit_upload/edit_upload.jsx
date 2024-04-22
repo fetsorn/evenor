@@ -7,13 +7,13 @@ import styles from "./edit_upload.module.css";
 import { InputText } from "../index.js";
 
 function UploadButton({ onUpload, title }) {
-  // if (__BUILD_MODE__ === "electron") {
-  //   return (
-  //     <Button type="button" onClick={() => onUpload()}>
-  //       {title}
-  //     </Button>
-  //   );
-  // }
+  if (__BUILD_MODE__ === "electron") {
+    return (
+      <Button type="button" onClick={() => onUpload()}>
+        {title}
+      </Button>
+    );
+  }
 
   return <input type="file" onChange={(e) => onUpload(e.target.files[0])} />;
 }
@@ -73,8 +73,6 @@ export function EditUpload({ schema, record, onFieldChange }) {
 
   return (
     <div>
-      {/* <div>{record.UUID}</div> */}
-
       <InputText
         {...{
           branch: filenameBranch,

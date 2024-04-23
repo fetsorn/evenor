@@ -39,14 +39,10 @@ export function VirtualScroll({
     [viewportHeight, rowHeight, tolerance],
   );
 
-  const dataWithKeys = useMemo(
-    () =>
-      data.map((elem, index) => ({
-        ...elem,
-        key: index,
-      })),
-    [data],
-  );
+  const dataWithKeys = data.map((elem, index) => ({
+    ...elem,
+    key: index,
+  }));
 
   const getTopHeight = () => rowHeight * start;
 

@@ -1,7 +1,7 @@
 import history from "history/hash";
 import { digestMessage } from "@fetsorn/csvs-js";
 import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
-import { getDefaultBase, getDefaultSortBy } from "./bin.js";
+import { getDefaultBase, getDefaultSortBy, setURL } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
   queries: {},
@@ -87,7 +87,15 @@ export const createOverviewSlice = (set, get) => ({
 
         const baseDefault = getDefaultBase(schema);
 
-        set({ queries, base: baseURL ?? baseDefault, schema, repo });
+        const sortByDefault = getDefaultSortBy(schema, base, []);
+
+        set({
+          queries,
+          base: baseURL ?? baseDefault,
+          sortBy: sortByURL ?? sortByDefault,
+          schema,
+          repo
+        });
 
         // run queries from the store
         await get().setQuery("", undefined);
@@ -115,7 +123,15 @@ export const createOverviewSlice = (set, get) => ({
 
         const baseDefault = getDefaultBase(schema);
 
-        set({ queries, base: baseURL ?? baseDefault, schema, repo });
+        const sortByDefault = getDefaultSortBy(schema, base, []);
+
+        set({
+          queries,
+          base: baseURL ?? baseDefault,
+          sortBy: sortByURL ?? sortByDefault,
+          schema,
+          repo
+        });
 
         // run queries from the store
         await get().setQuery("", undefined);
@@ -147,7 +163,7 @@ export const createOverviewSlice = (set, get) => ({
       set({
         schema: schemaRoot,
         base: "repo",
-        sortBy: undefined,
+        sortBy: "reponame",
         repo: { _: "repo", repo: "root" },
       });
     } else {
@@ -164,7 +180,9 @@ export const createOverviewSlice = (set, get) => ({
 
       const base = getDefaultBase(schema);
 
-      set({ schema, base, sortBy: undefined, repo });
+      const sortBy = getDefaultSortBy(schema, base, []);
+
+      set({ schema, base, sortBy, repo });
     }
 
     // reset all queries
@@ -174,6 +192,10 @@ export const createOverviewSlice = (set, get) => ({
   setQuery: async (queryField, queryValue) => {
     if (queryField === ".sortBy") {
       set({ sortBy: queryValue });
+
+      const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
+
+      setURL(queries, base, sortBy, repoUUID, reponame);
 
       return;
     }
@@ -220,41 +242,11 @@ export const createOverviewSlice = (set, get) => ({
       set({ queries });
     }
 
-    const {
-      queries,
-      base,
-      sortBy,
-      repo: { repo: repoUUID, reponame },
-    } = get();
+    const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
 
-    function queriesToParams(queriesObject) {
-      const searchParams = new URLSearchParams();
+    const searchParams = setURL(queries, base, sortBy, repoUUID, reponame);
 
-      Object.keys(queriesObject).map((key) =>
-        queriesObject[key] === ""
-          ? null
-          : searchParams.set(key, queriesObject[key]),
-      );
-
-      return searchParams;
-    }
-
-    const searchParams = queriesToParams(queries);
-
-    searchParams.set("_", base);
-
-    if (sortBy) {
-      searchParams.set(".sortBy", sortBy);
-    }
-
-    const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
-
-    const searchStringNew = searchParams.toString();
-
-    const urlNew = `${pathname}?${searchStringNew}`;
-
-    window.history.replaceState(null, null, urlNew);
-
+    // remove all evenor-specific queries before passing searchParams to csvs
     searchParams.delete(".sortBy");
 
     const api = new API(repoUUID);

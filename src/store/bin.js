@@ -213,3 +213,35 @@ export async function saveRepoRecord(record) {
 
   return
 }
+
+function queriesToParams(queriesObject) {
+  const searchParams = new URLSearchParams();
+
+  Object.keys(queriesObject).map((key) =>
+    queriesObject[key] === ""
+      ? null
+      : searchParams.set(key, queriesObject[key]),
+  );
+
+  return searchParams;
+}
+
+export function setURL(queries, base, sortBy, repoUUID, reponame) {
+  const searchParams = queriesToParams(queries);
+
+  searchParams.set("_", base);
+
+  if (sortBy) {
+    searchParams.set(".sortBy", sortBy);
+  }
+
+  const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
+
+  const searchStringNew = searchParams.toString();
+
+  const urlNew = `${pathname}?${searchStringNew}`;
+
+  window.history.replaceState(null, null, urlNew);
+
+  return searchParams
+}

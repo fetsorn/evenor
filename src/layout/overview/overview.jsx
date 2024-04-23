@@ -9,18 +9,20 @@ export function Overview() {
   const { t } = useTranslation();
 
   const [
+    repo,
+    sortBy,
     record,
     records,
-    repo,
     setRepoUUID,
     onSettingsOpen,
     onRecordSelect,
-    onRecordEdit
+    onRecordEdit,
   ] = useStore(
     (state) => [
+      state.repo,
+      state.sortBy,
       state.record,
       state.records,
-      state.repo,
       state.setRepoUUID,
       state.onSettingsOpen,
       state.onRecordSelect,
@@ -31,6 +33,28 @@ export function Overview() {
   const { repo: repoUUID } = repo;
 
   const isRepo = repoUUID !== "root";
+
+  // find first available string value for sorting
+  function identify(branch, value) {
+    // if array, take first item
+    const car = Array.isArray(value) ? value[0] : value;
+
+    // it object, take base field
+    const key = typeof car === "object" ? car[branch] : car;
+
+    // if undefined, return empty string
+    const id = key === undefined ? "" : key;
+
+    return id
+  }
+
+  const recordsSorted = records.sort((a, b) => {
+    const valueA = identify(sortBy, a[sortBy]);
+
+    const valueB = identify(sortBy, b[sortBy]);
+
+    return valueA.localeCompare(valueB)
+  });
 
   return (
     <div className={record ? styles.invisible : ""}>
@@ -64,7 +88,7 @@ export function Overview() {
       <div className={styles.overview}>
         <VirtualScroll
           {...{
-            data: records,
+            data: recordsSorted,
             onRecordSelect,
             OverviewItem,
           }}

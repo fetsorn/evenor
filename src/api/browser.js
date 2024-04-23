@@ -194,45 +194,51 @@ export class BrowserAPI {
     await this.writeFile(assetEndpoint, buffer);
   }
 
-  async uploadFile(file) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === "server") {
-      const form = new FormData();
+  async uploadFile() {
+    const input = document.createElement("input");
 
-      form.append("file", file);
+    input.type = "file";
 
-      const response = await fetch("/upload", {
-        method: "POST",
-        body: form,
-      });
+    input.multiple = "multiple";
 
-      const [hashHexString, filename] = JSON.parse(await response.text());
+    let metadata = [];
 
-      return [hashHexString, filename];
-    }
+    await new Promise((res, rej) => {
+      input.onchange = async (e) => {
+        for (const file of e.target.files) {
+          const fileArrayBuffer = await file.arrayBuffer();
 
-    const fileArrayBuffer = await file.arrayBuffer();
+          const hashArrayBuffer = await crypto.subtle.digest(
+            "SHA-256",
+            fileArrayBuffer,
+          );
 
-    const hashArrayBuffer = await crypto.subtle.digest(
-      "SHA-256",
-      fileArrayBuffer,
-    );
+          const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-    const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+          const hashHexString = hashByteArray
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
 
-    const hashHexString = hashByteArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+          const name = file.name.replace(/\.[^/.]+$/, "");
 
-    const name = file.name.replace(/\.[^/.]+$/, "");
+          const extension = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
 
-    const ext = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
+          const assetname = `${hashHexString}.${extension}`;
 
-    const assetname = `${hashHexString}.${ext}`;
+          await this.putAsset(assetname, fileArrayBuffer);
 
-    await this.putAsset(assetname, fileArrayBuffer);
+          const metadatum = { hash: hashHexString, name, extension };
 
-    return [hashHexString, name, ext];
+          metadata.push(metadatum)
+        };
+
+        res();
+      }
+
+      input.click()
+    })
+
+    return metadata;
   }
 
   async select(searchParams) {

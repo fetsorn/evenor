@@ -162,39 +162,45 @@ export class ElectronAPI {
   }
 
   async uploadFile() {
-    const res = await dialog.showOpenDialog({ properties: ["openFile"] });
+    const res = await dialog.showOpenDialog({ properties: ["openFile", "multiSelections"] });
 
     if (res.canceled) {
       throw Error("cancelled");
     } else {
-      const filepath = res.filePaths[0];
+      let metadata = [];
 
-      const fileArrayBuffer = fs.readFileSync(filepath);
+      for (const filepath of res.filePaths) {
+        const fileArrayBuffer = fs.readFileSync(filepath);
 
-      const crypto = await import("crypto");
+        const crypto = await import("crypto");
 
-      const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
-        "SHA-256",
-        fileArrayBuffer,
-      );
+        const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
+          "SHA-256",
+          fileArrayBuffer,
+        );
 
-      const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+        const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-      const hashHexString = hashByteArray
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
+        const hashHexString = hashByteArray
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("");
 
-      const filename = path.basename(filepath);
+        const filename = path.basename(filepath);
 
-      const name = filename.replace(/\.[^/.]+$/, "");
+        const name = filename.replace(/\.[^/.]+$/, "");
 
-      const ext = /(?:\.([^.]+))?$/.exec(filename)[1]?.trim();
+        const extension = /(?:\.([^.]+))?$/.exec(filename)[1]?.trim();
 
-      const assetname = `${hashHexString}.${ext}`;
+        const assetname = `${hashHexString}.${extension}`;
 
-      await this.putAsset(assetname, fileArrayBuffer);
+        await this.putAsset(assetname, fileArrayBuffer);
 
-      return [hashHexString, name, ext];
+        const metadatum = { hash: hashHexString, name, extension };
+
+        metadata.push(metadatum);
+      }
+
+      return metadata
     }
   }
 

@@ -53,24 +53,6 @@ export function EditUpload({ schema, record, onFieldChange }) {
     onFieldChange(branch, recordNew);
   }
 
-  async function onUpload(file) {
-    const api = new API(repoUUID);
-
-    const [filehash, filename, fileext] = await api.uploadFile(file);
-
-    const recordNew = { ...record };
-
-    recordNew[filehashBranch] = filehash;
-
-    recordNew[filenameBranch] = filename;
-
-    recordNew[fileextBranch] = fileext;
-
-    onFieldChange(branch, recordNew);
-  }
-
-  const notUploaded = record[filehashBranch] === undefined;
-
   return (
     <div>
       <InputText
@@ -90,14 +72,6 @@ export function EditUpload({ schema, record, onFieldChange }) {
       />
 
       {record[filehashBranch] ?? ""}
-
-      {notUploaded && (
-        <UploadButton
-          onUpload={(file) => onUpload(file)}
-          title={t("line.button.upload")}
-        />
-      )}
-
       {record[filenameBranch] && record[filehashBranch] && (
         <AssetView {...{ record, schema }} />
       )}

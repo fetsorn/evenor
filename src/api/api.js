@@ -85,14 +85,14 @@ export class API {
     }
   }
 
-  async uploadFile(file) {
+  async uploadFile() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.uploadFile(this.uuid);
 
       default:
-        return this.#browser.uploadFile(file);
+        return this.#browser.uploadFile();
     }
   }
 

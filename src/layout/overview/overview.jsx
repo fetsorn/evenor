@@ -1,5 +1,6 @@
 import React, { Suspense } from "react";
 import { useTranslation } from "react-i18next";
+import cn from "classnames";
 import { useStore } from "@/store/index.js";
 import { Button } from "@/components/index.js";
 import styles from "./overview.module.css";
@@ -57,7 +58,7 @@ export function Overview() {
   });
 
   return (
-    <div className={record ? styles.invisible : ""}>
+    <div className={cn(styles.page, record ? styles.invisible : undefined)}>
       <div className={styles.buttonbar}>
         {isRepo ? (
           <Button
@@ -95,13 +96,16 @@ export function Overview() {
         />
       </div>
 
-      <button
-        type="button"
-        title={t("line.button.add")}
-        onClick={() => onRecordEdit()}
-      >
-        +
-      </button>
+      <div className={styles.plus}>
+        <button
+          type="button"
+          title={t("line.button.add")}
+          style={{width: "50px", height: "50px"}}
+          onClick={() => onRecordEdit()}
+        >
+          +
+        </button>
+      </div>
     </div>
   );
 }

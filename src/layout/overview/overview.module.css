@@ -25,3 +25,14 @@
     width: calc(var(--rem) * 109);
   }
 }
+
+.plus {
+  position: sticky;
+  left: 0;
+  bottom: 0;
+  height: 0;
+  width: 100%;
+  display: flex;
+  align-items: end;
+  justify-content: right;
+}

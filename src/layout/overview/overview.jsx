@@ -97,14 +97,13 @@ export function Overview() {
       </div>
 
       <div className={styles.plus}>
-        <button
+        <Button
           type="button"
           title={t("line.button.add")}
-          style={{width: "50px", height: "50px"}}
           onClick={() => onRecordEdit()}
         >
           +
-        </button>
+        </Button>
       </div>
     </div>
   );

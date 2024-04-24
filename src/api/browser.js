@@ -347,7 +347,7 @@ export class BrowserAPI {
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).delete(structuredClone(recordOld));
+    }).delete(structuredClone(record));
   }
 
   async clone(remoteUrl, remoteToken, name) {

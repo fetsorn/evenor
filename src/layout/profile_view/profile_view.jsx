@@ -46,7 +46,7 @@ export function ProfileView() {
 
 
   const onZip = async () => {
-    const api = new API(repoUUID);
+    const api = new API(record.repo);
 
     await api.zip();
   }
@@ -105,7 +105,7 @@ export function ProfileView() {
               <button
                 type="button"
                 title="zip"
-                onClick={() => onRepoOpen()}
+                onClick={() => onZip()}
               >
                zip
               </button>

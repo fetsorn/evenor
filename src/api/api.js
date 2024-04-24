@@ -313,7 +313,7 @@ export class API {
         return window.electron.zip(this.uuid);
 
       default:
-        return BrowserAPI.zip();
+        return this.#browser.zip();
     }
   }
 

@@ -1,48 +1,79 @@
 import React, { Suspense } from "react";
-import { OverviewFilter } from "./components/overview_filter/overview_filter.jsx";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../store/index.js";
-import { Button } from "../../components/index.js";
-
-const OverviewItinerary = React.lazy(
-  () => import("./components/overview_itinerary/index.js"),
-);
+import cn from "classnames";
+import { useStore } from "@/store/index.js";
+import { Button } from "@/components/index.js";
+import styles from "./overview.module.css";
+import { OverviewFilter, OverviewItem, VirtualScroll } from "./components/index.js";
 
 export function Overview() {
   const { t } = useTranslation();
 
-  const [isView, repoUUID, repoName, setRepoUUID, onSettingsOpen] = useStore(
+  const [
+    repo,
+    sortBy,
+    record,
+    records,
+    setRepoUUID,
+    onSettingsOpen,
+    onRecordSelect,
+    onRecordEdit,
+  ] = useStore(
     (state) => [
-      state.isView,
-      state.repoUUID,
-      state.repoName,
+      state.repo,
+      state.sortBy,
+      state.record,
+      state.records,
       state.setRepoUUID,
       state.onSettingsOpen,
+      state.onRecordSelect,
+      state.onRecordEdit,
     ],
   );
 
-  function onHome() {
-    setRepoUUID("root");
+  const { repo: repoUUID } = repo;
+
+  const isRepo = repoUUID !== "root";
+
+  // find first available string value for sorting
+  function identify(branch, value) {
+    // if array, take first item
+    const car = Array.isArray(value) ? value[0] : value;
+
+    // it object, take base field
+    const key = typeof car === "object" ? car[branch] : car;
+
+    // if undefined, return empty string
+    const id = key === undefined ? "" : key;
+
+    return id
   }
 
+  const recordsSorted = records.sort((a, b) => {
+    const valueA = identify(sortBy, a[sortBy]);
+
+    const valueB = identify(sortBy, b[sortBy]);
+
+    return valueA.localeCompare(valueB)
+  });
+
   return (
-    <div>
-      <div>
-        {!isView && repoUUID !== "root" ? (
+    <div className={cn(styles.page, record ? styles.invisible : undefined)}>
+      <div className={styles.buttonbar}>
+        {isRepo ? (
           <Button
             type="button"
             title={t("header.button.back")}
-            onClick={() => onHome()}
+            onClick={() => setRepoUUID("root")}
           >
             {/* &lt;= */}
-            🏠
-            {repoName}
+            {"<"}
           </Button>
         ) : (
           <div />
         )}
 
-        {repoUUID !== "root" && !isView && (
+        {isRepo && (
           <Button
             type="button"
             title={t("header.button.back")}
@@ -55,9 +86,25 @@ export function Overview() {
 
       <OverviewFilter />
 
-      <Suspense>
-        <OverviewItinerary />
-      </Suspense>
+      <div className={styles.overview}>
+        <VirtualScroll
+          {...{
+            data: recordsSorted,
+            onRecordSelect,
+            OverviewItem,
+          }}
+        />
+      </div>
+
+      <div className={styles.plus}>
+        <Button
+          type="button"
+          title={t("line.button.add")}
+          onClick={() => onRecordEdit()}
+        >
+          +
+        </Button>
+      </div>
     </div>
   );
 }

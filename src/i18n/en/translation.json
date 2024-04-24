@@ -12,8 +12,8 @@
     },
     "dropdown": {
       "overview": "show events as {{ field }}",
-      "sortby": "Group branch",
-      "base": "Base branch",
+      "sortby": "Sort by:",
+      "base": "Select:",
       "search": "search for field {{ field }}"
     },
     "label": {

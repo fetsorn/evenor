@@ -1,471 +1,377 @@
-import { digestMessage, randomUUID } from "@fetsorn/csvs-js";
-import {
-  schemaSync,
-  schemaRemote,
-  schemaRSS,
-  schemaLocal,
-  schemaZip,
-  schemaTG,
-} from "../layout/profile_view/components/dispenser/components/index.js";
+import { v4 as uuidv4 } from "uuid";
+import { sha256 } from "js-sha256";
 
-export function recordToSchema(schemaRecord) {
-  const schemaObject = {};
-
-  for (const item of schemaRecord.items) {
-    const branch = item.schema_branch_name;
-
-    schemaObject[branch] = {};
-
-    if (item.schema_branch_trunk) {
-      schemaObject[branch].trunk = item.schema_branch_trunk;
-    }
-
-    if (item.schema_branch_type) {
-      schemaObject[branch].type = item.schema_branch_type;
-    }
-
-    if (item.schema_branch_task) {
-      schemaObject[branch].task = item.schema_branch_task;
-    }
-
-    if (item.schema_branch_dir) {
-      schemaObject[branch].dir = item.schema_branch_dir;
-    }
-
-    if (item.schema_branch_description) {
-      schemaObject[branch].description = {};
-
-      if (item.schema_branch_description.schema_branch_description_en) {
-        schemaObject[branch].description.en =
-          item.schema_branch_description.schema_branch_description_en;
-      }
-
-      if (item.schema_branch_description.schema_branch_description_ru) {
-        schemaObject[branch].description.ru =
-          item.schema_branch_description.schema_branch_description_ru;
-      }
-    }
-  }
-
-  return schemaObject;
-}
-
-export async function schemaToRecord(schema) {
+export function generateDefaultRepoRecord() {
   const record = {
-    _: "schema",
-    UUID: await digestMessage(await randomUUID()),
-    items: [],
+    _: "repo",
+    reponame: "",
+    branch: [
+      {
+        _: "branch",
+        branch: "entry",
+        description_en: "Record",
+        description_ru: "Запись",
+      },
+      {
+        _: "branch",
+        branch: "datum",
+        trunk: "entry",
+        task: "text",
+        description_en: "Description of the event",
+        description_ru: "Описание события",
+      },
+      {
+        _: "branch",
+        branch: "actdate",
+        trunk: "entry",
+        task: "date",
+        description_en: "Date of the event",
+        description_ru: "Дата события",
+      },
+      {
+        _: "branch",
+        branch: "actname",
+        trunk: "entry",
+        description_en: "Name of the person in the event",
+        description_ru: "Имя человека участвовавшего в событии",
+      },
+      {
+        _: "branch",
+        branch: "saydate",
+        trunk: "entry",
+        task: "date",
+        description_en: "Date of record",
+        description_ru: "Дата записи",
+      },
+      {
+        _: "branch",
+        branch: "sayname",
+        trunk: "entry",
+        description_en: "Name of the person who made the record",
+        description_ru: "Имя автора записи",
+      },
+      {
+        _: "branch",
+        branch: "category",
+        trunk: "entry",
+        description_en: "Category",
+        description_ru: "Категория",
+      },
+      {
+        _: "branch",
+        branch: "privacy",
+        trunk: "entry",
+        description_en: "Privacy",
+        description_ru: "Публичность",
+      },
+      {
+        _: "branch",
+        branch: "file",
+        trunk: "entry",
+        task: "file",
+        description_en: "Digital asset",
+        description_ru: "Файл",
+      },
+      {
+        _: "branch",
+        branch: "filename",
+        trunk: "file",
+        task: "filename",
+        description_en: "Name of digital asset",
+        description_ru: "Название файла",
+      },
+      {
+        _: "branch",
+        branch: "fileext",
+        trunk: "file",
+        task: "fileext",
+        description_en: "Extension of the file",
+        description_ru: "Расширение файла",
+      },
+      {
+        _: "branch",
+        branch: "filehash",
+        trunk: "file",
+        task: "filehash",
+        description_en: "Hashsum of the file",
+        description_ru: "Хэш файла",
+      },
+      {
+        _: "branch",
+        branch: "branch",
+        description_en: "Branch name",
+        description_ru: "Название ветки",
+      },
+      {
+        _: "branch",
+        branch: "task",
+        trunk: "branch",
+        description_en: "Branch task",
+        description_ru: "Предназначение ветки",
+      },
+      {
+        _: "branch",
+        branch: "description_en",
+        trunk: "branch",
+        description_en: "Branch description EN",
+        description_ru: "Описание ветки на английском",
+      },
+      {
+        _: "branch",
+        branch: "description_ru",
+        trunk: "branch",
+        description_en: "Branch description RU",
+        description_ru: "Описание ветки на русском",
+      },
+    ],
   };
-
-  await Promise.all(
-    Object.keys(schema).map(async (key) => {
-      const item = {};
-
-      item._ = "schema_branch";
-
-      item.UUID = await digestMessage(await randomUUID());
-
-      item.schema_branch_name = key;
-
-      if (schema[key].trunk) {
-        item.schema_branch_trunk = schema[key].trunk;
-      }
-
-      if (schema[key].type) {
-        item.schema_branch_type = schema[key].type;
-      }
-
-      if (schema[key].task) {
-        item.schema_branch_task = schema[key].task;
-      }
-
-      if (schema[key].dir) {
-        item.schema_branch_dir = schema[key].dir;
-      }
-
-      if (schema[key].description) {
-        item.schema_branch_description = {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-        };
-
-        if (schema[key].description.en) {
-          item.schema_branch_description.schema_branch_description_en =
-            schema[key].description.en;
-        }
-
-        if (schema[key].description.ru) {
-          item.schema_branch_description.schema_branch_description_ru =
-            schema[key].description.ru;
-        }
-      }
-
-      record.items.push(item);
-    }),
-  );
 
   return record;
 }
 
-export async function generateDefaultSchemaRecord() {
-  return {
-    _: "schema",
-    UUID: await digestMessage(await randomUUID()),
-    items: [
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "files",
-        schema_branch_trunk: "datum",
-        schema_branch_type: "array",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Digital assets",
-          schema_branch_description_ru: "Файлы",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "file",
-        schema_branch_trunk: "files",
-        schema_branch_type: "object",
-        schema_branch_task: "file",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Digital asset",
-          schema_branch_description_ru: "Файл",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "filename",
-        schema_branch_trunk: "file",
-        schema_branch_task: "filename",
-        schema_branch_type: "string",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Path to a digital asset",
-          schema_branch_description_ru: "Путь к файлу",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "actdate",
-        schema_branch_trunk: "datum",
-        schema_branch_task: "date",
-        schema_branch_dir: "date",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Date of the event",
-          schema_branch_description_ru: "Дата события",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "datum",
-        schema_branch_type: "string",
-        schema_branch_task: "text",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Description of the event",
-          schema_branch_description_ru: "Описание события",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "saydate",
-        schema_branch_trunk: "datum",
-        schema_branch_task: "date",
-        schema_branch_dir: "date",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Date of record",
-          schema_branch_description_ru: "Дата записи",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "filehash",
-        schema_branch_trunk: "file",
-        schema_branch_type: "hash",
-        schema_branch_task: "filehash",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Hashsum of the file",
-          schema_branch_description_ru: "Хэш файла",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "category",
-        schema_branch_trunk: "datum",
-        schema_branch_type: "string",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Category",
-          schema_branch_description_ru: "Категория",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "privacy",
-        schema_branch_trunk: "datum",
-        schema_branch_type: "string",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Privacy",
-          schema_branch_description_ru: "Публичность",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "actname",
-        schema_branch_trunk: "datum",
-        schema_branch_dir: "name",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Name of the person in the event",
-          schema_branch_description_ru: "Имя человека участвовавшего в событии",
-        },
-      },
-      {
-        _: "schema_branch",
-        UUID: await digestMessage(await randomUUID()),
-        schema_branch_name: "sayname",
-        schema_branch_trunk: "datum",
-        schema_branch_dir: "name",
-        schema_branch_description: {
-          _: "schema_branch_description",
-          UUID: await digestMessage(await randomUUID()),
-          schema_branch_description_en: "Name of the person who made the record",
-          schema_branch_description_ru: "Имя автора записи",
-        },
-      },
-    ],
-  };
-}
-
-export const defaultSchema = {
-  datum: {
-    task: "text",
-    type: "string",
+export const schemaRoot = {
+  repo: {
     description: {
-      en: "Description of the event",
-      ru: "Описание события",
+      en: "Dataset",
+      ru: "Проект",
     },
   },
-  hostdate: {
-    trunk: "datum",
-    dir: "date",
-    task: "date",
+  reponame: {
+    trunk: "repo",
     description: {
-      en: "Date of the event",
-      ru: "Дата события",
-    },
-  },
-  hostname: {
-    trunk: "datum",
-    dir: "name",
-    description: {
-      en: "Name of the person in the event",
-      ru: "Имя человека участвовавшего в событии",
-    },
-  },
-  guestdate: {
-    trunk: "datum",
-    dir: "date",
-    task: "date",
-    description: {
-      en: "Date of record",
-      ru: "Дата записи",
-    },
-  },
-  guestname: {
-    trunk: "datum",
-    dir: "name",
-    description: {
-      en: "Name of the person who made the record",
-      ru: "Имя автора записи",
+      en: "Name of the dataset",
+      ru: "Название проекта",
     },
   },
   category: {
-    trunk: "datum",
+    trunk: "repo",
     description: {
-      en: "Category",
-      ru: "Категория",
+      en: "Category of the dataset",
+      ru: "Категория проекта",
     },
   },
-  privacy: {
-    trunk: "datum",
-    description: {
-      en: "Privacy",
-      ru: "Публичность",
-    },
-  },
-  files: {
-    trunk: "datum",
-    type: "array",
-    description: {
-      en: "Digital assets",
-      ru: "Файлы",
-    },
-  },
-  file: {
-    trunk: "files",
-    type: "object",
-    task: "file",
-    description: {
-      en: "Digital asset",
-      ru: "Файл",
-    },
-  },
-  filename: {
-    trunk: "file",
-    type: "string",
-    task: "filename",
-    description: {
-      en: "Path to a digital asset",
-      ru: "Путь к файлу",
-    },
-  },
-  filehash: {
-    trunk: "file",
-    type: "hash",
-    task: "filehash",
-    description: {
-      en: "Hash of a digital asset",
-      ru: "Хеш файла",
-    },
-  },
-};
-
-const schemaSchema = {
-  schema: {
-    trunk: "reponame",
-    type: "array",
-    description: {
-      en: "Schema of the repo",
-      ru: "Структура проекта",
-    },
-  },
-  schema_branch: {
-    trunk: "schema",
-    type: "object",
-    description: {
-      en: "Schema branch",
-      ru: "Ветка схемы",
-    },
-  },
-  schema_branch_name: {
-    trunk: "schema_branch",
-    type: "string",
+  branch: {
+    trunk: "repo",
     description: {
       en: "Branch name",
       ru: "Название ветки",
     },
   },
-  schema_branch_trunk: {
-    trunk: "schema_branch",
-    type: "string",
+  trunk: {
+    trunk: "branch",
     description: {
       en: "Branch trunk",
       ru: "Ствол ветки",
     },
   },
-  schema_branch_type: {
-    trunk: "schema_branch",
-    type: "string",
-    description: {
-      en: "Branch type",
-      ru: "Тип ветки",
-    },
-  },
-  schema_branch_task: {
-    trunk: "schema_branch",
-    type: "string",
+  task: {
+    trunk: "branch",
     description: {
       en: "Branch task",
       ru: "Предназначение ветки",
     },
   },
-  schema_branch_dir: {
-    trunk: "schema_branch",
-    type: "string",
-    description: {
-      en: "Branch dir",
-      ru: "Директория ветки",
-    },
-  },
-  schema_branch_description: {
-    trunk: "schema_branch",
-    type: "object",
-    description: {
-      en: "Branch description",
-      ru: "Описание ветки",
-    },
-  },
-  schema_branch_description_en: {
-    trunk: "schema_branch_description",
-    type: "string",
+  description_en: {
+    trunk: "branch",
     description: {
       en: "Branch description EN",
       ru: "Описание ветки на английском",
     },
   },
-  schema_branch_description_ru: {
-    trunk: "schema_branch_description",
-    type: "string",
+  description_ru: {
+    trunk: "branch",
     description: {
       en: "Branch description RU",
       ru: "Описание ветки на русском",
     },
   },
+  local_tag: {
+    trunk: "repo",
+    task: "directory",
+    description: {
+      en: "Path to asset archive",
+      ru: "Путь к локальному архиву",
+    },
+  },
+  remote_tag: {
+    trunk: "repo",
+    description: {
+      en: "Name of git repository",
+      ru: "Название git репозитория",
+    },
+  },
+  remote_url: {
+    trunk: "remote_tag",
+    description: {
+      en: "URL to git repository",
+      ru: "Путь к git репозиторию",
+    },
+  },
+  remote_token: {
+    trunk: "remote_tag",
+    description: {
+      en: "Authentication token",
+      ru: "Токен для синхронизации",
+    },
+  },
+  sync_tag: {
+    trunk: "repo",
+    task: "sync",
+    description: {
+      en: "Name of database to sync",
+      ru: "Название базы данных для синхронизации",
+    },
+  },
+  sync_tag_search: {
+    trunk: "sync_tag",
+    description: {
+      en: "Search query",
+      ru: "Поисковый запрос",
+    },
+  },
 };
 
-export const schemaRoot = {
-  reponame: {
-    type: "string",
-    description: {
-      en: "Name of the repo",
-      ru: "Название проекта",
+export function newUUID() {
+  return sha256(uuidv4());
+}
+
+// add trunk field from schema record to branch records
+// turn [{_:_, branch1: branch2}, {_:branch, branch: "branch2", task: "date"}]
+// into [{_:branch, branch: "branch2", trunk: "branch1", task: "date"}]
+export function enrichBranchRecords(schemaRecord, metaRecords) {
+  // TODO validate against the case when branch has multiple trunks
+  return metaRecords.map((branchRecord) => {
+    const { branch } = branchRecord;
+
+    const trunk = Object.keys(schemaRecord).find((key) =>
+      schemaRecord[key].includes(branch),
+    );
+
+    const trunkPartial = trunk !== undefined ? { trunk } : {};
+
+    return { ...branchRecord, ...trunkPartial };
+  });
+}
+
+// extract schema record with trunks from branch records
+// turn [{_:branch, branch: "branch2", trunk: "branch1", task: "date"}]
+// into [{_:_, branch1: branch2}, {_:branch, branch: "branch2", task: "date"}]
+export function extractSchemaRecords(branchRecords) {
+  const records = branchRecords.reduce(
+    (acc, branchRecord) => {
+      const { trunk, ...branchRecordOmitted } = branchRecord;
+
+      const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+      const schemaRecord =
+        trunk !== undefined
+          ? {
+              ...acc.schemaRecord,
+              [trunk]: [branchRecord.branch, ...accLeaves],
+            }
+          : acc.schemaRecord;
+
+      const metaRecords = [branchRecordOmitted, ...acc.metaRecords];
+
+      return { schemaRecord, metaRecords };
     },
-  },
-  category: {
-    trunk: "reponame",
-    type: "string",
-    description: {
-      en: "Category of the repo",
-      ru: "Категория проекта",
+    { schemaRecord: { _: "_" }, metaRecords: [] },
+  );
+
+  return [records.schemaRecord, ...records.metaRecords];
+}
+
+// turn
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+// into
+// [ {_: "_", entry: [ "datum" ]},
+//   {_: branch, branch: "entry", description_en: "", description_ru: ""},
+//   {_: branch, branch: "datum"}
+// ]
+export function schemaToBranchRecords(schema) {
+  const branches = Object.keys(schema);
+
+  const records = branches.reduce(
+    (acc, branch) => {
+      const { trunk, task, description } = schema[branch];
+
+      const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+      const schemaRecord =
+        trunk !== undefined
+          ? { ...acc.schemaRecord, [trunk]: [branch, ...accLeaves] }
+          : acc.schemaRecord;
+
+      const partialEn =
+        description && description.en ? { description_en: description.en } : {};
+
+      const partialRu =
+        description && description.ru ? { description_ru: description.ru } : {};
+
+      const partialTask = task ? { task } : {};
+
+      const metaRecords = [
+        { _: "branch", branch, ...partialTask, ...partialEn, ...partialRu },
+        ...acc.metaRecords,
+      ];
+
+      return { schemaRecord, metaRecords };
     },
-  },
-  ...schemaSchema,
-  tags: {
-    trunk: "reponame",
-    type: "array",
-  },
-  ...schemaSync,
-  ...schemaRemote,
-  ...schemaRSS,
-  ...schemaLocal,
-  ...schemaZip,
-  ...schemaTG,
-};
+    { schemaRecord: { _: "_" }, metaRecords: [] },
+  );
+
+  return [records.schemaRecord, ...records.metaRecords];
+}
+
+// turn
+// [ {_: "_", entry: [ "datum" ]},
+//   {_: branch, branch: "entry", description_en: "", description_ru: ""},
+//   {_: branch, branch: "datum"}
+// ]
+// into
+// { entry: { description: { en: "", ru: "" } }, datum: { trunk: "entry" } }
+export function branchRecordsToSchema(schemaRecord, branchRecords) {
+  const trunks = Object.keys(schemaRecord).filter((key) => key !== "_");
+
+  const schemaTrunks = trunks.reduce((accTrunk, trunk) => {
+    const accTrunkNew = { ...accTrunk, [trunk]: {} };
+
+    // for each value of trunk, set acc[value].trunk = trunk
+    const leaves = schemaRecord[trunk];
+
+    // play differently with description
+    return leaves.reduce((accLeaf, leaf) => {
+      return { ...accLeaf, [leaf]: { trunk } };
+    }, accTrunkNew);
+  }, {});
+
+  // TODO validate against the case when branch has multiple trunks
+  return branchRecords.reduce((acc, branchRecord) => {
+    const { branch, task, description_en, description_ru } = branchRecord;
+
+    const trunk = Object.keys(schemaRecord).find((key) =>
+      schemaRecord[key].includes(branch),
+    );
+
+    const trunkPartial = trunk !== undefined ? { trunk } : {};
+
+    const taskPartial = task !== undefined ? { task } : {};
+
+    const enPartial =
+      description_en !== undefined ? { en: description_en } : undefined;
+
+    const ruPartial =
+      description_ru !== undefined ? { ru: description_ru } : undefined;
+
+    const descriptionPartial =
+      enPartial || ruPartial
+        ? { description: { ...enPartial, ...ruPartial } }
+        : {};
+
+    const branchPartial = {
+      [branch]: { ...trunkPartial, ...taskPartial, ...descriptionPartial },
+    };
+
+    return { ...acc, ...branchPartial };
+  }, schemaTrunks);
+}

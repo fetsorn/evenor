@@ -11,8 +11,11 @@ export function OverviewFilter() {
   return (
     <div className={styles.panel}>
       <FilterBaseSelect />
+
       <FilterQueryList />
+
       <FilterQueryPlus />
+
       <FilterSortBySelect />
     </div>
   );

@@ -1,105 +1,69 @@
-import { API, schemaRoot } from "../api/index.js";
-
-// pick a param to group data by
-function getDefaultSortBy(schema, data, searchParams) {
-  // fallback to sortBy param from the search query
-  if (searchParams.has(".sort")) {
-    const sortBy = searchParams.get(".sort");
-
-    return sortBy;
-  }
-
-  let sortBy;
-
-  const car = data[0] ?? {};
-
-  // fallback to first date param present in data
-  sortBy = Object.keys(schema).find(
-    (branch) =>
-      schema[branch].task === "date" &&
-      Object.prototype.hasOwnProperty.call(car, branch),
-  );
-
-  // fallback to first param present in data
-  if (!sortBy) {
-    sortBy = Object.keys(schema).find((branch) =>
-      Object.prototype.hasOwnProperty.call(car, branch),
-    );
-  }
-
-  // fallback to first date param present in schema
-  if (!sortBy) {
-    sortBy = Object.keys(schema).find(
-      (branch) => schema[branch].task === "date",
-    );
-  }
-
-  // fallback to first param present in schema
-  if (!sortBy) {
-    [sortBy] = Object.keys(schema);
-  }
-
-  // unreachable with a valid scheme
-  if (!sortBy) {
-    throw Error("failed to find default sortBy in the schema");
-  }
-
-  return sortBy;
-}
-
-export function queriesToParams(queries) {
-  const searchParams = new URLSearchParams();
-
-  Object.keys(queries).map((key) =>
-    queries[key] === "" ? null : searchParams.set(key, queries[key]),
-  );
-
-  return searchParams;
-}
-
-function paramsToQueries(searchParams) {
-  const searchParamsObject = Array.from(searchParams).reduce(
-    (acc, [key, value]) => ({ ...acc, [key]: value }),
-    {},
-  );
-
-  const queries = Object.fromEntries(
-    Object.entries(searchParamsObject).filter(
-      ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
-    ),
-  );
-
-  return queries;
-}
+import history from "history/hash";
+import { digestMessage } from "@fetsorn/csvs-js";
+import { API, schemaRoot, schemaToBranchRecords, enrichBranchRecords } from "../api/index.js";
+import { getDefaultBase, getDefaultSortBy, setURL } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
-  schema: {},
+  queries: {},
+
+  base: "repo",
+
+  sortBy: "reponame",
+
+  schema: schemaRoot,
 
   records: [],
 
-  isInitialized: false,
-
-  isView: false,
-
-  repoRoute: undefined,
-
-  repoUUID: undefined,
-
-  repoName: undefined,
-
-  base: undefined,
+  repo: { _: "repo", repo: "root" },
 
   abortPreviousStream: () => {},
 
-  initialize: async (repoRoute, search) => {
-    const searchParams = new URLSearchParams(search);
+  // TODO: refactor this away somehow
+  initialize: async () => {
+    // first initialize root
+    const apiRoot = new API("root");
 
-    let repoUUID;
+    await apiRoot.ensure();
 
-    let repoName;
+    const branchRecords = schemaToBranchRecords(schemaRoot);
 
-    let isView = false;
+    for (const branchRecord of branchRecords) {
+      await apiRoot.updateRecord(branchRecord);
+    }
 
+    await apiRoot.commit();
+
+    // get all the queries from url here and feed them to setQuery
+    const searchString = history.location.search;
+
+    const searchParams = new URLSearchParams(searchString);
+
+    const baseURL = searchParams.get("_");
+
+    const sortByURL = searchParams.get(".sortBy");
+
+    function paramsToQueries(searchParamsSet) {
+      const searchParamsObject = Array.from(searchParamsSet).reduce(
+        (acc, [key, value]) => ({ ...acc, [key]: value }),
+        {},
+      );
+
+      const queries = Object.fromEntries(
+        Object.entries(searchParamsObject).filter(
+          ([key]) =>
+            key !== "_" && key !== "~" && key !== "-" && !key.startsWith("."),
+        ),
+      );
+
+      return queries;
+    }
+
+    // convert to object, skip reserved fields
+    const queries = paramsToQueries(searchParams);
+
+    const repoRoute = history.location.pathname.replace("/", "");
+
+    // if url specifies a remote, try to clone
     if (searchParams.has("~")) {
       // if uri specifies a remote
       // try to clone remote to store
@@ -109,89 +73,158 @@ export const createOverviewSlice = (set, get) => ({
 
       const token = searchParams.get("-") ?? "";
 
-      const { digestMessage } = await import("@fetsorn/csvs-js");
-
-      repoUUID = await digestMessage(remote);
-
-      repoName = encodeURIComponent(remote);
-
-      isView = true;
-
-      const api = new API(repoUUID);
-
-      await api.cloneView(remote, token);
-    } else if (repoRoute === undefined) {
-      repoUUID = "root";
-
-      // eslint-disable-next-line
-      if (__BUILD_MODE__ !== "server") {
-        const apiRoot = new API("root");
-
-        await apiRoot.ensure(schemaRoot);
-      }
-    } else {
-      repoName = repoRoute;
-
-      const apiRoot = new API("root");
-
-      const searchParamsReponame = new URLSearchParams();
-
-      searchParamsReponame.set("_", "reponame");
-
-      searchParamsReponame.set("reponame", repoName);
+      const repoUUIDRemote = await digestMessage(remote);
 
       try {
-        const [{ UUID }] = await apiRoot.select(searchParamsReponame);
+        const api = new API(repoUUIDRemote);
 
-        repoUUID = UUID;
-      } catch {
-        // if repoRoute is not in root database
-        // try to decode repoRoute as a view url
-        // and set uuid to a digest of repoRoute
-        const remote = repoRoute;
+        await api.cloneView(remote, token);
 
-        const { digestMessage } = await import("@fetsorn/csvs-js");
+        const pathname = new URL(remote).pathname;
 
-        repoUUID = digestMessage(remote);
+        // get repo name from remote
+        const reponameClone = pathname.substring(pathname.lastIndexOf('/') + 1);
 
-        repoName = encodeURIComponent(remote);
+        const schemaClone = await api.readSchema();
 
-        isView = true;
+        const [ schemaRecordClone, ...metaRecordsClone ] = schemaToBranchRecords(schemaClone);
+
+        const branchRecordsClone = enrichBranchRecords(schemaRecordClone, metaRecordsClone);
+
+        const recordClone = {
+          _: "repo",
+          repo: repoUUIDRemote,
+          reponame: reponameClone,
+          branch: branchRecordsClone,
+          remote_tag: {
+            _: "remote_tag",
+            remote_tag: "",
+            remote_token: token,
+            remote_url: remote
+          }
+        };
+
+        await get().onRecordUpdate({}, recordClone);
+
+        const baseDefault = getDefaultBase(schemaClone);
+
+        const base = baseURL ?? baseDefault;
+
+        const sortByDefault = getDefaultSortBy(schemaClone, base, []);
+
+        const sortBy = sortByURL ?? sortByDefault;
+
+        set({
+          queries,
+          base,
+          sortBy,
+          schema: schemaClone,
+          repo: recordClone
+        });
+
+        await get().setQuery(undefined, undefined);
+
+        return undefined;
+      } catch(e) {
+        // proceed to choose root repo uuid
+        console.log(e)
       }
     }
 
-    const api = new API(repoUUID);
+    if (repoRoute !== "") {
+      // if repo is in store, find uuid in root dataset
+      try {
+        const [repo] = await apiRoot.select(
+          new URLSearchParams(`?_=repo&reponame=${repoRoute}`),
+        );
 
-    const debugMessage = await api.helloWorld("Hello");
+        const { repo: repoUUID } = repo;
 
-    console.log(debugMessage);
+        const api = new API(repoUUID);
 
-    const queries = paramsToQueries(searchParams);
+        const schema = await api.readSchema();
 
-    const sortBy = searchParams.get(".sort") ?? undefined;
+        const baseDefault = getDefaultBase(schema);
 
-    const schema = await api.readSchema();
+        const sortByDefault = getDefaultSortBy(schema, base, []);
 
-    const base = Object.keys(schema).find(
-      (branch) =>
-        !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
-    );
+        set({
+          queries,
+          base: baseURL ?? baseDefault,
+          sortBy: sortByURL ?? sortByDefault,
+          schema,
+          repo
+        });
+
+        // run queries from the store
+        await get().setQuery("", undefined);
+
+        return;
+      } catch {
+        // proceed to set repo uuid as root
+      }
+    }
+
 
     set({
-      schema,
-      base,
+      schema: schemaRoot,
+      base: baseURL ?? "repo",
       queries,
-      sortBy,
-      isView,
-      isInitialized: true,
-      repoUUID,
-      repoName,
+      repo: { _: "repo", repo: "root" },
     });
 
-    await get().updateOverview();
+    // run queries from the store
+    await get().setQuery("", undefined);
+
+    return undefined;
   },
 
-  updateOverview: async () => {
+  setRepoUUID: async (repoUUID) => {
+    set({ record: undefined });
+
+    if (repoUUID === "root") {
+      set({
+        schema: schemaRoot,
+        base: "repo",
+        sortBy: "reponame",
+        repo: { _: "repo", repo: "root" },
+      });
+    } else {
+      const apiRoot = new API("root");
+
+      // TODO handle errors
+      const [repo] = await apiRoot.select(
+        new URLSearchParams(`?_=repo&repo=${repoUUID}`),
+      );
+
+      const api = new API(repoUUID);
+
+      const schema = await api.readSchema();
+
+      const base = getDefaultBase(schema);
+
+      const sortBy = getDefaultSortBy(schema, base, []);
+
+      set({ schema, base, sortBy, repo });
+    }
+
+    // reset all queries
+    await get().setQuery(undefined, undefined);
+  },
+
+  setQuery: async (queryField, queryValue) => {
+    if (queryField === ".sortBy") {
+      set({ sortBy: queryValue });
+
+      const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
+
+      setURL(queries, base, sortBy, repoUUID, reponame);
+
+      return;
+    }
+
+    set({ records: [] });
+
     // abort previous search stream if it is running
     get().abortPreviousStream();
 
@@ -207,15 +240,39 @@ export const createOverviewSlice = (set, get) => ({
       },
     });
 
-    const { base, queries, repoUUID } = get();
+    const { schema } = get();
+
+    // if query field is undefined, delete queries
+    if (queryField === undefined) {
+      set({ queries: {} });
+    } else if (queryField === "_") {
+      const sortBy = getDefaultSortBy(schema, queryValue, []);
+
+      set({ base: queryValue, sortBy, queries: {} });
+      // if query field is defined, update queries
+    } else if (queryField !== "") {
+      const { queries } = get();
+
+      // TODO: validate queryField
+      // if query value is undefined, remove query field
+      if (queryValue === undefined) {
+        delete queries[queryField];
+      } else {
+        // if query value is defined, set query field
+        queries[queryField] = queryValue;
+      }
+
+      set({ queries });
+    }
+
+    const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
+
+    const searchParams = setURL(queries, base, sortBy, repoUUID, reponame);
+
+    // remove all evenor-specific queries before passing searchParams to csvs
+    searchParams.delete(".sortBy");
 
     const api = new API(repoUUID);
-
-    const schema = await api.readSchema();
-
-    const searchParams = queriesToParams(queries);
-
-    searchParams.set("_", base);
 
     const { strm: fromStrm, closeHandler } =
       await api.selectStream(searchParams);
@@ -228,27 +285,7 @@ export const createOverviewSlice = (set, get) => ({
 
         const records = [...get().records, chunk];
 
-        const schemaBase = Object.fromEntries(
-          Object.entries(schema).filter(
-            ([branch, info]) =>
-              branch === base ||
-              info.trunk === base ||
-              schema[info.trunk]?.trunk === base,
-          ),
-        );
-
-        const sortBy = Object.prototype.hasOwnProperty.call(
-          schemaBase,
-          queries[".sort"],
-        )
-          ? queries[".sort"]
-          : getDefaultSortBy(schemaBase, records, searchParams);
-
-        set({
-          sortBy,
-          queries,
-          records,
-        });
+        set({ records });
       },
 
       abort() {
@@ -258,122 +295,11 @@ export const createOverviewSlice = (set, get) => ({
       },
     });
 
+    // TODO: remove await here to free the main thread
     try {
       await fromStrm.pipeTo(toStrm, { signal: abort_controller.signal });
     } catch {
       // stream interrupted
     }
-  },
-
-  onQueries: async () => {
-    if (get().isInitialized) {
-      const { queries, repoName } = get();
-
-      const api = new API(get().repoUUID);
-
-      const schema = await api.readSchema();
-
-      const base = Object.prototype.hasOwnProperty.call(schema, queries._)
-        ? queries._
-        : Object.keys(schema).find(
-            (branch) =>
-              !Object.prototype.hasOwnProperty.call(schema[branch], "trunk"),
-          );
-
-      const searchParams = queriesToParams(queries);
-
-      const pathname = repoName === undefined ? "/" : `#/${repoName}`;
-
-      window.history.replaceState(
-        null,
-        null,
-        `${pathname}${
-          searchParams.toString() == "" ? "" : `?${searchParams.toString()}`
-        }`,
-      );
-
-      set({
-        base,
-        schema,
-        records: [],
-        queries,
-      });
-
-      await get().updateOverview();
-    }
-  },
-
-  setRepoUUID: async (repoUUID) => {
-    // abort previous search stream if it is running
-    get().abortPreviousStream();
-
-    let repoName;
-
-    if (repoUUID === "root" || get().isView) {
-      // leave repoName as undefined
-    } else {
-      const api = new API("root");
-
-      const searchParams = new URLSearchParams();
-
-      searchParams.set("_", "reponame");
-
-      searchParams.set("reponame", repoUUID);
-
-      const [record] = await api.select(searchParams);
-
-      repoName = record.reponame;
-    }
-
-    set({
-      repoName,
-      repoUUID,
-      queries: {},
-      record: undefined,
-    });
-
-    await get().onQueries();
-  },
-
-  setRepoName: async (repoName) => {
-    // abort previous search stream if it is running
-    get().abortPreviousStream();
-
-    const api = new API("root");
-
-    const searchParams = new URLSearchParams();
-
-    searchParams.set("_", "reponame");
-
-    searchParams.set("reponame", repoName);
-
-    const [record] = await api.select(searchParams);
-
-    if (record === undefined) {
-      return;
-    }
-
-    const repoUUID = record.UUID;
-
-    set({
-      repoName,
-      repoUUID,
-      queries: {},
-      record: undefined,
-    });
-
-    await get().onQueries();
-  },
-
-  setSortBy: async (sortBy) => {
-    set({
-      sortBy,
-    });
-  },
-
-  setBase: async (base) => {
-    set({ base, records: [] });
-
-    await get().updateOverview();
   },
 });

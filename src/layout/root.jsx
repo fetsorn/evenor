@@ -3,7 +3,7 @@ import {
   HashRouter as Router,
   Routes,
   Route,
-  useParams,
+  // useParams,
 } from "react-router-dom";
 import { useStore } from "../store/index.js";
 import { Overview } from "./overview/index.js";
@@ -21,31 +21,18 @@ export function Root() {
   );
 }
 
-const ProfileSingleEdit = React.lazy(() => import("./profile_edit/index.js"));
-const ProfileSingleView = React.lazy(() => import("./profile_view/index.js"));
+const ProfileEdit = React.lazy(() => import("./profile_edit/index.js"));
+const ProfileView = React.lazy(() => import("./profile_view/index.js"));
 
 function Page() {
-  const { repoRoute } = useParams();
-
-  const location = window.location;
-
-  const [initialize, isEdit] = useStore((state) => [
-    state.initialize,
-    state.isEdit,
-  ]);
-
-  useEffect(() => {
-    initialize(repoRoute, location.search);
-  }, []);
+  const isEdit = useStore((state) => state.isEdit);
 
   return (
     <>
       <main className={styles.main}>
         <Overview />
 
-        <Suspense>
-          {isEdit ? <ProfileSingleEdit /> : <ProfileSingleView />}
-        </Suspense>
+        <Suspense>{isEdit ? <ProfileEdit /> : <ProfileView />}</Suspense>
       </main>
     </>
   );

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { API } from "../../api";
-import { useStore } from "../../store/index.js";
+import { API } from "@/api";
+import { useStore } from "@/store/index.js";
 import { convert, isIFrameable } from "./asset_view_controller.js";
 
 function FileView({ downloadUrl, mimetype }) {
@@ -55,6 +55,10 @@ export function AssetView({ schema, record }) {
       schema[b].task === "filehash",
   );
 
+  const fileextBranch = Object.keys(schema).find(
+    (b) => schema[b].trunk === branch && schema[b].task === "fileext",
+  );
+
   const filenameBranch = Object.keys(schema).find(
     // when file is object, filename is a leaf
     // when file is a string, it is also a filename
@@ -63,10 +67,9 @@ export function AssetView({ schema, record }) {
       schema[b].task === "filename",
   );
 
-  const [repoUUID, isView] = useStore((state) => [
-    state.repoUUID,
-    state.isView,
-  ]);
+  const filenameFull = `${record[filehashBranch]}.${record[fileextBranch]}`;
+
+  const { repo: repoUUID } = useStore((state) => state.repo);
 
   const api = new API(repoUUID);
 
@@ -74,18 +77,9 @@ export function AssetView({ schema, record }) {
     let contents;
 
     try {
-      contents = await api.fetchAsset(record[filehashBranch]);
+      contents = await api.fetchAsset(filenameFull);
     } catch (e) {
       console.log(e);
-    }
-
-    // if no contents, try to fetch record[filenameBranch]
-    if (contents === undefined) {
-      try {
-        contents = await api.fetchAsset(record[filenameBranch]);
-      } catch (e) {
-        console.log(e);
-      }
     }
 
     if (contents === undefined) {
@@ -101,13 +95,13 @@ export function AssetView({ schema, record }) {
     let contents = await fetchAsset();
 
     // if cannot be shown in the browser, try to convert to something that can be shown
-    if (!isIFrameable(record[filenameBranch])) {
+    if (!isIFrameable(filenameFull)) {
       contents = await convert(record[filehashBranch], contents);
     }
 
     const mime = await import("mime");
 
-    const mimetypeNew = mime.getType(record[filenameBranch]);
+    const mimetypeNew = mime.getType(filenameFull);
 
     setMimetype(mimetypeNew);
 
@@ -121,16 +115,16 @@ export function AssetView({ schema, record }) {
   async function onDownload() {
     let contents = await fetchAsset();
 
-    api.downloadAsset(contents, record[filenameBranch] ?? record[filehashBranch]);
+    api.downloadAsset(new Blob([contents]), filenameFull);
   }
 
   if (!blobURL) {
-    if (record[filehashBranch] || record[filenameBranch]) {
+    if (record[filehashBranch] || filenameFull) {
       return (
         <div>
           <p>{record[filehashBranch]}</p>
 
-          <p>{record[filenameBranch]}</p>
+          <p>{filenameFull}</p>
 
           <button type="button" onClick={() => onView()}>
             ▶️
@@ -148,7 +142,7 @@ export function AssetView({ schema, record }) {
         <div>
           <p>{record[filehashBranch]}</p>
 
-          <p>{record[filenameBranch]}</p>
+          <p>{filenameFull}</p>
 
           <button type="button" onClick={() => setBlobURL(undefined)}>
             🔽

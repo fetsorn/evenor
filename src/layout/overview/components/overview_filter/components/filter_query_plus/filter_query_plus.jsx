@@ -1,8 +1,8 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useStore } from "../../../../../../store/index.js";
+import { useStore } from "@/store/index.js";
+import { Dropdown } from "@/components/index.js";
 import styles from "./filter_query_plus.module.css";
-import { Dropdown } from "../../../../../../components/index.js";
 
 /**
  * return leaves of base
@@ -12,7 +12,7 @@ import { Dropdown } from "../../../../../../components/index.js";
  * @param {string} base - field of schema.
  * @returns {string[]} - list of lieaves of base
  */
-function filterLeaves(schema, base) {
+function findLeaves(schema, base) {
   // how to find all leaves of base. It should return all branches that have trunk === base when you select the plus button(base)
   return Object.keys(schema).filter((branch) => schema[branch].trunk === base);
 }
@@ -20,36 +20,37 @@ function filterLeaves(schema, base) {
 export function FilterQueryPlus({}) {
   const { i18n, t } = useTranslation();
 
-  const [base, queries, schema, onQueryAdd] = useStore((state) => [
+  const [base, queries, schema, setQuery] = useStore((state) => [
     state.base,
     state.queries,
     state.schema,
-    state.onQueryAdd,
+    state.setQuery,
   ]);
 
   // find all fields name
-  const leafFields = filterLeaves(schema, base).concat([base]);
+  const leafFields = findLeaves(schema, base).concat([base]);
   // find field name which added to filterqueries
   const addedFields = Object.keys(queries);
   // find name fields which is not added to filterqueries
   const notAddedFields = leafFields.filter((key) => !addedFields.includes(key));
-  // transform list of fieldnames(array of strings) to list of objects in dropdown
-  const menuItems = notAddedFields.map((key) => ({
-    onClick: () => {
-      onQueryAdd(key, "");
-    },
-    label: key,
-  }));
 
   return (
     <div className={styles.search}>
-      <Dropdown
-        {...{
-          label: "+",
-          title: "title",
-          menuItems,
-        }}
-      />
+      <select
+        value="default"
+        style={{width: 40}}
+        onChange={({ target: { value: leaf } }) => setQuery(leaf, "")}
+      >
+        <option hidden disabled value="default">
+          +
+        </option>
+
+        {notAddedFields.map((leaf) => (
+          <option key={leaf} value={leaf}>
+            {leaf}
+          </option>
+        ))}
+      </select>
     </div>
   );
 }

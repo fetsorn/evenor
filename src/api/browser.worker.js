@@ -1,11 +1,5 @@
 import { CSVS } from "@fetsorn/csvs-js";
 
-async function grep(contentFile, patternFile, isInverted = false) {
-  const wasm = await import("@fetsorn/wasm-grep");
-
-  return wasm.grep(contentFile, patternFile, isInverted);
-}
-
 const readFile = (filepath) =>
   new Promise((res, rej) => {
     const channel = new MessageChannel();
@@ -30,14 +24,14 @@ async function select(message) {
     try {
       const searchParams = new URLSearchParams(message.data.searchParams);
 
-      result = await new CSVS({ readFile, grep }).select(searchParams);
+      result = await new CSVS({ readFile }).select(searchParams);
     } catch (e) {
       result = [];
     }
 
     message.ports[0].postMessage({ result });
   } catch (e) {
-    message.ports[0].postMessage({ error: e });
+    message.ports[0].postMessage({ error: JSON.stringify(e) });
   }
 }
 
@@ -47,26 +41,27 @@ async function selectStream(message) {
   try {
     const searchParams = new URLSearchParams(message.data.searchParams);
 
-    const { base, baseKeys } = await new CSVS({
-      readFile,
-      grep,
-    }).selectBaseKeys(searchParams);
+    const client = new CSVS({ readFile });
 
-    for (const baseKey of baseKeys) {
-      const record = await new CSVS({ readFile, grep }).buildRecord(
-        base,
-        baseKey,
-      );
+    const result = await client.selectBaseKeys(searchParams);
 
-      postMessage({
-        action: "write",
-        record,
-      });
+    if (result) {
+      const { base, baseKeys } = result;
+
+      // must keep a common client instance here to reuse cache
+      for (const baseKey of baseKeys) {
+        const record = await client.buildRecord(base, baseKey);
+
+        postMessage({
+          action: "write",
+          record,
+        });
+      }
     }
 
     postMessage({ action: "close" }, [channel.port2]);
   } catch (e) {
-    postMessage({ action: "error", error: e }, [channel.port2]);
+    postMessage({ action: "error", error: JSON.stringify(e) }, [channel.port2]);
   }
 }
 

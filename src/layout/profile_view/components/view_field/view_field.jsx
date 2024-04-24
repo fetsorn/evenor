@@ -1,259 +1,85 @@
-import React, { useState, Suspense } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
-import { AssetView } from "../../../../components/index.js";
-import { useStore } from "../../../../store/index.js";
-import { FieldText } from "..";
+import { ViewValue, ViewRecord, ViewRemote, ViewSync } from "../index.js";
+import { AssetView, Spoiler } from "@/components/index.js";
+import { useStore } from "@/store/index.js";
+import { isTwig } from "@fetsorn/csvs-js";
 
-const Dispenser = React.lazy(() => import("../dispenser/components/index.js"));
+function ViewFieldItem({ schema, index, base, item, description }) {
+  const [ record, repoUUID ] = useStore((state) => [ state.record, state.repoUUID ]);
 
-export function ViewField({ record, schema, isBaseObject }) {
-  const { i18n, t } = useTranslation();
+  const isHomeScreen = repoUUID === "root";
 
-  const [isOpen, setIsOpen] = useState(false);
+  const isFile = schema[base].task === "file";
 
-  const [isOpenUUID, setIsOpenUUID] = useState(false);
+  const isRemote = isHomeScreen && task === "remote";
 
-  const [baseRecord, repoUUID] = useStore((state) => [
-    state.record,
-    state.repoUUID,
-  ]);
+  const isSync = isHomeScreen && task === "sync";
 
-  const branch = record._;
+  const baseIsTwig = isTwig(schema, base);
 
-  const branchType = schema[branch]?.type;
-
-  const branchTask = schema[branch]?.task;
-
-  const branchDescription =
-    schema?.[branch]?.description?.[i18n.resolvedLanguage] ?? branch;
-
-  const uuidDescription = t("profile.label.uuid");
-
-  const trunk = schema[branch]?.trunk;
-
-  if (trunk === undefined && branchType !== "array" && isBaseObject) {
+  if (baseIsTwig) {
     return (
-      <div>
-        <div>
-          {!isOpenUUID ? (
-            <div>
-              <button type="button" onClick={() => setIsOpenUUID(true)}>
-                ▶️
-              </button>
-
-              {uuidDescription}
-            </div>
-          ) : (
-            <div>
-              <div>
-                <button type="button" onClick={() => setIsOpenUUID(false)}>
-                  🔽
-                </button>
-
-                {uuidDescription}
-              </div>
-
-              {record.UUID}
-            </div>
-          )}
-        </div>
-
-        {Object.keys(record).map((leaf) => {
-          if (leaf === "_" || leaf === "UUID") {
-            return;
-          }
-
-          const leafRecord =
-            schema[leaf]?.type === "object" || schema[leaf]?.type === "array"
-              ? record[leaf]
-              : { _: leaf, [leaf]: record[leaf] };
-
-          return (
-            <div key={(record.UUID ?? "") + leaf}>
-              <ViewField record={leafRecord} schema={schema} />
-            </div>
-          );
-        })}
-      </div>
+      <ViewValue
+        schema={schema}
+        index={index}
+        base={base}
+        description={description}
+        value={item}
+      />
     );
   }
 
-  if (trunk === "tags") {
-    return (
-      <div>
-        {!isOpen ? (
-          <div>
-            <button type="button" onClick={() => setIsOpen(true)}>
-              ▶️
-            </button>
-
-            {branchDescription}
-          </div>
-        ) : (
-          <div>
-            <div>
-              <button type="button" onClick={() => setIsOpen(false)}>
-                🔽
-              </button>
-
-              {branchDescription}
-            </div>
-
-            <Suspense>
-              <Dispenser {...{ baseRecord, branchRecord: record }} />
-            </Suspense>
-          </div>
-        )}
-      </div>
-    );
+  if (isFile) {
+    return <AssetView {...{ record: item, schema }} />;
   }
 
-  switch (branchType) {
-    case "array":
-      return (
-        (repoUUID !== "root" || branch !== "schema") && (
-          <div>
-            {!isOpen ? (
-              <div>
-                <button type="button" onClick={() => setIsOpen(true)}>
-                  ▶️
-                </button>
-
-                {branchDescription}
-              </div>
-            ) : (
-              <div>
-                <div>
-                  <button type="button" onClick={() => setIsOpen(false)}>
-                    🔽
-                  </button>
-
-                  {branchDescription}
-                </div>
-
-                <div>
-                  {!isOpenUUID ? (
-                    <div>
-                      <button type="button" onClick={() => setIsOpenUUID(true)}>
-                        ▶️
-                      </button>
-
-                      {uuidDescription}
-                    </div>
-                  ) : (
-                    <div>
-                      <div>
-                        <button
-                          type="button"
-                          onClick={() => setIsOpenUUID(false)}
-                        >
-                          🔽
-                        </button>
-
-                        {uuidDescription}
-                      </div>
-
-                      {record.UUID}
-                    </div>
-                  )}
-                </div>
-
-                {record.items.map((item) => (
-                  <div key={`array_item_${Math.random()}`}>
-                    <ViewField record={item} schema={schema} />
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )
-      );
-
-    case "object":
-      if (branchTask === "file") {
-        return <AssetView {...{ record, schema }} />;
-      }
-
-      return (
-        <div>
-          {!isOpen ? (
-            <div>
-              <button type="button" onClick={() => setIsOpen(true)}>
-                ▶️
-              </button>
-
-              {branchDescription}
-            </div>
-          ) : (
-            <div>
-              <div>
-                <button type="button" onClick={() => setIsOpen(false)}>
-                  🔽
-                </button>
-
-                {branchDescription}
-              </div>
-
-              <div>
-                {!isOpenUUID ? (
-                  <div>
-                    <button type="button" onClick={() => setIsOpenUUID(true)}>
-                      ▶️
-                    </button>
-
-                    {uuidDescription}
-                  </div>
-                ) : (
-                  <div>
-                    <div>
-                      <button
-                        type="button"
-                        onClick={() => setIsOpenUUID(false)}
-                      >
-                        🔽
-                      </button>
-
-                      {uuidDescription}
-                    </div>
-
-                    {record.UUID}
-                  </div>
-                )}
-              </div>
-
-              {Object.keys(record).map((leaf) => {
-                if (leaf === "_" || leaf === "UUID") {
-                  return <div />;
-                }
-
-                const leafRecord =
-                  schema[leaf]?.type === "object" ||
-                  schema[leaf]?.type === "array"
-                    ? record[leaf]
-                    : { _: leaf, [leaf]: record[leaf] };
-
-                return (
-                  <div key={(record.UUID ?? "") + leaf}>
-                    <ViewField record={leafRecord} schema={schema} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-      );
-
-    default:
-      if (branchTask === "filename") {
-        return <AssetView {...{ record, schema }} />;
-      }
-
-      return (
-        <div>
-          {branchDescription}
-
-          <FieldText value={record[branch]} />
-        </div>
-      );
+  if (isRemote) {
+    return <ViewRemote {...{ baseRecord: record, branchRecord: item }} />;
   }
+
+  if (isSync) {
+    return <ViewSync {...{ baseRecord: record, branchRecord: item }} />;
+  }
+
+  return (
+    <ViewRecord
+      index={`${index}-${item[base]}`}
+      schema={schema}
+      base={base}
+      record={item}
+    />
+  );
+}
+
+export function ViewField({ schema, index, base, items }) {
+  const { i18n } = useTranslation();
+
+  const description =
+        schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
+
+  // TODO handle error when items is not array
+  return (
+    <Spoiler
+      {...{
+        index,
+        title: base,
+        description,
+        isIgnored: items.length < 2, // only show spoiler for multiple items
+        onRemove: () => onFieldRemove(),
+      }}
+    >
+      {items.map((item, idx) => (
+        <ViewFieldItem
+          key={idx}
+          {...{
+            schema,
+            index,
+            base,
+            item,
+            description
+          }} />
+      ))}
+    </Spoiler>
+  );
 }

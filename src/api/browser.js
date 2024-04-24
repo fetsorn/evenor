@@ -1,4 +1,7 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
+import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
+import { schemaRoot, branchRecordsToSchema } from "./schema.js";
+import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
 
@@ -6,8 +9,12 @@ const pfs = fs.promises;
 
 const lfsDir = "lfs";
 
+const __BUILD_MODE__ = "browser";
+
 async function runWorker(readFile, searchParams) {
-  const worker = new Worker(new URL("./browser.worker", import.meta.url));
+  const worker = new Worker(new URL("./browser.worker.js", import.meta.url), {
+    type: "module",
+  });
 
   worker.onmessage = async (message) => {
     switch (message.data.action) {
@@ -187,39 +194,51 @@ export class BrowserAPI {
     await this.writeFile(assetEndpoint, buffer);
   }
 
-  async uploadFile(file) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === "server") {
-      const form = new FormData();
+  async uploadFile() {
+    const input = document.createElement("input");
 
-      form.append("file", file);
+    input.type = "file";
 
-      const response = await fetch("/upload", {
-        method: "POST",
-        body: form,
-      });
+    input.multiple = "multiple";
 
-      const [hashHexString, filename] = JSON.parse(await response.text());
+    let metadata = [];
 
-      return [hashHexString, filename];
-    }
+    await new Promise((res, rej) => {
+      input.onchange = async (e) => {
+        for (const file of e.target.files) {
+          const fileArrayBuffer = await file.arrayBuffer();
 
-    const fileArrayBuffer = await file.arrayBuffer();
+          const hashArrayBuffer = await crypto.subtle.digest(
+            "SHA-256",
+            fileArrayBuffer,
+          );
 
-    const hashArrayBuffer = await crypto.subtle.digest(
-      "SHA-256",
-      fileArrayBuffer,
-    );
+          const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-    const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+          const hashHexString = hashByteArray
+                .map((b) => b.toString(16).padStart(2, "0"))
+                .join("");
 
-    const hashHexString = hashByteArray
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
+          const name = file.name.replace(/\.[^/.]+$/, "");
 
-    await this.putAsset(hashHexString, fileArrayBuffer);
+          const extension = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
 
-    return [hashHexString, file.name];
+          const assetname = `${hashHexString}.${extension}`;
+
+          await this.putAsset(assetname, fileArrayBuffer);
+
+          const metadatum = { hash: hashHexString, name, extension };
+
+          metadata.push(metadatum)
+        };
+
+        res();
+      }
+
+      input.click()
+    })
+
+    return metadata;
   }
 
   async select(searchParams) {
@@ -235,7 +254,10 @@ export class BrowserAPI {
 
     const strm = new ReadableStream({
       start(controller) {
-        const worker = new Worker(new URL("./browser.worker", import.meta.url));
+        const worker = new Worker(
+          new URL("./browser.worker", import.meta.url),
+          { type: "module" },
+        );
 
         closeHandler = () => {
           try {
@@ -310,39 +332,22 @@ export class BrowserAPI {
     return overview;
   }
 
-  async updateRecord(record, overview) {
+  async updateRecord(record) {
     const { CSVS } = await import("@fetsorn/csvs-js");
-
-    const { deepClone } = await import("./curse_controller.js");
-
-    const recordNew = await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).update(deepClone(record));
-
-    if (overview.find((e) => e.UUID === recordNew.UUID)) {
-      return overview.map((e) => {
-        if (e.UUID === recordNew.UUID) {
-          return recordNew;
-        }
-        return e;
-      });
-    }
-
-    return overview.concat([recordNew]);
-  }
-
-  async deleteRecord(record, overview) {
-    const { CSVS } = await import("@fetsorn/csvs-js");
-
-    const { deepClone } = await import("./curse_controller.js");
 
     await new CSVS({
       readFile: (filepath) => this.readFile(filepath),
       writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).delete(deepClone(record));
+    }).update(structuredClone(record));
+  }
 
-    return overview.filter((e) => e.UUID !== record.UUID);
+  async deleteRecord(record) {
+    const { CSVS } = await import("@fetsorn/csvs-js");
+
+    await new CSVS({
+      readFile: (filepath) => this.readFile(filepath),
+      writeFile: (filepath, content) => this.writeFile(filepath, content),
+    }).delete(structuredClone(record));
   }
 
   async clone(remoteUrl, remoteToken, name) {
@@ -493,7 +498,6 @@ export class BrowserAPI {
     }
   }
 
-  // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
   async uploadBlobsLFS(remote, files) {
     const { pointsToLFS, uploadBlobs } = await import("@fetsorn/isogit-lfs");
@@ -589,7 +593,7 @@ export class BrowserAPI {
     });
   }
 
-  async ensure(schema, name) {
+  async ensure(name) {
     const dir = `/${this.uuid}${name !== undefined ? `-${name}` : ""}`;
 
     const { init, setConfig } = await import("isomorphic-git");
@@ -648,11 +652,7 @@ export class BrowserAPI {
       value: true,
     });
 
-    await pfs.writeFile(
-      `${dir}/metadir.json`,
-      JSON.stringify(schema, null, 2),
-      "utf8",
-    );
+    await pfs.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
 
     await this.commit();
   }
@@ -704,9 +704,15 @@ export class BrowserAPI {
   }
 
   async readSchema() {
-    const schemaString = await this.readFile("metadir.json");
+    if (this.uuid === "root") {
+      return schemaRoot;
+    }
 
-    const schema = JSON.parse(schemaString);
+    const [schemaRecord] = await this.select(new URLSearchParams("?_=_"));
+
+    const branchRecords = await this.select(new URLSearchParams("?_=branch"));
+
+    const schema = branchRecordsToSchema(schemaRecord, branchRecords);
 
     return schema;
   }
@@ -723,10 +729,8 @@ export class BrowserAPI {
     return index;
   }
 
-  async downloadAsset(content, filename) {
-    const { saveAs } = await import("file-saver");
-
-    await saveAs(content, filename);
+  downloadAsset(content, filename) {
+    saveAs(content, filename);
   }
 
   async zip() {
@@ -775,6 +779,8 @@ export class BrowserAPI {
     }
 
     await this.clone(remoteUrl, remoteToken);
+    // TODO add new repo to root
+    // TODO return a repo record
   }
 
   // returns Uint8Array file contents
@@ -794,23 +800,25 @@ export class BrowserAPI {
         path: "asset.path",
       });
 
-      const assetPath = `${assetEndpoint}/${filename}`;
+      if (assetEndpoint) {
+        const assetPath = `${assetEndpoint}/${filename}`;
 
-      // if URL, try to fetch
-      try {
-        new URL(assetPath);
+        // if URL, try to fetch
+        try {
+          new URL(assetPath);
 
-        content = await fetch(assetPath);
+          content = await fetch(assetPath);
+
+          return content;
+        } catch (e) {
+          // do nothing
+        }
+
+        // otherwise try to read from fs
+        content = await fs.promises.readFile(assetPath);
 
         return content;
-      } catch (e) {
-        // do nothing
       }
-
-      // otherwise try to read from fs
-      content = await fs.promises.readFile(assetPath);
-
-      return content;
     } catch (e) {
       // do nothing
     }

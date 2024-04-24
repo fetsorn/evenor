@@ -1,18 +1,19 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { API } from "@/api/index.js";
+import { useStore } from "@/store/index.js";
 import styles from "./filter_query_list.module.css";
-import { useStore } from "../../../../../../store/index.js";
-import { API } from "../../../../../../api/index.js";
 
 export function FilterQueryList() {
   const { t } = useTranslation();
 
-  const [queries, onQueryRemove, onQueryAdd, repoUUID] = useStore((state) => [
+  const [queries, setQuery, repo] = useStore((state) => [
     state.queries,
-    state.onQueryRemove,
-    state.onQueryAdd,
-    state.repoUUID,
+    state.setQuery,
+    state.repo,
   ]);
+
+  const { repo: repoUUID } = repo;
 
   const api = new API(repoUUID);
 
@@ -41,7 +42,7 @@ export function FilterQueryList() {
             <button
               type="button"
               title={t("header.button.remove", { field })}
-              onClick={() => onQueryRemove(field)}
+              onClick={() => setQuery(field, undefined)}
               style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
             >
               X
@@ -57,7 +58,7 @@ export function FilterQueryList() {
               list={`panel_list-${field ?? Math.random()}`}
               onFocus={() => onFocus(field)}
               onChange={({ target: { value } }) => {
-                onQueryAdd(field, value);
+                setQuery(field, value);
               }}
             />
           </label>

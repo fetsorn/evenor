@@ -79,21 +79,24 @@
 // }
 
 // buf: ArrayBuffer
-async function pptxToHtml(buf) {
-  const {
-    // docx,
-    pptx,
-    // xlsx,
-    // drawml
-  } = await import("docx4js");
-  const pptxObj = await pptx.load(buf);
-
-  const html = await pptxObj.render((_type, _props, children) =>
-    children.join("\n"),
-  );
-
-  return html;
-}
+//async function pptxToHtml(buf) {
+//
+//  // vite fails to package dependency cfb due to recursive import
+//  // Error: Cannot copy '../../../../../printj/bin/printj.njs' to a subdirectory of itself, '../../../../../printj/bin/printj.njs'.
+//  const {
+//    // docx,
+//    pptx,
+//    // xlsx,
+//    // drawml
+//  } = await import("docx4js");
+//  const pptxObj = await pptx.load(buf);
+//
+//  const html = await pptxObj.render((_type, _props, children) =>
+//    children.join("\n"),
+//  );
+//
+//  return html;
+//}
 
 // buf: ArrayBuffer
 // async function docToHtml(buf) {
@@ -111,34 +114,36 @@ async function pptxToHtml(buf) {
 // }
 
 // buf: ArrayBuffer
-async function pptToHtml(buf) {
-  const b = Buffer.from(buf);
-
-  const cfb = await import("cfb");
-
-  // ppt requires cfb^0.10.0
-  const cfbObj = cfb.read(b, { type: "buffer" });
-
-  const PPT = await import("@fetsorn/ppt");
-
-  const pptObj = PPT.parse_pptcfb(cfbObj);
-
-  // { docs: [ { slideList: [ "" ] } ]
-  //   slides: [ { drawing: { groupShape: [ { clientTextbox: { t: "" } } ] } } ] }
-  const textboxes = pptObj.slides.map((slide) =>
-    slide.drawing?.groupShape
-
-      ?.map((shape) => shape.clientTextbox?.t)
-
-      .join("\n"),
-  );
-
-  const headings = pptObj.docs.map((doc) => doc.slideList?.join("\n"));
-
-  const html = headings.join("\n") + textboxes.join("\n");
-
-  return html;
-}
+//async function pptToHtml(buf) {
+//  const b = Buffer.from(buf);
+//
+//  // vite fails to package cfb due to recursive import
+//  // Error: Cannot copy '../../../../../printj/bin/printj.njs' to a subdirectory of itself, '../../../../../printj/bin/printj.njs'.
+//  const cfb = await import("cfb");
+//
+//  // ppt requires cfb^0.10.0
+//  const cfbObj = cfb.read(b, { type: "buffer" });
+//
+//  const PPT = await import("@fetsorn/ppt");
+//
+//  const pptObj = PPT.parse_pptcfb(cfbObj);
+//
+//  // { docs: [ { slideList: [ "" ] } ]
+//  //   slides: [ { drawing: { groupShape: [ { clientTextbox: { t: "" } } ] } } ] }
+//  const textboxes = pptObj.slides.map((slide) =>
+//    slide.drawing?.groupShape
+//
+//      ?.map((shape) => shape.clientTextbox?.t)
+//
+//      .join("\n"),
+//  );
+//
+//  const headings = pptObj.docs.map((doc) => doc.slideList?.join("\n"));
+//
+//  const html = headings.join("\n") + textboxes.join("\n");
+//
+//  return html;
+//}
 
 // buf: ArrayBuffer
 async function rtfToHtml(buf) {
@@ -175,17 +180,17 @@ async function toHtml(path, buf) {
   //   return docxToHtml(buf);
   // }
 
-  if (/.pptx$/.test(path)) {
-    return pptxToHtml(buf);
-  }
+  // if (/.pptx$/.test(path)) {
+  //   return pptxToHtml(buf);
+  // }
 
   // if (/.doc$/.test(path)) {
   //   return docToHtml(buf);
   // }
 
-  if (/.ppt$/.test(path)) {
-    return pptToHtml(buf);
-  }
+  // if (/.ppt$/.test(path)) {
+  //   return pptToHtml(buf);
+  // }
 
   if (/.rtf$/.test(path)) {
     return rtfToHtml(buf);

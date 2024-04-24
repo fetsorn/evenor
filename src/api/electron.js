@@ -2,10 +2,12 @@ import fs from "fs";
 import path from "path";
 import { URLSearchParams } from "url";
 import { app, dialog } from "electron";
+import { schemaRoot, branchRecordsToSchema } from "./schema.js";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
-import { exportPDF, generateLatex } from "lib/latex";
-import { Worker } from "node:worker_threads";
+// import { exportPDF, generateLatex } from "lib/latex";
+// import { Worker } from "node:worker_threads";
+import Worker from './electron.worker.js?nodeWorker'
 
 const pfs = fs.promises;
 
@@ -37,10 +39,17 @@ async function runWorker(workerData) {
   }
 
   return new Promise((resolve, reject) => {
+    //const worker = new Worker(
+    //  new URL("./electron.worker.js", import.meta.url),
+    //  {
+    //    workerData,
+    //    type: "module",
+    //  },
+    //);
     const worker = new Worker(
-      new URL("./electron.worker.js", import.meta.url),
       {
         workerData,
+        type: "module",
       },
     );
 
@@ -153,31 +162,45 @@ export class ElectronAPI {
   }
 
   async uploadFile() {
-    const res = await dialog.showOpenDialog({ properties: ["openFile"] });
+    const res = await dialog.showOpenDialog({ properties: ["openFile", "multiSelections"] });
 
     if (res.canceled) {
       throw Error("cancelled");
     } else {
-      const filepath = res.filePaths[0];
+      let metadata = [];
 
-      const fileArrayBuffer = fs.readFileSync(filepath);
+      for (const filepath of res.filePaths) {
+        const fileArrayBuffer = fs.readFileSync(filepath);
 
-      const crypto = await import("crypto");
+        const crypto = await import("crypto");
 
-      const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
-        "SHA-256",
-        fileArrayBuffer,
-      );
+        const hashArrayBuffer = await crypto.webcrypto.subtle.digest(
+          "SHA-256",
+          fileArrayBuffer,
+        );
 
-      const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+        const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
-      const hashHexString = hashByteArray
-        .map((b) => b.toString(16).padStart(2, "0"))
-        .join("");
+        const hashHexString = hashByteArray
+              .map((b) => b.toString(16).padStart(2, "0"))
+              .join("");
 
-      await this.putAsset(hashHexString, fileArrayBuffer);
+        const filename = path.basename(filepath);
 
-      return [hashHexString, path.basename(filepath)];
+        const name = filename.replace(/\.[^/.]+$/, "");
+
+        const extension = /(?:\.([^.]+))?$/.exec(filename)[1]?.trim();
+
+        const assetname = `${hashHexString}.${extension}`;
+
+        await this.putAsset(assetname, fileArrayBuffer);
+
+        const metadatum = { hash: hashHexString, name, extension };
+
+        metadata.push(metadatum);
+      }
+
+      return metadata
     }
   }
 
@@ -198,14 +221,25 @@ export class ElectronAPI {
       // do nothing
     }
 
+    //const worker = new Worker(
+    //  new URL("./electron.worker.js", import.meta.url),
+    //  {
+    //    workerData: {
+    //      msg: "selectStream",
+    //      dir: this.dir,
+    //      searchParamsString: searchParams.toString(),
+    //    },
+    //    type: "module",
+    //  },
+    //);
     const worker = new Worker(
-      new URL("./electron.worker.js", import.meta.url),
       {
         workerData: {
           msg: "selectStream",
           dir: this.dir,
           searchParamsString: searchParams.toString(),
         },
+        type: "module",
       },
     );
 
@@ -238,33 +272,20 @@ export class ElectronAPI {
     });
   }
 
-  async updateRecord(record, overview) {
-    const recordNew = await runWorker({
+  async updateRecord(record) {
+    await runWorker({
       msg: "update",
       dir: this.dir,
       record,
     });
-
-    if (overview.find((e) => e.UUID === recordNew.UUID)) {
-      return overview.map((e) => {
-        if (e.UUID === recordNew.UUID) {
-          return recordNew;
-        }
-        return e;
-      });
-    }
-
-    return overview.concat([recordNew]);
   }
 
-  async deleteRecord(record, overview) {
+  async deleteRecord(record) {
     await runWorker({
       msg: "delete",
       dir: this.dir,
-      record,
+      record: record,
     });
-
-    return overview.filter((e) => e.UUID !== record.UUID);
   }
 
   async clone(remoteUrl, remoteToken, name) {
@@ -282,7 +303,9 @@ export class ElectronAPI {
       throw Error(`could not clone, directory ${this.uuid} exists`);
     }
 
-    this.dir = path.join(appPath, `${this.uuid}-${name}`);
+    const dirname = name ? `${this.uuid}-${name}` : this.uuid;
+
+    this.dir = path.join(appPath, dirname);
 
     const options = {
       fs,
@@ -292,13 +315,17 @@ export class ElectronAPI {
       singleBranch: true,
     };
 
-    if (remoteToken) {
-      options.onAuth = () => ({
-        username: remoteToken,
-      });
-    }
+    const authPartial = remoteToken
+          ? { onAuth: () => ({ username: remoteToken }) }
+          : {};
 
-    await git.clone(options);
+    try {
+      await git.clone( { ...options, ...authPartial });
+    } catch(e) {
+      // if clone failed, remove directory
+      await ElectronAPI.rimraf(this.dir);
+      throw e
+    }
 
     await git.setConfig({
       fs,
@@ -417,7 +444,6 @@ export class ElectronAPI {
     }
   }
 
-  // called with "files" by dispensers which need to check download acitons
   // called without "files" on push
   async uploadBlobsLFS(remote, files) {
     const { pointsToLFS, uploadBlobs } = await import("@fetsorn/isogit-lfs");
@@ -499,18 +525,16 @@ export class ElectronAPI {
     });
   }
 
-  async ensure(schema, name) {
+  async ensure(name) {
     try {
       await pfs.stat(appPath);
     } catch {
       await pfs.mkdir(appPath);
     }
 
-    if (name) {
-      this.dir = path.join(appPath, `${this.uuid}-${name}`);
-    } else {
-      this.dir = path.join(appPath, `${this.uuid}`);
-    }
+    const dirname = name ? `${this.uuid}-${name}` : `${this.uuid}`;
+
+    this.dir = path.join(appPath, dirname);
 
     const { dir } = this;
 
@@ -560,11 +584,7 @@ export class ElectronAPI {
       value: true,
     });
 
-    await pfs.writeFile(
-      path.join(dir, "metadir.json"),
-      JSON.stringify(schema, null, 2),
-      "utf8",
-    );
+    await pfs.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
 
     await this.commit();
   }
@@ -607,18 +627,24 @@ export class ElectronAPI {
     }
   }
 
-  static async latex() {
-    const text = generateLatex([]);
+  // static async latex() {
+  //   const text = generateLatex([]);
 
-    const pdfURL = await exportPDF(text);
+  //   const pdfURL = await exportPDF(text);
 
-    return pdfURL;
-  }
+  //   return pdfURL;
+  // }
 
   async readSchema() {
-    const schemaString = await this.readFile("metadir.json");
+    if (this.uuid === "root") {
+      return schemaRoot;
+    }
 
-    const schema = JSON.parse(schemaString);
+    const [schemaRecord] = await this.select(new URLSearchParams("?_=_"));
+
+    const branchRecords = await this.select(new URLSearchParams("?_=branch"));
+
+    const schema = branchRecordsToSchema(schemaRecord, branchRecords);
 
     return schema;
   }
@@ -710,23 +736,25 @@ export class ElectronAPI {
         path: "asset.path",
       });
 
-      const assetPath = path.join(assetEndpoint, filename);
+      if (assetEndpoint) {
+        const assetPath = path.join(assetEndpoint, filename);
 
-      // if URL, try to fetch
-      try {
-        new URL(assetPath);
+        // if URL, try to fetch
+        try {
+          new URL(assetPath);
 
-        content = await fetch(assetPath);
+          content = await fetch(assetPath);
+
+          return content;
+        } catch (e) {
+          // do nothing
+        }
+
+        // otherwise try to read from fs
+        content = await fs.readFileSync(assetPath);
 
         return content;
-      } catch (e) {
-        // do nothing
       }
-
-      // otherwise try to read from fs
-      content = await fs.readFileSync(assetPath);
-
-      return content;
     } catch (e) {
       console.log(e);
       // do nothing

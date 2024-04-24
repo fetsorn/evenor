@@ -1,6 +1,29 @@
 // import axios from "axios";
 import { invoke } from "@tauri-apps/api/core";
 import { BrowserAPI } from "./browser.js";
+import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
+import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
+
+if (!window.WritableStream) {
+  window.WritableStream = WritableStreamPolyfill;
+  window.ReadableStream = ReadableStreamPolyfill;
+}
+
+(function () {
+  File.prototype.arrayBuffer = File.prototype.arrayBuffer || myArrayBuffer;
+  Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || myArrayBuffer;
+
+  function myArrayBuffer() {
+    // this: File or Blob
+    return new Promise((resolve) => {
+      let fr = new FileReader();
+      fr.onload = () => {
+        resolve(fr.result);
+      };
+      fr.readAsArrayBuffer(this);
+    })
+  }
+})();
 
 export class API {
   // UUID of repo in the store
@@ -15,11 +38,14 @@ export class API {
     this.#browser = new BrowserAPI(uuid);
   }
 
-  async helloWorld(someVariable) {
+  async helloWorld(someVariable = "") {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
+      case "electron":
+        return
+
       case "tauri":
-        return invoke("helloWorld", { someVariable });
+        return invoke("hello_world", { someVariable });
 
       default:
         return this.#browser.helloWorld(someVariable);
@@ -59,14 +85,14 @@ export class API {
     }
   }
 
-  async uploadFile(file) {
+  async uploadFile() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.uploadFile(this.uuid);
 
       default:
-        return this.#browser.uploadFile(file);
+        return this.#browser.uploadFile();
     }
   }
 
@@ -136,25 +162,25 @@ export class API {
     }
   }
 
-  async updateRecord(record, overview = []) {
+  async updateRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.updateRecord(this.uuid, record, overview);
+        return window.electron.updateRecord(this.uuid, record);
 
       default:
-        return this.#browser.updateRecord(record, overview);
+        return this.#browser.updateRecord(record);
     }
   }
 
-  async deleteRecord(record, overview = []) {
+  async deleteRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.deleteRecord(this.uuid, record, overview);
+        return window.electron.deleteRecord(this.uuid, record);
 
       default:
-        return this.#browser.deleteRecord(record, overview);
+        return this.#browser.deleteRecord(record);
     }
   }
 
@@ -287,7 +313,7 @@ export class API {
         return window.electron.zip(this.uuid);
 
       default:
-        return BrowserAPI.zip();
+        return this.#browser.zip();
     }
   }
 
@@ -370,7 +396,7 @@ export class API {
   async getSettings() {
     const searchParams = new URLSearchParams();
 
-    searchParams.set("reponame", this.uuid);
+    searchParams.set("repo", this.uuid);
 
     const [record] = await new API("root").select(searchParams);
 

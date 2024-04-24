@@ -204,10 +204,10 @@ export async function saveRepoRecord(record) {
   }
 
   // write remotes to .git/config
-  await writeRemotes(api, tagsRemote);
+  await writeRemotes(api, record.remote_tag);
 
   // write locals to .git/config
-  await writeLocals(api, tagsLocal);
+  await writeLocals(api, record.local_tag);
 
   await api.commit();
 

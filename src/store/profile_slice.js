@@ -68,19 +68,17 @@ export const createProfileSlice = (set, get) => ({
 
   // create new record or update old record
   onRecordEdit: async (recordNew) => {
-    const { repo, base } = get();
-
-    const { repo: repoUUID } = repo;
+    const { repo: { repo: repoUUID }, base } = get();
 
     // if new repo record, set default values for required fields
     const isRepoRecord = repoUUID === "root" && base === "repo";
 
-    const defaults = isRepoRecord ? generateDefaultRepoRecord() : {};
+    const repoPartial = isRepoRecord ? generateDefaultRepoRecord() : {};
 
     const record = recordNew ?? {
-      ...defaults,
       _: base,
       [base]: await newUUID(),
+      ...repoPartial,
     };
 
     set({ record, isEdit: true });

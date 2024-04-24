@@ -92,15 +92,19 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
       return addFileValue(branch)
     }
 
-    const needsUUID = schema[branch].task === "file";
+    const isRemote = repoUUID === "root" && branch === "remote_tag";
+
+    const needsUUID = isRemote;
 
     const valueDefault = needsUUID ? newUUID() : "";
 
-    // TODO: if task is file, call upload and insert the fields
+    const remotePartial = isRemote
+          ? { remote_url: "", remote_token: "" }
+          : {};
 
     const value = isTwig(schema, branch)
-      ? valueDefault
-      : { _: branch, [branch]: valueDefault };
+          ? valueDefault
+          : { _: branch, [branch]: valueDefault, ...remotePartial };
 
     const valuesOld = record[branch];
 
@@ -121,6 +125,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
         index,
         title: base,
         description,
+        isOpenDefault: true,
         onRemove: () => onRecordRemove(),
       }}
     >
@@ -156,7 +161,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
             key={idx}
             {...{
               schema,
-              index,
+              index: `${index}-${leaf}`,
               base: leaf,
               items: Array.isArray(record[leaf])
                 ? record[leaf]

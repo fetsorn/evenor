@@ -196,15 +196,15 @@ export const schemaRoot = {
   remote_tag: {
     trunk: "repo",
     description: {
-      en: "Name of remote git repository",
-      ru: "Название удаленного git репозитория",
+      en: "Name of git repository",
+      ru: "Название git репозитория",
     },
   },
   remote_url: {
     trunk: "remote_tag",
     description: {
-      en: "Name of database to sync",
-      ru: "Название базы данных для синхронизации",
+      en: "URL to git repository",
+      ru: "Путь к git репозиторию",
     },
   },
   remote_token: {

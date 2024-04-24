@@ -23,6 +23,7 @@ export function ViewRecord({ schema, index, base, record }) {
         index,
         title: base,
         description,
+        isOpenDefault: true,
       }}
     >
       <ViewValue
@@ -41,7 +42,7 @@ export function ViewRecord({ schema, index, base, record }) {
             key={idx}
             {...{
               schema,
-              index,
+              index: `${index}-${leaf}`,
               base: leaf,
               items: Array.isArray(record[leaf])
                 ? record[leaf]

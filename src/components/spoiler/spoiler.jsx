@@ -3,41 +3,60 @@ import { useTranslation } from "react-i18next";
 import { create } from "zustand";
 
 const useSpoilerStore = create()((set, get) => ({
-  mapIsOpen: { _: true },
+  mapIsOpen: {},
 
-  openIndex: (index, isOpen) => {
+  isOpen: (index) => {
     const { mapIsOpen } = get();
 
-    mapIsOpen[index] = isOpen;
+    return mapIsOpen[index];
+  },
 
-    set({ mapIsOpen });
+  setIsOpen: (index, isOpen) => {
+    const { mapIsOpen } = get();
+
+    set({ mapIsOpen: { ...mapIsOpen, [index]: isOpen } });
   },
 }));
 
-export function Spoiler({ index, title, description, children, onRemove }) {
+export function Spoiler({
+  index,
+  title,
+  description,
+  children,
+  onRemove,
+  isIgnored,
+  isOpenDefault = false,
+  ...other
+}) {
   const { t } = useTranslation();
 
-  const [mapIsOpen, openIndex] = useSpoilerStore((state) => [
-    state.mapIsOpen,
-    state.openIndex,
+  const [isOpen, setIsOpen] = useSpoilerStore((state) => [
+    state.isOpen,
+    state.setIsOpen,
   ]);
 
-  const [isOpen, setIsOpen] = useState(mapIsOpen[index]);
+  if (isOpen(index) === undefined) {
+    setIsOpen(index, isOpenDefault);
+  }
 
   function open() {
-    openIndex(index, true);
-
-    setIsOpen(true);
+    setIsOpen(index, true);
   }
 
   function close() {
-    openIndex(index, false);
-
-    setIsOpen(false);
+    setIsOpen(index, false);
   }
 
-  return isOpen ? (
-    <div key={`${index}spoiler`}>
+  if (isIgnored) {
+    return (
+      <div>
+        {children}
+      </div>
+    )
+  }
+
+  return isOpen(index) ? (
+    <div key={`${index}-spoiler`}>
       <button type="button" onClick={close}>
         🔽️
       </button>

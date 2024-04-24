@@ -1,17 +1,77 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { EditInput, EditRecord, EditUpload } from "../index.js";
 import { isTwig } from "@fetsorn/csvs-js";
+import { EditInput, EditRecord, EditUpload } from "../index.js";
+import { Spoiler } from "@/components/index.js";
 
-export function EditField({ schema, index, base, items, onFieldChange, onFieldRemove }) {
+function EditFieldItem({
+  schema,
+  index,
+  base,
+  item,
+  description,
+  onFieldItemChange,
+  onFieldItemRemove
+}) {
+  const baseIsTwig = isTwig(schema, base);
+
+  const isFile = schema[base].task === "file";
+
+  if (baseIsTwig) {
+    return (
+      <EditInput
+        schema={schema}
+        index={index}
+        base={base}
+        description={description}
+        value={item}
+        onFieldValueChange={(_, valueNew) =>
+          onFieldItemChange(valueNew)
+        }
+        onFieldValueRemove={() => onFieldItemRemove()}
+      />
+    );
+  }
+
+  if (isFile) {
+    return (
+      <EditUpload
+        {...{
+          schema,
+          index: `${index}-${item[base]}`,
+          base,
+          record: item,
+          onFieldChange: (_, valueNew) =>
+          onFieldItemChange(valueNew),
+        }}
+      />
+    );
+  }
+
+  return (
+    <EditRecord
+      index={`${index}-${item[base]}`}
+      schema={schema}
+      base={base}
+      record={item}
+      onRecordChange={(recordNew) => onFieldItemChange(recordNew)}
+      onRecordRemove={() => onFieldItemRemove()}
+    />
+  );
+}
+
+export function EditField({
+  schema,
+  index,
+  base,
+  items,
+  onFieldChange,
+  onFieldRemove
+}) {
   const { i18n, t } = useTranslation();
 
   const description =
-    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
-
-  const baseIsTwig = isTwig(schema, base);
-
-  const task = schema[base].task;
+        schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   function onFieldItemChange(idx, itemNew) {
     // replace the new item at index
@@ -31,54 +91,28 @@ export function EditField({ schema, index, base, items, onFieldChange, onFieldRe
 
   // TODO handle error when items is not array
   return (
-    <div>
-      {items.map((item, idx) => {
-        if (baseIsTwig) {
-          return (
-            <div key={idx}>
-              <EditInput
-                schema={schema}
-                index={index}
-                base={base}
-                description={description}
-                value={item}
-                onFieldValueChange={(_, valueNew) =>
-                  onFieldItemChange(idx, valueNew)
-                }
-                onFieldValueRemove={() => onFieldItemRemove(idx)}
-              />
-            </div>
-          );
-        }
-
-        if (task === "file") {
-          return (
-            <EditUpload
-              {...{
-                key: idx,
-                schema,
-                index: `${index}${base}${item[base]}`,
-                base,
-                record: item,
-                onFieldChange: (_, valueNew) =>
-                  onFieldItemChange(idx, valueNew),
-              }}
-            />
-          );
-        }
-
-        return (
-          <EditRecord
-            index={`${index}${base}${item[base]}`}
-            key={idx}
-            schema={schema}
-            base={base}
-            record={item}
-            onRecordChange={(recordNew) => onFieldItemChange(idx, recordNew)}
-            onRecordRemove={() => onFieldItemRemove(idx)}
-          />
-        );
-      })}
-    </div>
+    <Spoiler
+      {...{
+        index,
+        title: base,
+        description,
+        isIgnored: items.length < 2, // only show spoiler for multiple items
+        onRemove: () => onFieldRemove(),
+      }}
+    >
+      {items.map((item, idx) => (
+        <EditFieldItem
+          key={idx}
+          {...{
+            schema,
+            index,
+            base,
+            item,
+            description,
+            onFieldItemChange: (itemNew) => onFieldItemChange(idx, itemNew),
+            onFieldItemRemove: () => onFieldItemRemove(idx)
+          }} />
+      ))}
+    </Spoiler>
   );
 }

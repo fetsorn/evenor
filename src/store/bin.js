@@ -157,10 +157,12 @@ async function cloneRemote(api, tags) {
 
 async function writeRemotes(api, tags) {
   if (tags) {
-    for (const tag of tags) {
+    const tagsList = Array.isArray(tags) ? tags : [tags];
+
+    for (const tag of tagsList) {
       try {
         api.addRemote(
-          tag.remote_name,
+          tag.remote_tag,
           tag.remote_url,
           tag.remote_token
         );
@@ -173,7 +175,9 @@ async function writeRemotes(api, tags) {
 
 async function writeLocals(api, tags) {
   if (tags) {
-    for (const tag of tags) {
+    const tagList = Array.isArray(tags) ? tags : [tags];
+
+    for (const tag of tagList) {
       try {
         api.addAssetPath(tag);
       } catch {

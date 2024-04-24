@@ -303,7 +303,9 @@ export class ElectronAPI {
       throw Error(`could not clone, directory ${this.uuid} exists`);
     }
 
-    this.dir = path.join(appPath, `${this.uuid}-${name}`);
+    const dirname = name ? `${this.uuid}-${name}` : this.uuid;
+
+    this.dir = path.join(appPath, dirname);
 
     const options = {
       fs,
@@ -313,13 +315,11 @@ export class ElectronAPI {
       singleBranch: true,
     };
 
-    if (remoteToken) {
-      options.onAuth = () => ({
-        username: remoteToken,
-      });
-    }
+    const authPartial = remoteToken
+          ? {onAuth: () => ({ username: remoteToken })}
+          : {};
 
-    await git.clone(options);
+    await git.clone( { ...options, ...authPartial });
 
     await git.setConfig({
       fs,
@@ -526,11 +526,9 @@ export class ElectronAPI {
       await pfs.mkdir(appPath);
     }
 
-    if (name) {
-      this.dir = path.join(appPath, `${this.uuid}-${name}`);
-    } else {
-      this.dir = path.join(appPath, `${this.uuid}`);
-    }
+    const dirname = name ? `${this.uuid}-${name}` : `${this.uuid}`;
+
+    this.dir = path.join(appPath, dirname);
 
     const { dir } = this;
 

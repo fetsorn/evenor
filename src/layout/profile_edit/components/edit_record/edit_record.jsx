@@ -2,14 +2,22 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { Spoiler } from "@/components/index.js";
-import { API, newUUID } from "@/api/index.js";
+import { API, newUUID, schemaToBranchRecords } from "@/api/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 import { useStore } from "@/store/index.js";
 
 export function EditRecord({ schema, index, base, record, onRecordChange, onRecordRemove }) {
   const { i18n } = useTranslation();
 
-  const { repo: repoUUID } = useStore((state) => state.repo);
+  const [
+    { repo: repoUUID },
+    repoRecord,
+    onRecordEdit
+  ] = useStore((state) => [
+    state.repo,
+    state.record,
+    state.onRecordEdit
+  ]);
 
   const leaves = Object.keys(schema).filter(
     (leaf) => schema[leaf].trunk === base,
@@ -119,6 +127,39 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
   const description =
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
+  async function onClone() {
+    try {
+      const repoUUIDClone = repoRecord.repo;
+
+      const reponameClone = repoRecord.reponame[0] ?? record.remote_tag;
+
+      const api = new API(repoUUIDClone);
+
+      await api.clone(record.remote_url[0], record.remote_token[0]);
+
+      const schemaClone = await api.readSchema();
+
+      await api.ensure(reponameClone);
+
+      const branchRecordsClone = schemaToBranchRecords(schemaClone);
+
+      const recordClone = {
+        _: "repo",
+        [base]: repoUUIDClone,
+        reponame: reponameClone,
+        branch: branchRecordsClone,
+        remote_tag: record
+      };
+
+      onRecordEdit(recordClone);
+    } catch(e) {
+      console.log(e)
+      // do nothing
+    }
+  }
+
+  const isRemote = repoUUID === "root" && base === "remote_tag";
+
   return (
     <Spoiler
       {...{
@@ -154,6 +195,14 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
           </option>
         ))}
       </select>
+
+      {isRemote && (
+        <button
+          type="button"
+          title=""
+          onClick={() => onClone()}
+        >clone</button>
+      )}
 
       <div>
         {leaves.filter(recordHasLeaf).map((leaf, idx) => (

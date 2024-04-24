@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { isTwig } from "@fetsorn/csvs-js";
-import { EditInput, EditRecord, EditUpload } from "../index.js";
+import { EditInput, EditRecord } from "../index.js";
 import { Spoiler } from "@/components/index.js";
 
 function EditFieldItem({
@@ -29,21 +29,6 @@ function EditFieldItem({
           onFieldItemChange(valueNew)
         }
         onFieldValueRemove={() => onFieldItemRemove()}
-      />
-    );
-  }
-
-  if (isFile) {
-    return (
-      <EditUpload
-        {...{
-          schema,
-          index: `${index}-${item[base]}`,
-          base,
-          record: item,
-          onFieldChange: (_, valueNew) =>
-          onFieldItemChange(valueNew),
-        }}
       />
     );
   }

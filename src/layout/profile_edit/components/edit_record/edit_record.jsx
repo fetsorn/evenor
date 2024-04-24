@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
-import { Spoiler } from "@/components/index.js";
+import { AssetView, Spoiler } from "@/components/index.js";
 import { API, newUUID, schemaToBranchRecords } from "@/api/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 import { useStore } from "@/store/index.js";
@@ -160,6 +160,8 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
 
   const isRemote = repoUUID === "root" && base === "remote_tag";
 
+  const isFile = schema[base].task === "file";
+
   return (
     <Spoiler
       {...{
@@ -222,6 +224,10 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
           />
         ))}
       </div>
+
+      {isFile && (
+        <AssetView {...{ record, schema }} />
+      )}
     </Spoiler>
   );
 }

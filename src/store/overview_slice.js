@@ -1,6 +1,6 @@
 import history from "history/hash";
 import { digestMessage } from "@fetsorn/csvs-js";
-import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
+import { API, schemaRoot, schemaToBranchRecords, enrichBranchRecords } from "../api/index.js";
 import { getDefaultBase, getDefaultSortBy, setURL } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
@@ -61,6 +61,8 @@ export const createOverviewSlice = (set, get) => ({
     // convert to object, skip reserved fields
     const queries = paramsToQueries(searchParams);
 
+    const repoRoute = history.location.pathname.replace("/", "");
+
     // if url specifies a remote, try to clone
     if (searchParams.has("~")) {
       // if uri specifies a remote
@@ -71,42 +73,63 @@ export const createOverviewSlice = (set, get) => ({
 
       const token = searchParams.get("-") ?? "";
 
-      const repoUUID = await digestMessage(remote);
+      const repoUUIDRemote = await digestMessage(remote);
 
       try {
-        const api = new API(repoUUID);
+        const api = new API(repoUUIDRemote);
 
         await api.cloneView(remote, token);
 
-        // set queries from
-        const [{ repo }] = await apiRoot.select(
-          new URLSearchParams(`?_=repo&reponame=${repoRoute}`),
-        );
+        const pathname = new URL(remote).pathname;
 
-        const schema = await api.readSchema();
+        // get repo name from remote
+        const reponameClone = pathname.substring(pathname.lastIndexOf('/') + 1);
 
-        const baseDefault = getDefaultBase(schema);
+        const schemaClone = await api.readSchema();
 
-        const sortByDefault = getDefaultSortBy(schema, base, []);
+        const [ schemaRecordClone, ...metaRecordsClone ] = schemaToBranchRecords(schemaClone);
+
+        const branchRecordsClone = enrichBranchRecords(schemaRecordClone, metaRecordsClone);
+
+        const recordClone = {
+          _: "repo",
+          repo: repoUUIDRemote,
+          reponame: reponameClone,
+          branch: branchRecordsClone,
+          remote_tag: {
+            _: "remote_tag",
+            remote_tag: "",
+            remote_token: token,
+            remote_url: remote
+          }
+        };
+
+        await get().onRecordUpdate({}, recordClone);
+
+        const baseDefault = getDefaultBase(schemaClone);
+
+        const base = baseURL ?? baseDefault;
+
+        const sortByDefault = getDefaultSortBy(schemaClone, base, []);
+
+        const sortBy = sortByURL ?? sortByDefault;
 
         set({
           queries,
-          base: baseURL ?? baseDefault,
-          sortBy: sortByURL ?? sortByDefault,
-          schema,
-          repo
+          base,
+          sortBy,
+          schema: schemaClone,
+          repo: recordClone
         });
 
-        // run queries from the store
-        await get().setQuery("", undefined);
+        await get().setQuery(undefined, undefined);
 
         return undefined;
-      } catch {
+      } catch(e) {
         // proceed to choose root repo uuid
+        console.log(e)
       }
     }
-
-    const repoRoute = history.location.pathname.replace("/", "");
 
     if (repoRoute !== "") {
       // if repo is in store, find uuid in root dataset

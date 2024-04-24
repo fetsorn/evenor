@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { AssetView, Spoiler } from "@/components/index.js";
-import { API, newUUID, schemaToBranchRecords } from "@/api/index.js";
+import { API, newUUID, schemaToBranchRecords, enrichBranchRecords } from "@/api/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 import { useStore } from "@/store/index.js";
 
@@ -141,11 +141,13 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
 
       await api.ensure(reponameClone);
 
-      const branchRecordsClone = schemaToBranchRecords(schemaClone);
+      const [ schemaRecordClone, ...metaRecordsClone ] = schemaToBranchRecords(schemaClone);
+
+      const branchRecordsClone = enrichBranchRecords(schemaRecordClone, metaRecordsClone);
 
       const recordClone = {
         _: "repo",
-        [base]: repoUUIDClone,
+        repo: repoUUIDClone,
         reponame: reponameClone,
         branch: branchRecordsClone,
         remote_tag: record
@@ -153,7 +155,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
 
       onRecordEdit(recordClone);
     } catch(e) {
-      console.log(e)
+      console.log("clone failed", e)
       // do nothing
     }
   }

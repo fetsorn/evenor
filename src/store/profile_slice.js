@@ -39,7 +39,7 @@ export const createProfileSlice = (set, get) => ({
     const canSaveRepo = isHomeScreen;
 
     if (canSaveRepo) {
-      await saveRepoRecord(condense(schema, recordNew));
+      await saveRepoRecord(recordNew);
     }
 
     set({ records: recordsNew, record: recordNew, isEdit: false });

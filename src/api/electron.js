@@ -316,10 +316,16 @@ export class ElectronAPI {
     };
 
     const authPartial = remoteToken
-          ? {onAuth: () => ({ username: remoteToken })}
+          ? { onAuth: () => ({ username: remoteToken }) }
           : {};
 
-    await git.clone( { ...options, ...authPartial });
+    try {
+      await git.clone( { ...options, ...authPartial });
+    } catch(e) {
+      // if clone failed, remove directory
+      await ElectronAPI.rimraf(this.dir);
+      throw e
+    }
 
     await git.setConfig({
       fs,

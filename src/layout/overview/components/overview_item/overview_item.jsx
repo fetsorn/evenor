@@ -15,6 +15,8 @@ export function OverviewItem({
       {...others}
     >
       {Object.keys(record).map((key) => {
+        if (key === "_") return undefined
+
         const value = record[key];
 
         const isString = typeof value === "string";

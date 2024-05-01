@@ -9,7 +9,7 @@ const pfs = fs.promises;
 
 const lfsDir = "lfs";
 
-const __BUILD_MODE__ = "browser";
+// const __BUILD_MODE__ = "browser";
 
 async function runWorker(readFile, searchParams) {
   const worker = new Worker(new URL("./browser.worker.js", import.meta.url), {
@@ -36,35 +36,24 @@ async function runWorker(readFile, searchParams) {
     }
   };
 
-  // eslint-disable-next-line
-  switch (__BUILD_MODE__) {
-    case "server": {
-      const response = await fetch(`/query?${searchParams.toString()}`);
+  return new Promise((res, rej) => {
+    const channel = new MessageChannel();
 
-      return response.json();
-    }
+    channel.port1.onmessage = ({ data }) => {
+      channel.port1.close();
 
-    default: {
-      return new Promise((res, rej) => {
-        const channel = new MessageChannel();
+      if (data.error) {
+        rej(data.error);
+      } else {
+        res(data.result);
+      }
+    };
 
-        channel.port1.onmessage = ({ data }) => {
-          channel.port1.close();
-
-          if (data.error) {
-            rej(data.error);
-          } else {
-            res(data.result);
-          }
-        };
-
-        worker.postMessage(
-          { action: "select", searchParams: searchParams.toString() },
-          [channel.port2],
-        );
-      });
-    }
-  }
+    worker.postMessage(
+      { action: "select", searchParams: searchParams.toString() },
+      [channel.port2],
+    );
+  });
 }
 
 export class BrowserAPI {
@@ -248,7 +237,7 @@ export class BrowserAPI {
   }
 
   async selectStream(searchParams) {
-    const br = this;
+    const browserAPI = this;
 
     let closeHandler;
 
@@ -271,7 +260,7 @@ export class BrowserAPI {
           switch (message.data.action) {
             case "readFile": {
               try {
-                const contents = await br.readFile(message.data.filepath);
+                const contents = await browserAPI.readFile(message.data.filepath);
 
                 message.ports[0].postMessage({ result: contents });
               } catch (e) {

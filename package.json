@@ -1,6 +1,6 @@
 {
-  "name": "evenor",
-  "productName": "evenor",
+  "name": "evenor1",
+  "productName": "evenor1",
   "version": "2.0.0",
   "private": true,
   "description": "Tell the story of your data.",
@@ -15,6 +15,8 @@
     "electron-package": "electron-forge package",
     "electron-make": "electron-forge make",
     "electron-publish": "electron-forge publish",
+    "server-build": "BUILD_MODE=server yarn vite build && yarn --cwd ./src-server",
+    "server-start": "node ./src-server/index.js",
     "lint": "eslint ."
   },
   "keywords": [],
@@ -71,7 +73,6 @@
     "mime": "3.0.0",
     "mp3tag.js": "^3.4.0",
     "node-git-server": "1.0.0",
-    "node-loader": "2.0.0",
     "normalize.css": "8.0.1",
     "process": "0.11.10",
     "react": "18.2.0",

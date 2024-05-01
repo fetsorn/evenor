@@ -87,11 +87,11 @@ router.post("/upload", async (req, res) => {
 router.get("/", (req, res) => {
   // console.log(req.path);
 
-  res.sendFile(path.join(dirname, "build", "index.html"));
+  res.sendFile(path.join(dirname, "..", "dist", "index.html"));
 });
 
 // serve `build/file` at `/file`
-app.use(express.static(path.join(dirname, "build")));
+app.use(express.static(path.join(dirname, "..", "dist")));
 
 const PORT = process.env.PORT || 8080;
 

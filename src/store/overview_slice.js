@@ -20,6 +20,34 @@ export const createOverviewSlice = (set, get) => ({
 
   // TODO: refactor this away somehow
   initialize: async () => {
+    if (__BUILD_MODE__ === "server") {
+      const api = new API("server");
+
+      const schemaServer = await api.readSchema()
+
+      const baseDefault = getDefaultBase(schemaServer);
+
+      const base = baseURL ?? baseDefault;
+
+      const sortByDefault = getDefaultSortBy(schemaServer, base, []);
+
+      const sortBy = sortByURL ?? sortByDefault;
+
+      // read repo from working directory
+      const recordServer = await loadRepoRecord("server", { _: "repo", repo: "server" });
+
+      set({
+        base,
+        sortBy,
+        schema: schemaServer,
+        repo: recordServer
+      });
+
+      // run queries from the store
+      await get().setQuery("", undefined);
+
+      return
+    }
     // first initialize root
     const apiRoot = new API("root");
 
@@ -164,7 +192,6 @@ export const createOverviewSlice = (set, get) => ({
         // proceed to set repo uuid as root
       }
     }
-
 
     set({
       schema: schemaRoot,

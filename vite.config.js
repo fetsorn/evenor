@@ -5,7 +5,20 @@ import { internalIpV4 } from "internal-ip";
 import react from '@vitejs/plugin-react'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
-const isTauri = process.env.TAURI_ENV_ARCH != undefined;
+function getBuildMode() {
+  if (process.env.BUILD_MODE) {
+    return process.env.BUILD_MODE
+  }
+
+  const isTauri = process.env.TAURI_ENV_ARCH != undefined;
+
+  if (isTauri) {
+    return "tauri"
+  }
+
+  return "browser"
+}
+
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
@@ -67,7 +80,7 @@ export default defineConfig(async () => {
       }
     },
     define: {
-      __BUILD_MODE__: isTauri ? `"tauri"` : `"browser"`
+      __BUILD_MODE__: JSON.stringify(getBuildMode())
     }
   };
 

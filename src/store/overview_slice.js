@@ -1,7 +1,7 @@
 import history from "history/hash";
 import { digestMessage } from "@fetsorn/csvs-js";
 import { API, schemaRoot, schemaToBranchRecords, enrichBranchRecords } from "../api/index.js";
-import { getDefaultBase, getDefaultSortBy, setURL } from "./bin.js";
+import { getDefaultBase, getDefaultSortBy, setURL, loadRepoRecord } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
   queries: {},
@@ -25,13 +25,9 @@ export const createOverviewSlice = (set, get) => ({
 
       const schemaServer = await api.readSchema()
 
-      const baseDefault = getDefaultBase(schemaServer);
+      const base = getDefaultBase(schemaServer);
 
-      const base = baseURL ?? baseDefault;
-
-      const sortByDefault = getDefaultSortBy(schemaServer, base, []);
-
-      const sortBy = sortByURL ?? sortByDefault;
+      const sortBy = getDefaultSortBy(schemaServer, base, []);
 
       // read repo from working directory
       const recordServer = await loadRepoRecord("server", { _: "repo", repo: "server" });

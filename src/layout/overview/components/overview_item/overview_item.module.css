@@ -1,5 +1,7 @@
 .row {
   position: relative;
+
+  -webkit-appearance: none;
 }
 
 .row.last::before {

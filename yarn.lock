@@ -1579,10 +1579,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@fetsorn/csvs-js@0.16.3":
-  version "0.16.3"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.16.3.tgz#bb9a30b2ea673c4cb22b3aa0e1cde91f6baf7068"
-  integrity sha512-VDSnDrpuEMVtFoM6GKITn9H9/Mo2dTvczoC2T5gCwDYEONpdJyZkMPWKpXBd1b29oDXH3OQfq+eeRHlK9tpuXw==
+"@fetsorn/csvs-js@0.16.4":
+  version "0.16.4"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.16.4.tgz#10fe37789cd604fabd862d0d32795829f394621f"
+  integrity sha512-uwFQAX8tQT0YMDe5V6G4xD/c9+Fz1U2cXS8dmvYnWND5/EH0rejGZTFNojyxenHuqpb42rAdA0OJvy5Jj4ErQg==
   dependencies:
     papaparse "^5.4.1"
 
@@ -5739,13 +5739,6 @@ node-fetch@^2.6.12, node-fetch@^2.6.7:
   dependencies:
     whatwg-url "^5.0.0"
 
-node-git-server@1.0.0:
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/node-git-server/-/node-git-server-1.0.0.tgz#fa9cb66071206029d35c9fea99359639423d374c"
-  integrity sha512-LdAEExF4N6/RIuAdJe16l1U5OZrw5M1U7B4C4O2PiRVImyaPNTFeTHlj46vGgpjthvrK7z43JKcIPc4r6+j0fA==
-  dependencies:
-    through "^2.3.8"
-
 node-gyp@^9.0.0:
   version "9.4.1"
   resolved "https://registry.yarnpkg.com/node-gyp/-/node-gyp-9.4.1.tgz#8a1023e0d6766ecb52764cc3a734b36ff275e185"
@@ -7344,11 +7337,6 @@ text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
   integrity sha512-N+8UisAXDGk8PFXP4HAzVR9nbfmVJ3zYLAWiTIoqC5v5isinhr+r5uaO8+7r3BMfuNIufIsA7RdpVgacC2cSpw==
-
-through@^2.3.8:
-  version "2.3.8"
-  resolved "https://registry.yarnpkg.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
-  integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
 
 time-span@^5.1.0:
   version "5.1.0"

@@ -1,10 +1,11 @@
-import { FusesPlugin } from '@electron-forge/plugin-fuses';
-import { FuseV1Options, FuseVersion } from '@electron/fuses';
+// import { FusesPlugin } from '@electron-forge/plugin-fuses';
+// import { FuseV1Options, FuseVersion } from '@electron/fuses';
 
 export default {
   packagerConfig: {
     // asar fails because dependencies "link out of package"
     // asar: true,
+    electronZipDir: process.env.electron_zip_dir,
   },
   rebuildConfig: {},
   makers: [
@@ -50,16 +51,17 @@ export default {
         ],
       },
     },
+    // doesn't work with nix
     // Fuses are used to enable/disable various Electron functionality
     // at package time, before code signing the application
-    new FusesPlugin({
-      version: FuseVersion.V1,
-      [FuseV1Options.RunAsNode]: false,
-      [FuseV1Options.EnableCookieEncryption]: true,
-      [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
-      [FuseV1Options.EnableNodeCliInspectArguments]: false,
+    // new FusesPlugin({
+    //   version: FuseVersion.V1,
+    //   [FuseV1Options.RunAsNode]: false,
+    //   [FuseV1Options.EnableCookieEncryption]: true,
+    //   [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
+    //   [FuseV1Options.EnableNodeCliInspectArguments]: false,
       // [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
       // [FuseV1Options.OnlyLoadAppFromAsar]: true,
-    }),
+    // }),
   ],
 };

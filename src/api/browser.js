@@ -190,9 +190,9 @@ export class BrowserAPI {
 
     input.multiple = "multiple";
 
-    let metadata = [];
+    return new Promise((res, rej) => {
+      let metadata = [];
 
-    await new Promise((res, rej) => {
       input.onchange = async (e) => {
         for (const file of e.target.files) {
           const fileArrayBuffer = await file.arrayBuffer();
@@ -221,13 +221,11 @@ export class BrowserAPI {
           metadata.push(metadatum)
         };
 
-        res();
-      }
+        res(metadata);
+      };
 
-      input.click()
+      input.click();
     })
-
-    return metadata;
   }
 
   async select(searchParams) {

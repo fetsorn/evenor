@@ -160,7 +160,7 @@
             electron_zip_dir = electronZipDir;
             ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
             extraBuildInputs = [ pkgs.zip ];
-            # DEBUG = "*";
+            DEBUG = "*";
             buildPhase = ''
               mkdir home
               touch home/.skip-forge-system-check

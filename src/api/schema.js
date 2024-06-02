@@ -195,6 +195,7 @@ export const schemaRoot = {
   },
   remote_tag: {
     trunk: "repo",
+    task: "remote",
     description: {
       en: "Name of git repository",
       ru: "Название git репозитория",

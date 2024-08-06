@@ -15,14 +15,14 @@ export function ProfileEdit() {
     isSettings,
     onRecordSelect,
     onRecordUpdate,
-    onRecordEdit,
+    onRecordInput,
     schemaRepo,
   ] = useStore((state) => [
     state.record,
     state.isSettings,
     state.onRecordSelect,
     state.onRecordUpdate,
-    state.onRecordEdit,
+    state.onRecordInput,
     state.schema,
   ]);
 
@@ -68,7 +68,7 @@ export function ProfileEdit() {
                 index: "_",
                 base: record._,
                 record,
-                onRecordChange: onRecordEdit,
+                onRecordChange: onRecordInput,
               }}
             />
           </div>

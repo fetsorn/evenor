@@ -67,7 +67,7 @@ export function VirtualScroll({
     window.addEventListener("scroll", onScroll);
 
     return () => {
-      window.removeEventListener("scroll", onScroll)
+      window.removeEventListener("scroll", onScroll);
     };
   }, [dataWithKeys, visibleRowCount, rowHeight, tolerance]);
 

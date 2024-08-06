@@ -16,7 +16,7 @@ export const createProfileSlice = (set, get) => ({
       base,
       schema,
       repo: { repo: repoUUID },
-      records: recordsOld
+      records: recordsOld,
     } = get();
 
     const api = new API(repoUUID);
@@ -24,9 +24,9 @@ export const createProfileSlice = (set, get) => ({
     await api.updateRecord(recordNew);
 
     // replace old record with the new
-    const recordsNew = recordsOld.filter(
-      (record) => record[base] !== recordOld[base]
-    ).concat([recordNew]);
+    const recordsNew = recordsOld
+      .filter((record) => record[base] !== recordOld[base])
+      .concat([recordNew]);
 
     await api.commit();
 
@@ -67,8 +67,11 @@ export const createProfileSlice = (set, get) => ({
   },
 
   // create new record or update old record
-  onRecordEdit: async (recordNew) => {
-    const { repo: { repo: repoUUID }, base } = get();
+  onRecordInput: async (recordNew) => {
+    const {
+      repo: { repo: repoUUID },
+      base,
+    } = get();
 
     // if new repo record, set default values for required fields
     const isRepoRecord = repoUUID === "root" && base === "repo";
@@ -90,14 +93,16 @@ export const createProfileSlice = (set, get) => ({
       base,
       repo: { repo: repoUUID },
       record: recordOld,
-      records: recordsOld
+      records: recordsOld,
     } = get();
 
     const api = new API(repoUUID);
 
     await api.deleteRecord(recordOld);
 
-    const recordsNew = recordsOld.filter((record) => record[base] !== recordOld[base]);
+    const recordsNew = recordsOld.filter(
+      (record) => record[base] !== recordOld[base],
+    );
 
     await api.commit();
 

@@ -21,7 +21,7 @@ if (!window.WritableStream) {
         resolve(fr.result);
       };
       fr.readAsArrayBuffer(this);
-    })
+    });
   }
 })();
 
@@ -42,7 +42,7 @@ export class API {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return
+        return;
 
       case "tauri":
         return invoke("hello_world", { someVariable });

@@ -6,7 +6,7 @@ import { Button } from "@/components/index.js";
 import { useStore } from "@/store/index.js";
 import { ViewRecord } from "./components/index.js";
 import styles from "./profile_view.module.css";
-import { API } from '../../api/index.js';
+import { API } from "../../api/index.js";
 
 export function ProfileView() {
   const { t } = useTranslation();
@@ -15,7 +15,7 @@ export function ProfileView() {
     record,
     repo,
     setRepoUUID,
-    onRecordEdit,
+    onRecordInput,
     onRecordSelect,
     onRecordDelete,
     isSettings,
@@ -24,7 +24,7 @@ export function ProfileView() {
     state.record,
     state.repo,
     state.setRepoUUID,
-    state.onRecordEdit,
+    state.onRecordInput,
     state.onRecordSelect,
     state.onRecordDelete,
     state.isSettings,
@@ -44,12 +44,11 @@ export function ProfileView() {
 
   const onRepoOpen = () => setRepoUUID(record.repo);
 
-
   const onZip = async () => {
     const api = new API(record.repo);
 
     await api.zip();
-  }
+  };
 
   return (
     <div
@@ -85,7 +84,7 @@ export function ProfileView() {
               <Button
                 type="button"
                 title={t("line.button.edit")}
-                onClick={() => onRecordEdit(record)}
+                onClick={() => onRecordInput(record)}
               >
                 ✏️
               </Button>
@@ -102,12 +101,8 @@ export function ProfileView() {
             )}
 
             {canOpenRepo && (
-              <button
-                type="button"
-                title="zip"
-                onClick={() => onZip()}
-              >
-               zip
+              <button type="button" title="zip" onClick={() => onZip()}>
+                zip
               </button>
             )}
 

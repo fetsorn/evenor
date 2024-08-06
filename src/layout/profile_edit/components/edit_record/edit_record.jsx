@@ -2,21 +2,29 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { AssetView, Spoiler } from "@/components/index.js";
-import { API, newUUID, schemaToBranchRecords, enrichBranchRecords } from "@/api/index.js";
+import {
+  API,
+  newUUID,
+  schemaToBranchRecords,
+  enrichBranchRecords,
+} from "@/api/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 import { useStore } from "@/store/index.js";
 
-export function EditRecord({ schema, index, base, record, onRecordChange, onRecordRemove }) {
+export function EditRecord({
+  schema,
+  index,
+  base,
+  record,
+  onRecordChange,
+  onRecordRemove,
+}) {
   const { i18n } = useTranslation();
 
-  const [
-    { repo: repoUUID },
-    repoRecord,
-    onRecordEdit
-  ] = useStore((state) => [
+  const [{ repo: repoUUID }, repoRecord, onRecordInput] = useStore((state) => [
     state.repo,
     state.record,
-    state.onRecordEdit
+    state.onRecordInput,
   ]);
 
   const leaves = Object.keys(schema).filter(
@@ -61,17 +69,13 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
     const metadata = await api.uploadFile();
 
     const records = metadata.map(({ hash, name, extension }) => {
-      const filehashPartial = filehashBranch
-            ? { [filehashBranch]: hash }
-            : {};
+      const filehashPartial = filehashBranch ? { [filehashBranch]: hash } : {};
 
-      const filenamePartial = filenameBranch
-            ? { [filenameBranch]: name }
-            : {};
+      const filenamePartial = filenameBranch ? { [filenameBranch]: name } : {};
 
       const fileextPartial = fileextBranch
-            ? { [fileextBranch]: extension }
-            : {};
+        ? { [fileextBranch]: extension }
+        : {};
 
       return {
         _: branch,
@@ -79,14 +83,13 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
         ...filehashPartial,
         ...filenamePartial,
         ...fileextPartial,
-      }
+      };
     });
 
     const valuesOld = record[branch];
 
-    const valuesNew = valuesOld === undefined
-          ? records
-          : [ ...valuesOld, ...records ];
+    const valuesNew =
+      valuesOld === undefined ? records : [...valuesOld, ...records];
 
     const objectNew = { ...record, [branch]: valuesNew };
 
@@ -97,7 +100,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
     const isFile = schema[branch].task === "file";
 
     if (isFile) {
-      return addFileValue(branch)
+      return addFileValue(branch);
     }
 
     const isRemote = repoUUID === "root" && branch === "remote_tag";
@@ -106,13 +109,11 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
 
     const valueDefault = needsUUID ? newUUID() : "";
 
-    const remotePartial = isRemote
-          ? { remote_url: "", remote_token: "" }
-          : {};
+    const remotePartial = isRemote ? { remote_url: "", remote_token: "" } : {};
 
     const value = isTwig(schema, branch)
-          ? valueDefault
-          : { _: branch, [branch]: valueDefault, ...remotePartial };
+      ? valueDefault
+      : { _: branch, [branch]: valueDefault, ...remotePartial };
 
     const valuesOld = record[branch];
 
@@ -141,21 +142,25 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
 
       await api.ensure(reponameClone);
 
-      const [ schemaRecordClone, ...metaRecordsClone ] = schemaToBranchRecords(schemaClone);
+      const [schemaRecordClone, ...metaRecordsClone] =
+        schemaToBranchRecords(schemaClone);
 
-      const branchRecordsClone = enrichBranchRecords(schemaRecordClone, metaRecordsClone);
+      const branchRecordsClone = enrichBranchRecords(
+        schemaRecordClone,
+        metaRecordsClone,
+      );
 
       const recordClone = {
         _: "repo",
         repo: repoUUIDClone,
         reponame: reponameClone,
         branch: branchRecordsClone,
-        remote_tag: record
+        remote_tag: record,
       };
 
-      onRecordEdit(recordClone);
-    } catch(e) {
-      console.log("clone failed", e)
+      onRecordInput(recordClone);
+    } catch (e) {
+      console.log("clone failed", e);
       // do nothing
     }
   }
@@ -201,11 +206,9 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
       </select>
 
       {isRemote && (
-        <button
-          type="button"
-          title=""
-          onClick={() => onClone()}
-        >clone</button>
+        <button type="button" title="" onClick={() => onClone()}>
+          clone
+        </button>
       )}
 
       <div>
@@ -227,9 +230,7 @@ export function EditRecord({ schema, index, base, record, onRecordChange, onReco
         ))}
       </div>
 
-      {isFile && (
-        <AssetView {...{ record, schema }} />
-      )}
+      {isFile && <AssetView {...{ record, schema }} />}
     </Spoiler>
   );
 }

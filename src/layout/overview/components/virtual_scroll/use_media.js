@@ -24,8 +24,8 @@ export const useMedia = (query) => {
       mounted = false;
 
       mediaQueryList.removeListener(onChange);
-    }
+    };
   }, [query]);
 
-  return state
+  return state;
 };

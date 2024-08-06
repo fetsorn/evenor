@@ -4,7 +4,11 @@ import cn from "classnames";
 import { useStore } from "@/store/index.js";
 import { Button } from "@/components/index.js";
 import styles from "./overview.module.css";
-import { OverviewFilter, OverviewItem, VirtualScroll } from "./components/index.js";
+import {
+  OverviewFilter,
+  OverviewItem,
+  VirtualScroll,
+} from "./components/index.js";
 
 export function Overview() {
   const { t } = useTranslation();
@@ -17,19 +21,17 @@ export function Overview() {
     setRepoUUID,
     onSettingsOpen,
     onRecordSelect,
-    onRecordEdit,
-  ] = useStore(
-    (state) => [
-      state.repo,
-      state.sortBy,
-      state.record,
-      state.records,
-      state.setRepoUUID,
-      state.onSettingsOpen,
-      state.onRecordSelect,
-      state.onRecordEdit,
-    ],
-  );
+    onRecordInput,
+  ] = useStore((state) => [
+    state.repo,
+    state.sortBy,
+    state.record,
+    state.records,
+    state.setRepoUUID,
+    state.onSettingsOpen,
+    state.onRecordSelect,
+    state.onRecordInput,
+  ]);
 
   const { repo: repoUUID } = repo;
 
@@ -46,7 +48,7 @@ export function Overview() {
     // if undefined, return empty string
     const id = key === undefined ? "" : key;
 
-    return id
+    return id;
   }
 
   const recordsSorted = records.sort((a, b) => {
@@ -54,7 +56,7 @@ export function Overview() {
 
     const valueB = identify(sortBy, b[sortBy]);
 
-    return valueA.localeCompare(valueB)
+    return valueA.localeCompare(valueB);
   });
 
   return (
@@ -100,7 +102,7 @@ export function Overview() {
         <Button
           type="button"
           title={t("line.button.add")}
-          onClick={() => onRecordEdit()}
+          onClick={() => onRecordInput()}
         >
           +
         </Button>

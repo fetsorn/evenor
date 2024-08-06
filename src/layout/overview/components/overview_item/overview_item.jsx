@@ -2,12 +2,7 @@ import React from "react";
 import cn from "classnames";
 import styles from "./overview_item.module.css";
 
-export function OverviewItem({
-  record,
-  onRecordSelect,
-  isLast,
-  ...others
-}) {
+export function OverviewItem({ record, onRecordSelect, isLast, ...others }) {
   return (
     <button
       className={cn(styles.row, { [styles.last]: isLast })}
@@ -15,7 +10,7 @@ export function OverviewItem({
       {...others}
     >
       {Object.keys(record).map((key) => {
-        if (key === "_") return undefined
+        if (key === "_") return undefined;
 
         const value = record[key];
 
@@ -27,8 +22,8 @@ export function OverviewItem({
 
         const item = isString ? <div key={key}>{labelShort}</div> : undefined;
 
-        return item
+        return item;
       })}
     </button>
-  )
+  );
 }

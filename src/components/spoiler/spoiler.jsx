@@ -48,11 +48,7 @@ export function Spoiler({
   }
 
   if (isIgnored) {
-    return (
-      <div>
-        {children}
-      </div>
-    )
+    return <div>{children}</div>;
   }
 
   return isOpen(index) ? (

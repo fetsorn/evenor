@@ -11,7 +11,7 @@ function EditFieldItem({
   item,
   description,
   onFieldItemChange,
-  onFieldItemRemove
+  onFieldItemRemove,
 }) {
   const baseIsTwig = isTwig(schema, base);
 
@@ -25,9 +25,7 @@ function EditFieldItem({
         base={base}
         description={description}
         value={item}
-        onFieldValueChange={(_, valueNew) =>
-          onFieldItemChange(valueNew)
-        }
+        onFieldValueChange={(_, valueNew) => onFieldItemChange(valueNew)}
         onFieldValueRemove={() => onFieldItemRemove()}
       />
     );
@@ -51,12 +49,12 @@ export function EditField({
   base,
   items,
   onFieldChange,
-  onFieldRemove
+  onFieldRemove,
 }) {
   const { i18n, t } = useTranslation();
 
   const description =
-        schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
+    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   function onFieldItemChange(idx, itemNew) {
     // replace the new item at index
@@ -95,8 +93,9 @@ export function EditField({
             item,
             description,
             onFieldItemChange: (itemNew) => onFieldItemChange(idx, itemNew),
-            onFieldItemRemove: () => onFieldItemRemove(idx)
-          }} />
+            onFieldItemRemove: () => onFieldItemRemove(idx),
+          }}
+        />
       ))}
     </Spoiler>
   );

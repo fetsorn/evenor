@@ -7,7 +7,7 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
 // import { exportPDF, generateLatex } from "lib/latex";
 // import { Worker } from "node:worker_threads";
-import Worker from './electron.worker.js?nodeWorker'
+import Worker from "./electron.worker.js?nodeWorker";
 
 const pfs = fs.promises;
 
@@ -46,12 +46,10 @@ async function runWorker(workerData) {
     //    type: "module",
     //  },
     //);
-    const worker = new Worker(
-      {
-        workerData,
-        type: "module",
-      },
-    );
+    const worker = new Worker({
+      workerData,
+      type: "module",
+    });
 
     worker.on("message", (message) => {
       if (typeof message === "string" && message.startsWith("log")) {
@@ -162,7 +160,9 @@ export class ElectronAPI {
   }
 
   async uploadFile() {
-    const res = await dialog.showOpenDialog({ properties: ["openFile", "multiSelections"] });
+    const res = await dialog.showOpenDialog({
+      properties: ["openFile", "multiSelections"],
+    });
 
     if (res.canceled) {
       throw Error("cancelled");
@@ -182,8 +182,8 @@ export class ElectronAPI {
         const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
         const hashHexString = hashByteArray
-              .map((b) => b.toString(16).padStart(2, "0"))
-              .join("");
+          .map((b) => b.toString(16).padStart(2, "0"))
+          .join("");
 
         const filename = path.basename(filepath);
 
@@ -200,7 +200,7 @@ export class ElectronAPI {
         metadata.push(metadatum);
       }
 
-      return metadata
+      return metadata;
     }
   }
 
@@ -232,16 +232,14 @@ export class ElectronAPI {
     //    type: "module",
     //  },
     //);
-    const worker = new Worker(
-      {
-        workerData: {
-          msg: "selectStream",
-          dir: this.dir,
-          searchParamsString: searchParams.toString(),
-        },
-        type: "module",
+    const worker = new Worker({
+      workerData: {
+        msg: "selectStream",
+        dir: this.dir,
+        searchParamsString: searchParams.toString(),
       },
-    );
+      type: "module",
+    });
 
     worker.on("message", (message) => {
       if (typeof message === "string" && message.startsWith("log")) {
@@ -316,15 +314,15 @@ export class ElectronAPI {
     };
 
     const authPartial = remoteToken
-          ? { onAuth: () => ({ username: remoteToken }) }
-          : {};
+      ? { onAuth: () => ({ username: remoteToken }) }
+      : {};
 
     try {
-      await git.clone( { ...options, ...authPartial });
-    } catch(e) {
+      await git.clone({ ...options, ...authPartial });
+    } catch (e) {
       // if clone failed, remove directory
       await ElectronAPI.rimraf(this.dir);
-      throw e
+      throw e;
     }
 
     await git.setConfig({

@@ -205,8 +205,8 @@ export class BrowserAPI {
           const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
 
           const hashHexString = hashByteArray
-                .map((b) => b.toString(16).padStart(2, "0"))
-                .join("");
+            .map((b) => b.toString(16).padStart(2, "0"))
+            .join("");
 
           const name = file.name.replace(/\.[^/.]+$/, "");
 
@@ -218,14 +218,14 @@ export class BrowserAPI {
 
           const metadatum = { hash: hashHexString, name, extension };
 
-          metadata.push(metadatum)
-        };
+          metadata.push(metadatum);
+        }
 
         res(metadata);
       };
 
       input.click();
-    })
+    });
   }
 
   async select(searchParams) {
@@ -258,7 +258,9 @@ export class BrowserAPI {
           switch (message.data.action) {
             case "readFile": {
               try {
-                const contents = await browserAPI.readFile(message.data.filepath);
+                const contents = await browserAPI.readFile(
+                  message.data.filepath,
+                );
 
                 message.ports[0].postMessage({ result: contents });
               } catch (e) {

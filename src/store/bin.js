@@ -70,24 +70,27 @@ async function readRemotes(api) {
   try {
     const remotes = await api.listRemotes();
 
-    return remotes.reduce((acc, remoteName) => {
-      const tagsRemoteOld = acc.remote_tag;
+    return remotes.reduce(
+      (acc, remoteName) => {
+        const tagsRemoteOld = acc.remote_tag;
 
-      const [remoteUrl, remoteToken] = api.getRemote(remoteName);
+        const [remoteUrl, remoteToken] = api.getRemote(remoteName);
 
-      const tag = {
-        _: "remote_tag",
-        remote_name: remoteName,
-        remote_url: remoteUrl,
-        remote_token: remoteToken
-      };
+        const tag = {
+          _: "remote_tag",
+          remote_name: remoteName,
+          remote_url: remoteUrl,
+          remote_token: remoteToken,
+        };
 
-      const tagsRemoteNew = [ ...tagsRemote, tag ];
+        const tagsRemoteNew = [...tagsRemote, tag];
 
-      return { ...acc, remote_tag: tagsRemoteNew }
-    }, {remote_tag: []})
+        return { ...acc, remote_tag: tagsRemoteNew };
+      },
+      { remote_tag: [] },
+    );
   } catch {
-    return {}
+    return {};
   }
 }
 
@@ -95,13 +98,16 @@ async function readLocals(api) {
   try {
     const locals = await api.listAssetPaths();
 
-    return locals.reduce((acc, local) => {
-      const tagsLocalOld = acc.local_tag;
+    return locals.reduce(
+      (acc, local) => {
+        const tagsLocalOld = acc.local_tag;
 
-      return { ...acc, remote_tag: [...tagsLocalOld, local] }
-    }, {local_tag: []})
+        return { ...acc, remote_tag: [...tagsLocalOld, local] };
+      },
+      { local_tag: [] },
+    );
   } catch {
-    return {}
+    return {};
   }
 }
 
@@ -129,7 +135,7 @@ export async function loadRepoRecord(repoUUID, record) {
     ...record,
     ...branchPartial,
     ...tagsRemotePartial,
-    ...tagsLocalPartial
+    ...tagsLocalPartial,
   };
 
   return recordNew;
@@ -142,11 +148,8 @@ async function cloneRemote(api, tags) {
     //  try {
     //    // what to do when multiple remotes clone?
     //    const [tag] = tags;
-
     //    await api.clone(tag.remote_url, tag.remote_token);
-
     //    const schema = await api.readSchema();
-
     //    return schema
     //  } catch {
     //    // do nothing
@@ -161,11 +164,7 @@ async function writeRemotes(api, tags) {
 
     for (const tag of tagsList) {
       try {
-        api.addRemote(
-          tag.remote_tag,
-          tag.remote_url,
-          tag.remote_token
-        );
+        api.addRemote(tag.remote_tag, tag.remote_url, tag.remote_token);
       } catch {
         // do nothing
       }
@@ -194,7 +193,7 @@ export async function saveRepoRecord(record) {
   const api = new API(repoUUID);
 
   // extract schema record with trunks from branch records
-  const [ schemaRecord, ...branchRecords ] = extractSchemaRecords(record.branch);
+  const [schemaRecord, ...branchRecords] = extractSchemaRecords(record.branch);
 
   const schema = branchRecordsToSchema(schemaRecord, branchRecords);
 
@@ -215,7 +214,7 @@ export async function saveRepoRecord(record) {
 
   await api.commit();
 
-  return
+  return;
 }
 
 function queriesToParams(queriesObject) {
@@ -247,5 +246,5 @@ export function setURL(queries, base, sortBy, repoUUID, reponame) {
 
   window.history.replaceState(null, null, urlNew);
 
-  return searchParams
+  return searchParams;
 }

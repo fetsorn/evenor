@@ -6,7 +6,10 @@ import { useStore } from "@/store/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
 function ViewFieldItem({ schema, index, base, item, description }) {
-  const [ record, repoUUID ] = useStore((state) => [ state.record, state.repoUUID ]);
+  const [record, repoUUID] = useStore((state) => [
+    state.record,
+    state.repoUUID,
+  ]);
 
   const isHomeScreen = repoUUID === "root";
 
@@ -56,7 +59,7 @@ export function ViewField({ schema, index, base, items }) {
   const { i18n } = useTranslation();
 
   const description =
-        schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
+    schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   // TODO handle error when items is not array
   return (
@@ -77,8 +80,9 @@ export function ViewField({ schema, index, base, items }) {
             index,
             base,
             item,
-            description
-          }} />
+            description,
+          }}
+        />
       ))}
     </Spoiler>
   );

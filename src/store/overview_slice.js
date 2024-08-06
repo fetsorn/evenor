@@ -1,7 +1,17 @@
 import history from "history/hash";
 import { digestMessage } from "@fetsorn/csvs-js";
-import { API, schemaRoot, schemaToBranchRecords, enrichBranchRecords } from "../api/index.js";
-import { getDefaultBase, getDefaultSortBy, setURL, loadRepoRecord } from "./bin.js";
+import {
+  API,
+  schemaRoot,
+  schemaToBranchRecords,
+  enrichBranchRecords,
+} from "../api/index.js";
+import {
+  getDefaultBase,
+  getDefaultSortBy,
+  setURL,
+  loadRepoRecord,
+} from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
   queries: {},
@@ -23,26 +33,29 @@ export const createOverviewSlice = (set, get) => ({
     if (__BUILD_MODE__ === "server") {
       const api = new API("server");
 
-      const schemaServer = await api.readSchema()
+      const schemaServer = await api.readSchema();
 
       const base = getDefaultBase(schemaServer);
 
       const sortBy = getDefaultSortBy(schemaServer, base, []);
 
       // read repo from working directory
-      const recordServer = await loadRepoRecord("server", { _: "repo", repo: "server" });
+      const recordServer = await loadRepoRecord("server", {
+        _: "repo",
+        repo: "server",
+      });
 
       set({
         base,
         sortBy,
         schema: schemaServer,
-        repo: recordServer
+        repo: recordServer,
       });
 
       // run queries from the store
       await get().setQuery("", undefined);
 
-      return
+      return;
     }
     // first initialize root
     const apiRoot = new API("root");
@@ -107,13 +120,17 @@ export const createOverviewSlice = (set, get) => ({
         const pathname = new URL(remote).pathname;
 
         // get repo name from remote
-        const reponameClone = pathname.substring(pathname.lastIndexOf('/') + 1);
+        const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
 
         const schemaClone = await api.readSchema();
 
-        const [ schemaRecordClone, ...metaRecordsClone ] = schemaToBranchRecords(schemaClone);
+        const [schemaRecordClone, ...metaRecordsClone] =
+          schemaToBranchRecords(schemaClone);
 
-        const branchRecordsClone = enrichBranchRecords(schemaRecordClone, metaRecordsClone);
+        const branchRecordsClone = enrichBranchRecords(
+          schemaRecordClone,
+          metaRecordsClone,
+        );
 
         const recordClone = {
           _: "repo",
@@ -124,8 +141,8 @@ export const createOverviewSlice = (set, get) => ({
             _: "remote_tag",
             remote_tag: "",
             remote_token: token,
-            remote_url: remote
-          }
+            remote_url: remote,
+          },
         };
 
         await get().onRecordUpdate({}, recordClone);
@@ -143,15 +160,15 @@ export const createOverviewSlice = (set, get) => ({
           base,
           sortBy,
           schema: schemaClone,
-          repo: recordClone
+          repo: recordClone,
         });
 
         await get().setQuery(undefined, undefined);
 
         return undefined;
-      } catch(e) {
+      } catch (e) {
         // proceed to choose root repo uuid
-        console.log(e)
+        console.log(e);
       }
     }
 
@@ -177,7 +194,7 @@ export const createOverviewSlice = (set, get) => ({
           base: baseURL ?? baseDefault,
           sortBy: sortByURL ?? sortByDefault,
           schema,
-          repo
+          repo,
         });
 
         // run queries from the store
@@ -239,7 +256,12 @@ export const createOverviewSlice = (set, get) => ({
     if (queryField === ".sortBy") {
       set({ sortBy: queryValue });
 
-      const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
+      const {
+        queries,
+        base,
+        sortBy,
+        repo: { repo: repoUUID, reponame },
+      } = get();
 
       setURL(queries, base, sortBy, repoUUID, reponame);
 
@@ -288,7 +310,12 @@ export const createOverviewSlice = (set, get) => ({
       set({ queries });
     }
 
-    const { queries, base, sortBy, repo: { repo: repoUUID, reponame } } = get();
+    const {
+      queries,
+      base,
+      sortBy,
+      repo: { repo: repoUUID, reponame },
+    } = get();
 
     const searchParams = setURL(queries, base, sortBy, repoUUID, reponame);
 

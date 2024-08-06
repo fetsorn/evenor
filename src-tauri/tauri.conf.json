@@ -3,10 +3,10 @@
   "version": "0.0.0",
   "identifier": "com.fetsorn",
   "build": {
-    "beforeDevCommand": "yarn dev",
+    "beforeDevCommand": "yarn preview",
     "beforeBuildCommand": "yarn build",
     "frontendDist": "../dist",
-    "devUrl": "http://localhost:1420/"
+    "devUrl": "http://localhost:4173/"
   },
   "app": {
     "withGlobalTauri": false,

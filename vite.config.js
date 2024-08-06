@@ -2,23 +2,22 @@ import path from "path";
 import process from "process";
 import { defineConfig } from "vite";
 import { internalIpV4 } from "internal-ip";
-import react from '@vitejs/plugin-react'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import react from "@vitejs/plugin-react";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 function getBuildMode() {
   if (process.env.BUILD_MODE) {
-    return process.env.BUILD_MODE
+    return process.env.BUILD_MODE;
   }
 
   const isTauri = process.env.TAURI_ENV_ARCH != undefined;
 
   if (isTauri) {
-    return "tauri"
+    return "tauri";
   }
 
-  return "browser"
+  return "browser";
 }
-
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
@@ -27,26 +26,31 @@ export default defineConfig(async () => {
   /** @type {import('vite').UserConfig} */
   const config = {
     build: {
-      target: 'safari13',
+      target: "safari13",
     },
     worker: {
       rollupOptions: {
         output: {
           inlineDynamicImports: true,
-        }
-      }
+        },
+      },
     },
-    plugins: [react({
-      presets: [
-        [ "@babel/preset-env", { targets: "safari13", useBuiltins: "entry", corejs: "3.36"
-                               } ],
-        "@babel/preset-react"
-      ],
-      // Use .babelrc files
-      babelrc: false,
-      // Use babel.config.js files
-      configFile: false,
-    }), nodePolyfills()],
+    plugins: [
+      react({
+        presets: [
+          [
+            "@babel/preset-env",
+            { targets: "safari13", useBuiltins: "entry", corejs: "3.36" },
+          ],
+          "@babel/preset-react",
+        ],
+        // Use .babelrc files
+        babelrc: false,
+        // Use babel.config.js files
+        configFile: false,
+      }),
+      nodePolyfills(),
+    ],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //
@@ -59,13 +63,13 @@ export default defineConfig(async () => {
     // },
     server: {
       host: "0.0.0.0", // listen on all addresses
-      port: 1420,
+      port: 4173, // this is a port for `vite preview` because `vite dev` fails on legacy mobile
       strictPort: true,
       hmr: {
         protocol: "ws",
         // TODO: replace with internalIpV4, why is it 192.168.1.0 but tauri connects to 192.168.1.4?
-        host: "192.168.1.4",
-        port: 1420,
+        host: "192.168.1.3",
+        port: 4173,
       },
     },
     // TODO: check for build, https://github.com/vitejs/vite/issues/8427
@@ -77,11 +81,11 @@ export default defineConfig(async () => {
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src/"),
-      }
+      },
     },
     define: {
-      __BUILD_MODE__: JSON.stringify(getBuildMode())
-    }
+      __BUILD_MODE__: JSON.stringify(getBuildMode()),
+    },
   };
 
   return config;

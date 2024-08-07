@@ -59,9 +59,7 @@ export const createProfileSlice = (set, get) => ({
     const canSelectRepo = isHomeScreen && isNewRecord;
 
     // when selecting a repo, load git state and schema from dataset into the record
-    const record = canSelectRepo
-      ? await loadRepoRecord("root", recordNew)
-      : recordNew;
+    const record = canSelectRepo ? await loadRepoRecord(recordNew) : recordNew;
 
     set({ record, isEdit: false });
   },
@@ -123,7 +121,7 @@ export const createProfileSlice = (set, get) => ({
     const recordRepo = await apiRepo.getSettings();
 
     // load git state and schema from dataset into the record
-    const recordSettings = await loadRepoRecord(repoUUID, recordRepo);
+    const recordSettings = await loadRepoRecord(recordRepo);
 
     const apiRoot = new API("root");
 

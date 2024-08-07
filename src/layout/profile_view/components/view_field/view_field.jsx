@@ -6,14 +6,16 @@ import { useStore } from "@/store/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
 function ViewFieldItem({ schema, index, base, item, description }) {
-  const [record, repoUUID] = useStore((state) => [
+  const [record, { repo: repoUUID }] = useStore((state) => [
     state.record,
-    state.repoUUID,
+    state.repo,
   ]);
 
   const isHomeScreen = repoUUID === "root";
 
-  const isFile = schema[base].task === "file";
+  const task = schema[base].task;
+
+  const isFile = task === "file";
 
   const isRemote = isHomeScreen && task === "remote";
 

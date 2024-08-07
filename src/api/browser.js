@@ -368,7 +368,14 @@ export class BrowserAPI {
 
     const { clone, setConfig } = await import("isomorphic-git");
 
-    await clone(options);
+    try {
+      await clone(options);
+    } catch (e) {
+      // if clone failed, remove directory
+      await this.rimraf(dir);
+
+      throw e;
+    }
 
     await setConfig({
       fs,

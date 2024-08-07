@@ -70,25 +70,22 @@ async function readRemotes(api) {
   try {
     const remotes = await api.listRemotes();
 
-    return remotes.reduce(
-      (acc, remoteName) => {
-        const tagsRemoteOld = acc.remote_tag;
+    const remoteTags = await Promise.all(
+      remotes.map(async (remoteName) => {
+        const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
 
-        const [remoteUrl, remoteToken] = api.getRemote(remoteName);
+        const partialToken = remoteToken ? { remote_token: remoteToken } : {};
 
-        const tag = {
+        return {
           _: "remote_tag",
           remote_name: remoteName,
           remote_url: remoteUrl,
-          remote_token: remoteToken,
+          ...partialToken,
         };
-
-        const tagsRemoteNew = [...tagsRemote, tag];
-
-        return { ...acc, remote_tag: tagsRemoteNew };
-      },
-      { remote_tag: [] },
+      }),
     );
+
+    return { remote_tag: remoteTags };
   } catch {
     return {};
   }
@@ -112,7 +109,9 @@ async function readLocals(api) {
 }
 
 // load git state and schema from dataset into the record
-export async function loadRepoRecord(repoUUID, record) {
+export async function loadRepoRecord(record) {
+  const repoUUID = record.repo;
+
   const api = new API(repoUUID);
 
   const [schemaRecord] = await api.select(new URLSearchParams("?_=_"));
@@ -164,8 +163,13 @@ async function writeRemotes(api, tags) {
 
     for (const tag of tagsList) {
       try {
-        api.addRemote(tag.remote_tag, tag.remote_url, tag.remote_token);
-      } catch {
+        await api.addRemote(
+          tag.remote_tag,
+          tag.remote_url[0],
+          tag.remote_token,
+        );
+      } catch (e) {
+        console.log(e);
         // do nothing
       }
     }

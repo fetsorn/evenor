@@ -555,15 +555,22 @@ export class BrowserAPI {
 
     const dir = await this.dir();
 
+    const tokenPartial = remoteToken
+      ? {
+          onAuth: () => ({
+            username: remoteToken,
+          }),
+        }
+      : {};
+
     await push({
       fs,
       http,
       force: true,
       dir,
       url: remoteUrl,
-      onAuth: () => ({
-        username: remoteToken,
-      }),
+      remote,
+      ...tokenPartial,
     });
   }
 
@@ -578,14 +585,21 @@ export class BrowserAPI {
 
     const dir = await this.dir();
 
+    const tokenPartial = remoteToken
+      ? {
+          onAuth: () => ({
+            username: remoteToken,
+          }),
+        }
+      : {};
+
     await fastForward({
       fs,
       http,
       dir,
       url: remoteUrl,
-      onAuth: () => ({
-        username: remoteToken,
-      }),
+      remote,
+      ...tokenPartial,
     });
   }
 

@@ -98,10 +98,11 @@ export function Overview() {
         />
       </div>
 
-      <div className={styles.plus}>
+      <div className={styles.plusbar}>
         <Button
           type="button"
           title={t("line.button.add")}
+          className={styles.plusbutton}
           onClick={() => onRecordInput()}
         >
           +

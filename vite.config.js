@@ -1,9 +1,10 @@
 import path from "path";
 import process from "process";
 import { defineConfig } from "vite";
-import { internalIpV4 } from "internal-ip";
 import react from "@vitejs/plugin-react";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+
+const host = process.env.TAURI_DEV_HOST;
 
 function getBuildMode() {
   if (process.env.BUILD_MODE) {
@@ -21,8 +22,6 @@ function getBuildMode() {
 
 // https://vitejs.dev/config/
 export default defineConfig(async () => {
-  const host = await internalIpV4();
-
   /** @type {import('vite').UserConfig} */
   const config = {
     build: {
@@ -62,14 +61,20 @@ export default defineConfig(async () => {
     //   strictPort: true,
     // },
     server: {
-      host: "0.0.0.0", // listen on all addresses
-      port: 4173, // this is a port for `vite preview` because `vite dev` fails on legacy mobile
+      host: host || false, // listen on all addresses
+      port: 1420, // 4173 is a port for `vite preview` because `vite dev` fails on legacy mobile
       strictPort: true,
-      hmr: {
-        protocol: "ws",
-        // TODO: replace with internalIpV4, why is it 192.168.1.0 but tauri connects to 192.168.1.4?
-        host: "192.168.1.3",
-        port: 4173,
+      hmr: host
+        ? {
+            protocol: "ws",
+            // host: "192.168.1.3",
+            host,
+            port: 1430,
+          }
+        : undefined,
+      watch: {
+        // 3. tell vite to ignore watching `src-tauri`
+        ignored: ["**/src-tauri/**"],
       },
     },
     // TODO: check for build, https://github.com/vitejs/vite/issues/8427

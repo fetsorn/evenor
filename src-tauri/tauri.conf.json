@@ -1,12 +1,12 @@
 {
   "productName": "evenor",
-  "version": "0.0.0",
-  "identifier": "com.fetsorn",
+  "version": "2.0.0",
+  "identifier": "com.evenor",
   "build": {
-    "beforeDevCommand": "yarn preview",
+    "beforeDevCommand": "yarn dev",
+    "devUrl": "http://localhost:1420/",
     "beforeBuildCommand": "yarn build",
-    "frontendDist": "../dist",
-    "devUrl": "http://localhost:4173/"
+    "frontendDist": "../dist"
   },
   "app": {
     "withGlobalTauri": false,
@@ -26,12 +26,20 @@
   "bundle": {
     "active": true,
     "targets": "all",
+    "copyright": "GPLv3",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
-  }
+    ],
+    "macOS": {
+      "entitlements": "entitlements.plist"
+    },
+    "iOS": {
+      "developmentTeam": "PU6CTXHGJ5"
+    }
+  },
+  "plugins": {}
 }

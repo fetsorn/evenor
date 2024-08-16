@@ -1,5 +1,5 @@
 import { condense } from "@fetsorn/csvs-js";
-import { API, generateDefaultRepoRecord, newUUID } from "../api/index.js";
+import { API, defaultRepoRecord, newUUID } from "../api/index.js";
 import { saveRepoRecord, loadRepoRecord } from "./bin.js";
 
 export const createProfileSlice = (set, get) => ({
@@ -7,8 +7,6 @@ export const createProfileSlice = (set, get) => ({
   record: undefined,
 
   isEdit: false,
-
-  isSettings: false,
 
   // write record to the dataset
   onRecordUpdate: async (recordOld, recordNew) => {
@@ -74,7 +72,7 @@ export const createProfileSlice = (set, get) => ({
     // if new repo record, set default values for required fields
     const isRepoRecord = repoUUID === "root" && base === "repo";
 
-    const repoPartial = isRepoRecord ? generateDefaultRepoRecord() : {};
+    const repoPartial = isRepoRecord ? defaultRepoRecord : {};
 
     const record = recordNew ?? {
       _: base,
@@ -86,11 +84,10 @@ export const createProfileSlice = (set, get) => ({
   },
 
   // delete record form the dataset
-  onRecordDelete: async () => {
+  onRecordDelete: async (recordOld) => {
     const {
       base,
       repo: { repo: repoUUID },
-      record: recordOld,
       records: recordsOld,
     } = get();
 
@@ -105,71 +102,5 @@ export const createProfileSlice = (set, get) => ({
     await api.commit();
 
     set({ records: recordsNew, record: undefined, isEdit: false });
-  },
-
-  // override all record store functions to act on the root repo
-  onSettingsOpen: async () => {
-    const { repo } = get();
-
-    const { repo: repoUUID } = repo;
-
-    const apiRepo = new API(repoUUID);
-
-    const baseBackup = get().base;
-
-    // get current repo settings from root db
-    const recordRepo = await apiRepo.getSettings();
-
-    // load git state and schema from dataset into the record
-    const recordSettings = await loadRepoRecord(recordRepo);
-
-    const apiRoot = new API("root");
-
-    const {
-      onRecordUpdate: onRecordUpdateBackup,
-      onRecordDelete: onRecordDeleteBackup,
-    } = get();
-
-    const onRecordUpdateSettings = async (recordOld, recordNew) => {
-      await saveRepoRecord(recordNew);
-
-      await apiRoot.updateRecord(recordNew);
-
-      set({ isEdit: false });
-    };
-
-    const onRecordSelectSettings = (recordNew) => {
-      if (recordNew === undefined) {
-        set({
-          base: baseBackup,
-          isSettings: false,
-          onRecordUpdate: onRecordUpdateBackup,
-          onRecordDelete: onRecordDeleteBackup,
-        });
-      }
-
-      set({ isEdit: false, record: recordNew });
-    };
-
-    const onRecordDeleteSettings = async () => {
-      await apiRoot.deleteRecord(get().record);
-
-      set({
-        base: "repo",
-        repo: { _: "repo", repo: "root" },
-        record: undefined,
-        isSettings: false,
-        onRecordUpdate: onRecordUpdateBackup,
-        onRecordDelete: onRecordDeleteBackup,
-      });
-    };
-
-    set({
-      isSettings: true,
-      record: recordSettings,
-      onRecordSelect: onRecordSelectSettings,
-      onRecordDelete: onRecordDeleteSettings,
-      onRecordUpdate: onRecordUpdateSettings,
-    });
   },
 });

@@ -151,17 +151,6 @@ export class API {
     }
   }
 
-  async queryOptions(branch) {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.queryOptions(this.uuid, branch);
-
-      default:
-        return this.#browser.queryOptions(branch);
-    }
-  }
-
   async updateRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
@@ -248,50 +237,6 @@ export class API {
 
       default:
         return this.#browser.readSchema();
-    }
-  }
-
-  async readGedcom() {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.readGedcom(this.uuid);
-
-      default:
-        return this.#browser.readGedcom();
-    }
-  }
-
-  async readIndex() {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.readIndex(this.uuid);
-
-      default:
-        return this.#browser.readIndex();
-    }
-  }
-
-  async cloneView(remoteUrl, remoteToken) {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.cloneView(this.uuid, remoteUrl, remoteToken);
-
-      default:
-        return this.#browser.cloneView(remoteUrl, remoteToken);
-    }
-  }
-
-  async writeFeed(xml) {
-    // eslint-disable-next-line
-    switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.writeFeed(this.uuid, xml);
-
-      default:
-        return this.#browser.writeFeed(xml);
     }
   }
 
@@ -391,15 +336,5 @@ export class API {
       default:
         return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);
     }
-  }
-
-  async getSettings() {
-    const searchParams = new URLSearchParams();
-
-    searchParams.set("repo", this.uuid);
-
-    const [record] = await new API("root").select(searchParams);
-
-    return record;
   }
 }

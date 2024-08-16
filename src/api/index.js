@@ -1,10 +1,8 @@
 export { API } from "./api.js";
 export {
   schemaRoot,
-  generateDefaultRepoRecord,
+  defaultRepoRecord,
   newUUID,
-  enrichBranchRecords,
-  extractSchemaRecords,
   schemaToBranchRecords,
   branchRecordsToSchema,
 } from "./schema.js";

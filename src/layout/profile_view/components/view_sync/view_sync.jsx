@@ -32,15 +32,14 @@ export function ViewSync({ baseRecord, branchRecord }) {
   }
 
   return (
-    <div>
-      <p>Sync</p>
-      <p>{branchRecord.sync_tag}</p>
+    <span>
+      <span>Sync</span>
+      <span>{branchRecord.sync_tag}</span>
       <br />
-      <p>{branchRecord.sync_tag_search}</p>
-      <br />
+      <span>{branchRecord.sync_tag_search}</span>
       <button type="button" onClick={onSyncRepo}>
         🔄
       </button>
-    </div>
+    </span>
   );
 }

@@ -176,11 +176,11 @@ export class BrowserAPI {
     await pfs.writeFile(`${dir}/${filepath}`, content, "utf8");
   }
 
-  async putAsset(filename, buffer) {
+  async putAsset(filename, content) {
     // write buffer to assetEndpoint/filename
     const assetEndpoint = `${lfsDir}/${filename}`;
 
-    await this.writeFile(assetEndpoint, buffer);
+    await this.writeFile(assetEndpoint, content);
   }
 
   async uploadFile() {
@@ -309,16 +309,6 @@ export class BrowserAPI {
     });
 
     return { strm, closeHandler };
-  }
-
-  async queryOptions(branch) {
-    const searchParams = new URLSearchParams();
-
-    searchParams.set("_", branch);
-
-    const overview = await runWorker(this.readFile.bind(this), searchParams);
-
-    return overview;
   }
 
   async updateRecord(record) {
@@ -455,7 +445,7 @@ export class BrowserAPI {
         } else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
-            const { addLFS } = await import("./lfs.mjs");
+            const { addLFS } = await import("@fetsorn/isogit-lfs");
 
             await addLFS({
               fs,
@@ -777,20 +767,6 @@ export class BrowserAPI {
     zip.generateAsync({ type: "blob" }).then((content) => {
       saveAs(content, "archive.zip");
     });
-  }
-
-  async cloneView(remoteUrl, remoteToken) {
-    try {
-      const dir = await this.dir();
-
-      await this.rimraf(dir);
-    } catch {
-      // do nothing
-    }
-
-    await this.clone(remoteUrl, remoteToken);
-    // TODO add new repo to root
-    // TODO return a repo record
   }
 
   // returns Uint8Array file contents

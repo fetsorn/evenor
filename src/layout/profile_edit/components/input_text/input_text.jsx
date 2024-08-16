@@ -15,7 +15,11 @@ export function InputText({ branch, value, onFieldChange }) {
   async function onFocus(branch) {
     setOptions([]);
 
-    const optionsNew = await api.queryOptions(branch);
+    const searchParams = new URLSearchParams();
+
+    searchParams.set("_", branch);
+
+    const optionsNew = await api.select(searchParams);
 
     const optionValues = optionsNew.map((record) => record[branch]);
 
@@ -33,7 +37,7 @@ export function InputText({ branch, value, onFieldChange }) {
   }
 
   return (
-    <div>
+    <span>
       <input
         className={styles.input}
         type="text"
@@ -50,6 +54,6 @@ export function InputText({ branch, value, onFieldChange }) {
           ))}
         </datalist>
       )}
-    </div>
+    </span>
   );
 }

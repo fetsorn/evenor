@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { ViewValue, ViewRecord, ViewRemote, ViewSync } from "../index.js";
-import { AssetView, Spoiler } from "@/components/index.js";
+import { AssetView, Spoiler } from "@/layout/components/index.js";
 import { useStore } from "@/store/index.js";
 import { isTwig } from "@fetsorn/csvs-js";
 
@@ -65,15 +65,7 @@ export function ViewField({ schema, index, base, items }) {
 
   // TODO handle error when items is not array
   return (
-    <Spoiler
-      {...{
-        index,
-        title: base,
-        description,
-        isIgnored: items.length < 2, // only show spoiler for multiple items
-        onRemove: () => onFieldRemove(),
-      }}
-    >
+    <span>
       {items.map((item, idx) => (
         <ViewFieldItem
           key={idx}
@@ -86,6 +78,6 @@ export function ViewField({ schema, index, base, items }) {
           }}
         />
       ))}
-    </Spoiler>
+    </span>
   );
 }

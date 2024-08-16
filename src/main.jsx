@@ -1,11 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./app.jsx";
+import { Root } from "./layout/root.jsx";
 import "./index.css";
 import "core-js/stable";
+import "normalize.css";
+import "./i18n/config.js";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <App />
+    <Root />
   </React.StrictMode>,
 );

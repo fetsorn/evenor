@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store/index.js";
-import { Dropdown } from "@/components/index.js";
+import { Dropdown } from "@/layout/components/index.js";
 import styles from "./filter_query_plus.module.css";
 
 /**
@@ -28,7 +28,7 @@ export function FilterQueryPlus({}) {
   ]);
 
   // find all fields name
-  const leafFields = findLeaves(schema, base).concat([base]);
+  const leafFields = findLeaves(schema, base).concat([base, ".sortBy"]);
   // find field name which added to filterqueries
   const addedFields = Object.keys(queries);
   // find name fields which is not added to filterqueries

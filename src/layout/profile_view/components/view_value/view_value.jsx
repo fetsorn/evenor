@@ -2,9 +2,9 @@ import React from "react";
 
 export function ViewValue({ schema, index, description, base, value }) {
   return (
-    <div>
+    <span>
       <label>{description}:</label>
-      <div>{value}</div>
-    </div>
+      <span>{value}</span>
+    </span>
   );
 }

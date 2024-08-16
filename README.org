@@ -55,7 +55,7 @@ cd ~/csvs-init
 node path/to/evenor/src-server/index.js
 #+end_src
 * Documentation
-Evenor stands for "EVENt editOR". In Greek, Evenor is the ancestor of the people of Atlantis. In tokien's elvish, evenor can be loosely translated as "common ground".
+Evenor stands for "EVENt editOR". In Greek, Evenor is the ancestor of the people of Atlantis. In Tolkien's Elvish, "evenor" can be loosely translated as "common ground".
 ** Structure of the repo
 [[src/renderer][renderer]] - a React app, packaged both as a webapp and as an Electron renderer
 

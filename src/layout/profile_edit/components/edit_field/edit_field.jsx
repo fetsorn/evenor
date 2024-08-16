@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { isTwig } from "@fetsorn/csvs-js";
 import { EditInput, EditRecord } from "../index.js";
-import { Spoiler } from "@/components/index.js";
+import { Spoiler } from "@/layout/components/index.js";
 
 function EditFieldItem({
   schema,
@@ -74,15 +74,7 @@ export function EditField({
 
   // TODO handle error when items is not array
   return (
-    <Spoiler
-      {...{
-        index,
-        title: base,
-        description,
-        isIgnored: items.length < 2, // only show spoiler for multiple items
-        onRemove: () => onFieldRemove(),
-      }}
-    >
+    <span>
       {items.map((item, idx) => (
         <EditFieldItem
           key={idx}
@@ -97,6 +89,6 @@ export function EditField({
           }}
         />
       ))}
-    </Spoiler>
+    </span>
   );
 }

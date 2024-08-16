@@ -1,54 +1,26 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
-import { schemaRoot } from "@/api/index.js";
-import { Button } from "@/components/index.js";
+import { API, schemaRoot } from "@/api/index.js";
+import { Button } from "@/layout/components/index.js";
 import { useStore } from "@/store/index.js";
 import { ViewRecord } from "./components/index.js";
 import styles from "./profile_view.module.css";
-import { API } from "../../api/index.js";
 
 export function ProfileView() {
   const { t } = useTranslation();
 
-  const [
-    record,
-    repo,
-    setRepoUUID,
-    onRecordInput,
-    onRecordSelect,
-    onRecordDelete,
-    isSettings,
-    schemaRepo,
-  ] = useStore((state) => [
-    state.record,
-    state.repo,
-    state.setRepoUUID,
-    state.onRecordInput,
-    state.onRecordSelect,
-    state.onRecordDelete,
-    state.isSettings,
-    state.schema,
-  ]);
+  const [record, repo, setRepoUUID, onRecordInput, onRecordSelect, schema] =
+    useStore((state) => [
+      state.record,
+      state.repo,
+      state.setRepoUUID,
+      state.onRecordInput,
+      state.onRecordSelect,
+      state.schema,
+    ]);
 
   const { repo: repoUUID } = repo;
-
-  const schema = isSettings ? schemaRoot : schemaRepo;
-
-  // const notSingleRepo = __BUILD_MODE__ !== "server";
-
-  const isHomeScreen = repoUUID === "root";
-
-  // const canOpenRepo = isHomeScreen && notSingleRepo;
-  const canOpenRepo = isHomeScreen;
-
-  const onRepoOpen = () => setRepoUUID(record.repo);
-
-  const onZip = async () => {
-    const api = new API(record.repo);
-
-    await api.zip();
-  };
 
   return (
     <div
@@ -67,44 +39,22 @@ export function ProfileView() {
             <div className={cn(styles.buttonbar, "view-sidebar__btn-bar")}>
               <Button
                 type="button"
-                title={t("line.button.close")}
+                title={t("header.button.back")}
                 onClick={() => onRecordSelect(undefined)}
               >
-                {"<"}
+                {"<"} {t("header.button.back")}
               </Button>
 
-              <Button
-                type="button"
-                title={t("line.button.delete")}
-                onClick={() => onRecordDelete()}
-              >
-                🗑️
-              </Button>
+              <span>{record[record._].slice(0, 20)}...</span>
 
               <Button
                 type="button"
                 title={t("line.button.edit")}
                 onClick={() => onRecordInput(record)}
               >
-                ✏️
+                {t("line.button.edit")}
               </Button>
             </div>
-
-            {canOpenRepo && (
-              <button
-                type="button"
-                title={t("line.button.open")}
-                onClick={() => onRepoOpen()}
-              >
-                {t("line.button.open")}
-              </button>
-            )}
-
-            {canOpenRepo && (
-              <button type="button" title="zip" onClick={() => onZip()}>
-                zip
-              </button>
-            )}
 
             <ViewRecord
               {...{

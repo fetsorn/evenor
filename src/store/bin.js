@@ -1,10 +1,9 @@
-import { findCrown } from "@fetsorn/csvs-js";
 import {
-  API,
+  findCrown,
   enrichBranchRecords,
   extractSchemaRecords,
-  branchRecordsToSchema,
-} from "../api/index.js";
+} from "@fetsorn/csvs-js";
+import { API, branchRecordsToSchema } from "../api/index.js";
 
 export function getDefaultBase(schema) {
   // find a sane default branch to select
@@ -138,23 +137,6 @@ export async function loadRepoRecord(record) {
   };
 
   return recordNew;
-}
-
-async function cloneRemote(api, tags) {
-  if (tags) {
-    //for (const tag of tags) {
-    //  // try to clone project to repo directory if entry has a remote tag, will fail if repo exists
-    //  try {
-    //    // what to do when multiple remotes clone?
-    //    const [tag] = tags;
-    //    await api.clone(tag.remote_url, tag.remote_token);
-    //    const schema = await api.readSchema();
-    //    return schema
-    //  } catch {
-    //    // do nothing
-    //  }
-    //}
-  }
 }
 
 async function writeRemotes(api, tags) {

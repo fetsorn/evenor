@@ -10,12 +10,8 @@ const rowHeights = {
   desktop: 40,
 };
 
-export function VirtualScroll({
-  data,
-  OverviewItem,
-  onRecordSelect,
-  tolerance = 2,
-}) {
+// TODO pass ...props to overviewItem as spread
+export function VirtualScroll({ data, OverviewItem, tolerance = 2, ...other }) {
   const { width: viewportWidth } = useWindowSize();
 
   const isMobile = useMedia("(max-width: 600px)");
@@ -79,8 +75,8 @@ export function VirtualScroll({
           record={elem}
           key={elem.key}
           style={{ height: rowHeight }}
-          onRecordSelect={onRecordSelect}
           isLast={elem.key === dataWithKeys.length - 1}
+          {...other}
         />
       ))}
       <div style={{ height: getBottomHeight() }} />

@@ -4,13 +4,28 @@ import { API } from "@/api/index.js";
 import { useStore } from "@/store/index.js";
 import styles from "./filter_query_list.module.css";
 
+/**
+ * return leaves of base
+ * @name filterLeaves
+ * @function
+ * @param {object} schema - structure data base.
+ * @param {string} base - field of schema.
+ * @returns {string[]} - list of lieaves of base
+ */
+function findLeaves(schema, base) {
+  // how to find all leaves of base. It should return all branches that have trunk === base when you select the plus button(base)
+  return Object.keys(schema).filter((branch) => schema[branch].trunk === base);
+}
+
 export function FilterQueryList() {
   const { t } = useTranslation();
 
-  const [queries, setQuery, repo] = useStore((state) => [
+  const [queries, setQuery, repo, schema, base] = useStore((state) => [
     state.queries,
     state.setQuery,
     state.repo,
+    state.schema,
+    state.base,
   ]);
 
   const { repo: repoUUID } = repo;
@@ -19,15 +34,29 @@ export function FilterQueryList() {
 
   const [options, setOptions] = useState([]);
 
-  async function onFocus(field) {
+  const leaves = findLeaves(schema, base);
+
+  async function onFocus(branch) {
+    if (branch === ".sortBy") {
+      setOptions(leaves);
+
+      return;
+    }
+
     setOptions([]);
 
-    const optionsNew = await api.queryOptions(field);
+    const searchParams = new URLSearchParams();
 
-    const optionValues = optionsNew.map((record) => record[field]);
+    searchParams.set("_", branch);
+
+    const optionsNew = await api.select(searchParams);
+
+    const optionValues = optionsNew.map((record) => record[branch]);
 
     setOptions([...new Set(optionValues)]);
   }
+
+  const canDelete = (field) => field !== ".sortBy";
 
   return (
     <div className={styles.queries}>
@@ -39,14 +68,16 @@ export function FilterQueryList() {
           <label htmlFor={`input-${field}`}>
             {field}
 
-            <button
-              type="button"
-              title={t("header.button.remove", { field })}
-              onClick={() => setQuery(field, undefined)}
-              style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
-            >
-              X
-            </button>
+            {canDelete(field) && (
+              <button
+                type="button"
+                title={t("header.button.remove", { field })}
+                onClick={() => setQuery(field, undefined)}
+                style={{ marginLeft: "5px", color: "red", cursor: "pointer" }}
+              >
+                X
+              </button>
+            )}
 
             <br />
 
@@ -62,6 +93,7 @@ export function FilterQueryList() {
               }}
             />
           </label>
+
           <datalist id={`panel_list-${field ?? Math.random()}`}>
             {options.map((option) => (
               <option

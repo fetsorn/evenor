@@ -2,7 +2,7 @@ import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
 import { schemaRoot } from "@/api";
-import { AssetView, Button } from "@/components/index.js";
+import { AssetView, Button } from "@/layout/components/index.js";
 import { useStore } from "@/store/index.js";
 import { EditRecord } from "./components/index.js";
 import styles from "./profile_edit.module.css";
@@ -10,25 +10,16 @@ import styles from "./profile_edit.module.css";
 export function ProfileEdit() {
   const { t } = useTranslation();
 
-  const [
-    record,
-    isSettings,
-    onRecordSelect,
-    onRecordUpdate,
-    onRecordInput,
-    schemaRepo,
-  ] = useStore((state) => [
-    state.record,
-    state.isSettings,
-    state.onRecordSelect,
-    state.onRecordUpdate,
-    state.onRecordInput,
-    state.schema,
-  ]);
+  const [record, onRecordSelect, onRecordUpdate, onRecordInput, schema] =
+    useStore((state) => [
+      state.record,
+      state.onRecordSelect,
+      state.onRecordUpdate,
+      state.onRecordInput,
+      state.schema,
+    ]);
 
   const recordBackup = structuredClone(record);
-
-  const schema = isSettings ? schemaRoot : schemaRepo;
 
   return (
     <div
@@ -47,18 +38,20 @@ export function ProfileEdit() {
             <div className={cn(styles.buttonbar, "edit-sidebar__btn-bar")}>
               <Button
                 type="button"
-                title={t("line.button.revert")}
+                title={t("header.button.back")}
                 onClick={() => onRecordSelect(recordBackup)}
               >
-                {"<"}
+                {"<"} {t("header.button.back")}
               </Button>
+
+              <span>{record[record._].slice(0, 20)}...</span>
 
               <Button
                 type="button"
                 title={t("line.button.save")}
                 onClick={() => onRecordUpdate(recordBackup, record)}
               >
-                💾
+                {t("line.button.save")}
               </Button>
             </div>
 

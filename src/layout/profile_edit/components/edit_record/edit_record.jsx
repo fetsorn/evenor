@@ -1,14 +1,9 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
-import { AssetView, Spoiler } from "@/components/index.js";
-import {
-  API,
-  newUUID,
-  schemaToBranchRecords,
-  enrichBranchRecords,
-} from "@/api/index.js";
-import { isTwig } from "@fetsorn/csvs-js";
+import { AssetView, Spoiler } from "@/layout/components/index.js";
+import { API, newUUID, schemaToBranchRecords } from "@/api/index.js";
+import { isTwig, enrichBranchRecords } from "@fetsorn/csvs-js";
 import { useStore } from "@/store/index.js";
 
 export function EditRecord({
@@ -170,15 +165,7 @@ export function EditRecord({
   const isFile = schema[base].task === "file";
 
   return (
-    <Spoiler
-      {...{
-        index,
-        title: base,
-        description,
-        isOpenDefault: true,
-        onRemove: () => onRecordRemove(),
-      }}
-    >
+    <span>
       <EditInput
         {...{
           schema,
@@ -190,47 +177,43 @@ export function EditRecord({
         }}
       />
 
-      <select
-        value="default"
-        onChange={({ target: { value: leaf } }) => addLeafValue(leaf)}
-      >
-        <option hidden disabled value="default">
-          +
-        </option>
-
-        {leaves.map((leaf) => (
-          <option key={leaf} value={leaf}>
-            {leaf}
-          </option>
-        ))}
-      </select>
-
       {isRemote && (
         <button type="button" title="" onClick={() => onClone()}>
           clone
         </button>
       )}
 
-      <div>
-        {leaves.filter(recordHasLeaf).map((leaf, idx) => (
-          <EditField
-            key={idx}
-            {...{
-              schema,
-              index: `${index}-${leaf}`,
-              base: leaf,
-              items: Array.isArray(record[leaf])
-                ? record[leaf]
-                : [record[leaf]],
-              description,
-              onFieldChange,
-              onFieldRemove,
-            }}
-          />
-        ))}
-      </div>
+      <span>
+        {leaves.map((leaf, idx) =>
+          recordHasLeaf(leaf) ? (
+            <span key={idx}>
+              <EditField
+                {...{
+                  schema,
+                  index: `${index}-${leaf}`,
+                  base: leaf,
+                  items: Array.isArray(record[leaf])
+                    ? record[leaf]
+                    : [record[leaf]],
+                  description,
+                  onFieldChange,
+                  onFieldRemove,
+                }}
+              />
+
+              <button key={leaf} onClick={() => addLeafValue(leaf)}>
+                Add another {leaf}
+              </button>
+            </span>
+          ) : (
+            <button key={leaf} onClick={() => addLeafValue(leaf)}>
+              Add {leaf}
+            </button>
+          ),
+        )}
+      </span>
 
       {isFile && <AssetView {...{ record, schema }} />}
-    </Spoiler>
+    </span>
   );
 }

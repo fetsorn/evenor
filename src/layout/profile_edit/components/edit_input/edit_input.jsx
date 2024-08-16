@@ -18,7 +18,7 @@ export function EditInput({
   switch (task) {
     case "text":
       return (
-        <div>
+        <span>
           <label>{description}:</label>
           {onFieldValueRemove && (
             <button
@@ -32,12 +32,12 @@ export function EditInput({
           <InputTextarea
             {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />
-        </div>
+        </span>
       );
 
     default:
       return (
-        <div>
+        <span>
           <label>{description}:</label>
           {onFieldValueRemove && (
             <button
@@ -51,7 +51,7 @@ export function EditInput({
           <InputText
             {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />
-        </div>
+        </span>
       );
   }
 }

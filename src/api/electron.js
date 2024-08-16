@@ -258,18 +258,6 @@ export class ElectronAPI {
     streamWorker = worker;
   }
 
-  async queryOptions(branch) {
-    const searchParams = new URLSearchParams();
-
-    searchParams.set("_", branch);
-
-    return runWorker({
-      msg: "select",
-      dir: this.dir,
-      searchParamsString: searchParams.toString(),
-    });
-  }
-
   async updateRecord(record) {
     await runWorker({
       msg: "update",
@@ -340,16 +328,6 @@ export class ElectronAPI {
     });
   }
 
-  async cloneView(remoteUrl, remoteToken) {
-    try {
-      await ElectronAPI.rimraf(this.dir);
-    } catch {
-      // do nothing
-    }
-
-    await this.clone(remoteUrl, remoteToken);
-  }
-
   async commit() {
     const { dir } = this;
 
@@ -403,7 +381,7 @@ export class ElectronAPI {
         } else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
-            const { addLFS } = await import("./lfs.mjs");
+            const { addLFS } = await import("@fetsorn/isogit-lfs");
 
             await addLFS({
               fs,

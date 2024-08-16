@@ -1,14 +1,20 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import styles from "./overview_item.module.css";
 
-export function OverviewItem({ record, onRecordSelect, isLast, ...others }) {
+export function OverviewItem({
+  record,
+  onRecordSelect,
+  onRecordDelete,
+  isLast,
+  ...others
+}) {
+  const { t } = useTranslation();
+
+  // TODO add delete
   return (
-    <button
-      className={cn(styles.row, { [styles.last]: isLast })}
-      onClick={() => onRecordSelect(record)}
-      {...others}
-    >
+    <p className={cn(styles.row, { [styles.last]: isLast })} {...others}>
       {Object.keys(record).map((key) => {
         if (key === "_") return undefined;
 
@@ -20,10 +26,24 @@ export function OverviewItem({ record, onRecordSelect, isLast, ...others }) {
 
         const labelShort = label.slice(0, 40);
 
-        const item = isString ? <div key={key}>{labelShort}</div> : undefined;
+        const item = isString ? <span key={key}>{labelShort}</span> : undefined;
 
         return item;
       })}
-    </button>
+
+      <span>{t("line.button.select")}</span>
+
+      <button onClick={() => onRecordSelect(record)}>
+        {t("line.button.yes")}
+      </button>
+
+      <button
+        type="button"
+        title={t("line.button.delete")}
+        onClick={() => onRecordDelete(record)}
+      >
+        {t("line.button.delete")}
+      </button>
+    </p>
   );
 }

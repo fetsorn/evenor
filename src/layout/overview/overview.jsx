@@ -2,7 +2,7 @@ import React, { Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import { useStore } from "@/store/index.js";
-import { Button } from "@/components/index.js";
+import { Button } from "@/layout/components/index.js";
 import styles from "./overview.module.css";
 import {
   OverviewFilter,
@@ -15,27 +15,29 @@ export function Overview() {
 
   const [
     repo,
-    sortBy,
+    queries,
     record,
     records,
     setRepoUUID,
-    onSettingsOpen,
     onRecordSelect,
+    onRecordDelete,
     onRecordInput,
   ] = useStore((state) => [
     state.repo,
-    state.sortBy,
+    state.queries,
     state.record,
     state.records,
     state.setRepoUUID,
-    state.onSettingsOpen,
     state.onRecordSelect,
+    state.onRecordDelete,
     state.onRecordInput,
   ]);
 
-  const { repo: repoUUID } = repo;
+  const { repo: repoUUID, reponame } = repo;
 
   const isRepo = repoUUID !== "root";
+
+  const sortBy = queries[".sortBy"];
 
   // find first available string value for sorting
   function identify(branch, value) {
@@ -69,21 +71,24 @@ export function Overview() {
             onClick={() => setRepoUUID("root")}
           >
             {/* &lt;= */}
-            {"<"}
+            {"<"} {t("header.button.back")}
           </Button>
         ) : (
           <div />
         )}
 
-        {isRepo && (
+        {isRepo ? <p>{reponame}</p> : ""}
+
+        <div>
           <Button
             type="button"
-            title={t("header.button.back")}
-            onClick={onSettingsOpen}
+            title={t("line.button.add")}
+            className={styles.plusbutton}
+            onClick={() => onRecordInput()}
           >
-            ⚙️
+            +
           </Button>
-        )}
+        </div>
       </div>
 
       <OverviewFilter />
@@ -93,20 +98,10 @@ export function Overview() {
           {...{
             data: recordsSorted,
             onRecordSelect,
+            onRecordDelete,
             OverviewItem,
           }}
         />
-      </div>
-
-      <div className={styles.plusbar}>
-        <Button
-          type="button"
-          title={t("line.button.add")}
-          className={styles.plusbutton}
-          onClick={() => onRecordInput()}
-        >
-          +
-        </Button>
       </div>
     </div>
   );

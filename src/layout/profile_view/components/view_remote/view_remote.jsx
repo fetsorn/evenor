@@ -31,11 +31,10 @@ export function ViewRemote({ baseRecord, branchRecord }) {
   }
 
   return (
-    <div>
-      <p>Remote git</p>
-      <p>{branchRecord.remote_tag}</p>
-      <p>{branchRecord.remote_url}</p>
-      <br />
+    <span>
+      <span>Remote git</span>
+      <span>{branchRecord.remote_tag}</span>
+      <span>{branchRecord.remote_url}</span>
       <button type="button" onClick={onPullRepo}>
         ⬇️
       </button>
@@ -45,6 +44,6 @@ export function ViewRemote({ baseRecord, branchRecord }) {
       <button type="button" onClick={onRemoteSync}>
         🔄️
       </button>
-    </div>
+    </span>
   );
 }

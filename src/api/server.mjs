@@ -205,7 +205,7 @@ export class ServerAPI {
         } else {
           // stage files in remoteEndpoint as LFS pointers
           if (filepath.startsWith(lfsDir)) {
-            const { addLFS } = await import("./lfs.mjs");
+            const { addLFS } = await import("@fetsorn/isogit-lfs");
 
             await addLFS({
               fs,

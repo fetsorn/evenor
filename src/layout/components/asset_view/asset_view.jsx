@@ -121,10 +121,10 @@ export function AssetView({ schema, record }) {
   if (!blobURL) {
     if (record[filehashBranch] || filenameFull) {
       return (
-        <div>
-          <p>{record[filehashBranch]}</p>
+        <span>
+          <span>{record[filehashBranch]}</span>
 
-          <p>{filenameFull}</p>
+          <span>{filenameFull}</span>
 
           <button type="button" onClick={() => onView()}>
             ▶️
@@ -133,16 +133,16 @@ export function AssetView({ schema, record }) {
           <button type="button" onClick={() => onDownload()}>
             ⬇️
           </button>
-        </div>
+        </span>
       );
     }
   } else {
     return (
-      <div>
-        <div>
-          <p>{record[filehashBranch]}</p>
+      <span>
+        <span>
+          <span>{record[filehashBranch]}</span>
 
-          <p>{filenameFull}</p>
+          <span>{filenameFull}</span>
 
           <button type="button" onClick={() => setBlobURL(undefined)}>
             🔽
@@ -151,10 +151,10 @@ export function AssetView({ schema, record }) {
           <button type="button" onClick={() => onDownload()}>
             ⬇️
           </button>
-        </div>
+        </span>
 
         <FileView downloadUrl={blobURL} mimetype={mimetype} />
-      </div>
+      </span>
     );
   }
 }

@@ -29,7 +29,7 @@ export function FilterQueryPlus({}) {
   const { _: base } = queries;
 
   // find all fields name
-  const leafFields = findLeaves(schema, base).concat([base, ".sortBy"]);
+  const leafFields = findLeaves(schema, base).concat([base, ".sortBy", "__"]);
   // find field name which added to filterqueries
   const addedFields = Object.keys(queries);
   // find name fields which is not added to filterqueries

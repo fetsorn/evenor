@@ -44,7 +44,7 @@ export function FilterQueryList() {
       return;
     }
 
-    if (branch === ".sortBy") {
+    if (branch === ".sortBy" || branch === "__") {
       setOptions(leaves);
 
       return;

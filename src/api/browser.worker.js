@@ -43,6 +43,11 @@ async function selectStream(message) {
 
     const client = new CSVS({ readFile });
 
+    // access leader here because csvs-js buildRecord is not capable of it
+    const leader = searchParams.get("__");
+
+    searchParams.delete("__");
+
     const result = await client.selectBaseKeys(searchParams);
 
     if (result) {
@@ -52,10 +57,22 @@ async function selectStream(message) {
       for (const baseKey of baseKeys) {
         const record = await client.buildRecord(base, baseKey);
 
-        postMessage({
-          action: "write",
-          record,
-        });
+        // postprocess leader here because csvs-js buildRecord is not capable of it
+        if (leader && leader !== base) {
+          const recordLeader = { _: leader, [leader]: record[leader] };
+
+          if (recordLeader) {
+            postMessage({
+              action: "write",
+              record: recordLeader,
+            });
+          }
+        } else {
+          postMessage({
+            action: "write",
+            record,
+          });
+        }
       }
     }
 

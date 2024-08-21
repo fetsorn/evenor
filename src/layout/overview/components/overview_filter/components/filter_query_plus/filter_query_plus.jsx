@@ -20,12 +20,13 @@ function findLeaves(schema, base) {
 export function FilterQueryPlus({}) {
   const { i18n, t } = useTranslation();
 
-  const [base, queries, schema, setQuery] = useStore((state) => [
-    state.base,
+  const [queries, schema, setQuery] = useStore((state) => [
     state.queries,
     state.schema,
     state.setQuery,
   ]);
+
+  const { _: base } = queries;
 
   // find all fields name
   const leafFields = findLeaves(schema, base).concat([base, ".sortBy"]);

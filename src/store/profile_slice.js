@@ -6,13 +6,14 @@ export const createProfileSlice = (set, get) => ({
   // record selected from records for viewing/editing
   record: undefined,
 
+  // whether the record is being edited
   isEdit: false,
 
-  // write record to the dataset
+  // write record to the folder
   onRecordUpdate: async (recordOld, recordNew) => {
     const {
-      base,
       schema,
+      queries: { _: base },
       repo: { repo: repoUUID },
       records: recordsOld,
     } = get();
@@ -56,7 +57,7 @@ export const createProfileSlice = (set, get) => ({
 
     const canSelectRepo = isHomeScreen && isNewRecord;
 
-    // when selecting a repo, load git state and schema from dataset into the record
+    // when selecting a repo, load git state and schema from folder into the record
     const record = canSelectRepo ? await loadRepoRecord(recordNew) : recordNew;
 
     set({ record, isEdit: false });
@@ -66,7 +67,7 @@ export const createProfileSlice = (set, get) => ({
   onRecordInput: async (recordNew) => {
     const {
       repo: { repo: repoUUID },
-      base,
+      queries: { _: base },
     } = get();
 
     // if new repo record, set default values for required fields
@@ -83,10 +84,10 @@ export const createProfileSlice = (set, get) => ({
     set({ record, isEdit: true });
   },
 
-  // delete record form the dataset
+  // delete record from the folder
   onRecordDelete: async (recordOld) => {
     const {
-      base,
+      queries: { _: base },
       repo: { repo: repoUUID },
       records: recordsOld,
     } = get();

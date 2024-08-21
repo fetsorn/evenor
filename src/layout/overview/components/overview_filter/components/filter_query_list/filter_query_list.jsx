@@ -20,15 +20,16 @@ function findLeaves(schema, base) {
 export function FilterQueryList() {
   const { t } = useTranslation();
 
-  const [queries, setQuery, repo, schema, base] = useStore((state) => [
+  const [queries, setQuery, repo, schema] = useStore((state) => [
     state.queries,
     state.setQuery,
     state.repo,
     state.schema,
-    state.base,
   ]);
 
   const { repo: repoUUID } = repo;
+
+  const { _: base } = queries;
 
   const api = new API(repoUUID);
 
@@ -37,6 +38,12 @@ export function FilterQueryList() {
   const leaves = findLeaves(schema, base);
 
   async function onFocus(branch) {
+    if (branch === "_") {
+      setOptions(Object.keys(schema));
+
+      return;
+    }
+
     if (branch === ".sortBy") {
       setOptions(leaves);
 
@@ -56,7 +63,7 @@ export function FilterQueryList() {
     setOptions([...new Set(optionValues)]);
   }
 
-  const canDelete = (field) => field !== ".sortBy";
+  const canDelete = (field) => field !== ".sortBy" && field !== "_";
 
   return (
     <div className={styles.queries}>

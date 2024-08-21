@@ -107,7 +107,7 @@ async function readLocals(api) {
   }
 }
 
-// load git state and schema from dataset into the record
+// load git state and schema from folder into the record
 export async function loadRepoRecord(record) {
   const repoUUID = record.repo;
 

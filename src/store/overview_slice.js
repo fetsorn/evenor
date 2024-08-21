@@ -9,19 +9,22 @@ import {
 } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
-  queries: {},
-
-  base: "repo",
-
+  // structure of records in the current folder
   schema: schemaRoot,
 
-  records: [],
-
+  // currently viewed folder
   repo: { _: "repo", repo: "root" },
 
+  // state of the search bar
+  queries: { _: "repo" },
+
+  // objects currently displayed in the overview
+  records: [],
+
+  // handler to interrupt a search stream
   abortPreviousStream: () => {},
 
-  // TODO: refactor this away somehow
+  // bootstraps the state and reads the URL on application launch
   initialize: async () => {
     if (__BUILD_MODE__ === "server") {
       const api = new API("server");
@@ -39,15 +42,13 @@ export const createOverviewSlice = (set, get) => ({
       });
 
       set({
-        base,
+        queries: { _: base, ".sortBy": sortBy },
         schema: schemaServer,
         repo: recordServer,
       });
 
       // run queries from the store
       await get().setQuery("", undefined);
-
-      await get().setQuery(".sortBy", sortBy);
 
       return;
     }
@@ -70,8 +71,6 @@ export const createOverviewSlice = (set, get) => ({
 
     const searchParams = new URLSearchParams(searchString);
 
-    const baseURL = searchParams.get("_");
-
     const sortByURL = searchParams.get(".sortBy");
 
     function paramsToQueries(searchParamsSet) {
@@ -82,8 +81,7 @@ export const createOverviewSlice = (set, get) => ({
 
       const queries = Object.fromEntries(
         Object.entries(searchParamsObject).filter(
-          ([key]) =>
-            key !== "_" && key !== "~" && key !== "-" && !key.startsWith("."),
+          ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
         ),
       );
 
@@ -149,22 +147,19 @@ export const createOverviewSlice = (set, get) => ({
 
         const baseDefault = getDefaultBase(schemaClone);
 
-        const base = baseURL ?? baseDefault;
+        const base = queries._ ?? baseDefault;
 
         const sortByDefault = getDefaultSortBy(schemaClone, base, []);
 
         const sortBy = sortByURL ?? sortByDefault;
 
         set({
-          queries,
-          base,
+          queries: { ...queries, _: base, ".sortBy": sortBy },
           schema: schemaClone,
           repo: recordClone,
         });
 
-        await get().setQuery(undefined, undefined);
-
-        await get().setQuery(".sortBy", sortBy);
+        await get().setQuery("", undefined);
 
         return undefined;
       } catch (e) {
@@ -174,7 +169,7 @@ export const createOverviewSlice = (set, get) => ({
     }
 
     if (repoRoute !== "") {
-      // if repo is in store, find uuid in root dataset
+      // if repo is in store, find uuid in root folder
       try {
         const [repo] = await apiRoot.select(
           new URLSearchParams(`?_=repo&reponame=${repoRoute}`),
@@ -188,13 +183,14 @@ export const createOverviewSlice = (set, get) => ({
 
         const baseDefault = getDefaultBase(schema);
 
+        const base = queries._ ?? baseDefault;
+
         const sortByDefault = getDefaultSortBy(schema, base, []);
 
         const sortBy = sortByURL ?? sortByDefault;
 
         set({
-          queries,
-          base: baseURL ?? baseDefault,
+          queries: { ...queries, _: base, ".sortBy": sortBy },
           schema,
           repo,
         });
@@ -202,48 +198,41 @@ export const createOverviewSlice = (set, get) => ({
         // run queries from the store
         await get().setQuery("", undefined);
 
-        await get().setQuery(".sortBy", sortBy);
-
         return;
       } catch {
         // proceed to set repo uuid as root
       }
     }
 
-    const base = baseURL ?? "repo";
+    const base = queries._ ?? "repo";
 
     const sortBy = sortByURL ?? getDefaultSortBy(schemaRoot, base, []);
 
     set({
       schema: schemaRoot,
-      base,
-      queries,
+      queries: { ...queries, _: base, ".sortBy": sortBy },
       repo: { _: "repo", repo: "root" },
     });
 
     // run queries from the store
     await get().setQuery("", undefined);
 
-    await get().setQuery(".sortBy", sortBy);
-
     return undefined;
   },
 
+  // changes the currently viewed folder
   setRepoUUID: async (repoUUID, baseNew) => {
     set({ record: undefined });
 
     if (repoUUID === "root") {
       set({
         schema: schemaRoot,
-        base: "repo",
-        queries: {},
+        queries: { _: "repo", ".sortBy": "reponame" },
         repo: { _: "repo", repo: "root" },
       });
 
       // reset all queries
-      await get().setQuery(undefined, undefined);
-
-      await get().setQuery(".sortBy", "reponame");
+      await get().setQuery("", undefined);
     } else {
       const apiRoot = new API("root");
 
@@ -260,20 +249,18 @@ export const createOverviewSlice = (set, get) => ({
 
       const sortBy = getDefaultSortBy(schema, base, []);
 
-      set({ schema, base, queries: {}, repo });
+      set({ schema, queries: { _: base, ".sortBy": sortBy }, repo });
 
       // reset all queries
-      await get().setQuery(undefined, undefined);
-
-      await get().setQuery(".sortBy", sortBy);
+      await get().setQuery("", undefined);
     }
   },
 
+  // changes the state of the search bar, runs a new search
   setQuery: async (queryField, queryValue) => {
     if (queryField === ".sortBy") {
       const {
         queries,
-        base,
         repo: { repo: repoUUID, reponame },
       } = get();
 
@@ -281,7 +268,7 @@ export const createOverviewSlice = (set, get) => ({
 
       set({ queries });
 
-      setURL(queries, base, queryValue, repoUUID, reponame);
+      setURL(queries, queries._, queryValue, repoUUID, reponame);
 
       return;
     }
@@ -307,11 +294,13 @@ export const createOverviewSlice = (set, get) => ({
 
     // if query field is undefined, delete queries
     if (queryField === undefined) {
+      const { queries } = get();
+
       set({ queries: {} });
     } else if (queryField === "_") {
       const sortBy = getDefaultSortBy(schema, queryValue, []);
 
-      set({ base: queryValue, queries: { ".sortBy": sortBy } });
+      set({ queries: { _: queryValue, ".sortBy": sortBy } });
       // if query field is defined, update queries
     } else if (queryField !== "") {
       const { queries } = get();
@@ -330,13 +319,12 @@ export const createOverviewSlice = (set, get) => ({
 
     const {
       queries,
-      base,
       repo: { repo: repoUUID, reponame },
     } = get();
 
     const searchParams = setURL(
       queries,
-      base,
+      queries._,
       queries[".sortBy"],
       repoUUID,
       reponame,

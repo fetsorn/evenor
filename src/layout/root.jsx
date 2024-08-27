@@ -22,6 +22,7 @@ export function Root() {
 }
 
 const ProfileEdit = React.lazy(() => import("./profile_edit/index.js"));
+
 const ProfileView = React.lazy(() => import("./profile_view/index.js"));
 
 function Page() {

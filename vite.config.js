@@ -25,6 +25,7 @@ export default defineConfig(async () => {
   /** @type {import('vite').UserConfig} */
   const config = {
     build: {
+      outDir: "public",
       target: "safari13",
     },
     worker: {

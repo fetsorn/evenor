@@ -91,3 +91,4 @@ out/
 
 /src-tauri/gen/
 /.vite/
+/public/

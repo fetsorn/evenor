@@ -3,7 +3,7 @@ name = "evenor"
 version = "2.1.0"
 description = "tell the story of your own data"
 authors = ["fetsorn", "nasimmora"]
-license = ""
+license = "GPLv3"
 repository = "https://gitlab.com/norcivilian-labs/evenor"
 edition = "2021"
 

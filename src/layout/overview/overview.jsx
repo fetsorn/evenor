@@ -15,6 +15,7 @@ export function Overview() {
 
   const [
     repo,
+    schema,
     queries,
     record,
     records,
@@ -24,6 +25,7 @@ export function Overview() {
     onRecordInput,
   ] = useStore((state) => [
     state.repo,
+    state.schema,
     state.queries,
     state.record,
     state.records,
@@ -38,6 +40,18 @@ export function Overview() {
   const isRepo = repoUUID !== "root";
 
   const sortBy = queries[".sortBy"];
+
+  const { _: base } = queries;
+
+  const leaves = Object.keys(schema).filter(
+    (leaf) => schema[leaf].trunk === base,
+  );
+
+  // if base is twig, it has no connections
+  const isTwig = leaves.length === 0;
+
+  // we can add new values only if base has connections
+  const canAdd = !isTwig;
 
   // find first available string value for sorting
   function identify(branch, value) {
@@ -79,16 +93,18 @@ export function Overview() {
 
         {isRepo ? <p>{reponame}</p> : ""}
 
-        <div>
-          <Button
-            type="button"
-            title={t("line.button.add")}
-            className={styles.plusbutton}
-            onClick={() => onRecordInput()}
-          >
-            +
-          </Button>
-        </div>
+        {canAdd && (
+          <div>
+            <Button
+              type="button"
+              title={t("line.button.add")}
+              className={styles.plusbutton}
+              onClick={() => onRecordInput()}
+            >
+              +
+            </Button>
+          </div>
+        )}
       </div>
 
       <OverviewFilter />

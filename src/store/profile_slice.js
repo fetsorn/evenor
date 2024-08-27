@@ -31,11 +31,13 @@ export const createProfileSlice = (set, get) => ({
 
     const isHomeScreen = repoUUID === "root";
 
+    const isRepoBranch = base === "repo";
+
     // eslint-disable-next-line
     // const isNotServer = __BUILD_MODE__ !== "server";
 
     // const canSaveRepo = isHomeScreen && isNotServer;
-    const canSaveRepo = isHomeScreen;
+    const canSaveRepo = isHomeScreen && base === "repo";
 
     if (canSaveRepo) {
       await saveRepoRecord(recordNew);
@@ -49,6 +51,7 @@ export const createProfileSlice = (set, get) => ({
     const { repo } = get();
 
     const { repo: repoUUID } = repo;
+
     // eslint-disable-next-line
     // const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
     const isHomeScreen = repoUUID === "root";

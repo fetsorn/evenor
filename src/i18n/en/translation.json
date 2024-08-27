@@ -30,7 +30,7 @@
       "delete": "delete event",
       "remove": "remove {{ field }} field",
       "upload": "choose file",
-      "open": "open project",
+      "open": "open",
       "add-field": "add field"
     },
     "dropdown": {

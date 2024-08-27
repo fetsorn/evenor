@@ -1,6 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
-import { schemaRoot, branchRecordsToSchema } from "./schema.js";
+import { schemaRoot, recordsToSchema } from "./schema.js";
 import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
@@ -712,7 +712,7 @@ export class BrowserAPI {
 
     const branchRecords = await this.select(new URLSearchParams("?_=branch"));
 
-    const schema = branchRecordsToSchema(schemaRecord, branchRecords);
+    const schema = recordsToSchema(schemaRecord, branchRecords);
 
     return schema;
   }

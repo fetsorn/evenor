@@ -1,7 +1,7 @@
 {
   "name": "evenor",
   "productName": "evenor",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "private": true,
   "description": "Tell the story of your data.",
   "type": "module",
@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "@fetsorn/csvs-js": "0.18.0",
-    "@fetsorn/isogit-lfs": "^0.5.0",
+    "@fetsorn/isogit-lfs": "^0.5.1",
     "@fetsorn/vite-node-worker": "1.0.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
     "@tauri-apps/api": ">=2.0.0-rc.0",
@@ -76,6 +76,7 @@
     "normalize.css": "8.0.1",
     "process": "0.11.10",
     "react": "18.2.0",
+    "react-contenteditable": "^3.3.7",
     "react-dom": "18.2.0",
     "react-draggable": "4.4.6",
     "react-i18next": "14.1.0",

@@ -68,13 +68,13 @@ export function ViewRecord({ schema, index, base, record }) {
       />
 
       {canOpenRepo && (
-        <button
-          type="button"
-          title={t("line.button.open")}
-          onClick={() => onRepoOpen()}
-        >
-          {t("line.button.open")}
-        </button>
+        <span>
+          <a title={t("line.button.open")} onClick={() => onRepoOpen()}>
+            {t("line.button.open")} {record[base]}
+          </a>
+
+          <span> </span>
+        </span>
       )}
 
       <span>
@@ -94,9 +94,9 @@ export function ViewRecord({ schema, index, base, record }) {
       </span>
 
       {canZip && (
-        <button type="button" title="zip" onClick={() => onZip()}>
-          zip
-        </button>
+        <a title="zip" onClick={() => onZip()}>
+          Can zip
+        </a>
       )}
     </span>
   );

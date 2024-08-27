@@ -177,6 +177,8 @@ export function EditRecord({
         }}
       />
 
+      <span> </span>
+
       {isRemote && (
         <button type="button" title="" onClick={() => onClone()}>
           clone
@@ -186,7 +188,7 @@ export function EditRecord({
       <span>
         {leaves.map((leaf, idx) =>
           recordHasLeaf(leaf) ? (
-            <span key={idx}>
+            <span key={"record" + leaf + idx}>
               <EditField
                 {...{
                   schema,
@@ -201,14 +203,22 @@ export function EditRecord({
                 }}
               />
 
-              <button key={leaf} onClick={() => addLeafValue(leaf)}>
-                Add another {leaf}
-              </button>
+              <label>
+                Add another<span> </span>
+                <a onClick={() => addLeafValue(leaf)}>
+                  {leaf}
+                  <span> </span>
+                </a>
+              </label>
             </span>
           ) : (
-            <button key={leaf} onClick={() => addLeafValue(leaf)}>
-              Add {leaf}
-            </button>
+            <label key={"record" + leaf + idx}>
+              Add<span> </span>
+              <a key={leaf} onClick={() => addLeafValue(leaf)}>
+                {leaf}
+                <span> </span>
+              </a>
+            </label>
           ),
         )}
       </span>

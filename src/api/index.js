@@ -4,5 +4,5 @@ export {
   defaultRepoRecord,
   newUUID,
   schemaToBranchRecords,
-  branchRecordsToSchema,
+  recordsToSchema,
 } from "./schema.js";

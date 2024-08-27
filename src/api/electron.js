@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { URLSearchParams } from "url";
 import { app, dialog } from "electron";
-import { schemaRoot, branchRecordsToSchema } from "./schema.js";
+import { schemaRoot, recordsToSchema } from "./schema.js";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
 // import { exportPDF, generateLatex } from "lib/latex";
@@ -620,7 +620,7 @@ export class ElectronAPI {
 
     const branchRecords = await this.select(new URLSearchParams("?_=branch"));
 
-    const schema = branchRecordsToSchema(schemaRecord, branchRecords);
+    const schema = recordsToSchema(schemaRecord, branchRecords);
 
     return schema;
   }

@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { useStore } from "@/store/index.js";
 import cn from "classnames";
 import styles from "./overview_item.module.css";
 
@@ -10,7 +11,9 @@ export function OverviewItem({
   isLast,
   ...others
 }) {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
+
+  const [schema] = useStore((state) => [state.schema]);
 
   // TODO add delete
   return (
@@ -18,32 +21,41 @@ export function OverviewItem({
       {Object.keys(record).map((key) => {
         if (key === "_") return undefined;
 
+        const description =
+          schema?.[key]?.description?.[i18n.resolvedLanguage] ?? key;
+
         const value = record[key];
 
         const isString = typeof value === "string";
 
-        const label = `${key}: ${value}`;
+        const label = `${description} is ${value}`;
 
-        const labelShort = label.slice(0, 40);
+        const valueShort =
+          value.length > 10 ? value.slice(0, 10) + "..." : value;
 
-        const item = isString ? <span key={key}>{labelShort}</span> : undefined;
+        const item = isString ? (
+          <span key={key}>
+            {description} is {valueShort}
+            <span> </span>
+          </span>
+        ) : undefined;
 
         return item;
       })}
 
-      <span>{t("line.button.select")}</span>
+      <span> </span>
 
-      <button onClick={() => onRecordSelect(record)}>
-        {t("line.button.yes")}
-      </button>
+      <a onClick={() => onRecordSelect(record)}>Select</a>
 
-      <button
+      <span> or </span>
+
+      <a
         type="button"
         title={t("line.button.delete")}
         onClick={() => onRecordDelete(record)}
       >
         {t("line.button.delete")}
-      </button>
+      </a>
     </p>
   );
 }

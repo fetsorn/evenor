@@ -19,27 +19,35 @@ function EditFieldItem({
 
   if (baseIsTwig) {
     return (
-      <EditInput
-        schema={schema}
-        index={index}
-        base={base}
-        description={description}
-        value={item}
-        onFieldValueChange={(_, valueNew) => onFieldItemChange(valueNew)}
-        onFieldValueRemove={() => onFieldItemRemove()}
-      />
+      <span>
+        <EditInput
+          schema={schema}
+          index={index}
+          base={base}
+          description={description}
+          value={item}
+          onFieldValueChange={(_, valueNew) => onFieldItemChange(valueNew)}
+          onFieldValueRemove={() => onFieldItemRemove()}
+        />
+      </span>
     );
   }
 
   return (
-    <EditRecord
-      index={`${index}-${item[base]}`}
-      schema={schema}
-      base={base}
-      record={item}
-      onRecordChange={(recordNew) => onFieldItemChange(recordNew)}
-      onRecordRemove={() => onFieldItemRemove()}
-    />
+    <span>
+      <EditRecord
+        index={`${index}-${item[base]}`}
+        schema={schema}
+        base={base}
+        record={item}
+        onRecordChange={(recordNew) => onFieldItemChange(recordNew)}
+        onRecordRemove={() => onFieldItemRemove()}
+      />
+
+      <span> </span>
+
+      <a onClick={() => onFieldItemRemove()}>Remove this {base}</a>
+    </span>
   );
 }
 
@@ -69,26 +77,43 @@ export function EditField({
 
     itemsNew.splice(idx, 1);
 
-    onFieldChange(base, itemsNew);
+    if (itemsNew.length === 0) {
+      onFieldRemove(base);
+    } else {
+      onFieldChange(base, itemsNew);
+    }
   }
 
   // TODO handle error when items is not array
   return (
     <span>
       {items.map((item, idx) => (
-        <EditFieldItem
-          key={idx}
-          {...{
-            schema,
-            index,
-            base,
-            item,
-            description,
-            onFieldItemChange: (itemNew) => onFieldItemChange(idx, itemNew),
-            onFieldItemRemove: () => onFieldItemRemove(idx),
-          }}
-        />
+        <span key={idx}>
+          <EditFieldItem
+            {...{
+              schema,
+              index,
+              base,
+              item,
+              description,
+              onFieldItemChange: (itemNew) => onFieldItemChange(idx, itemNew),
+              onFieldItemRemove: () => onFieldItemRemove(idx),
+            }}
+          />
+
+          <span> </span>
+
+          <a onClick={() => onFieldItemRemove(idx)}>Remove this {base}</a>
+
+          <span> </span>
+        </span>
       ))}
+
+      {items.length > 1 && (
+        <a onClick={() => onFieldRemove(base)}>Remove each {base}</a>
+      )}
+
+      <span> </span>
     </span>
   );
 }

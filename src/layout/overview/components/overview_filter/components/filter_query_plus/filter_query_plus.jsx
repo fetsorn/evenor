@@ -46,8 +46,8 @@ export function FilterQueryPlus({}) {
           +
         </option>
 
-        {notAddedFields.map((leaf) => (
-          <option key={leaf} value={leaf}>
+        {notAddedFields.map((leaf, index) => (
+          <option key={leaf + index} value={leaf}>
             {leaf}
           </option>
         ))}

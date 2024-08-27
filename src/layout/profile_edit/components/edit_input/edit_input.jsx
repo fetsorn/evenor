@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { InputText, InputTextarea } from "../index.js";
+import { InputText, InputTextarea, InputContenteditable } from "../index.js";
 
 export function EditInput({
   schema,
@@ -19,17 +19,17 @@ export function EditInput({
     case "text":
       return (
         <span>
-          <label>{description}:</label>
-          {onFieldValueRemove && (
-            <button
-              type="button"
-              title={t("line.button.remove", { field: base })}
-              onClick={() => onFieldValueRemove()}
-            >
-              X
-            </button>
-          )}
-          <InputTextarea
+          <label>The {description} is </label>
+          {/* {onFieldValueRemove && ( */}
+          {/*   <a */}
+          {/*     title={t("line.button.remove", { field: base })} */}
+          {/*     onClick={() => onFieldValueRemove()} */}
+          {/*   > */}
+          {/*     Remove this {base} */}
+          {/*     <span> </span> */}
+          {/*   </a> */}
+          {/* )} */}
+          <InputContenteditable
             {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />
         </span>
@@ -38,17 +38,17 @@ export function EditInput({
     default:
       return (
         <span>
-          <label>{description}:</label>
-          {onFieldValueRemove && (
-            <button
-              type="button"
-              title={t("line.button.remove", { field: base })}
-              onClick={() => onFieldValueRemove()}
-            >
-              X
-            </button>
-          )}
-          <InputText
+          <label>The {description} is </label>
+          {/* {onFieldValueRemove && ( */}
+          {/*   <a */}
+          {/*     title={t("line.button.remove", { field: base })} */}
+          {/*     onClick={() => onFieldValueRemove()} */}
+          {/*   > */}
+          {/*     Remove this {base} */}
+          {/*     <span> </span> */}
+          {/*   </a> */}
+          {/* )} */}
+          <InputContenteditable
             {...{ branch: base, value, onFieldChange: onFieldValueChange }}
           />
         </span>

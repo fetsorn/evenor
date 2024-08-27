@@ -59,13 +59,26 @@ async function selectStream(message) {
 
         // postprocess leader here because csvs-js buildRecord is not capable of it
         if (leader && leader !== base) {
-          const recordLeader = { _: leader, [leader]: record[leader] };
+          const valueLeader = record[leader];
 
-          if (recordLeader) {
-            postMessage({
-              action: "write",
-              record: recordLeader,
-            });
+          if (valueLeader) {
+            if (Array.isArray(valueLeader)) {
+              for (const itemLeader of valueLeader) {
+                const recordLeader = { _: leader, [leader]: itemLeader };
+
+                postMessage({
+                  action: "write",
+                  record: recordLeader,
+                });
+              }
+            } else {
+              const recordLeader = { _: leader, [leader]: valueLeader };
+
+              postMessage({
+                action: "write",
+                record: recordLeader,
+              });
+            }
           }
         } else {
           postMessage({

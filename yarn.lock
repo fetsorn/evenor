@@ -1584,17 +1584,19 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@fetsorn/csvs-js@0.17.1":
-  version "0.17.1"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.17.1.tgz#d62242fac94298a714dbe45482189a1d3096f0ee"
-  integrity sha512-PctBOwDDzYOk6IVUl15pxLXDLPFkao+A2P1ndaPbW5PUhvpCi9QHMAAgDijBz5/9hJtbv+hNUKzBrYnhhh02wQ==
+"@fetsorn/csvs-js@0.18.0":
+  version "0.18.0"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.18.0.tgz#2c2962e4f9122d027975a0c6b41b1b0a8efa0517"
+  integrity sha512-oUg2VICIZUlRDsEWGPxx0EkkrZ8ZMejeDveyxqTQ2T97HJsGGA17Y0oy46QOXFR/KlNMRgGeSuDidI+DCiHAEQ==
   dependencies:
     papaparse "^5.4.1"
 
-"@fetsorn/isogit-lfs@^0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.4.1.tgz#7146bd512b943d2eae8497960746a0cb0e2fea43"
-  integrity sha512-wBJErr6UkQ767e39Hk1xArz4t3STEfqJj6/5wd64D+AxjHeavoq1/CmzATfJ6IJ/UCFDolr859hVZunAa3HwTg==
+"@fetsorn/isogit-lfs@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.1.tgz#8a65e51bb4ee087d9ca7d7939781b2244f93beaa"
+  integrity sha512-ZJsf/G6meisAKbojfaA85c+g+avfeEWgLOlBAN5tUsF3x5aQVpB1/1TOyvuc+JMtAJKLmQdQVHsG0GtyeQ49Xw==
+  dependencies:
+    isomorphic-git "1.25.6"
 
 "@fetsorn/vite-node-worker@1.0.0":
   version "1.0.0"
@@ -6426,7 +6428,7 @@ promise-retry@^2.0.1:
     err-code "^2.0.2"
     retry "^0.12.0"
 
-prop-types@^15.8.1:
+prop-types@^15.7.1, prop-types@^15.8.1:
   version "15.8.1"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.8.1.tgz#67d87bf1a694f48435cf332c24af10214a3140b5"
   integrity sha512-oj87CgZICdulUohogVAR7AjlC0327U4el4L6eAvOqCeudMDVU0NThNaV+b9Df4dXgSP1gXMTnPdhfe/2qDH5cg==
@@ -6541,6 +6543,14 @@ raw-body@2.5.2:
     http-errors "2.0.0"
     iconv-lite "0.4.24"
     unpipe "1.0.0"
+
+react-contenteditable@^3.3.7:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/react-contenteditable/-/react-contenteditable-3.3.7.tgz#18dd1f281841ba2c2b306e2d28278bc31b7929ed"
+  integrity sha512-GA9NbC0DkDdpN3iGvib/OMHWTJzDX2cfkgy5Tt98JJAbA3kLnyrNbBIpsSpPpq7T8d3scD39DHP+j8mAM7BIfQ==
+  dependencies:
+    fast-deep-equal "^3.1.3"
+    prop-types "^15.7.1"
 
 react-dom@18.2.0:
   version "18.2.0"

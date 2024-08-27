@@ -3,7 +3,7 @@ import {
   enrichBranchRecords,
   extractSchemaRecords,
 } from "@fetsorn/csvs-js";
-import { API, branchRecordsToSchema } from "../api/index.js";
+import { API, recordsToSchema } from "../api/index.js";
 
 export function getDefaultBase(schema) {
   // find a sane default branch to select
@@ -179,17 +179,17 @@ export async function saveRepoRecord(record) {
   const api = new API(repoUUID);
 
   // extract schema record with trunks from branch records
-  const [schemaRecord, ...branchRecords] = extractSchemaRecords(record.branch);
+  const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
 
-  const schema = branchRecordsToSchema(schemaRecord, branchRecords);
+  const schema = recordsToSchema(schemaRecord, metaRecords);
 
   // create repo directory with a schema
   await api.ensure(record.reponame);
 
   await api.updateRecord(schemaRecord);
 
-  for (const branchRecord of branchRecords) {
-    await api.updateRecord(branchRecord);
+  for (const metaRecord of metaRecords) {
+    await api.updateRecord(metaRecord);
   }
 
   // write remotes to .git/config

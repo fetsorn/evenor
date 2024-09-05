@@ -24,10 +24,13 @@ function getBuildMode() {
 export default defineConfig(async () => {
   /** @type {import('vite').UserConfig} */
   const config = {
+    publicDir: "assets",
+
     build: {
       outDir: "public",
       target: "safari13",
     },
+
     worker: {
       rollupOptions: {
         output: {
@@ -35,6 +38,7 @@ export default defineConfig(async () => {
         },
       },
     },
+
     plugins: [
       react({
         presets: [
@@ -84,11 +88,13 @@ export default defineConfig(async () => {
     // 3. to make use of `TAURI_DEBUG` and other env variables
     // https://tauri.app/v1/api/config#buildconfig.beforedevcommand
     envPrefix: ["VITE_", "TAURI_"],
+
     resolve: {
       alias: {
         "@": path.resolve(__dirname, "./src/"),
       },
     },
+
     define: {
       __BUILD_MODE__: JSON.stringify(getBuildMode()),
     },

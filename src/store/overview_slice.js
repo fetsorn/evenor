@@ -280,13 +280,13 @@ export const createOverviewSlice = (set, get) => ({
 
     let isAborted = false;
 
-    const abort_controller = new AbortController();
+    const abortController = new AbortController();
 
     set({
       abortPreviousStream: async () => {
         isAborted = true;
 
-        await abort_controller.abort();
+        await abortController.abort();
       },
     });
 
@@ -358,7 +358,7 @@ export const createOverviewSlice = (set, get) => ({
 
     // TODO: remove await here to free the main thread
     try {
-      await fromStrm.pipeTo(toStrm, { signal: abort_controller.signal });
+      await fromStrm.pipeTo(toStrm, { signal: abortController.signal });
     } catch {
       // stream interrupted
     }

@@ -6,12 +6,15 @@ export function InputContenteditable({ branch, value, onFieldChange }) {
   const contentEditable = useRef();
 
   return (
-    <ContentEditable
-      innerRef={contentEditable}
-      style={{ textDecoration: "underline" }}
-      html={value}
-      onChange={({ target: { value } }) => onFieldChange(branch, value)}
-      tagName="span"
-    />
+    <span className={styles.content}>
+      <ContentEditable
+        innerRef={contentEditable}
+        id="textarea"
+        className={styles.textarea}
+        html={value}
+        onChange={({ target: { value } }) => onFieldChange(branch, value)}
+        tagName="span"
+      />
+    </span>
   );
 }

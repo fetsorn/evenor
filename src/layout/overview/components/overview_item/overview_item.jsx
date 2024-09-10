@@ -28,14 +28,11 @@ export function OverviewItem({
 
         const isString = typeof value === "string";
 
-        const label = `${description} is ${value}`;
-
-        const valueShort =
-          value.length > 10 ? value.slice(0, 10) + "..." : value;
+        const valueShort = value.length > 200 ? value.slice(0, 200) : value;
 
         const item = isString ? (
           <span key={key}>
-            {description} is {valueShort}
+            {key === record._ ? value.slice(0, 5) : valueShort}
             <span> </span>
           </span>
         ) : undefined;

@@ -143,7 +143,7 @@ export const defaultRepoRecord = {
       trunk: "event",
       description_en: "Name of the person in the event",
       description_ru: "Имя человека участвовавшего в событии",
-      cognate: ["sayname", "name", "parent"],
+      cognate: ["sayname", "person", "parent"],
     },
     {
       _: "branch",
@@ -155,14 +155,14 @@ export const defaultRepoRecord = {
     },
     {
       _: "branch",
-      branch: "name",
+      branch: "person",
       cognate: ["sayname", "actname", "parent"],
     },
     {
       _: "branch",
       branch: "parent",
-      trunk: "name",
-      cognate: ["sayname", "actname", "name"],
+      trunk: "person",
+      cognate: ["sayname", "actname", "person"],
     },
     {
       _: "branch",
@@ -170,7 +170,7 @@ export const defaultRepoRecord = {
       trunk: "event",
       description_en: "Name of the person who made the record",
       description_ru: "Имя автора записи",
-      cognate: ["actname", "name", "parent"],
+      cognate: ["actname", "person", "parent"],
     },
     {
       _: "branch",

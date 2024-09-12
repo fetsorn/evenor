@@ -20,15 +20,6 @@ export const createProfileSlice = (set, get) => ({
 
     const api = new API(repoUUID);
 
-    await api.updateRecord(recordNew);
-
-    // replace old record with the new
-    const recordsNew = recordsOld
-      .filter((record) => record[base] !== recordOld[base])
-      .concat([recordNew]);
-
-    await api.commit();
-
     const isHomeScreen = repoUUID === "root";
 
     const isRepoBranch = base === "repo";
@@ -38,6 +29,26 @@ export const createProfileSlice = (set, get) => ({
 
     // const canSaveRepo = isHomeScreen && isNotServer;
     const canSaveRepo = isHomeScreen && base === "repo";
+
+    // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
+    if (canSaveRepo) {
+      const branches = recordNew["branch"].map(
+        ({ trunk, ...branchWithoutTrunk }) => branchWithoutTrunk,
+      );
+
+      const recordPruned = { ...recordNew, branch: branches };
+
+      await api.updateRecord(recordPruned);
+    } else {
+      await api.updateRecord(recordNew);
+    }
+
+    // replace old record with the new
+    const recordsNew = recordsOld
+      .filter((record) => record[base] !== recordOld[base])
+      .concat([recordNew]);
+
+    await api.commit();
 
     if (canSaveRepo) {
       await saveRepoRecord(recordNew);

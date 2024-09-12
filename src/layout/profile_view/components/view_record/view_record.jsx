@@ -29,22 +29,6 @@ export function ViewRecord({ schema, index, base, record }) {
 
   const isHomeScreen = repoUUID === "root";
 
-  const isBranch = base === "branch";
-
-  // const notSingleRepo = __BUILD_MODE__ !== "server";
-
-  // const canOpenRepo = isHomeScreen && notSingleRepo;
-
-  const canOpenRepo = isHomeScreen && isBranch;
-
-  const onRepoOpen = async () => {
-    const repoUUIDNew = recordProfile.repo;
-
-    const baseNew = record[base];
-
-    setRepoUUID(repoUUIDNew, baseNew);
-  };
-
   const isRepo = base === "repo";
 
   const canZip = isHomeScreen && isRepo;
@@ -67,30 +51,24 @@ export function ViewRecord({ schema, index, base, record }) {
         }}
       />
 
-      {canOpenRepo && (
-        <span>
-          <a title={t("line.button.open")} onClick={() => onRepoOpen()}>
-            {t("line.button.open")} {record[base]}
-          </a>
-
-          <span> </span>
-        </span>
-      )}
-
       <span>
-        {leaves.filter(recordHasLeaf).map((leaf, idx) => (
-          <ViewField
-            key={idx}
-            {...{
-              schema,
-              index: `${index}-${leaf}`,
-              base: leaf,
-              items: Array.isArray(record[leaf])
-                ? record[leaf]
-                : [record[leaf]],
-            }}
-          />
-        ))}
+        {leaves.filter(recordHasLeaf).map((leaf, idx) => {
+          const items = Array.isArray(record[leaf])
+            ? record[leaf]
+            : [record[leaf]];
+
+          return (
+            <ViewField
+              key={idx}
+              {...{
+                schema,
+                index: `${index}-${leaf}`,
+                base: leaf,
+                items: items,
+              }}
+            />
+          );
+        })}
       </span>
 
       {canZip && (

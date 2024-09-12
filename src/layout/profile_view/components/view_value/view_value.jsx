@@ -9,6 +9,8 @@ export function ViewValue({ schema, index, description, base, value }) {
 
   const { _: recordBase } = record;
 
+  const isRepo = recordBase !== "repo";
+
   // TODO: add schema[base].cognate from branch-cognate.csv
   const basePartial = base === recordBase ? [] : [base];
 
@@ -17,15 +19,25 @@ export function ViewValue({ schema, index, description, base, value }) {
     : [];
 
   const laterals = cognatePartial
-    .filter((cognate) => schema[base].trunk === schema[cognate].trunk)
+    .filter((cognate) => {
+      console.log(cognate, schema[cognate]);
+      return (
+        schema[cognate] &&
+        schema[cognate].trunk &&
+        schema[base].trunk === schema[cognate].trunk
+      );
+    })
     .concat(basePartial);
 
   const recurses = cognatePartial.filter(
     (cognate) => schema[base].trunk === cognate,
   );
 
-  const neighbours = cognatePartial.filter((cognate) =>
-    cognatePartial.includes(schema[cognate].trunk),
+  const neighbours = cognatePartial.filter(
+    (cognate) =>
+      schema[cognate] &&
+      schema[cognate].trunk &&
+      cognatePartial.includes(schema[cognate].trunk),
   );
 
   // lateral jump
@@ -58,6 +70,7 @@ export function ViewValue({ schema, index, description, base, value }) {
     await setQuery(cognate, value);
   }
 
+  // side jump
   async function warp(cognate) {
     await setQuery(undefined, undefined);
 
@@ -78,9 +91,10 @@ export function ViewValue({ schema, index, description, base, value }) {
 
       <span> </span>
 
-      {laterals.length !== 0 && (
+      {/* lateral jump */}
+      {isRepo && laterals.length > 0 && (
         <span>
-          Can lateral jump to<span> </span>
+          To<span> </span>
           {laterals.reduce(
             (acc, cognate, index) => [
               ...acc,
@@ -95,9 +109,10 @@ export function ViewValue({ schema, index, description, base, value }) {
         </span>
       )}
 
-      {recurses.length !== 0 && (
+      {/* deep jump */}
+      {isRepo && recurses.length > 0 && (
         <span>
-          Can deep jump to<span> </span>
+          To<span> </span>
           {recurses.reduce(
             (acc, recurse, index) => [
               ...acc,
@@ -112,9 +127,10 @@ export function ViewValue({ schema, index, description, base, value }) {
         </span>
       )}
 
-      {neighbours.length !== 0 && (
+      {/* side jump */}
+      {isRepo && neighbours.length > 0 && (
         <span>
-          Can side jump to<span> </span>
+          To<span> </span>
           {neighbours.reduce(
             (acc, neighbour, index) => [
               ...acc,

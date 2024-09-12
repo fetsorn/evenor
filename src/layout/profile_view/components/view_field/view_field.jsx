@@ -58,14 +58,59 @@ function ViewFieldItem({ schema, index, base, item, description }) {
 }
 
 export function ViewField({ schema, index, base, items }) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+
+  const [repo, recordProfile, setRepoUUID] = useStore((state) => [
+    state.repo,
+    state.record,
+    state.setRepoUUID,
+  ]);
+
+  const { repo: repoUUID } = repo;
 
   const description =
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
+  const isHomeScreen = repoUUID === "root";
+
+  // const notSingleRepo = __BUILD_MODE__ !== "server";
+
+  // const canOpenRepo = isHomeScreen && notSingleRepo;
+
+  const isBranch = base === "branch";
+
+  const canOpenRepo = isHomeScreen && isBranch;
+
+  const onRepoOpen = async (itemBase) => {
+    const repoUUIDNew = recordProfile.repo;
+
+    const baseNew = itemBase;
+
+    setRepoUUID(repoUUIDNew, baseNew);
+  };
+
   // TODO handle error when items is not array
   return (
     <span>
+      {canOpenRepo && (
+        <span>
+          {t("line.button.open")}
+          <span> </span>
+          {items.map((item, idx) => (
+            <span key={idx}>
+              <a
+                title={t("line.button.open")}
+                onClick={() => onRepoOpen(item[base])}
+              >
+                {item[base]}
+              </a>
+
+              <span> </span>
+            </span>
+          ))}
+        </span>
+      )}
+
       {items.map((item, idx) => (
         <ViewFieldItem
           key={idx}

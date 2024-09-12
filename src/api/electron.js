@@ -526,6 +526,8 @@ export class ElectronAPI {
       await pfs.rename(path.join(appPath, existingRepo), dir);
     }
 
+    await pfs.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
+
     await pfs.writeFile(
       `${dir}/.gitattributes`,
       `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,

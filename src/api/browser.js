@@ -610,6 +610,8 @@ export class BrowserAPI {
       await pfs.rename(`/${existingRepo}`, dir);
     }
 
+    await pfs.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
+
     await pfs.writeFile(
       `${dir}/.gitattributes`,
       `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,

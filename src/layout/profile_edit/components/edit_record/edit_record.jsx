@@ -27,7 +27,7 @@ export function EditRecord({
   );
 
   function recordHasLeaf(leaf) {
-    return Object.prototype.hasOwnProperty.call(record, leaf);
+    return Object.hasOwn(record, leaf);
   }
 
   function onFieldChange(fieldBranch, fieldValue) {

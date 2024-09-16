@@ -24,7 +24,7 @@ export function ViewRecord({ schema, index, base, record }) {
   );
 
   function recordHasLeaf(leaf) {
-    return Object.prototype.hasOwnProperty.call(record, leaf);
+    return Object.hasOwn(record, leaf);
   }
 
   const isHomeScreen = repoUUID === "root";

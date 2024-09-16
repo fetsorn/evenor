@@ -9,10 +9,7 @@ export function getDefaultBase(schema) {
   // find a sane default branch to select
   const base = Object.keys(schema).find((branch) => {
     // does not have a trunk
-    const isRoot = !Object.prototype.hasOwnProperty.call(
-      schema[branch],
-      "trunk",
-    );
+    const isRoot = !Object.hasOwn(schema[branch], "trunk");
 
     // not the metadata schema branch
     const isData = branch !== "branch";
@@ -34,16 +31,12 @@ export function getDefaultSortBy(schema, base, records) {
 
   // fallback to first date param present in data
   sortBy = crown.find(
-    (branch) =>
-      schema[branch].task === "date" &&
-      Object.prototype.hasOwnProperty.call(record, branch),
+    (branch) => schema[branch].task === "date" && Object.hasOwn(record, branch),
   );
 
   // fallback to first param present in data
   if (!sortBy) {
-    sortBy = crown.find((branch) =>
-      Object.prototype.hasOwnProperty.call(record, branch),
-    );
+    sortBy = crown.find((branch) => Object.hasOwn(record, branch));
   }
 
   // fallback to first date param present in schema

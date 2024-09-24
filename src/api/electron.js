@@ -6,8 +6,6 @@ import { schemaRoot, recordsToSchema } from "./schema.js";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
 // import { exportPDF, generateLatex } from "lib/latex";
-// import { Worker } from "node:worker_threads";
-import Worker from "./electron.worker.js?nodeWorker";
 
 const pfs = fs.promises;
 
@@ -23,60 +21,7 @@ if (process.platform === "darwin") {
 
 const lfsDir = "lfs";
 
-let readWorker;
-let streamWorker;
-
-// we run CSVS functions in workers to offload the main thread
-// but UI only expects results from the last call to CSVS.select
-// so we want only one instance of worker running at any time
-// and we terminate the previous instance if worker is still running
-async function runWorker(workerData) {
-  if (workerData.msg === "select" && readWorker !== undefined) {
-    console.log("read worker terminated");
-    await readWorker.terminate();
-
-    readWorker = undefined;
-  }
-
-  return new Promise((resolve, reject) => {
-    //const worker = new Worker(
-    //  new URL("./electron.worker.js", import.meta.url),
-    //  {
-    //    workerData,
-    //    type: "module",
-    //  },
-    //);
-    const worker = new Worker({
-      workerData,
-      type: "module",
-    });
-
-    worker.on("message", (message) => {
-      if (typeof message === "string" && message.startsWith("log")) {
-        // console.log(message);
-      } else {
-        if (workerData.msg === "select") {
-          readWorker = undefined;
-        }
-        resolve(message);
-      }
-    });
-
-    worker.on("error", reject);
-
-    worker.on("exit", (code) => {
-      if (workerData.msg === "select") {
-        readWorker = undefined;
-      }
-      if (code !== 0)
-        reject(new Error(`Worker stopped with exit code ${code}`));
-    });
-
-    if (workerData.msg === "select") {
-      readWorker = worker;
-    }
-  });
-}
+let abortControllerPrevious = { abort: () => {} };
 
 export class ElectronAPI {
   uuid;
@@ -205,72 +150,85 @@ export class ElectronAPI {
   }
 
   async select(searchParams) {
-    return runWorker({
-      msg: "select",
+    const csvs = await import("@fetsorn/csvs-js");
+
+    const [schemaRecord] = await csvs.selectSchema({
+      fs,
       dir: this.dir,
-      searchParamsString: searchParams.toString(),
     });
+
+    const schema = csvs.toSchema(schemaRecord);
+
+    const query = csvs.searchParamsToQuery(schema, searchParams);
+
+    const records = await csvs.selectRecord({ fs, dir: this.dir, query });
+
+    return records;
   }
 
   async selectStream(searchParams, enqueueHandler, closeHandler) {
-    // console.log('api/electron/selectStream', searchParams.toString());
-
     try {
-      await streamWorker.terminate();
+      await abortControllerPrevious.abort();
     } catch {
-      // do nothing
+      //
     }
 
-    //const worker = new Worker(
-    //  new URL("./electron.worker.js", import.meta.url),
-    //  {
-    //    workerData: {
-    //      msg: "selectStream",
-    //      dir: this.dir,
-    //      searchParamsString: searchParams.toString(),
-    //    },
-    //    type: "module",
-    //  },
-    //);
-    const worker = new Worker({
-      workerData: {
-        msg: "selectStream",
-        dir: this.dir,
-        searchParamsString: searchParams.toString(),
+    const abortController = new AbortController();
+
+    const csvs = await import("@fetsorn/csvs-js");
+
+    const [schemaRecord] = await csvs.selectSchema({
+      fs,
+      dir: this.dir,
+    });
+
+    const schema = csvs.toSchema(schemaRecord);
+
+    const query = csvs.searchParamsToQuery(schema, searchParams);
+
+    // TODO terminate previous stream
+    const strm = await csvs.selectRecordStream({
+      fs,
+      dir: this.dir,
+      query,
+    });
+
+    const writeStream = new WritableStream({
+      write(record) {
+        enqueueHandler(record);
       },
-      type: "module",
-    });
 
-    worker.on("message", (message) => {
-      if (typeof message === "string" && message.startsWith("log")) {
-        console.log(message);
-      } else if (message.msg === "selectStream:enqueue") {
-        enqueueHandler(message.record);
-      } else if (message.msg === "selectStream:close") {
+      close() {
         closeHandler();
-      }
+      },
     });
 
-    worker.on("exit", () => {
-      streamWorker = undefined;
-    });
+    abortControllerPrevious = abortController;
 
-    streamWorker = worker;
+    try {
+      await strm.pipeTo(writeStream, { signal: abortController.signal });
+    } catch {
+      //
+    }
   }
 
   async updateRecord(record) {
-    await runWorker({
-      msg: "update",
+    const csvs = await import("@fetsorn/csvs-js");
+
+    await csvs.updateRecord({
+      fs,
       dir: this.dir,
-      record,
+      query: record,
     });
   }
 
   async deleteRecord(record) {
-    await runWorker({
-      msg: "delete",
+    const csvs = await import("@fetsorn/csvs-js");
+
+    await csvs.deleteRecord({
+      fs,
       dir: this.dir,
-      record: record,
+      query: record,
     });
   }
 

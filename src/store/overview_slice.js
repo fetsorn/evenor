@@ -1,11 +1,12 @@
 import history from "history/hash";
-import { digestMessage, enrichBranchRecords } from "@fetsorn/csvs-js";
+import { enrichBranchRecords } from "@fetsorn/csvs-js";
 import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
 import {
   getDefaultBase,
   getDefaultSortBy,
   setURL,
   loadRepoRecord,
+  digestMessage,
 } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
@@ -359,8 +360,9 @@ export const createOverviewSlice = (set, get) => ({
     // TODO: remove await here to free the main thread
     try {
       await fromStrm.pipeTo(toStrm, { signal: abortController.signal });
-    } catch {
+    } catch (e) {
       // stream interrupted
+      console.log(e);
     }
   },
 });

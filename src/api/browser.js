@@ -5,56 +5,58 @@ import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
 
+fs.createReadStream = (filepath) =>
+  new ReadableStream({
+    async start(controller) {
+      const contents = await fs.promises.readFile(filepath);
+
+      controller.enqueue(contents);
+
+      controller.close();
+    },
+  });
+
+fs.createWriteStream = (filepath) => {
+  let contents = "";
+
+  return new WritableStream({
+    write(character) {
+      contents += character;
+    },
+
+    async close() {
+      await fs.promises.writeFile(filepath, contents);
+    },
+  });
+};
+
+fs.promises.mkdtemp = async (filepath) => {
+  const randomString = Math.floor(Math.random() * 10000).toString();
+
+  const tmpdir = filepath + randomString;
+
+  await fs.promises.mkdir(tmpdir);
+
+  return tmpdir;
+};
+
+fs.promises.appendFile = async (filepath, tail) => {
+  try {
+    const contents = await fs.promises.readFile(filepath, "utf8");
+
+    const contentsNew = contents + tail;
+
+    await fs.promises.writeFile(filepath, contentsNew);
+  } catch {
+    await fs.promises.writeFile(filepath, tail);
+  }
+};
+
 const pfs = fs.promises;
 
 const lfsDir = "lfs";
 
 // const __BUILD_MODE__ = "browser";
-
-async function runWorker(readFile, searchParams) {
-  const worker = new Worker(new URL("./browser.worker.js", import.meta.url), {
-    type: "module",
-  });
-
-  worker.onmessage = async (message) => {
-    switch (message.data.action) {
-      case "readFile": {
-        try {
-          const contents = await readFile(message.data.filepath);
-
-          message.ports[0].postMessage({ result: contents });
-        } catch (e) {
-          // safari cannot clone the error object, force to string
-          message.ports[0].postMessage({ error: `${e}` });
-        }
-
-        break;
-      }
-
-      default:
-      // do nothing
-    }
-  };
-
-  return new Promise((res, rej) => {
-    const channel = new MessageChannel();
-
-    channel.port1.onmessage = ({ data }) => {
-      channel.port1.close();
-
-      if (data.error) {
-        rej(data.error);
-      } else {
-        res(data.result);
-      }
-    };
-
-    worker.postMessage(
-      { action: "select", searchParams: searchParams.toString() },
-      [channel.port2],
-    );
-  });
-}
 
 export class BrowserAPI {
   uuid;
@@ -229,104 +231,74 @@ export class BrowserAPI {
   }
 
   async select(searchParams) {
-    const overview = await runWorker(this.readFile.bind(this), searchParams);
+    const csvs = await import("@fetsorn/csvs-js");
+
+    const dir = await this.dir();
+
+    const [schemaRecord] = await csvs.selectSchema({
+      fs,
+      dir,
+    });
+
+    const schema = csvs.toSchema(schemaRecord);
+
+    const query = csvs.searchParamsToQuery(schema, searchParams);
+
+    const overview = await csvs.selectRecord({
+      fs,
+      dir,
+      query,
+    });
 
     return overview;
   }
 
   async selectStream(searchParams) {
-    const browserAPI = this;
+    const csvs = await import("@fetsorn/csvs-js");
 
-    let closeHandler;
+    const dir = await this.dir();
 
-    const strm = new ReadableStream({
-      start(controller) {
-        const worker = new Worker(
-          new URL("./browser.worker", import.meta.url),
-          { type: "module" },
-        );
+    let closeHandler; // controller.close()
 
-        closeHandler = () => {
-          try {
-            controller.close();
-          } catch {
-            // ignore catch
-          }
-        };
+    const [schemaRecord] = await csvs.selectSchema({
+      fs,
+      dir,
+    });
 
-        worker.onmessage = async (message) => {
-          switch (message.data.action) {
-            case "readFile": {
-              try {
-                const contents = await browserAPI.readFile(
-                  message.data.filepath,
-                );
+    const schema = csvs.toSchema(schemaRecord);
 
-                message.ports[0].postMessage({ result: contents });
-              } catch (e) {
-                // safari cannot clone the error object, force to string
-                message.ports[0].postMessage({ error: `${e}` });
-              }
+    const query = csvs.searchParamsToQuery(schema, searchParams);
 
-              break;
-            }
-            case "write": {
-              try {
-                controller.enqueue(message.data.record);
-              } catch {
-                // after stream is interrupted
-                // ReadableStreamDefaultController is not in a state where chunk can be enqueued
-              }
-
-              break;
-            }
-            case "close": {
-              try {
-                controller.close();
-              } catch {
-                // ignore catch
-              }
-
-              break;
-            }
-            case "error": {
-              controller.error(message.data.error);
-
-              break;
-            }
-            default:
-            // do nothing
-          }
-        };
-
-        const channel = new MessageChannel();
-
-        worker.postMessage(
-          { action: "selectStream", searchParams: searchParams.toString() },
-          [channel.port2],
-        );
-      },
+    // TODO terminate previous stream
+    const strm = await csvs.selectRecordStream({
+      fs,
+      dir,
+      query,
     });
 
     return { strm, closeHandler };
   }
 
   async updateRecord(record) {
-    const { CSVS } = await import("@fetsorn/csvs-js");
+    const csvs = await import("@fetsorn/csvs-js");
 
-    await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).update(structuredClone(record));
+    const dir = await this.dir();
+
+    await csvs.updateRecord({
+      fs,
+      dir,
+      query: structuredClone(record),
+    });
   }
 
   async deleteRecord(record) {
-    const { CSVS } = await import("@fetsorn/csvs-js");
+    const csvs = await import("@fetsorn/csvs-js");
 
-    await new CSVS({
-      readFile: (filepath) => this.readFile(filepath),
-      writeFile: (filepath, content) => this.writeFile(filepath, content),
-    }).delete(structuredClone(record));
+    await csvs.deleteRecord({
+      fs,
+      dir: await this.dir(),
+      query: structuredClone(record),
+    });
   }
 
   async clone(remoteUrl, remoteToken, name) {

@@ -3,47 +3,10 @@ import path from "path";
 import { promisify } from "util";
 import { exec } from "child_process";
 import git from "isomorphic-git";
-import { CSVS } from "@fetsorn/csvs-js";
+import csvs from "@fetsorn/csvs-js";
 import crypto from "crypto";
 
 const lfsDir = "lfs";
-
-// TODO: add WASM fallback
-async function grepCallback(contentFile, patternFile, isInverse) {
-  // console.log("grepCallback")
-
-  const contentFilePath = `/tmp/${crypto.randomUUID()}`;
-
-  const patternFilePath = `/tmp/${crypto.randomUUID()}`;
-
-  await fs.promises.writeFile(contentFilePath, contentFile);
-
-  await fs.promises.writeFile(patternFilePath, patternFile);
-
-  let output = "";
-
-  try {
-    // console.log(`grep ${contentFile} for ${patternFile}`)
-    const { stdout, stderr } = await promisify(exec)(
-      "export PATH=$PATH:~/.nix-profile/bin/; " +
-        `rg ${isInverse ? "-v" : ""} -f ${patternFilePath} ${contentFilePath}`,
-    );
-
-    if (stderr) {
-      console.log("grep cli failed", stderr);
-    } else {
-      output = stdout;
-    }
-  } catch (e) {
-    // console.log('grep cli returned empty', e);
-  }
-
-  await fs.promises.unlink(contentFilePath);
-
-  await fs.promises.unlink(patternFilePath);
-
-  return output;
-}
 
 export class ServerAPI {
   dir;
@@ -64,53 +27,6 @@ export class ServerAPI {
     } catch {
       throw ("couldn't find file", filepath);
     }
-  }
-
-  async fetchFile(filepath) {
-    const realpath = path.join(this.dir, filepath);
-
-    try {
-      const content = fs.readFileSync(realpath);
-
-      return content;
-    } catch {
-      return new Buffer("");
-    }
-  }
-
-  async writeFile(filepath, content) {
-    const realpath = path.join(this.dir, filepath);
-
-    // if path doesn't exist, create it
-    // split path into array of directory names
-    const pathElements = filepath.split(path.sep);
-
-    // remove file name
-    pathElements.pop();
-
-    let root = "";
-
-    for (let i = 0; i < pathElements.length; i += 1) {
-      const pathElement = pathElements[i];
-
-      root += path.sep;
-
-      const files = await fs.promises.readdir(path.join(this.dir, root));
-
-      if (!files.includes(pathElement)) {
-        try {
-          await fs.promises.mkdir(path.join(this.dir, root, pathElement));
-        } catch {
-          // do nothing
-        }
-      } else {
-        // console.log(`${root} has ${pathElement}`)
-      }
-
-      root += pathElement;
-    }
-
-    await fs.promises.writeFile(realpath, content);
   }
 
   async uploadFile(file) {
@@ -144,10 +60,20 @@ export class ServerAPI {
   }
 
   async select(searchParams) {
-    const overview = await new CSVS({
-      readFile: this.fetchCallback.bind(this),
-      grep: grepCallback,
-    }).select(searchParams);
+    const [schemaRecord] = await csvs.selectSchema({
+      fs,
+      dir: this.dir,
+    });
+
+    const schema = csvs.toSchema(schemaRecord);
+
+    const query = csvs.searchParamsToQuery(schema, searchParams);
+
+    const overview = await csvs.selectRecord({
+      fs,
+      dir: this.dir,
+      query: searchParams,
+    });
 
     return overview;
   }

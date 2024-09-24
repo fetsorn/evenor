@@ -1,4 +1,3 @@
-import { condense } from "@fetsorn/csvs-js";
 import { API, defaultRepoRecord, newUUID } from "../api/index.js";
 import { saveRepoRecord, loadRepoRecord } from "./bin.js";
 

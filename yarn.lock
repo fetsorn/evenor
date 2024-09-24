@@ -1584,11 +1584,12 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@fetsorn/csvs-js@0.18.2":
-  version "0.18.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.18.2.tgz#81c1e90326403743702f8431a88fd6def1db71b6"
-  integrity sha512-hZLs64+7olK0pIPvzvn8fxfWQkPeFGZgbVM5qszv4S/y0lPgqjCf5VKNhIydZwzLSEonQc2RQESG2VFh8Uy5Ww==
+"@fetsorn/csvs-js@0.19.1":
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.19.1.tgz#977a573c2c77a2e9094ff4d83b6d13084e0951e9"
+  integrity sha512-ErU9XpLyHfzMZqB7LYNECA9xy6rSE6MqkCjAt1WDSVX5MOOG4JUNKkpu/RsNefvgE4R16leJj2OipW5GnBTFqg==
   dependencies:
+    "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
 
 "@fetsorn/isogit-lfs@^0.5.1":
@@ -1919,6 +1920,11 @@
     "@stylistic/eslint-plugin-plus" "1.7.0"
     "@stylistic/eslint-plugin-ts" "1.7.0"
     "@types/eslint" "^8.56.2"
+
+"@swimburger/isomorphic-streams@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@swimburger/isomorphic-streams/-/isomorphic-streams-1.1.1.tgz#27ad84b20be631012b0a6babbceae706f74cdd0b"
+  integrity sha512-E4ZHqsSA5A/xRRmi/rgnR84qPhiqHAjprBmwRtwiPC63mtMOUk/eYClRV69MuZWt6dsvgijHCdfdDCCrfy39nQ==
 
 "@szmarczak/http-timer@^4.0.5":
   version "4.0.6"

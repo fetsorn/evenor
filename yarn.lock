@@ -1584,10 +1584,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@fetsorn/csvs-js@0.18.0":
-  version "0.18.0"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.18.0.tgz#2c2962e4f9122d027975a0c6b41b1b0a8efa0517"
-  integrity sha512-oUg2VICIZUlRDsEWGPxx0EkkrZ8ZMejeDveyxqTQ2T97HJsGGA17Y0oy46QOXFR/KlNMRgGeSuDidI+DCiHAEQ==
+"@fetsorn/csvs-js@0.18.2":
+  version "0.18.2"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.18.2.tgz#81c1e90326403743702f8431a88fd6def1db71b6"
+  integrity sha512-hZLs64+7olK0pIPvzvn8fxfWQkPeFGZgbVM5qszv4S/y0lPgqjCf5VKNhIydZwzLSEonQc2RQESG2VFh8Uy5Ww==
   dependencies:
     papaparse "^5.4.1"
 

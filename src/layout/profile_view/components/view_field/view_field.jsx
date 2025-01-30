@@ -2,8 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { ViewValue, ViewRecord, ViewRemote, ViewSync } from "../index.js";
 import { AssetView, Spoiler } from "@/layout/components/index.js";
-import { useStore } from "@/store/index.js";
-import { isTwig } from "@fetsorn/csvs-js";
+import { useStore, isTwig } from "@/store/index.js";
 
 function ViewFieldItem({ schema, index, base, item, description }) {
   const [record, { repo: repoUUID }] = useStore((state) => [

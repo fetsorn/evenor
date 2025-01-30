@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { AssetView, Spoiler } from "@/layout/components/index.js";
 import { API, newUUID, schemaToBranchRecords } from "@/api/index.js";
-import { isTwig, enrichBranchRecords } from "@fetsorn/csvs-js";
-import { useStore } from "@/store/index.js";
+import { useStore, isTwig, enrichBranchRecords } from "@/store/index.js";
 
 export function EditRecord({
   schema,

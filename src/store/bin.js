@@ -1,9 +1,68 @@
-import {
-  findCrown,
-  enrichBranchRecords,
-  extractSchemaRecords,
-} from "@fetsorn/csvs-js";
+import { findCrown } from "@fetsorn/csvs-js";
 import { API, recordsToSchema } from "../api/index.js";
+
+/**
+ * This function is true when branch has no leaves
+ * @name isTwig
+ * @function
+ * @param {object} schema - Dataset schema.
+ * @param {object} record - An expanded record.
+ * @returns {object} - A condensed record.
+ */
+export function isTwig(schema, branch) {
+  return (
+    Object.keys(schema).filter((b) => schema[b].trunk === branch).length === 0
+  );
+}
+
+// add trunk field from schema record to branch records
+// turn { _: _, branch1: [ branch2 ] }, [{ _: branch, branch: "branch2", task: "date" }]
+// into [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
+export function enrichBranchRecords(schemaRecord, metaRecords) {
+  // [[branch1, [branch2]]]
+  const schemaRelations = Object.entries(schemaRecord).filter(
+    ([key]) => key !== "_",
+  );
+
+  // list of unique branches in the schema
+  const branches = [...new Set(schemaRelations.flat(Infinity))];
+
+  const branchRecords = branches.reduce((accBranch, branch) => {
+    // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunk
+    const trunkPartial = schemaRelations.reduce((accTrunk, [trunk, leaves]) => {
+      if (leaves.includes(branch)) {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunks = accTrunk.trunk
+          ? [accTrunk.trunk, trunk].flat(Infinity)
+          : trunk;
+
+        return { ...accTrunk, trunk: trunks };
+      }
+
+      return accTrunk;
+    }, {});
+
+    const branchPartial = { _: "branch", branch };
+
+    const metaPartial =
+      metaRecords.find((record) => record.branch === branch) ?? {};
+
+    // if branch has no trunks, it's a trunk
+    if (trunkPartial.trunk === undefined) {
+      const rootRecord = { ...branchPartial, ...metaPartial };
+
+      return [...accBranch, rootRecord];
+    }
+
+    const branchRecord = { ...branchPartial, ...metaPartial, ...trunkPartial };
+
+    return [...accBranch, branchRecord];
+  }, []);
+
+  return branchRecords;
+}
 
 export function getDefaultBase(schema) {
   // find a sane default branch to select
@@ -164,6 +223,35 @@ async function writeLocals(api, tags) {
     }
   }
 }
+
+// extract schema record with trunks from branch records
+// turn [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
+// into [{ _: _, branch1: branch2 }, { _: branch, branch: "branch2", task: "date" }]
+export function extractSchemaRecords(branchRecords) {
+  const records = branchRecords.reduce(
+    (acc, branchRecord) => {
+      const { trunk, ...branchRecordOmitted } = branchRecord;
+
+      const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+      const schemaRecord =
+        trunk !== undefined
+          ? {
+              ...acc.schemaRecord,
+              [trunk]: [branchRecord.branch, ...accLeaves],
+            }
+          : acc.schemaRecord;
+
+      const metaRecords = [branchRecordOmitted, ...acc.metaRecords];
+
+      return { schemaRecord, metaRecords };
+    },
+    { schemaRecord: { _: "_" }, metaRecords: [] },
+  );
+
+  return [records.schemaRecord, ...records.metaRecords];
+}
+
 
 // clone or populate repo, write git state
 export async function saveRepoRecord(record) {

@@ -1,5 +1,4 @@
 import history from "history/hash";
-import { enrichBranchRecords } from "@fetsorn/csvs-js";
 import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
 import {
   getDefaultBase,
@@ -7,6 +6,7 @@ import {
   setURL,
   loadRepoRecord,
   digestMessage,
+  enrichBranchRecords,
 } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({

@@ -20,7 +20,7 @@ export function ViewRecord({ schema, index, base, record }) {
     schema?.[base]?.description?.[i18n.resolvedLanguage] ?? base;
 
   const leaves = Object.keys(schema).filter(
-    (leaf) => schema[leaf].trunk === base,
+    (leaf) => schema[leaf].trunks.includes(base),
   );
 
   function recordHasLeaf(leaf) {

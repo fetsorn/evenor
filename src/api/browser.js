@@ -1,6 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
-import { schemaRoot, recordsToSchema } from "./schema.js";
+import { schemaRoot, recordsToSchema, searchParamsToQuery } from "./schema.js";
 import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
@@ -35,7 +35,11 @@ fs.promises.mkdtemp = async (filepath) => {
 
   const tmpdir = filepath + randomString;
 
-  await fs.promises.mkdir(tmpdir);
+  try {
+    await fs.promises.mkdir(tmpdir);
+  } catch {
+    // do nothing
+  }
 
   return tmpdir;
 };
@@ -242,7 +246,7 @@ export class BrowserAPI {
 
     const schema = csvs.toSchema(schemaRecord);
 
-    const query = csvs.searchParamsToQuery(schema, searchParams);
+    const query = searchParamsToQuery(schema, searchParams);
 
     const overview = await csvs.selectRecord({
       fs,
@@ -258,8 +262,6 @@ export class BrowserAPI {
 
     const dir = await this.dir();
 
-    let closeHandler; // controller.close()
-
     const [schemaRecord] = await csvs.selectSchema({
       fs,
       dir,
@@ -267,14 +269,18 @@ export class BrowserAPI {
 
     const schema = csvs.toSchema(schemaRecord);
 
-    const query = csvs.searchParamsToQuery(schema, searchParams);
+    const query = searchParamsToQuery(schema, searchParams);
 
     // TODO terminate previous stream
-    const strm = await csvs.selectRecordStream({
+    const selectStream = csvs.selectRecordStream({
       fs,
       dir,
       query,
     });
+
+    const strm = ReadableStream.from([query]).pipeThrough(selectStream)
+
+    let closeHandler = () => strm.cancel();
 
     return { strm, closeHandler };
   }

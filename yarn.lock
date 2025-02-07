@@ -1584,10 +1584,10 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.57.0.tgz#a5417ae8427873f1dd08b70b3574b453e67b5f7f"
   integrity sha512-Ys+3g2TaW7gADOJzPt83SJtCDhMjndcDMFVQ/Tj9iA1BfJzFKD9mAUXT3OenpuPHbI6P/myECxRJrofUsDx/5g==
 
-"@fetsorn/csvs-js@0.19.4":
-  version "0.19.4"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.19.4.tgz#c7394db81002578be76785b72231b8a16da98a71"
-  integrity sha512-tY1BLkYVOxA0YhMyP4k3HUHyoqDWWCTvz6sdihBSIleTc1cCQuZyzXnBvABPk1Hc9ztG93d5FUHxUz8PNQpkLg==
+"@fetsorn/csvs-js@0.21.0":
+  version "0.21.0"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.21.0.tgz#f88adb98673c229a719a6561de30f973faab12c5"
+  integrity sha512-gUqJiOzhcZxszmhmGn5fG3cAL/kNQDmFUknBsGP7ZNlQnwiqzepMvtFYhuxhJ2zFWDDlVg567ly/iZYWZh8yGQ==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"

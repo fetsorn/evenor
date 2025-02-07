@@ -59,6 +59,7 @@ export const createOverviewSlice = (set, get) => ({
 
     await apiRoot.ensure();
 
+    // TODO move inside ensure
     const branchRecords = schemaToBranchRecords(schemaRoot);
 
     for (const branchRecord of branchRecords) {

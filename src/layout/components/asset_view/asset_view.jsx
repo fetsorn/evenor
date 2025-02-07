@@ -51,19 +51,19 @@ export function AssetView({ schema, record }) {
 
   const filehashBranch = Object.keys(schema).find(
     (b) =>
-      (schema[b].trunk === branch || b === branch) &&
+    (schema[b].trunks.includes(branch) || b === branch) &&
       schema[b].task === "filehash",
   );
 
   const fileextBranch = Object.keys(schema).find(
-    (b) => schema[b].trunk === branch && schema[b].task === "fileext",
+    (b) => schema[b].trunks.includes(branch) && schema[b].task === "fileext",
   );
 
   const filenameBranch = Object.keys(schema).find(
     // when file is object, filename is a leaf
     // when file is a string, it is also a filename
     (b) =>
-      (schema[b].trunk === branch || b === branch) &&
+    (schema[b].trunks.includes(branch) || b === branch) &&
       schema[b].task === "filename",
   );
 

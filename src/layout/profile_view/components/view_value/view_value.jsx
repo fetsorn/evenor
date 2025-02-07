@@ -20,24 +20,21 @@ export function ViewValue({ schema, index, description, base, value }) {
 
   const laterals = cognatePartial
     .filter((cognate) => {
-      console.log(cognate, schema[cognate]);
       return (
         schema[cognate] &&
-        schema[cognate].trunk &&
-        schema[base].trunk === schema[cognate].trunk
+          schema[base].trunks.some((t) => schema[cognate].trunks.includes(t))
       );
     })
     .concat(basePartial);
 
   const recurses = cognatePartial.filter(
-    (cognate) => schema[base].trunk === cognate,
+    (cognate) => schema[base].trunks.includes(cognate),
   );
 
   const neighbours = cognatePartial.filter(
     (cognate) =>
       schema[cognate] &&
-      schema[cognate].trunk &&
-      cognatePartial.includes(schema[cognate].trunk),
+      cognatePartial.some((p) => schema[cognate].trunks.includes(p)),
   );
 
   // lateral jump
@@ -74,11 +71,11 @@ export function ViewValue({ schema, index, description, base, value }) {
   async function warp(cognate) {
     await setQuery(undefined, undefined);
 
-    await setQuery("_", schema[cognate].trunk);
+    await setQuery("_", schema[cognate].trunks[0]);
 
     await setQuery("__", cognate);
 
-    await setQuery(schema[cognate].trunk, value);
+    await setQuery(schema[cognate].trunks[0], value);
   }
 
   return (

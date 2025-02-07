@@ -1,6 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { isTwig } from "@fetsorn/csvs-js";
+import { isTwig } from "@/store/index.js";
 import { EditInput, EditRecord } from "../index.js";
 import { Spoiler } from "@/layout/components/index.js";
 

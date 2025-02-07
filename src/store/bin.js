@@ -11,7 +11,7 @@ import { API, recordsToSchema } from "../api/index.js";
  */
 export function isTwig(schema, branch) {
   return (
-    Object.keys(schema).filter((b) => schema[b].trunk === branch).length === 0
+    Object.keys(schema).filter((b) => schema[b].trunks.includes(branch)).length === 0
   );
 }
 
@@ -28,35 +28,34 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
   const branches = [...new Set(schemaRelations.flat(Infinity))];
 
   const branchRecords = branches.reduce((accBranch, branch) => {
-    // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunk
-    const trunkPartial = schemaRelations.reduce((accTrunk, [trunk, leaves]) => {
-      if (leaves.includes(branch)) {
-        // if old is array, [ ...old, new ]
-        // if old is string, [ old, new ]
-        // is old is undefined, [ new ]
-        const trunks = accTrunk.trunk
-          ? [accTrunk.trunk, trunk].flat(Infinity)
-          : trunk;
+    // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunks
+    const relationsPartial = schemaRelations.reduce((accTrunk, [trunk, leaves]) => {
+      // if old is array, [ ...old, new ]
+      // if old is string, [ old, new ]
+      // is old is undefined, [ new ]
+      const trunkPartial = leaves.includes(branch) ? [trunk] : [];
 
-        return { ...accTrunk, trunk: trunks };
-      }
+      const leavesPartial = trunk === branch ? leaves : [];
 
-      return accTrunk;
-    }, {});
+      return ({
+        trunks: [...accTrunk.trunks, ...trunkPartial],
+        leaves: [...accTrunk.leaves, ...leavesPartial]
+      });
+    }, { trunks: [], leaves: [] });
 
     const branchPartial = { _: "branch", branch };
 
     const metaPartial =
       metaRecords.find((record) => record.branch === branch) ?? {};
 
-    // if branch has no trunks, it's a trunk
-    if (trunkPartial.trunk === undefined) {
+    // if branch has no trunks, it's a root
+    if (relationsPartial.trunks.length === 0) {
       const rootRecord = { ...branchPartial, ...metaPartial };
 
       return [...accBranch, rootRecord];
     }
 
-    const branchRecord = { ...branchPartial, ...metaPartial, ...trunkPartial };
+    const branchRecord = { ...branchPartial, ...metaPartial, ...relationsPartial };
 
     return [...accBranch, branchRecord];
   }, []);

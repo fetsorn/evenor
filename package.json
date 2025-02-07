@@ -1,7 +1,7 @@
 {
   "name": "evenor",
   "productName": "evenor",
-  "version": "2.3.1",
+  "version": "2.4.0",
   "private": true,
   "description": "Tell the story of your data.",
   "type": "module",
@@ -52,7 +52,7 @@
     "vite-plugin-node-polyfills": "^0.21.0"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "0.19.4",
+    "@fetsorn/csvs-js": "0.21.0",
     "@fetsorn/isogit-lfs": "^0.5.1",
     "@fetsorn/vite-node-worker": "1.0.0",
     "@isomorphic-git/lightning-fs": "4.6.0",

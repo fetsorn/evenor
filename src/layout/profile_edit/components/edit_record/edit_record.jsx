@@ -22,7 +22,7 @@ export function EditRecord({
   ]);
 
   const leaves = Object.keys(schema).filter(
-    (leaf) => schema[leaf].trunk === base,
+    (leaf) => schema[leaf].trunks.includes(base),
   );
 
   function recordHasLeaf(leaf) {
@@ -47,15 +47,15 @@ export function EditRecord({
 
   async function addFileValue(branch) {
     const filehashBranch = Object.keys(schema).find(
-      (b) => schema[b].trunk === branch && schema[b].task === "filehash",
+      (b) => schema[b].trunks.includes(branch) && schema[b].task === "filehash",
     );
 
     const filenameBranch = Object.keys(schema).find(
-      (b) => schema[b].trunk === branch && schema[b].task === "filename",
+      (b) => schema[b].trunks.includes(branch) && schema[b].task === "filename",
     );
 
     const fileextBranch = Object.keys(schema).find(
-      (b) => schema[b].trunk === branch && schema[b].task === "fileext",
+      (b) => schema[b].trunks.includes(branch) && schema[b].task === "fileext",
     );
 
     const api = new API(repoUUID);

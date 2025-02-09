@@ -1,5 +1,5 @@
 import history from "history/hash";
-import { API, schemaRoot, schemaToBranchRecords } from "../api/index.js";
+import { API } from "../api/index.js";
 import {
   getDefaultBase,
   getDefaultSortBy,
@@ -8,6 +8,8 @@ import {
   digestMessage,
   enrichBranchRecords,
   searchParamsToQuery,
+  schemaRoot,
+  schemaToBranchRecords,
 } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
@@ -29,9 +31,7 @@ export const createOverviewSlice = (set, get) => ({
   // bootstraps the state and reads the URL on application launch
   initialize: async () => {
     if (__BUILD_MODE__ === "server") {
-      const api = new API("server");
-
-      const schemaServer = await api.readSchema();
+      const schemaServer = await readSchema("server");
 
       const base = getDefaultBase(schemaServer);
 
@@ -123,7 +123,7 @@ export const createOverviewSlice = (set, get) => ({
         // get repo name from remote
         const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
 
-        const schemaClone = await api.readSchema();
+        const schemaClone = await readSchema(repoUUIDRemote);
 
         const [schemaRecordClone, ...metaRecordsClone] =
           schemaToBranchRecords(schemaClone);
@@ -182,7 +182,7 @@ export const createOverviewSlice = (set, get) => ({
 
         const api = new API(repoUUID);
 
-        const schema = await api.readSchema();
+        const schema = await readSchema(repoUUID);
 
         const baseDefault = getDefaultBase(schema);
 
@@ -244,9 +244,7 @@ export const createOverviewSlice = (set, get) => ({
         { _: "repo", "repo": repoUUID }
       );
 
-      const api = new API(repoUUID);
-
-      const schema = await api.readSchema();
+      const schema = await readSchema(repoUUID);
 
       const base = baseNew ?? getDefaultBase(schema);
 

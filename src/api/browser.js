@@ -1,6 +1,5 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
-import { schemaRoot, recordsToSchema } from "./schema.js";
 import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
@@ -663,20 +662,6 @@ export class BrowserAPI {
         await this.ls(filepath);
       }
     }
-  }
-
-  async readSchema() {
-    if (this.uuid === "root") {
-      return schemaRoot;
-    }
-
-    const [schemaRecord] = await this.select({ _: "_" });
-
-    const branchRecords = await this.select({ _: "branch" });
-
-    const schema = recordsToSchema(schemaRecord, branchRecords);
-
-    return schema;
   }
 
   async readGedcom() {

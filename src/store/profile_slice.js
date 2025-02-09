@@ -1,5 +1,5 @@
-import { API, defaultRepoRecord, newUUID } from "../api/index.js";
-import { saveRepoRecord, loadRepoRecord } from "./bin.js";
+import { API } from "../api/index.js";
+import { saveRepoRecord, loadRepoRecord, defaultRepoRecord, newUUID } from "./bin.js";
 
 export const createProfileSlice = (set, get) => ({
   // record selected from records for viewing/editing

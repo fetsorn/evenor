@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { AssetView, Spoiler } from "@/layout/components/index.js";
-import { API, newUUID, schemaToBranchRecords } from "@/api/index.js";
-import { useStore, isTwig, enrichBranchRecords } from "@/store/index.js";
+import { API } from "@/api/index.js";
+import { useStore, isTwig, enrichBranchRecords, readSchema, newUUID, schemaToBranchRecords } from "@/store/index.js";
 
 export function EditRecord({
   schema,
@@ -132,7 +132,7 @@ export function EditRecord({
 
       await api.clone(record.remote_url[0], record.remote_token[0]);
 
-      const schemaClone = await api.readSchema();
+      const schemaClone = await readSchema(repoUUIDClone);
 
       await api.ensure(reponameClone);
 

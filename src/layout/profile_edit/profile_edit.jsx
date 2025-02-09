@@ -1,7 +1,6 @@
 import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
-import { schemaRoot } from "@/api";
 import { AssetView, Button } from "@/layout/components/index.js";
 import { useStore } from "@/store/index.js";
 import { EditRecord } from "./components/index.js";

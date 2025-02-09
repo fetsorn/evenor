@@ -1,7 +1,6 @@
 import fs from "fs";
 import path from "path";
 import { app, dialog } from "electron";
-import { schemaRoot, recordsToSchema } from "./schema.js";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/node/index.cjs";
 // import { exportPDF, generateLatex } from "lib/latex";
@@ -551,20 +550,6 @@ export class ElectronAPI {
 
   //   return pdfURL;
   // }
-
-  async readSchema() {
-    if (this.uuid === "root") {
-      return schemaRoot;
-    }
-
-    const [schemaRecord] = await this.select({ _: "_" });
-
-    const branchRecords = await this.select({ _: "branch" });
-
-    const schema = recordsToSchema(schemaRecord, branchRecords);
-
-    return schema;
-  }
 
   async readGedcom() {
     const gedcom = await this.readFile("index.ged");

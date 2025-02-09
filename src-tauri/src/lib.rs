@@ -172,41 +172,6 @@ async fn select(app: AppHandle, uuid: &str, query: Entry) -> Result<Vec<Entry>, 
     }
 }
 
-fn records_to_schema(schema: Schema, branch_records: Vec<Entry>) {
-}
-
-#[tauri::command]
-async fn read_schema(app: AppHandle, uuid: &str) -> Result<(), Error> {
-    let store_dir = app.path().app_data_dir()?.join("store");
-
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
-
-        let file_name = entry.file_name();
-
-        let entry_path: &str = file_name.to_str().unwrap();
-
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
-    });
-
-    match existing_dataset {
-        None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
-
-            let dataset_dir_path = dataset_dir.path();
-
-            let schema_record = select_schema(dataset_dir_path.clone()).await;
-
-            let branch_records = select_record(dataset_dir_path, vec![ Entry { base: "branch".to_owned(), base_value: None, leader_value: None, leaves: std::collections::HashMap::new() } ]).await;
-
-            let schema = records_to_schema(schema_record, branch_records);
-
-            Ok(())
-        }
-    }
-}
-
 #[tauri::command]
 fn select_stream(app: AppHandle, uuid: &str, query: Entry) -> Result<(), Error> {
     println!("helloWorld in Rust");
@@ -280,7 +245,6 @@ pub fn run() {
             ensure,
             select,
             select_stream,
-            read_schema,
             update_record,
             delete_record
         ])

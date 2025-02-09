@@ -883,7 +883,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "csvs_rs"
+name = "csvs"
 version = "0.1.0"
 dependencies = [
  "assert-json-diff",
@@ -1189,7 +1189,10 @@ dependencies = [
 name = "evenor"
 version = "2.3.0"
 dependencies = [
- "csvs_rs",
+ "async-stream",
+ "csvs",
+ "futures-core",
+ "futures-util",
  "git2",
  "regex",
  "serde",

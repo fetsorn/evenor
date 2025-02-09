@@ -1,5 +1,5 @@
 // import axios from "axios";
-import { invoke } from "@tauri-apps/api/core";
+import { invoke, Channel } from "@tauri-apps/api/core";
 import { BrowserAPI } from "./browser.js";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
@@ -166,13 +166,15 @@ export class API {
         return {
           strm: new ReadableStream({
             start(controller) {
-              function enqueueHandler(event, record) {
-                try {
-                  controller.enqueue(record);
-                } catch {
-                  // do nothing
+              const onEvent = new Channel();
+
+              onEvent.onmessage = (message) => {
+                if (message.event === "progress") {
+                  controller.enqueue(message.event.entry)
+                } else if (message.event === "finished") {
+                  controller.close()
                 }
-              }
+              };
 
               closeHandler = () => {
                 try {
@@ -180,13 +182,11 @@ export class API {
                 } catch {
                   // do nothing
                 }
-              };
+              }
 
               return invoke("select_stream", {
                 uuid: this.uuid,
                 query,
-                enqueueHandler,
-                closeHandler,
               });
             },
           }),

@@ -1,6 +1,10 @@
 #![allow(warnings)]
-use tauri::{AppHandle, Emitter, Manager, EventTarget, Error};
-use csvs_rs::{types::{schema::Schema, entry::Entry}, select::{select_record, select_schema}, update, delete};
+use futures_util::pin_mut;
+use futures_util::stream::StreamExt;
+use async_stream::stream;
+use tauri::{AppHandle, Emitter, Manager, EventTarget, Error, ipc::Channel};
+use serde::Serialize;
+use csvs::{types::{schema::Schema, entry::Entry}, select::{select_record, select_schema, select_record_stream}, update, delete};
 use std::fs::{rename, create_dir, read_dir};
 use regex::Regex;
 use std::path::Path;
@@ -172,10 +176,71 @@ async fn select(app: AppHandle, uuid: &str, query: Entry) -> Result<Vec<Entry>, 
     }
 }
 
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase", tag = "event", content = "data")]
+enum SelectEvent {
+  #[serde(rename_all = "camelCase")]
+  Started {
+      query: Entry
+  },
+  #[serde(rename_all = "camelCase")]
+  Progress {
+      query: Entry,
+      entry: Entry
+  },
+  #[serde(rename_all = "camelCase")]
+  Finished {
+      query: Entry
+  },
+}
+
 #[tauri::command]
-fn select_stream(app: AppHandle, uuid: &str, query: Entry) -> Result<(), Error> {
-    println!("helloWorld in Rust");
-    Ok(())
+async fn select_stream(app: AppHandle, uuid: &str, query: Entry, on_event: Channel<SelectEvent>) -> Result<(), Error> {
+    let store_dir = app.path().app_data_dir()?.join("store");
+
+    let existing_dataset = read_dir(store_dir)?.find(|entry| {
+        let entry = entry.as_ref().unwrap();
+
+        let file_name = entry.file_name();
+
+        let entry_path: &str = file_name.to_str().unwrap();
+
+        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
+    });
+
+    match existing_dataset {
+        None => Err(Error::UnknownPath),
+        Some(dataset_dir) => {
+            let dataset_dir = dataset_dir.unwrap();
+
+            let dataset_dir_path = dataset_dir.path();
+
+            let query_for_stream = query.clone();
+
+            let readable_stream = stream! {
+                yield query_for_stream;
+            };
+
+            let s = select_record_stream(readable_stream, dataset_dir_path);
+
+            pin_mut!(s); // needed for iteration
+
+            on_event.send(SelectEvent::Started {
+                query: query.clone()
+            }).unwrap();
+
+            while let Some(entry) = s.next().await {
+                on_event.send(SelectEvent::Progress {
+                    query: query.clone(),
+                    entry
+                }).unwrap();
+            }
+
+            on_event.send(SelectEvent::Finished { query }).unwrap();
+
+            Ok(())
+        }
+    }
 }
 
 #[tauri::command]

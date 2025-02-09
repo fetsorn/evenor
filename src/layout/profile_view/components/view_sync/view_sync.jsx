@@ -1,7 +1,7 @@
 import React from "react";
 import { API } from "@/api/index.js";
 
-export function ViewSync({ baseRecord, branchRecord }) {
+export function ViewSync({ schema, baseRecord, branchRecord }) {
   async function onSyncRepo() {
     // find UUID of repo to sync from
     const searchParams = new URLSearchParams();
@@ -12,14 +12,18 @@ export function ViewSync({ baseRecord, branchRecord }) {
 
     const rootAPI = new API("root");
 
-    const [{ repo: subsetUUID }] = await rootAPI.select(searchParams);
+    const query = searchParamsToQuery(schema, searchParams)
+
+    const [{ repo: subsetUUID }] = await rootAPI.select(query);
 
     const subsetAPI = new API(subsetUUID);
 
+    const subsetSearchParams = new URLSearchParams(branchRecord.sync_tag_search);
+
+    const subsetQuery = searchParamsToQuery(schema, subsetSearchParams);
+
     // find entries to sync from subset
-    const entries = await subsetAPI.select(
-      new URLSearchParams(branchRecord.sync_tag_search),
-    );
+    const entries = await subsetAPI.select(subsetQuery);
 
     const supersetAPI = new API(baseRecord.repo);
 

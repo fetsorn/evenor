@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import { URLSearchParams } from "url";
 import { app, dialog } from "electron";
 import { schemaRoot, recordsToSchema } from "./schema.js";
 import git from "isomorphic-git";
@@ -149,24 +148,15 @@ export class ElectronAPI {
     }
   }
 
-  async select(searchParams) {
+  async select(query) {
     const csvs = await import("@fetsorn/csvs-js");
-
-    const [schemaRecord] = await csvs.selectSchema({
-      fs,
-      dir: this.dir,
-    });
-
-    const schema = csvs.toSchema(schemaRecord);
-
-    const query = csvs.searchParamsToQuery(schema, searchParams);
 
     const records = await csvs.selectRecord({ fs, dir: this.dir, query });
 
     return records;
   }
 
-  async selectStream(searchParams, enqueueHandler, closeHandler) {
+  async selectStream(query, enqueueHandler, closeHandler) {
     try {
       await abortControllerPrevious.abort();
     } catch {
@@ -176,15 +166,6 @@ export class ElectronAPI {
     const abortController = new AbortController();
 
     const csvs = await import("@fetsorn/csvs-js");
-
-    const [schemaRecord] = await csvs.selectSchema({
-      fs,
-      dir: this.dir,
-    });
-
-    const schema = csvs.toSchema(schemaRecord);
-
-    const query = csvs.searchParamsToQuery(schema, searchParams);
 
     // TODO terminate previous stream
     const strm = await csvs.selectRecordStream({
@@ -576,9 +557,9 @@ export class ElectronAPI {
       return schemaRoot;
     }
 
-    const [schemaRecord] = await this.select(new URLSearchParams("?_=_"));
+    const [schemaRecord] = await this.select({ _: "_" });
 
-    const branchRecords = await this.select(new URLSearchParams("?_=branch"));
+    const branchRecords = await this.select({ _: "branch" });
 
     const schema = recordsToSchema(schemaRecord, branchRecords);
 

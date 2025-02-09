@@ -43,7 +43,7 @@ function ViewFieldItem({ schema, index, base, item, description }) {
   }
 
   if (isSync) {
-    return <ViewSync {...{ baseRecord: record, branchRecord: item }} />;
+    return <ViewSync {...{ schema, baseRecord: record, branchRecord: item }} />;
   }
 
   return (

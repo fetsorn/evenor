@@ -59,20 +59,11 @@ export class ServerAPI {
     return [hashHexString, file.originalFilename];
   }
 
-  async select(searchParams) {
-    const [schemaRecord] = await csvs.selectSchema({
-      fs,
-      dir: this.dir,
-    });
-
-    const schema = csvs.toSchema(schemaRecord);
-
-    const query = csvs.searchParamsToQuery(schema, searchParams);
-
+  async select(query) {
     const overview = await csvs.selectRecord({
       fs,
       dir: this.dir,
-      query: searchParams,
+      query,
     });
 
     return overview;

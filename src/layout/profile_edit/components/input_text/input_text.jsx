@@ -15,11 +15,7 @@ export function InputText({ branch, value, onFieldChange }) {
   async function onFocus(branch) {
     setOptions([]);
 
-    const searchParams = new URLSearchParams();
-
-    searchParams.set("_", branch);
-
-    const optionsNew = await api.select(searchParams);
+    const optionsNew = await api.select({ _: branch });
 
     const optionValues = optionsNew.map((record) => record[branch]);
 

@@ -58,6 +58,9 @@ export class API {
       case "electron":
         return window.electron.fetchAsset(this.uuid, filename);
 
+      case "tauri":
+        return invoke("fetch_asset", { uuid: this.uuid, filename });
+
       default:
         return this.#browser.fetchAsset(filename);
     }
@@ -68,6 +71,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.downloadAsset(this.uuid, content, filename);
+
+      case "tauri":
+        return invoke("download_asset", { uuid: this.uuid, content, filename });
 
       default:
         return this.#browser.downloadAsset(content, filename);
@@ -80,6 +86,9 @@ export class API {
       case "electron":
         return window.electron.putAsset(this.uuid, filename, buffer);
 
+      case "tauri":
+        return invoke("put_asset", { uuid: this.uuid, filename, buffer });
+
       default:
         return this.#browser.putAsset(filename, buffer);
     }
@@ -91,24 +100,30 @@ export class API {
       case "electron":
         return window.electron.uploadFile(this.uuid);
 
+      case "tauri":
+        return invoke("upload_file", { uuid: this.uuid });
+
       default:
         return this.#browser.uploadFile();
     }
   }
 
-  async select(searchParams) {
+  async select(query) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.select(this.uuid, searchParams.toString());
+        return window.electron.select(this.uuid, query);
+
+      case "tauri":
+        return invoke("select", { uuid: this.uuid, query });
 
       default:
-        return this.#browser.select(searchParams);
+        return this.#browser.select(query);
     }
   }
 
-  async selectStream(searchParams) {
-    // console.log('api/selectStream', searchParams.toString());
+  async selectStream(query) {
+    // console.log('api/selectStream', query);
 
     const { uuid } = this;
 
@@ -138,7 +153,7 @@ export class API {
 
               return window.electron.selectStream(
                 uuid,
-                searchParams.toString(),
+                query,
                 enqueueHandler,
                 closeHandler,
               );
@@ -146,8 +161,40 @@ export class API {
           }),
           closeHandler,
         };
+
+      case "tauri":
+        return {
+          strm: new ReadableStream({
+            start(controller) {
+              function enqueueHandler(event, record) {
+                try {
+                  controller.enqueue(record);
+                } catch {
+                  // do nothing
+                }
+              }
+
+              closeHandler = () => {
+                try {
+                  controller.close();
+                } catch {
+                  // do nothing
+                }
+              };
+
+              return invoke("select_stream", {
+                uuid: this.uuid,
+                query,
+                enqueueHandler,
+                closeHandler,
+              });
+            },
+          }),
+          closeHandler,
+        };
+
       default:
-        return this.#browser.selectStream(searchParams);
+        return this.#browser.selectStream(query);
     }
   }
 
@@ -156,6 +203,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.updateRecord(this.uuid, record);
+
+      case "tauri":
+        return invoke("update_record", { uuid: this.uuid, record });
 
       default:
         return this.#browser.updateRecord(record);
@@ -168,6 +218,9 @@ export class API {
       case "electron":
         return window.electron.deleteRecord(this.uuid, record);
 
+      case "tauri":
+        return invoke("delete_record", { uuid: this.uuid, record });
+
       default:
         return this.#browser.deleteRecord(record);
     }
@@ -179,6 +232,9 @@ export class API {
       case "electron":
         return window.electron.ensure(this.uuid, schema, name);
 
+      case "tauri":
+        return invoke("ensure", { uuid: this.uuid, schema, name });
+
       default:
         return this.#browser.ensure(schema, name);
     }
@@ -189,6 +245,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.commit(this.uuid);
+
+      case "tauri":
+        return invoke("commit", { uuid: this.uuid });
 
       default:
         return this.#browser.commit();
@@ -202,6 +261,9 @@ export class API {
       case "electron":
         return window.electron.clone(this.uuid, remoteUrl, remoteToken, name);
 
+      case "tauri":
+        return invoke("clone", { uuid: this.uuid, remoteUrl, remoteToken, name });
+
       default:
         return this.#browser.clone(remoteUrl, remoteToken, name);
     }
@@ -212,6 +274,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.push(this.uuid, remote);
+
+      case "tauri":
+        return invoke("push", { uuid: this.uuid, remote });
 
       default:
         return this.#browser.push(remote);
@@ -224,6 +289,9 @@ export class API {
       case "electron":
         return window.electron.pull(this.uuid, remote);
 
+      case "tauri":
+        return invoke("pull", { uuid: this.uuid, remote });
+
       default:
         return this.#browser.pull(remote);
     }
@@ -234,6 +302,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.readSchema(this.uuid);
+
+      case "tauri":
+        return invoke("read_schema", { uuid: this.uuid });
 
       default:
         return this.#browser.readSchema();
@@ -246,6 +317,9 @@ export class API {
       case "electron":
         return window.electron.uploadBlobsLFS(this.uuid, remote, files);
 
+      case "tauri":
+        return invoke("upload_blobs_LFS", { uuid: this.uuid, remote, files });
+
       default:
         return this.#browser.uploadBlobsLFS(remote, files);
     }
@@ -257,6 +331,9 @@ export class API {
       case "electron":
         return window.electron.zip(this.uuid);
 
+      case "tauri":
+        return invoke("zip", { uuid: this.uuid });
+
       default:
         return this.#browser.zip();
     }
@@ -267,6 +344,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.listRemotes(this.uuid);
+
+      case "tauri":
+        return invoke("list_remotes", { uuid: this.uuid });
 
       default:
         return this.#browser.listRemotes();
@@ -284,6 +364,9 @@ export class API {
           remoteToken,
         );
 
+      case "tauri":
+        return invoke("add_remote", { uuid: this.uuid, remoteName, remoteUrl, remoteToken });
+
       default:
         return this.#browser.addRemote(remoteName, remoteUrl, remoteToken);
     }
@@ -294,6 +377,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.getRemote(this.uuid, remote);
+
+      case "tauri":
+        return invoke("get_remote", { uuid: this.uuid, remote });
 
       default:
         return this.#browser.getRemote(remote);
@@ -306,6 +392,9 @@ export class API {
       case "electron":
         return window.electron.addAssetPath(this.uuid, assetPath);
 
+      case "tauri":
+        return invoke("add_asset_path", { uuid: this.uuid, assetPath });
+
       default:
         return this.#browser.addAssetPath(assetPath);
     }
@@ -316,6 +405,9 @@ export class API {
     switch (__BUILD_MODE__) {
       case "electron":
         return window.electron.listAssetPaths(this.uuid);
+
+      case "tauri":
+        return invoke("list_asset_paths", { uuid: this.uuid });
 
       default:
         return this.#browser.listAssetPaths();
@@ -332,6 +424,9 @@ export class API {
           token,
           pointerInfo,
         );
+
+      case "tauri":
+        return invoke("download_url_from_pointer", { uuid: this.uuid, url, token, pointerInfo });
 
       default:
         return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);

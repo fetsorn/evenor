@@ -7,6 +7,7 @@ import {
   loadRepoRecord,
   digestMessage,
   enrichBranchRecords,
+  searchParamsToQuery,
 } from "./bin.js";
 
 export const createOverviewSlice = (set, get) => ({
@@ -174,7 +175,7 @@ export const createOverviewSlice = (set, get) => ({
       // if repo is in store, find uuid in root folder
       try {
         const [repo] = await apiRoot.select(
-          new URLSearchParams(`?_=repo&reponame=${repoRoute}`),
+          { _: "repo", "reponame": repoRoute }
         );
 
         const { repo: repoUUID } = repo;
@@ -240,7 +241,7 @@ export const createOverviewSlice = (set, get) => ({
 
       // TODO handle errors
       const [repo] = await apiRoot.select(
-        new URLSearchParams(`?_=repo&repo=${repoUUID}`),
+        { _: "repo", "repo": repoUUID }
       );
 
       const api = new API(repoUUID);
@@ -337,8 +338,10 @@ export const createOverviewSlice = (set, get) => ({
 
     const api = new API(repoUUID);
 
+    const query = searchParamsToQuery(schema, searchParams);
+
     const { strm: fromStrm, closeHandler } =
-      await api.selectStream(searchParams);
+      await api.selectStream(query);
 
     const toStrm = new WritableStream({
       write(chunk) {

@@ -1,6 +1,6 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
-import { schemaRoot, recordsToSchema, searchParamsToQuery } from "./schema.js";
+import { schemaRoot, recordsToSchema } from "./schema.js";
 import { saveAs } from "file-saver";
 
 const fs = new LightningFS("fs");
@@ -234,19 +234,10 @@ export class BrowserAPI {
     });
   }
 
-  async select(searchParams) {
+  async select(query) {
     const csvs = await import("@fetsorn/csvs-js");
 
     const dir = await this.dir();
-
-    const [schemaRecord] = await csvs.selectSchema({
-      fs,
-      dir,
-    });
-
-    const schema = csvs.toSchema(schemaRecord);
-
-    const query = searchParamsToQuery(schema, searchParams);
 
     const overview = await csvs.selectRecord({
       fs,
@@ -257,19 +248,10 @@ export class BrowserAPI {
     return overview;
   }
 
-  async selectStream(searchParams) {
+  async selectStream(query) {
     const csvs = await import("@fetsorn/csvs-js");
 
     const dir = await this.dir();
-
-    const [schemaRecord] = await csvs.selectSchema({
-      fs,
-      dir,
-    });
-
-    const schema = csvs.toSchema(schemaRecord);
-
-    const query = searchParamsToQuery(schema, searchParams);
 
     // TODO terminate previous stream
     const selectStream = csvs.selectRecordStream({
@@ -688,9 +670,9 @@ export class BrowserAPI {
       return schemaRoot;
     }
 
-    const [schemaRecord] = await this.select(new URLSearchParams("?_=_"));
+    const [schemaRecord] = await this.select({ _: "_" });
 
-    const branchRecords = await this.select(new URLSearchParams("?_=branch"));
+    const branchRecords = await this.select({ _: "branch" });
 
     const schema = recordsToSchema(schemaRecord, branchRecords);
 

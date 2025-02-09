@@ -1,2 +1,2 @@
 export { useStore } from "./store.js";
-export { isTwig, enrichBranchRecords } from "./bin.js";
+export { isTwig, enrichBranchRecords, searchParamsToQuery } from "./bin.js";

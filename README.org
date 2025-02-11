@@ -3,6 +3,8 @@
 
 Evenor - query and edit timelines. Tell the story of your own data.
 
+[Docs](https://norcivilianlabs.org/evenor)
+
 * Developer Information and Tools
 ** Install dependencies
 #+begin_quote

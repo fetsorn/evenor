@@ -20,7 +20,7 @@ contextBridge.exposeInMainWorld('electron', {
 
   deleteRecord: (dir, record) => ipcRenderer.invoke('deleteRecord', dir, record),
 
-  ensure: (dir, schema, name) => ipcRenderer.invoke('ensure', dir, schema, name),
+  ensure: (dir, name) => ipcRenderer.invoke('ensure', dir, name),
 
   commit: (dir) => ipcRenderer.invoke('commit', dir),
 

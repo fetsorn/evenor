@@ -166,8 +166,8 @@ app
       new API(dir).deleteRecord(record)
     );
 
-    ipcMain.handle("ensure", async (_event, dir, schema, name) =>
-      new API(dir).ensure(schema, name)
+    ipcMain.handle("ensure", async (_event, dir, name) =>
+      new API(dir).ensure(name)
     );
 
     ipcMain.handle("commit", async (_event, dir) => new API(dir).commit());

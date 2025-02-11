@@ -259,7 +259,15 @@ export class BrowserAPI {
       query,
     });
 
-    const strm = ReadableStream.from([query]).pipeThrough(selectStream)
+    const queryStream = new ReadableStream({
+      start(controller) {
+        controller.enqueue(query)
+
+        controller.close()
+      }
+    })
+
+    const strm = queryStream.pipeThrough(selectStream)
 
     let closeHandler = () => strm.cancel();
 

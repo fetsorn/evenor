@@ -1,14 +1,21 @@
 #![allow(warnings)]
+use async_stream::stream;
+use serde_json::Value;
+use csvs::{
+    delete,
+    select::{select_record, select_record_stream},
+    types::into_value::IntoValue,
+    types::entry::Entry,
+    update,
+};
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
-use async_stream::stream;
-use tauri::{AppHandle, Emitter, Manager, EventTarget, Error, ipc::Channel};
-use serde::Serialize;
-use csvs::{types::{schema::Schema, entry::Entry}, select::{select_record, select_schema, select_record_stream}, update, delete};
-use std::fs::{rename, create_dir, read_dir};
-use regex::Regex;
-use std::path::Path;
 use git2::Repository;
+use regex::Regex;
+use serde::Serialize;
+use std::fs::{create_dir, read_dir, rename};
+use std::path::Path;
+use tauri::{ipc::Channel, AppHandle, Emitter, Error, EventTarget, Manager};
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -24,7 +31,8 @@ fn hello_world(some_variable: &str) -> String {
 fn find_last_commit(repo: &Repository) -> Result<git2::Commit, git2::Error> {
     let obj = repo.head()?.resolve()?.peel(git2::ObjectType::Commit)?;
 
-    obj.into_commit().map_err(|_| git2::Error::from_str("Couldn't find commit"))
+    obj.into_commit()
+        .map_err(|_| git2::Error::from_str("Couldn't find commit"))
 }
 
 #[tauri::command]
@@ -38,7 +46,9 @@ fn commit(app: AppHandle, uuid: &str) -> Result<(), Error> {
 
         let entry_path: &str = file_name.to_str().unwrap();
 
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
     });
 
     match existing_dataset {
@@ -74,22 +84,38 @@ fn commit(app: AppHandle, uuid: &str) -> Result<(), Error> {
 
             let cb = Some(cb as &mut git2::IndexMatchedPath);
 
-            index.add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, cb).unwrap();
+            index
+                .add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, cb)
+                .unwrap();
 
             let oid = index.write_tree().unwrap();
 
             let signature = git2::Signature::now("name", "name@mail.com").unwrap();
 
-            let parent_commit = find_last_commit(&repo).unwrap();
-
             let tree = repo.find_tree(oid).unwrap();
 
-            repo.commit(Some("HEAD"), //  point HEAD to our new commit
-                        &signature, // author
-                        &signature, // committer
-                        &message, // commit message
-                        &tree, // tree
-                        &[&parent_commit]); // parents
+            match find_last_commit(&repo) {
+                Ok(c) => {
+                    repo.commit(
+                        Some("HEAD"), //  point HEAD to our new commit
+                        &signature,   // author
+                        &signature,   // committer
+                        &message,     // commit message
+                        &tree,        // tree
+                        &[&c],
+                    ); // parents
+                },
+                Err(_) => {
+                    repo.commit(
+                        Some("HEAD"), //  point HEAD to our new commit
+                        &signature,   // author
+                        &signature,   // committer
+                        &message,     // commit message
+                        &tree,        // tree
+                        &[],
+                    ); // parents
+                }
+            }
 
             Ok(())
         }
@@ -97,7 +123,7 @@ fn commit(app: AppHandle, uuid: &str) -> Result<(), Error> {
 }
 
 #[tauri::command]
-fn ensure(app: AppHandle, uuid: &str, schema: Schema, name: Option<&str>) -> Result<(), Error> {
+fn ensure(app: AppHandle, uuid: &str, name: Option<&str>) -> Result<(), Error> {
     let store_dir = app.path().app_data_dir()?.join("store");
 
     if (!store_dir.exists()) {
@@ -106,7 +132,7 @@ fn ensure(app: AppHandle, uuid: &str, schema: Schema, name: Option<&str>) -> Res
 
     let dataset_filename = match name {
         None => uuid,
-        Some(s) => &format!("{}-{}", uuid, s)
+        Some(s) => &format!("{}-{}", uuid, s),
     };
 
     let dataset_dir = store_dir.join(dataset_filename);
@@ -118,7 +144,9 @@ fn ensure(app: AppHandle, uuid: &str, schema: Schema, name: Option<&str>) -> Res
 
         let entry_path: &str = file_name.to_str().unwrap();
 
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
     });
 
     match existing_dataset {
@@ -149,7 +177,9 @@ fn ensure(app: AppHandle, uuid: &str, schema: Schema, name: Option<&str>) -> Res
 }
 
 #[tauri::command]
-async fn select(app: AppHandle, uuid: &str, query: Entry) -> Result<Vec<Entry>, Error> {
+async fn select(app: AppHandle, uuid: &str, query: Value) -> Result<Vec<Value>, Error> {
+    let query: Entry = query.try_into().unwrap();
+
     let store_dir = app.path().app_data_dir()?.join("store");
 
     let existing_dataset = read_dir(store_dir)?.find(|entry| {
@@ -159,53 +189,9 @@ async fn select(app: AppHandle, uuid: &str, query: Entry) -> Result<Vec<Entry>, 
 
         let entry_path: &str = file_name.to_str().unwrap();
 
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
-    });
-
-    match existing_dataset {
-        None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
-
-            let dataset_dir_path = dataset_dir.path();
-
-            let records = select_record(dataset_dir_path, vec![query]).await;
-
-            Ok(records)
-        }
-    }
-}
-
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase", tag = "event", content = "data")]
-enum SelectEvent {
-  #[serde(rename_all = "camelCase")]
-  Started {
-      query: Entry
-  },
-  #[serde(rename_all = "camelCase")]
-  Progress {
-      query: Entry,
-      entry: Entry
-  },
-  #[serde(rename_all = "camelCase")]
-  Finished {
-      query: Entry
-  },
-}
-
-#[tauri::command]
-async fn select_stream(app: AppHandle, uuid: &str, query: Entry, on_event: Channel<SelectEvent>) -> Result<(), Error> {
-    let store_dir = app.path().app_data_dir()?.join("store");
-
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
-
-        let file_name = entry.file_name();
-
-        let entry_path: &str = file_name.to_str().unwrap();
-
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
     });
 
     match existing_dataset {
@@ -225,26 +211,37 @@ async fn select_stream(app: AppHandle, uuid: &str, query: Entry, on_event: Chann
 
             pin_mut!(s); // needed for iteration
 
-            on_event.send(SelectEvent::Started {
-                query: query.clone()
-            }).unwrap();
+            let mut records: Vec<Value> = vec![];
 
             while let Some(entry) = s.next().await {
-                on_event.send(SelectEvent::Progress {
-                    query: query.clone(),
-                    entry
-                }).unwrap();
+                records.push(entry.into_value())
             }
 
-            on_event.send(SelectEvent::Finished { query }).unwrap();
-
-            Ok(())
+            Ok(records)
         }
     }
 }
 
+#[derive(Clone, Serialize)]
+#[serde(rename_all = "camelCase", tag = "event", content = "data")]
+enum SelectEvent {
+    #[serde(rename_all = "camelCase")]
+    Started { query: Value },
+    #[serde(rename_all = "camelCase")]
+    Progress { query: Value, entry: Value },
+    #[serde(rename_all = "camelCase")]
+    Finished { query: Value },
+}
+
 #[tauri::command]
-async fn update_record(app: AppHandle, uuid: &str, record: Entry) -> Result<(), Error> {
+async fn select_stream(
+    app: AppHandle,
+    uuid: &str,
+    query: Value,
+    on_event: Channel<SelectEvent>,
+) -> Result<(), Error> {
+    let query: Entry = query.try_into().unwrap();
+
     let store_dir = app.path().app_data_dir()?.join("store");
 
     let existing_dataset = read_dir(store_dir)?.find(|entry| {
@@ -254,7 +251,66 @@ async fn update_record(app: AppHandle, uuid: &str, record: Entry) -> Result<(), 
 
         let entry_path: &str = file_name.to_str().unwrap();
 
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
+    });
+
+    match existing_dataset {
+        None => Err(Error::UnknownPath),
+        Some(dataset_dir) => {
+            let dataset_dir = dataset_dir.unwrap();
+
+            let dataset_dir_path = dataset_dir.path();
+
+            let query_for_stream = query.clone();
+
+            let readable_stream = stream! {
+                yield query_for_stream;
+            };
+
+            let s = select_record_stream(readable_stream, dataset_dir_path);
+
+            pin_mut!(s); // needed for iteration
+
+            on_event
+                .send(SelectEvent::Started {
+                    query: query.clone().into_value(),
+                })
+                .unwrap();
+
+            while let Some(entry) = s.next().await {
+                on_event
+                    .send(SelectEvent::Progress {
+                        query: query.clone().into_value(),
+                        entry: entry.into_value(),
+                    })
+                    .unwrap();
+            }
+
+            on_event.send(SelectEvent::Finished { query: query.into_value() }).unwrap();
+
+            Ok(())
+        }
+    }
+}
+
+#[tauri::command]
+async fn update_record(app: AppHandle, uuid: &str, record: Value) -> Result<(), Error> {
+    let record: Entry = record.try_into().unwrap();
+
+    let store_dir = app.path().app_data_dir()?.join("store");
+
+    let existing_dataset = read_dir(store_dir)?.find(|entry| {
+        let entry = entry.as_ref().unwrap();
+
+        let file_name = entry.file_name();
+
+        let entry_path: &str = file_name.to_str().unwrap();
+
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
     });
 
     match existing_dataset {
@@ -272,7 +328,9 @@ async fn update_record(app: AppHandle, uuid: &str, record: Entry) -> Result<(), 
 }
 
 #[tauri::command]
-async fn delete_record(app: AppHandle, uuid: &str, record: Entry) -> Result<(), Error> {
+async fn delete_record(app: AppHandle, uuid: &str, record: Value) -> Result<(), Error> {
+    let record: Entry = record.try_into().unwrap();
+
     let store_dir = app.path().app_data_dir()?.join("store");
 
     let existing_dataset = read_dir(store_dir)?.find(|entry| {
@@ -282,7 +340,9 @@ async fn delete_record(app: AppHandle, uuid: &str, record: Entry) -> Result<(), 
 
         let entry_path: &str = file_name.to_str().unwrap();
 
-        Regex::new(&format!("^{}", uuid)).unwrap().is_match(entry_path)
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
     });
 
     match existing_dataset {

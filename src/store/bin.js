@@ -266,7 +266,8 @@ export async function saveRepoRecord(record) {
   const schema = recordsToSchema(schemaRecord, metaRecords);
 
   // create repo directory with a schema
-  await api.ensure(record.reponame);
+  // TODO record.reponame is a list, iterate over items
+  await api.ensure(record.reponame[0]);
 
   await api.updateRecord(schemaRecord);
 
@@ -518,11 +519,11 @@ export function recordsToSchema(schemaRecord, metaRecords) {
 }
 
 export async function readSchema(uuid) {
-  if (this.uuid === "root") {
+  if (uuid === "root") {
     return schemaRoot;
   }
 
-  const api = new API(repoUUID);
+  const api = new API(uuid);
 
   const [schemaRecord] = await api.select({ _: "_" });
 
@@ -724,7 +725,7 @@ export const defaultRepoRecord = {
       _: "branch",
       branch: "category",
       trunk: "event",
-      description_en: "Category",
+      description_en: "Category of the dataset",
       description_ru: "Категория",
     },
     {

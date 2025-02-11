@@ -165,12 +165,12 @@ export class API {
       case "tauri":
         return {
           strm: new ReadableStream({
-            start(controller) {
+            async start(controller) {
               const onEvent = new Channel();
 
               onEvent.onmessage = (message) => {
                 if (message.event === "progress") {
-                  controller.enqueue(message.event.entry)
+                  controller.enqueue(message.data.entry)
                 } else if (message.event === "finished") {
                   controller.close()
                 }
@@ -185,8 +185,9 @@ export class API {
               }
 
               return invoke("select_stream", {
-                uuid: this.uuid,
+                uuid,
                 query,
+                onEvent
               });
             },
           }),
@@ -226,17 +227,17 @@ export class API {
     }
   }
 
-  async ensure(schema, name) {
+  async ensure(name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "electron":
-        return window.electron.ensure(this.uuid, schema, name);
+        return window.electron.ensure(this.uuid, name);
 
       case "tauri":
-        return invoke("ensure", { uuid: this.uuid, schema, name });
+        return invoke("ensure", { uuid: this.uuid, name });
 
       default:
-        return this.#browser.ensure(schema, name);
+        return this.#browser.ensure(name);
     }
   }
 

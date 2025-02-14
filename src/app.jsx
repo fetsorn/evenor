@@ -1,25 +1,28 @@
 import styles from "./app.module.css";
 import cn from "classnames";
-import { createSignal, For } from "solid-js";
+import { createSignal, createContext, For, useContext } from "solid-js";
+import { createStore } from "solid-js/store";
 import { createVirtualizer } from "@tanstack/solid-virtual";
+
+const StoreContext = createContext();
 
 function OverviewFilter() {
   return <div>filter</div>;
 }
 
 function OverviewItem(props) {
-  return <div>{props.item}</div>;
+  const { setStore } = useContext(StoreContext);
+
+  return <div onClick={() => setStore("record", props.item)}>{props.item}</div>;
 }
 
 function OverviewList() {
   let parentRef;
 
-  const [listItems] = createSignal(
-    Array.from({ length: 30 }, (_, i) => `Item ${i}`),
-  );
+  const { store } = useContext(StoreContext);
 
   const virtualizer = createVirtualizer({
-    count: listItems().length,
+    count: store.records.length,
     getScrollElement: () => parentRef,
     estimateSize: () => 35,
     overscan: 5,
@@ -48,7 +51,7 @@ function OverviewList() {
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <OverviewItem item={listItems()[virtualRow.index]} />
+              <OverviewItem item={store.records[virtualRow.index]} />
             </div>
           )}
         </For>
@@ -67,11 +70,13 @@ function Overview() {
 }
 
 function Profile() {
+  const { store } = useContext(StoreContext);
+
   return (
     <div
       className={cn(
         styles.sidebar,
-        { [styles.invisible]: false },
+        { [styles.invisible]: !store.record },
         "profile-view__sidebar view__sidebar",
       )}
     >
@@ -88,11 +93,18 @@ function Profile() {
 }
 
 function App() {
+  const [store, setStore] = createStore({
+    record: undefined,
+    records: Array.from({ length: 30 }, (_, i) => `Item ${i}`),
+  });
+
   return (
-    <div class={styles.App}>
-      <Overview />
-      <Profile />
-    </div>
+    <StoreContext.Provider value={{ store, setStore }}>
+      <div class={styles.App}>
+        <Overview />
+        <Profile />
+      </div>
+    </StoreContext.Provider>
   );
 }
 

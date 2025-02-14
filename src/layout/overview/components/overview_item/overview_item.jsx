@@ -1,8 +1,5 @@
-import { useContext } from "solid-js";
-import { StoreContext } from "@/store.js";
+import { onRecordPick } from "@/store.js";
 
 export function OverviewItem(props) {
-  const { setStore } = useContext(StoreContext);
-
-  return <div onClick={() => setStore("record", props.item)}>{props.item}</div>;
+  return <div onClick={() => onRecordPick(props.item)}>{props.item}</div>;
 }

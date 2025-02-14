@@ -1,9 +1,17 @@
 import cn from "classnames";
+import styles from "./profile.module.css";
 import { useContext } from "solid-js";
 import { StoreContext } from "@/store.js";
-import styles from "./profile_edit.module.css";
+
+export function ProfileView() {
+  return <div>profile view</div>;
+}
 
 export function ProfileEdit() {
+  return <div>profile view</div>;
+}
+
+export function Profile() {
   const { store } = useContext(StoreContext);
 
   return (
@@ -19,7 +27,7 @@ export function ProfileEdit() {
           id="scrollcontainer"
           className={cn(styles.sticky, "view-sidebar__sticky")}
         >
-          profile
+          {store.isEdit ? <ProfileEdit /> : <ProfileView />}
         </div>
       </div>
     </div>

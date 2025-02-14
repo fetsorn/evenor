@@ -1,21 +1,14 @@
-import { createStore } from "solid-js/store";
-import { StoreContext } from "@/store.js";
+import { StoreContext, store, setStore } from "@/store.js";
 import styles from "./layout.module.css";
 import { Overview } from "./overview/overview.jsx";
-import { ProfileEdit } from "./profile_edit/profile_edit.jsx";
-import { ProfileView } from "./profile_view/profile_view.jsx";
+import { Profile } from "./profile/profile.jsx";
 
 export function App() {
-  const [store, setStore] = createStore({
-    record: undefined,
-    records: Array.from({ length: 30 }, (_, i) => `Item ${i}`),
-  });
-
   return (
     <StoreContext.Provider value={{ store, setStore }}>
-      <div class={styles.App}>
+      <div class={styles.main}>
         <Overview />
-        {store.isEdit ? <ProfileEdit /> : <ProfileView />}
+        <Profile />
       </div>
     </StoreContext.Provider>
   );

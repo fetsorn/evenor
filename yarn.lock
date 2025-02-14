@@ -1350,6 +1350,18 @@
   resolved "https://registry.yarnpkg.com/@swimburger/isomorphic-streams/-/isomorphic-streams-1.1.1.tgz#27ad84b20be631012b0a6babbceae706f74cdd0b"
   integrity sha512-E4ZHqsSA5A/xRRmi/rgnR84qPhiqHAjprBmwRtwiPC63mtMOUk/eYClRV69MuZWt6dsvgijHCdfdDCCrfy39nQ==
 
+"@tanstack/solid-virtual@^3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/solid-virtual/-/solid-virtual-3.13.0.tgz#0c95bb4e1ad427d018e5cd9e076e17dd41b6325a"
+  integrity sha512-F9DCB+wqshQWYInhg778086ozsnhkOasW7r3KNxLZoCiD+eEshQ2rakO/J6lleUuxNDU9/sQJRBwADWaB4GyzQ==
+  dependencies:
+    "@tanstack/virtual-core" "3.13.0"
+
+"@tanstack/virtual-core@3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@tanstack/virtual-core/-/virtual-core-3.13.0.tgz#8db0ccc9d6c32b6393551a6d19c87dbb259a8828"
+  integrity sha512-NBKJP3OIdmZY3COJdWkSonr50FMVIi+aj5ZJ7hI/DTpEKg2RMfo/KvP8A3B/zOSpMgIe52B5E2yn7rryULzA6g==
+
 "@tauri-apps/api@^2", "@tauri-apps/api@^2.0.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.2.0.tgz#daaff2515b1a4ff1e763cf84a414548b02b566c5"

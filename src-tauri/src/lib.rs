@@ -1,24 +1,28 @@
 #![allow(warnings)]
 use async_stream::stream;
-use serde_json::Value;
 use csvs::{
     delete,
     select::{select_record, select_record_stream},
-    types::into_value::IntoValue,
     types::entry::Entry,
+    types::into_value::IntoValue,
     update,
 };
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
-use git2::{Repository, RemoteCallbacks, Cred};
+use git2::{Cred, RemoteCallbacks, Repository};
 use regex::Regex;
 use serde::Serialize;
+use serde_json::Value;
 use std::fs::{create_dir, read_dir, rename};
 use std::path::Path;
 use tauri::{ipc::Channel, AppHandle, Emitter, EventTarget, Manager};
-mod git;
 mod error;
+mod git;
 pub use crate::error::{Error, Result};
+use tauri_plugin_dialog::DialogExt;
+use walkdir::{DirEntry, WalkDir};
+use zip::{result::ZipError, write::SimpleFileOptions};
+use std::io::prelude::*;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -55,7 +59,7 @@ fn find_dataset(app: &AppHandle, uuid: &str) -> Result<std::path::PathBuf> {
 
     match existing_dataset {
         None => Err(tauri::Error::UnknownPath.into()),
-        Some(dataset_dir) => Ok(dataset_dir?.path())
+        Some(dataset_dir) => Ok(dataset_dir?.path()),
     }
 }
 
@@ -109,7 +113,7 @@ fn commit(app: AppHandle, uuid: &str) -> Result<()> {
                 &tree,        // tree
                 &[&c],
             ); // parents
-        },
+        }
         Err(_) => {
             repo.commit(
                 Some("HEAD"), //  point HEAD to our new commit
@@ -251,7 +255,11 @@ async fn select_stream(
             .unwrap();
     }
 
-    on_event.send(SelectEvent::Finished { query: query.into_value() }).unwrap();
+    on_event
+        .send(SelectEvent::Finished {
+            query: query.into_value(),
+        })
+        .unwrap();
 
     Ok(())
 }
@@ -279,17 +287,23 @@ async fn delete_record(app: AppHandle, uuid: &str, record: Value) -> Result<()> 
 }
 
 #[tauri::command]
-async fn clone(app: AppHandle, uuid: &str, remote_url: &str, remote_token: &str, name: Option<String>) -> Result<()> {
+async fn clone(
+    app: AppHandle,
+    uuid: &str,
+    remote_url: &str,
+    remote_token: &str,
+    name: Option<String>,
+) -> Result<()> {
     match find_dataset(&app, uuid) {
         Err(_) => (),
-        Ok(_) => return Err(tauri::Error::UnknownPath.into())
+        Ok(_) => return Err(tauri::Error::UnknownPath.into()),
     };
 
     let store_dir = app.path().app_data_dir()?.join("store");
 
     let dir_name = match name {
         Some(name) => &format!("{}-{}", uuid, name),
-        None => uuid
+        None => uuid,
     };
 
     let dataset_dir_path = store_dir.join(dir_name);
@@ -302,9 +316,7 @@ async fn clone(app: AppHandle, uuid: &str, remote_url: &str, remote_token: &str,
 
     // Prepare callbacks.
     let mut callbacks = RemoteCallbacks::new();
-    callbacks.credentials(|_url, _username_from_url, _allowed_types| {
-        Cred::username(remote_token)
-    });
+    callbacks.credentials(|_url, _username_from_url, _allowed_types| Cred::username(remote_token));
 
     // Prepare fetch options.
     let mut fo = git2::FetchOptions::new();
@@ -315,10 +327,7 @@ async fn clone(app: AppHandle, uuid: &str, remote_url: &str, remote_token: &str,
     builder.fetch_options(fo);
 
     // Clone the project.
-    builder.clone(
-        remote_url,
-        &dataset_dir_path,
-    );
+    builder.clone(remote_url, &dataset_dir_path);
 
     // set config.remote.origin.url
 
@@ -370,22 +379,116 @@ async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
 }
 
 #[tauri::command]
-async fn zip(app: AppHandle, uuid: &str) -> Result<()> {
-    Ok(())
-}
-
-#[tauri::command]
 async fn list_remotes(app: AppHandle, uuid: &str) -> Result<Vec<String>> {
-    Ok(vec![])
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    let repo = match Repository::open(dataset_dir_path) {
+        Ok(repo) => repo,
+        Err(e) => panic!("failed to open: {}", e),
+    };
+
+    let remotes = repo
+        .remotes()?
+        .iter()
+        .flatten()
+        .map(String::from)
+        .collect::<Vec<_>>();
+
+    Ok(remotes)
 }
 
 #[tauri::command]
-async fn add_remote(app: AppHandle, uuid: &str, remote_name: &str, remote_url: &str, remote_token: &str) -> Result<()> {
+async fn add_remote(
+    app: AppHandle,
+    uuid: &str,
+    remote_name: &str,
+    remote_url: &str,
+    remote_token: &str,
+) -> Result<()> {
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    let repo = match Repository::open(dataset_dir_path) {
+        Ok(repo) => repo,
+        Err(e) => panic!("failed to open: {}", e),
+    };
+
+    repo.remote(remote_name, remote_url);
+
     Ok(())
 }
 
 #[tauri::command]
-async fn get_remote(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
+async fn get_remote(app: AppHandle, uuid: &str, remote: &str) -> Result<(String, String)> {
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    let repo = match Repository::open(dataset_dir_path) {
+        Ok(repo) => repo,
+        Err(e) => panic!("failed to open: {}", e),
+    };
+
+    let remote = repo.find_remote(remote)?;
+
+    let url = remote.url().unwrap().to_string();
+
+    // read config
+    let token = "".to_string();
+
+    Ok((url, token))
+}
+
+#[tauri::command]
+async fn zip(app: AppHandle, uuid: &str) -> Result<()> {
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    let file_path = app.dialog()
+       .file()
+       .add_filter("My Filter", &["zip"])
+       .blocking_save_file();
+
+    let writer = std::fs::File::create(file_path.unwrap().as_path().unwrap()).unwrap();
+
+    let walkdir = WalkDir::new(&dataset_dir_path);
+
+    let it = walkdir.into_iter();
+    let it = &mut it.filter_map(|e| e.ok());
+
+    let method = zip::CompressionMethod::Stored;
+
+    let mut zip = zip::ZipWriter::new(writer);
+    let options = SimpleFileOptions::default()
+        .compression_method(method)
+        .unix_permissions(0o755);
+
+    let prefix = Path::new(&dataset_dir_path);
+    let mut buffer = Vec::new();
+    for entry in it {
+        let path = entry.path();
+        let name = path.strip_prefix(prefix).unwrap();
+        let path_as_string = name
+            .to_str()
+            .map(str::to_owned).unwrap();
+            // .with_context(|| format!("{name:?} Is a Non UTF-8 Path"))?;
+
+        // Write file or directory explicitly
+        // Some unzip tools unzip files with directory paths correctly, some do not!
+        if path.is_file() {
+            println!("adding file {path:?} as {name:?} ...");
+            zip.start_file(path_as_string, options)?;
+            let mut f = std::fs::File::open(path)?;
+
+            f.read_to_end(&mut buffer)?;
+            zip.write_all(&buffer)?;
+            buffer.clear();
+        } else if !name.as_os_str().is_empty() {
+            // Only if not root! Avoids path spec / warning
+            // and mapname conversion failed error on unzip
+            println!("adding dir {path_as_string:?} as {name:?} ...");
+            zip.add_directory(path_as_string, options)?;
+        }
+    }
+
+    zip.finish()?;
+
     Ok(())
 }
 
@@ -425,13 +528,20 @@ async fn list_asset_paths(app: AppHandle, uuid: &str) -> Result<()> {
 }
 
 #[tauri::command]
-async fn download_url_from_pointer(app: AppHandle, uuid: &str, url: &str, token: &str, pointer_info: &str) -> Result<()> {
+async fn download_url_from_pointer(
+    app: AppHandle,
+    uuid: &str,
+    url: &str,
+    token: &str,
+    pointer_info: &str,
+) -> Result<()> {
     Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             greet,
@@ -461,4 +571,3 @@ pub fn run() {
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
-

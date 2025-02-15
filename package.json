@@ -57,6 +57,7 @@
     "@fetsorn/vite-node-worker": "1.0.0",
     "@isomorphic-git/lightning-fs": "4.6.0",
     "@tauri-apps/api": ">=2.0.0-rc.0",
+    "@tauri-apps/plugin-dialog": "^2.2.0",
     "@tauri-apps/plugin-shell": ">=2.0.0-rc.0",
     "classnames": "2.3.2",
     "command-exists": "^1.2.9",

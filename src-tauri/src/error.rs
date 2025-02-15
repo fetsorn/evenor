@@ -109,6 +109,12 @@ impl From<tauri::Error> for Error {
     }
 }
 
+impl From<zip::result::ZipError> for Error {
+    fn from(ctx: zip::result::ZipError) -> Error {
+        Error { inner: ctx.into() }
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.inner.fmt(f)

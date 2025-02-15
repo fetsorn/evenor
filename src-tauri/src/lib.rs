@@ -10,7 +10,7 @@ use csvs::{
 };
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
-use git2::Repository;
+use git2::{Repository, RemoteCallbacks, Cred};
 use regex::Regex;
 use serde::Serialize;
 use std::fs::{create_dir, read_dir, rename};
@@ -35,8 +35,7 @@ fn find_last_commit(repo: &Repository) -> Result<git2::Commit, git2::Error> {
         .map_err(|_| git2::Error::from_str("Couldn't find commit"))
 }
 
-#[tauri::command]
-fn commit(app: AppHandle, uuid: &str) -> Result<(), Error> {
+fn find_dataset(app: &AppHandle, uuid: &str) -> Result<std::path::PathBuf, Error> {
     let store_dir = app.path().app_data_dir()?.join("store");
 
     let existing_dataset = read_dir(store_dir)?.find(|entry| {
@@ -53,73 +52,74 @@ fn commit(app: AppHandle, uuid: &str) -> Result<(), Error> {
 
     match existing_dataset {
         None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
+        Some(dataset_dir) => Ok(dataset_dir?.path())
+    }
+}
 
-            let dataset_dir_path = dataset_dir.path();
+#[tauri::command]
+fn commit(app: AppHandle, uuid: &str) -> Result<(), Error> {
+    let dataset_dir_path = find_dataset(&app, uuid)?;
 
-            let repo = match Repository::open(dataset_dir_path) {
-                Ok(repo) => repo,
-                Err(e) => panic!("failed to open: {}", e),
-            };
+    let repo = match Repository::open(dataset_dir_path) {
+        Ok(repo) => repo,
+        Err(e) => panic!("failed to open: {}", e),
+    };
 
-            let mut index = repo.index().unwrap();
+    let mut index = repo.index().unwrap();
 
-            let mut message = "".to_owned();
+    let mut message = "".to_owned();
 
-            let cb = &mut |path: &Path, _matched_spec: &[u8]| -> i32 {
-                let status = repo.status_file(path).unwrap();
+    let cb = &mut |path: &Path, _matched_spec: &[u8]| -> i32 {
+        let status = repo.status_file(path).unwrap();
 
-                let ret = if status.contains(git2::Status::WT_MODIFIED)
-                    || status.contains(git2::Status::WT_NEW)
-                {
-                    message = format!("{}, {}", message, path.display());
-                    0
-                } else {
-                    1
-                };
+        let ret = if status.contains(git2::Status::WT_MODIFIED)
+            || status.contains(git2::Status::WT_NEW)
+        {
+            message = format!("{}, {}", message, path.display());
+            0
+        } else {
+            1
+        };
 
-                ret
-            };
+        ret
+    };
 
-            let cb = Some(cb as &mut git2::IndexMatchedPath);
+    let cb = Some(cb as &mut git2::IndexMatchedPath);
 
-            index
-                .add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, cb)
-                .unwrap();
+    index
+        .add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, cb)
+        .unwrap();
 
-            let oid = index.write_tree().unwrap();
+    let oid = index.write_tree().unwrap();
 
-            let signature = git2::Signature::now("name", "name@mail.com").unwrap();
+    let signature = git2::Signature::now("name", "name@mail.com").unwrap();
 
-            let tree = repo.find_tree(oid).unwrap();
+    let tree = repo.find_tree(oid).unwrap();
 
-            match find_last_commit(&repo) {
-                Ok(c) => {
-                    repo.commit(
-                        Some("HEAD"), //  point HEAD to our new commit
-                        &signature,   // author
-                        &signature,   // committer
-                        &message,     // commit message
-                        &tree,        // tree
-                        &[&c],
-                    ); // parents
-                },
-                Err(_) => {
-                    repo.commit(
-                        Some("HEAD"), //  point HEAD to our new commit
-                        &signature,   // author
-                        &signature,   // committer
-                        &message,     // commit message
-                        &tree,        // tree
-                        &[],
-                    ); // parents
-                }
-            }
-
-            Ok(())
+    match find_last_commit(&repo) {
+        Ok(c) => {
+            repo.commit(
+                Some("HEAD"), //  point HEAD to our new commit
+                &signature,   // author
+                &signature,   // committer
+                &message,     // commit message
+                &tree,        // tree
+                &[&c],
+            ); // parents
+        },
+        Err(_) => {
+            repo.commit(
+                Some("HEAD"), //  point HEAD to our new commit
+                &signature,   // author
+                &signature,   // committer
+                &message,     // commit message
+                &tree,        // tree
+                &[],
+            ); // parents
         }
     }
+
+    Ok(())
 }
 
 #[tauri::command]
@@ -180,46 +180,25 @@ fn ensure(app: AppHandle, uuid: &str, name: Option<&str>) -> Result<(), Error> {
 async fn select(app: AppHandle, uuid: &str, query: Value) -> Result<Vec<Value>, Error> {
     let query: Entry = query.try_into().unwrap();
 
-    let store_dir = app.path().app_data_dir()?.join("store");
+    let dataset_dir_path = find_dataset(&app, uuid)?;
 
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
+    let query_for_stream = query.clone();
 
-        let file_name = entry.file_name();
+    let readable_stream = stream! {
+        yield query_for_stream;
+    };
 
-        let entry_path: &str = file_name.to_str().unwrap();
+    let s = select_record_stream(readable_stream, dataset_dir_path);
 
-        Regex::new(&format!("^{}", uuid))
-            .unwrap()
-            .is_match(entry_path)
-    });
+    pin_mut!(s); // needed for iteration
 
-    match existing_dataset {
-        None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
+    let mut records: Vec<Value> = vec![];
 
-            let dataset_dir_path = dataset_dir.path();
-
-            let query_for_stream = query.clone();
-
-            let readable_stream = stream! {
-                yield query_for_stream;
-            };
-
-            let s = select_record_stream(readable_stream, dataset_dir_path);
-
-            pin_mut!(s); // needed for iteration
-
-            let mut records: Vec<Value> = vec![];
-
-            while let Some(entry) = s.next().await {
-                records.push(entry.into_value())
-            }
-
-            Ok(records)
-        }
+    while let Some(entry) = s.next().await {
+        records.push(entry.into_value())
     }
+
+    Ok(records)
 }
 
 #[derive(Clone, Serialize)]
@@ -242,121 +221,361 @@ async fn select_stream(
 ) -> Result<(), Error> {
     let query: Entry = query.try_into().unwrap();
 
-    let store_dir = app.path().app_data_dir()?.join("store");
+    let dataset_dir_path = find_dataset(&app, uuid)?;
 
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
+    let query_for_stream = query.clone();
 
-        let file_name = entry.file_name();
+    let readable_stream = stream! {
+        yield query_for_stream;
+    };
 
-        let entry_path: &str = file_name.to_str().unwrap();
+    let s = select_record_stream(readable_stream, dataset_dir_path);
 
-        Regex::new(&format!("^{}", uuid))
-            .unwrap()
-            .is_match(entry_path)
-    });
+    pin_mut!(s); // needed for iteration
 
-    match existing_dataset {
-        None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
+    on_event
+        .send(SelectEvent::Started {
+            query: query.clone().into_value(),
+        })
+        .unwrap();
 
-            let dataset_dir_path = dataset_dir.path();
-
-            let query_for_stream = query.clone();
-
-            let readable_stream = stream! {
-                yield query_for_stream;
-            };
-
-            let s = select_record_stream(readable_stream, dataset_dir_path);
-
-            pin_mut!(s); // needed for iteration
-
-            on_event
-                .send(SelectEvent::Started {
-                    query: query.clone().into_value(),
-                })
-                .unwrap();
-
-            while let Some(entry) = s.next().await {
-                on_event
-                    .send(SelectEvent::Progress {
-                        query: query.clone().into_value(),
-                        entry: entry.into_value(),
-                    })
-                    .unwrap();
-            }
-
-            on_event.send(SelectEvent::Finished { query: query.into_value() }).unwrap();
-
-            Ok(())
-        }
+    while let Some(entry) = s.next().await {
+        on_event
+            .send(SelectEvent::Progress {
+                query: query.clone().into_value(),
+                entry: entry.into_value(),
+            })
+            .unwrap();
     }
+
+    on_event.send(SelectEvent::Finished { query: query.into_value() }).unwrap();
+
+    Ok(())
 }
 
 #[tauri::command]
 async fn update_record(app: AppHandle, uuid: &str, record: Value) -> Result<(), Error> {
     let record: Entry = record.try_into().unwrap();
 
-    let store_dir = app.path().app_data_dir()?.join("store");
+    let dataset_dir_path = find_dataset(&app, uuid)?;
 
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
+    update::update_record(dataset_dir_path, vec![record]).await;
 
-        let file_name = entry.file_name();
-
-        let entry_path: &str = file_name.to_str().unwrap();
-
-        Regex::new(&format!("^{}", uuid))
-            .unwrap()
-            .is_match(entry_path)
-    });
-
-    match existing_dataset {
-        None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
-
-            let dataset_dir_path = dataset_dir.path();
-
-            update::update_record(dataset_dir_path, vec![record]).await;
-
-            Ok(())
-        }
-    }
+    Ok(())
 }
 
 #[tauri::command]
 async fn delete_record(app: AppHandle, uuid: &str, record: Value) -> Result<(), Error> {
     let record: Entry = record.try_into().unwrap();
 
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    delete::delete_record(dataset_dir_path, vec![record]).await;
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn clone(app: AppHandle, uuid: &str, remote_url: &str, remote_token: &str, name: Option<String>) -> Result<(), Error> {
+    match find_dataset(&app, uuid) {
+        Err(_) => (),
+        Ok(_) => return Err(Error::UnknownPath)
+    };
+
     let store_dir = app.path().app_data_dir()?.join("store");
 
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
+    let dir_name = match name {
+        Some(name) => &format!("{}-{}", uuid, name),
+        None => uuid
+    };
 
-        let file_name = entry.file_name();
+    let dataset_dir_path = store_dir.join(dir_name);
 
-        let entry_path: &str = file_name.to_str().unwrap();
+    // clone to dataset_dir_path from remote_url with remote_token
+    // let repo = match Repository::clone(remote_url, dataset_dir_path) {
+    //     Ok(repo) => repo,
+    //     Err(e) => panic!("failed to clone: {}", e),
+    // };
 
-        Regex::new(&format!("^{}", uuid))
-            .unwrap()
-            .is_match(entry_path)
+    // Prepare callbacks.
+    let mut callbacks = RemoteCallbacks::new();
+    callbacks.credentials(|_url, _username_from_url, _allowed_types| {
+        Cred::username(remote_token)
     });
 
-    match existing_dataset {
-        None => Err(Error::UnknownPath),
-        Some(dataset_dir) => {
-            let dataset_dir = dataset_dir.unwrap();
+    // Prepare fetch options.
+    let mut fo = git2::FetchOptions::new();
+    fo.remote_callbacks(callbacks);
 
-            let dataset_dir_path = dataset_dir.path();
+    // Prepare builder.
+    let mut builder = git2::build::RepoBuilder::new();
+    builder.fetch_options(fo);
 
-            delete::delete_record(dataset_dir_path, vec![record]).await;
+    // Clone the project.
+    builder.clone(
+        remote_url,
+        &dataset_dir_path,
+    );
 
-            Ok(())
+    // set config.remote.origin.url
+
+    // set config.remote.origin.token
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[derive(Serialize)]
+#[serde(tag = "state", content = "branch", rename_all = "snake_case")]
+pub enum PullOutcome {
+    UpToDate(String),
+    CreatedUnborn(String),
+    FastForwarded(String),
+}
+#[derive(Serialize)]
+pub struct RepositoryStatus {
+    pub head: HeadStatus,
+    pub upstream: UpstreamStatus,
+    pub working_tree: WorkingTreeStatus,
+    pub default_branch: Option<String>,
+}
+#[derive(Serialize)]
+pub struct HeadStatus {
+    pub name: String,
+    pub kind: HeadStatusKind,
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HeadStatusKind {
+    Unborn,
+    Detached,
+    Branch,
+}
+
+#[derive(Serialize)]
+#[serde(tag = "state", rename_all = "snake_case")]
+pub enum UpstreamStatus {
+    None,
+    Upstream { ahead: usize, behind: usize },
+    Gone,
+}
+
+#[derive(Serialize)]
+pub struct WorkingTreeStatus {
+    pub working_changed: bool,
+    pub index_changed: bool,
+}
+    fn head_status(&self) -> Result<HeadStatus, git2::Error> {
+        let head = self.repo.find_reference(HEAD_FILE)?;
+        match head.symbolic_target_bytes() {
+            // HEAD points to a branch
+            Some(name) if name.starts_with(REFS_HEADS_NAMESPACE.as_bytes()) => {
+                let name = name[REFS_HEADS_NAMESPACE.len()..].as_bstr().to_string();
+                match head.resolve() {
+                    Ok(_) => Ok(HeadStatus {
+                        name,
+                        kind: HeadStatusKind::Branch,
+                    }),
+                    Err(err)
+                        if err.class() == git2::ErrorClass::Reference
+                            && err.code() == git2::ErrorCode::NotFound =>
+                    {
+                        Ok(HeadStatus {
+                            name,
+                            kind: HeadStatusKind::Unborn,
+                        })
+                    }
+                    Err(err) => Err(err),
+                }
+            }
+            // HEAD points to an oid (is detached)
+            _ => {
+                let object = head.peel(git2::ObjectType::Any)?;
+                let description = object.describe(
+                    git2::DescribeOptions::new()
+                        .describe_tags()
+                        .show_commit_oid_as_fallback(true),
+                )?;
+                let name = description.format(None)?;
+                Ok(HeadStatus {
+                    name,
+                    kind: HeadStatusKind::Detached,
+                })
+            }
         }
     }
+
+    pub fn status(
+        repo: Repository,
+        settings: &Settings,
+    ) -> crate::Result<(RepositoryStatus, Option<git2::Remote>)> {
+        let head = head_status(repo)?;
+
+        let upstream = upstream_status(repo, &head)?;
+        let working_tree = working_tree_status(repo)?;
+
+        let (default_branch, remote) = try_default_branch(repo, settings);
+
+        Ok((
+            RepositoryStatus {
+                head,
+                upstream,
+                working_tree,
+                default_branch,
+            },
+            remote,
+        ))
+    }
+
+
+fn create_unborn(
+    repo: Repository,
+    status: &RepositoryStatus,
+    fetch_commit: git2::AnnotatedCommit,
+) -> Result<(), git2::Error> {
+    debug_assert!(status.head.is_unborn());
+    let commit = repo.find_commit(fetch_commit.id())?;
+    let branch = repo.branch(&status.head.name, &commit, false)?;
+    switch(repo, &branch.into_reference())?;
+    Ok(())
+}
+
+fn fast_forward(repo: Repository, fetch_commit: git2::AnnotatedCommit) -> Result<(), git2::Error> {
+    let mut branch = git2::Branch::wrap(repo.head()?);
+
+    let log_message = format!(
+        "multi-git: fast-forwarding branch {} to {}",
+        branch.name_bytes()?.as_bstr(),
+        fetch_commit.id(),
+    );
+
+    debug_assert!(branch.is_head());
+    repo.checkout_tree(
+        &repo.find_object(fetch_commit.id(), None)?,
+        Some(git2::build::CheckoutBuilder::new().safe()),
+    )?;
+    branch
+        .get_mut()
+        .set_target(fetch_commit.id(), &log_message)?;
+    Ok(())
+}
+
+#[tauri::command]
+async fn pull(app: AppHandle, uuid: &str, remote: &str) -> Result<(), Error> {
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    let repo = match Repository::open(dataset_dir_path) {
+        Ok(repo) => repo,
+        //Err(e) => panic!("failed to open: {}", e),
+        Err(e) => return Err(Error::UnknownPath),
+    };
+
+    repo.find_remote(remote)?.fetch(&["main"], None, None);
+
+    let mut fetch_head = None;
+    repo
+        .fetchhead_foreach(|ref_name, remote_url, oid, is_merge| {
+            if is_merge {
+                fetch_head = Some(repo.annotated_commit_from_fetchhead(
+                    ref_name,
+                    std::str::from_utf8(remote_url).expect("remote url is invalid utf-8"),
+                    oid,
+                ));
+                false
+            } else {
+                true
+            }
+        })?;
+    let fetch_head = match fetch_head {
+        Some(fetch_head) => fetch_head?,
+        None => return Err(Error::UnknownPath),
+        //None => return Err(crate::Error::from_message("no branch found to merge")),
+    };
+
+    let (merge_analysis, _) = repo.merge_analysis(&[&fetch_head])?;
+
+    if merge_analysis.is_up_to_date() {
+        // Ok(PullOutcome::UpToDate(default_branch))
+        return Ok(());
+    } else if merge_analysis.is_unborn() {
+        create_unborn(repo, status, fetch_head)?;
+        // Ok(PullOutcome::CreatedUnborn(default_branch))
+        return Ok(());
+    } else if merge_analysis.is_fast_forward() {
+        fast_forward(repo, fetch_head)?;
+        // Ok(PullOutcome::FastForwarded(default_branch))
+        return Ok(());
+    } else {
+        return Err(Error::UnknownPath)
+        //Err(crate::Error::from_message("cannot fast-forward"))
+    }
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn zip(app: AppHandle, uuid: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn list_remotes(app: AppHandle, uuid: &str) -> Result<Vec<String>, Error> {
+    Ok(vec![])
+}
+
+#[tauri::command]
+async fn add_remote(app: AppHandle, uuid: &str, remote_name: &str, remote_url: &str, remote_token: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn get_remote(app: AppHandle, uuid: &str, remote: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn fetch_asset(app: AppHandle, uuid: &str, filename: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn download_asset(app: AppHandle, uuid: &str, content: &str, filename: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn put_asset(app: AppHandle, uuid: &str, filename: &str, buffer: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn upload_file(app: AppHandle, uuid: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn upload_blobs_lfs(app: AppHandle, uuid: &str, remote: &str, files: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn add_asset_path(app: AppHandle, uuid: &str, asset_path: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn list_asset_paths(app: AppHandle, uuid: &str) -> Result<(), Error> {
+    Ok(())
+}
+
+#[tauri::command]
+async fn download_url_from_pointer(app: AppHandle, uuid: &str, url: &str, token: &str, pointer_info: &str) -> Result<(), Error> {
+    Ok(())
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -371,8 +590,24 @@ pub fn run() {
             select,
             select_stream,
             update_record,
-            delete_record
+            delete_record,
+            clone,
+            push,
+            push,
+            zip,
+            list_remotes,
+            add_remote,
+            get_remote,
+            fetch_asset,
+            download_asset,
+            put_asset,
+            upload_file,
+            upload_blobs_lfs,
+            add_asset_path,
+            list_asset_paths,
+            download_url_from_pointer
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
 }
+

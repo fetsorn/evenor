@@ -328,11 +328,6 @@ async fn clone(app: AppHandle, uuid: &str, remote_url: &str, remote_token: &str,
 }
 
 #[tauri::command]
-async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
-    Ok(())
-}
-
-#[tauri::command]
 async fn pull(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
@@ -354,6 +349,22 @@ async fn pull(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
     repo.pull(&settings, &status, remote, true, move |progress| {
         // do nothing
     });
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
+    let dataset_dir_path = find_dataset(&app, uuid)?;
+
+    let repo = match Repository::open(dataset_dir_path) {
+        Ok(repo) => repo,
+        Err(e) => panic!("failed to open: {}", e),
+    };
+
+    let mut remote = repo.find_remote(remote)?;
+
+    remote.push::<String>(&[], None);
 
     Ok(())
 }

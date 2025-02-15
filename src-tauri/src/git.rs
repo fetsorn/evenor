@@ -1,3 +1,4 @@
+// MIT Andrew Hickman <andrew.hickman1@sky.com>
 use std::path::{Path, PathBuf};
 use std::{fmt, str};
 

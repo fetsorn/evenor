@@ -263,7 +263,12 @@ export class API {
         return window.electron.clone(this.uuid, remoteUrl, remoteToken, name);
 
       case "tauri":
-        return invoke("clone", { uuid: this.uuid, remoteUrl, remoteToken, name });
+        return invoke("clone", {
+          uuid: this.uuid,
+          remoteUrl,
+          remoteToken: "",
+          name,
+        });
 
       default:
         return this.#browser.clone(remoteUrl, remoteToken, name);
@@ -352,7 +357,12 @@ export class API {
         );
 
       case "tauri":
-        return invoke("add_remote", { uuid: this.uuid, remoteName, remoteUrl, remoteToken });
+        return invoke("add_remote", {
+          uuid: this.uuid,
+          remoteName,
+          remoteUrl,
+          remoteToken: "",
+        });
 
       default:
         return this.#browser.addRemote(remoteName, remoteUrl, remoteToken);

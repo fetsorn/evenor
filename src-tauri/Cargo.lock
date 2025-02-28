@@ -1014,10 +1014,13 @@ dependencies = [
 [[package]]
 name = "csvs"
 version = "0.1.0"
+source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#f7f80197bb73262552aae46c52738526d1f34831"
 dependencies = [
  "assert-json-diff",
  "async-stream",
+ "backtrace",
  "clap",
+ "crossterm",
  "csv",
  "dir-diff",
  "futures-core",
@@ -1349,7 +1352,7 @@ dependencies = [
 
 [[package]]
 name = "evenor"
-version = "2.3.0"
+version = "2.5.0"
 dependencies = [
  "async-stream",
  "backtrace",
@@ -1368,8 +1371,6 @@ dependencies = [
  "tauri-plugin-dialog",
  "tauri-plugin-opener",
  "time",
- "toml 0.8.20",
- "toml_edit 0.22.24",
  "walkdir",
  "zip",
 ]

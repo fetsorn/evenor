@@ -1,6 +1,6 @@
 [package]
 name = "evenor"
-version = "2.3.0"
+version = "2.5.0"
 description = "tell the story of your own data"
 authors = ["fetsorn"]
 license = "GPLv3"
@@ -20,7 +20,7 @@ tauri-plugin-opener = "2"
 time = "0.3.36" # to fix a rust version error in dependency tree https://github.com/time-rs/time/issues/693
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-csvs = { version = "0.1.0", path = "../../csvs-rs" }
+csvs = { version = "0.1.0", git = "https://codeberg.org/norcivilianlabs/csvs-rs" }
 git2 = "0.20.0"
 regex = "1.11.1"
 futures-util = "0.3.31"
@@ -28,10 +28,8 @@ futures-core = "0.3.31"
 async-stream = "0.3.6"
 backtrace = "0.3.74"
 crossterm = "0.28.1"
-toml_edit = "0.22.24"
 bstr = "1.11.3"
 log = "0.4.25"
-toml = "0.8.20"
 tauri-plugin-dialog = "2.2.0"
 zip = "2.2.2"
 walkdir = "2.5.0"

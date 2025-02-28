@@ -1,5 +1,5 @@
 #![allow(warnings)]
-use async_stream::stream;
+use async_stream::try_stream;
 use csvs::{
     delete,
     select::{select_record, select_record_stream},
@@ -19,10 +19,10 @@ use tauri::{ipc::Channel, AppHandle, Emitter, EventTarget, Manager};
 mod error;
 mod git;
 pub use crate::error::{Error, Result};
+use std::io::prelude::*;
 use tauri_plugin_dialog::DialogExt;
 use walkdir::{DirEntry, WalkDir};
 use zip::{result::ZipError, write::SimpleFileOptions};
-use std::io::prelude::*;
 
 #[tauri::command]
 fn greet(name: &str) -> String {
@@ -191,7 +191,7 @@ async fn select(app: AppHandle, uuid: &str, query: Value) -> Result<Vec<Value>> 
 
     let query_for_stream = query.clone();
 
-    let readable_stream = stream! {
+    let readable_stream = try_stream! {
         yield query_for_stream;
     };
 
@@ -202,6 +202,8 @@ async fn select(app: AppHandle, uuid: &str, query: Value) -> Result<Vec<Value>> 
     let mut records: Vec<Value> = vec![];
 
     while let Some(entry) = s.next().await {
+        let entry = entry?;
+
         records.push(entry.into_value())
     }
 
@@ -232,7 +234,7 @@ async fn select_stream(
 
     let query_for_stream = query.clone();
 
-    let readable_stream = stream! {
+    let readable_stream = try_stream! {
         yield query_for_stream;
     };
 
@@ -247,6 +249,8 @@ async fn select_stream(
         .unwrap();
 
     while let Some(entry) = s.next().await {
+        let entry = entry?;
+
         on_event
             .send(SelectEvent::Progress {
                 query: query.clone().into_value(),
@@ -440,10 +444,11 @@ async fn get_remote(app: AppHandle, uuid: &str, remote: &str) -> Result<(String,
 async fn zip(app: AppHandle, uuid: &str) -> Result<()> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
-    let file_path = app.dialog()
-       .file()
-       .add_filter("My Filter", &["zip"])
-       .blocking_save_file();
+    let file_path = app
+        .dialog()
+        .file()
+        .add_filter("My Filter", &["zip"])
+        .blocking_save_file();
 
     let writer = std::fs::File::create(file_path.unwrap().as_path().unwrap()).unwrap();
 
@@ -464,10 +469,8 @@ async fn zip(app: AppHandle, uuid: &str) -> Result<()> {
     for entry in it {
         let path = entry.path();
         let name = path.strip_prefix(prefix).unwrap();
-        let path_as_string = name
-            .to_str()
-            .map(str::to_owned).unwrap();
-            // .with_context(|| format!("{name:?} Is a Non UTF-8 Path"))?;
+        let path_as_string = name.to_str().map(str::to_owned).unwrap();
+        // .with_context(|| format!("{name:?} Is a Non UTF-8 Path"))?;
 
         // Write file or directory explicitly
         // Some unzip tools unzip files with directory paths correctly, some do not!

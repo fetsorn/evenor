@@ -13,7 +13,8 @@ import { sha256 } from "js-sha256";
  */
 export function isTwig(schema, branch) {
   return (
-    Object.keys(schema).filter((b) => schema[b].trunks.includes(branch)).length === 0
+    Object.keys(schema).filter((b) => schema[b].trunks.includes(branch))
+      .length === 0
   );
 }
 
@@ -31,19 +32,22 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
 
   const branchRecords = branches.reduce((accBranch, branch) => {
     // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunks
-    const relationsPartial = schemaRelations.reduce((accTrunk, [trunk, leaves]) => {
-      // if old is array, [ ...old, new ]
-      // if old is string, [ old, new ]
-      // is old is undefined, [ new ]
-      const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+    const relationsPartial = schemaRelations.reduce(
+      (accTrunk, [trunk, leaves]) => {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
 
-      const leavesPartial = trunk === branch ? leaves : [];
+        const leavesPartial = trunk === branch ? leaves : [];
 
-      return ({
-        trunks: [...accTrunk.trunks, ...trunkPartial],
-        leaves: [...accTrunk.leaves, ...leavesPartial]
-      });
-    }, { trunks: [], leaves: [] });
+        return {
+          trunks: [...accTrunk.trunks, ...trunkPartial],
+          leaves: [...accTrunk.leaves, ...leavesPartial],
+        };
+      },
+      { trunks: [], leaves: [] },
+    );
 
     const branchPartial = { _: "branch", branch };
 
@@ -57,7 +61,11 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
       return [...accBranch, rootRecord];
     }
 
-    const branchRecord = { ...branchPartial, ...metaPartial, ...relationsPartial };
+    const branchRecord = {
+      ...branchPartial,
+      ...metaPartial,
+      ...relationsPartial,
+    };
 
     return [...accBranch, branchRecord];
   }, []);
@@ -253,7 +261,6 @@ export function extractSchemaRecords(branchRecords) {
   return [records.schemaRecord, ...records.metaRecords];
 }
 
-
 // clone or populate repo, write git state
 export async function saveRepoRecord(record) {
   const repoUUID = record.repo;
@@ -409,14 +416,14 @@ export function searchParamsToQuery(schema, searchParams) {
       // push to [trunk]: { [key]: [ value ] }
 
       const trunk1 =
-            schema[branch] !== undefined ? schema[branch].trunks[0] : undefined;
+        schema[branch] !== undefined ? schema[branch].trunks[0] : undefined;
 
       if (trunk1 === base || branch === base) {
         return { ...acc, [branch]: value };
       }
 
       const trunk2 =
-            schema[trunk1] !== undefined ? schema[trunk1].trunks[0] : undefined;
+        schema[trunk1] !== undefined ? schema[trunk1].trunks[0] : undefined;
 
       if (trunk2 === base) {
         const trunk1Record = acc[trunk1] ?? { _: trunk1 };
@@ -469,19 +476,22 @@ export function recordsToSchema(schemaRecord, metaRecords) {
   const branches = [...new Set(schemaRelations.flat(Infinity))];
 
   const schema = branches.reduce((accBranch, branch) => {
-    const relationsPartial = schemaRelations.reduce((accTrunk, [trunk, leaves]) => {
-      // if old is array, [ ...old, new ]
-      // if old is string, [ old, new ]
-      // is old is undefined, [ new ]
-      const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+    const relationsPartial = schemaRelations.reduce(
+      (accTrunk, [trunk, leaves]) => {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
 
-      const leavesPartial = trunk === branch ? leaves : [];
+        const leavesPartial = trunk === branch ? leaves : [];
 
-      return ({
-        trunks: [...accTrunk.trunks, ...trunkPartial],
-        leaves: [...accTrunk.leaves, ...leavesPartial]
-      });
-    }, { trunks: [], leaves: [] });
+        return {
+          trunks: [...accTrunk.trunks, ...trunkPartial],
+          leaves: [...accTrunk.leaves, ...leavesPartial],
+        };
+      },
+      { trunks: [], leaves: [] },
+    );
 
     const metaRecord =
       metaRecords.find((record) => record.branch === branch) ?? {};
@@ -537,14 +547,21 @@ export async function readSchema(uuid) {
 export const schemaRoot = {
   repo: {
     trunks: [],
-    leaves: [ "reponame", "category", "branch", "local_tag", "remote_tag", "sync_tag" ],
+    leaves: [
+      "reponame",
+      "category",
+      "branch",
+      "local_tag",
+      "remote_tag",
+      "sync_tag",
+    ],
     description: {
       en: "Dataset",
       ru: "Проект",
     },
   },
   reponame: {
-    trunks: [ "repo" ],
+    trunks: ["repo"],
     leaves: [],
     description: {
       en: "Name of the dataset",
@@ -552,7 +569,7 @@ export const schemaRoot = {
     },
   },
   category: {
-    trunks: [ "repo" ],
+    trunks: ["repo"],
     leaves: [],
     description: {
       en: "Category of the dataset",
@@ -560,15 +577,15 @@ export const schemaRoot = {
     },
   },
   branch: {
-    trunks: [ "repo" ],
-    leaves: [ "trunk", "task", "cognate", "description_en", "description_ru" ],
+    trunks: ["repo"],
+    leaves: ["trunk", "task", "cognate", "description_en", "description_ru"],
     description: {
       en: "Branch name",
       ru: "Название ветки",
     },
   },
   trunk: {
-    trunks: [ "branch" ],
+    trunks: ["branch"],
     leaves: [],
     description: {
       en: "Branch trunk",
@@ -576,7 +593,7 @@ export const schemaRoot = {
     },
   },
   task: {
-    trunks: [ "branch" ],
+    trunks: ["branch"],
     leaves: [],
     description: {
       en: "Branch task",
@@ -584,7 +601,7 @@ export const schemaRoot = {
     },
   },
   cognate: {
-    trunks: [ "branch" ],
+    trunks: ["branch"],
     leaves: [],
     description: {
       en: "Branch cognate",
@@ -592,7 +609,7 @@ export const schemaRoot = {
     },
   },
   description_en: {
-    trunks: [ "branch" ],
+    trunks: ["branch"],
     leaves: [],
     description: {
       en: "Branch description EN",
@@ -600,7 +617,7 @@ export const schemaRoot = {
     },
   },
   description_ru: {
-    trunks: [ "branch" ],
+    trunks: ["branch"],
     leaves: [],
     description: {
       en: "Branch description RU",
@@ -608,7 +625,7 @@ export const schemaRoot = {
     },
   },
   local_tag: {
-    trunks: [ "repo" ],
+    trunks: ["repo"],
     leaves: [],
     task: "directory",
     description: {
@@ -617,8 +634,8 @@ export const schemaRoot = {
     },
   },
   remote_tag: {
-    trunks: [ "repo" ],
-    leaves: [ "remote_url", "remote_token" ],
+    trunks: ["repo"],
+    leaves: ["remote_url", "remote_token"],
     task: "remote",
     description: {
       en: "Name of git repository",
@@ -626,7 +643,7 @@ export const schemaRoot = {
     },
   },
   remote_url: {
-    trunks: [ "remote_tag" ],
+    trunks: ["remote_tag"],
     leaves: [],
     description: {
       en: "URL to git repository",
@@ -634,7 +651,7 @@ export const schemaRoot = {
     },
   },
   remote_token: {
-    trunks: [ "remote_tag" ],
+    trunks: ["remote_tag"],
     leaves: [],
     description: {
       en: "Authentication token",
@@ -642,8 +659,8 @@ export const schemaRoot = {
     },
   },
   sync_tag: {
-    trunks: [ "repo" ],
-    leaves: [ "sync_tag_search" ],
+    trunks: ["repo"],
+    leaves: ["sync_tag_search"],
     task: "sync",
     description: {
       en: "Name of database to sync",
@@ -651,7 +668,7 @@ export const schemaRoot = {
     },
   },
   sync_tag_search: {
-    trunks: [ "sync_tag" ],
+    trunks: ["sync_tag"],
     leaves: [],
     description: {
       en: "Search query",
@@ -829,9 +846,10 @@ export function schemaToBranchRecords(schema) {
     (acc, branch) => {
       const { leaves, task, cognate, description } = schema[branch];
 
-      const schemaRecord = leaves.length > 0
-            ? { ...acc.schemaRecord, [branch]: leaves }
-            : acc.schemaRecord;
+      const schemaRecord =
+        leaves.length > 0
+          ? { ...acc.schemaRecord, [branch]: leaves }
+          : acc.schemaRecord;
 
       const partialEn =
         description && description.en ? { description_en: description.en } : {};

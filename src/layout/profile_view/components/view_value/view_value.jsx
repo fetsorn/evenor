@@ -22,13 +22,13 @@ export function ViewValue({ schema, index, description, base, value }) {
     .filter((cognate) => {
       return (
         schema[cognate] &&
-          schema[base].trunks.some((t) => schema[cognate].trunks.includes(t))
+        schema[base].trunks.some((t) => schema[cognate].trunks.includes(t))
       );
     })
     .concat(basePartial);
 
-  const recurses = cognatePartial.filter(
-    (cognate) => schema[base].trunks.includes(cognate),
+  const recurses = cognatePartial.filter((cognate) =>
+    schema[base].trunks.includes(cognate),
   );
 
   const neighbours = cognatePartial.filter(

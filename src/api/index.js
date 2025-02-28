@@ -170,9 +170,9 @@ export class API {
 
               onEvent.onmessage = (message) => {
                 if (message.event === "progress") {
-                  controller.enqueue(message.data.entry)
+                  controller.enqueue(message.data.entry);
                 } else if (message.event === "finished") {
-                  controller.close()
+                  controller.close();
                 }
               };
 
@@ -182,12 +182,12 @@ export class API {
                 } catch {
                   // do nothing
                 }
-              }
+              };
 
               return invoke("select_stream", {
                 uuid,
                 query,
-                onEvent
+                onEvent,
               });
             },
           }),
@@ -423,7 +423,12 @@ export class API {
         );
 
       case "tauri":
-        return invoke("download_url_from_pointer", { uuid: this.uuid, url, token, pointerInfo });
+        return invoke("download_url_from_pointer", {
+          uuid: this.uuid,
+          url,
+          token,
+          pointerInfo,
+        });
 
       default:
         return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);

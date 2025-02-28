@@ -12,13 +12,15 @@ export function ViewSync({ schema, baseRecord, branchRecord }) {
 
     const rootAPI = new API("root");
 
-    const query = searchParamsToQuery(schema, searchParams)
+    const query = searchParamsToQuery(schema, searchParams);
 
     const [{ repo: subsetUUID }] = await rootAPI.select(query);
 
     const subsetAPI = new API(subsetUUID);
 
-    const subsetSearchParams = new URLSearchParams(branchRecord.sync_tag_search);
+    const subsetSearchParams = new URLSearchParams(
+      branchRecord.sync_tag_search,
+    );
 
     const subsetQuery = searchParamsToQuery(schema, subsetSearchParams);
 

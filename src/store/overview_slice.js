@@ -175,9 +175,7 @@ export const createOverviewSlice = (set, get) => ({
     if (repoRoute !== "") {
       // if repo is in store, find uuid in root folder
       try {
-        const [repo] = await apiRoot.select(
-          { _: "repo", "reponame": repoRoute }
-        );
+        const [repo] = await apiRoot.select({ _: "repo", reponame: repoRoute });
 
         const { repo: repoUUID } = repo;
 
@@ -241,9 +239,7 @@ export const createOverviewSlice = (set, get) => ({
       const apiRoot = new API("root");
 
       // TODO handle errors
-      const [repo] = await apiRoot.select(
-        { _: "repo", "repo": repoUUID }
-      );
+      const [repo] = await apiRoot.select({ _: "repo", repo: repoUUID });
 
       const schema = await readSchema(repoUUID);
 
@@ -339,8 +335,7 @@ export const createOverviewSlice = (set, get) => ({
 
     const query = searchParamsToQuery(schema, searchParams);
 
-    const { strm: fromStrm, closeHandler } =
-      await api.selectStream(query);
+    const { strm: fromStrm, closeHandler } = await api.selectStream(query);
 
     const toStrm = new WritableStream({
       write(chunk) {

@@ -70,15 +70,17 @@ export function VirtualScroll({ data, OverviewItem, tolerance = 2, ...other }) {
   return (
     <>
       <div style={{ height: getTopHeight() }} ref={topSpacer} />
-      {dataWithKeys.slice(start, start + visibleRowCount).map(({key, ...elem}) => (
-        <OverviewItem
-          record={elem}
-          key={key}
-          style={{ height: rowHeight }}
-          isLast={key === dataWithKeys.length - 1}
-          {...other}
-        />
-      ))}
+      {dataWithKeys
+        .slice(start, start + visibleRowCount)
+        .map(({ key, ...elem }) => (
+          <OverviewItem
+            record={elem}
+            key={key}
+            style={{ height: rowHeight }}
+            isLast={key === dataWithKeys.length - 1}
+            {...other}
+          />
+        ))}
       <div style={{ height: getBottomHeight() }} />
     </>
   );

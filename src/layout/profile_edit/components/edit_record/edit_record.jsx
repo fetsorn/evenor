@@ -3,7 +3,14 @@ import { useTranslation } from "react-i18next";
 import { EditInput, EditField } from "../index.js";
 import { AssetView, Spoiler } from "@/layout/components/index.js";
 import { API } from "@/api/index.js";
-import { useStore, isTwig, enrichBranchRecords, readSchema, newUUID, schemaToBranchRecords } from "@/store/index.js";
+import {
+  useStore,
+  isTwig,
+  enrichBranchRecords,
+  readSchema,
+  newUUID,
+  schemaToBranchRecords,
+} from "@/store/index.js";
 
 export function EditRecord({
   schema,
@@ -21,8 +28,8 @@ export function EditRecord({
     state.onRecordInput,
   ]);
 
-  const leaves = Object.keys(schema).filter(
-    (leaf) => schema[leaf].trunks.includes(base),
+  const leaves = Object.keys(schema).filter((leaf) =>
+    schema[leaf].trunks.includes(base),
   );
 
   function recordHasLeaf(leaf) {

@@ -14,7 +14,9 @@ import styles from "./filter_query_plus.module.css";
  */
 function findLeaves(schema, base) {
   // how to find all leaves of base. It should return all branches that have trunk === base when you select the plus button(base)
-  return Object.keys(schema).filter((branch) => schema[branch].trunks.includes(base));
+  return Object.keys(schema).filter((branch) =>
+    schema[branch].trunks.includes(base),
+  );
 }
 
 export function FilterQueryPlus({}) {

@@ -43,8 +43,8 @@ export function Overview() {
 
   const { _: base } = queries;
 
-  const leaves = Object.keys(schema).filter(
-    (leaf) => schema[leaf].trunks.includes(base),
+  const leaves = Object.keys(schema).filter((leaf) =>
+    schema[leaf].trunks.includes(base),
   );
 
   // if base is twig, it has no connections

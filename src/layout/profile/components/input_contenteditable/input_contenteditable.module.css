@@ -3,8 +3,8 @@
 }
 
 .textarea {
-  min-width: 3rem;
-  height: 1rem;
+  min-width: 50px;
   word-break: break-all;
+  border-bottom: thin solid;
   cursor: text;
 }

@@ -4,16 +4,14 @@ import { useStore } from "@/store/index.js";
 import cn from "classnames";
 import styles from "./overview_item.module.css";
 
-export function OverviewItem({
-  record,
-  onRecordSelect,
-  onRecordDelete,
-  isLast,
-  ...others
-}) {
+export function OverviewItem({ record, isLast, ...others }) {
   const { i18n, t } = useTranslation();
 
-  const [schema] = useStore((state) => [state.schema]);
+  const [schema, onRecordSelect, onRecordDelete] = useStore((state) => [
+    state.schema,
+    state.onRecordSelect,
+    state.onRecordDelete,
+  ]);
 
   // TODO add delete
   return (

@@ -1,39 +1,36 @@
-import React, { Suspense } from "react";
+import React, { useRef } from "react";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { useTranslation } from "react-i18next";
 import cn from "classnames";
 import { useStore } from "@/store/index.js";
 import { Button } from "@/layout/components/index.js";
 import styles from "./overview.module.css";
-import {
-  OverviewFilter,
-  OverviewItem,
-  VirtualScroll,
-} from "./components/index.js";
+import { OverviewFilter, OverviewItem } from "./components/index.js";
 
 export function Overview() {
   const { t } = useTranslation();
 
-  const [
-    repo,
-    schema,
-    queries,
-    record,
-    records,
-    setRepoUUID,
-    onRecordSelect,
-    onRecordDelete,
-    onRecordInput,
-  ] = useStore((state) => [
-    state.repo,
-    state.schema,
-    state.queries,
-    state.record,
-    state.records,
-    state.setRepoUUID,
-    state.onRecordSelect,
-    state.onRecordDelete,
-    state.onRecordInput,
-  ]);
+  const [repo, schema, queries, record, records, setRepoUUID, onRecordInput] =
+    useStore((state) => [
+      state.repo,
+      state.schema,
+      state.queries,
+      state.record,
+      state.records,
+      state.setRepoUUID,
+      state.onRecordInput,
+    ]);
+
+  const parentRef = React.useRef(null);
+
+  const count = records.length;
+  const virtualizer = useVirtualizer({
+    count,
+    getScrollElement: () => parentRef.current,
+    estimateSize: () => 45,
+  });
+
+  const items = virtualizer.getVirtualItems();
 
   const { repo: repoUUID, reponame } = repo;
 
@@ -109,15 +106,45 @@ export function Overview() {
 
       <OverviewFilter />
 
-      <div className={styles.overview}>
-        <VirtualScroll
-          {...{
-            data: recordsSorted,
-            onRecordSelect,
-            onRecordDelete,
-            OverviewItem,
+      <div
+        ref={parentRef}
+        className={styles.overview}
+        style={{
+          height: 400,
+          width: 400,
+          overflowY: "auto",
+          contain: "strict",
+        }}
+      >
+        <div
+          style={{
+            height: virtualizer.getTotalSize(),
+            width: "100%",
+            position: "relative",
           }}
-        />
+        >
+          <div
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              transform: `translateY(${items[0]?.start ?? 0}px)`,
+            }}
+          >
+            {items.map((virtualRow) => (
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={virtualizer.measureElement}
+              >
+                <div>
+                  <OverviewItem record={recordsSorted[virtualRow.index]} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

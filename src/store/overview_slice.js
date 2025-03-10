@@ -337,13 +337,20 @@ export const createOverviewSlice = (set, get) => ({
 
     const { strm: fromStrm, closeHandler } = await api.selectStream(query);
 
+    const isHomeScreen = repoUUID === "root";
+
+    const canSelectRepo = isHomeScreen;
+
     const toStrm = new WritableStream({
-      write(chunk) {
+      async write(chunk) {
         if (isAborted) {
           return;
         }
 
-        const records = [...get().records, chunk];
+        // when selecting a repo, load git state and schema from folder into the record
+        const record = canSelectRepo ? await loadRepoRecord(chunk) : chunk;
+
+        const records = [...get().records, record];
 
         set({ records });
       },

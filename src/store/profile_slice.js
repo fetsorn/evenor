@@ -10,9 +10,6 @@ export const createProfileSlice = (set, get) => ({
   // record selected from records for viewing/editing
   record: undefined,
 
-  // whether the record is being edited
-  isEdit: false,
-
   // write record to the folder
   onRecordUpdate: async (recordOld, recordNew) => {
     const {
@@ -58,7 +55,7 @@ export const createProfileSlice = (set, get) => ({
       await saveRepoRecord(recordNew);
     }
 
-    set({ records: recordsNew, record: recordNew, isEdit: false });
+    set({ records: recordsNew, record: recordNew });
   },
 
   // open view, close view or revert edit
@@ -67,18 +64,7 @@ export const createProfileSlice = (set, get) => ({
 
     const { repo: repoUUID } = repo;
 
-    // eslint-disable-next-line
-    // const isHomeScreen = get().repoUUID === "root" && __BUILD_MODE__ !== "server";
-    const isHomeScreen = repoUUID === "root";
-
-    const isNewRecord = recordNew !== undefined;
-
-    const canSelectRepo = isHomeScreen && isNewRecord;
-
-    // when selecting a repo, load git state and schema from folder into the record
-    const record = canSelectRepo ? await loadRepoRecord(recordNew) : recordNew;
-
-    set({ record, isEdit: false });
+    set({ record: recordNew });
   },
 
   // create new record or update old record
@@ -99,7 +85,7 @@ export const createProfileSlice = (set, get) => ({
       ...repoPartial,
     };
 
-    set({ record, isEdit: true });
+    set({ record });
   },
 
   // delete record from the folder
@@ -120,6 +106,6 @@ export const createProfileSlice = (set, get) => ({
 
     await api.commit();
 
-    set({ records: recordsNew, record: undefined, isEdit: false });
+    set({ records: recordsNew, record: undefined });
   },
 });

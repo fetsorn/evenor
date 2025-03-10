@@ -12,14 +12,7 @@ import {
   schemaToBranchRecords,
 } from "@/store/index.js";
 
-export function EditRecord({
-  schema,
-  index,
-  base,
-  record,
-  onRecordChange,
-  onRecordRemove,
-}) {
+export function EditRecord({ schema, index, base, record, onRecordChange }) {
   const { i18n } = useTranslation();
 
   const [{ repo: repoUUID }, repoRecord, onRecordInput] = useStore((state) => [

@@ -1,14 +1,12 @@
-import React, { useEffect, Suspense } from "react";
+import React, { Suspense } from "react";
 import {
   HashRouter as Router,
   Routes,
   Route,
   // useParams,
 } from "react-router-dom";
-import { useStore } from "../store/index.js";
 import { Overview } from "./overview/index.js";
 import styles from "./root.module.css";
-import { API } from "../api";
 
 export function Root() {
   return (
@@ -21,19 +19,17 @@ export function Root() {
   );
 }
 
-const ProfileEdit = React.lazy(() => import("./profile_edit/index.js"));
-
-const ProfileView = React.lazy(() => import("./profile_view/index.js"));
+const Profile = React.lazy(() => import("./profile/index.js"));
 
 function Page() {
-  const isEdit = useStore((state) => state.isEdit);
-
   return (
     <>
       <main className={styles.main}>
         <Overview />
 
-        <Suspense>{isEdit ? <ProfileEdit /> : <ProfileView />}</Suspense>
+        <Suspense>
+          <Profile />
+        </Suspense>
       </main>
     </>
   );

@@ -1,42 +1,40 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import cn from "classnames";
-import { API } from "@/api/index.js";
+import { useTranslation } from "react-i18next";
 import { Button } from "@/layout/components/index.js";
 import { useStore } from "@/store/index.js";
-import { ViewRecord } from "./components/index.js";
-import styles from "./profile_view.module.css";
+import { EditRecord } from "./components/index.js";
+import styles from "./profile.module.css";
 
-export function ProfileView() {
+export function Profile() {
   const { t } = useTranslation();
 
-  const [record, repo, setRepoUUID, onRecordInput, onRecordSelect, schema] =
+  const [record, onRecordSelect, onRecordUpdate, onRecordInput, schema] =
     useStore((state) => [
       state.record,
-      state.repo,
-      state.setRepoUUID,
-      state.onRecordInput,
       state.onRecordSelect,
+      state.onRecordUpdate,
+      state.onRecordInput,
       state.schema,
     ]);
 
-  const { repo: repoUUID } = repo;
+  const recordBackup = structuredClone(record);
 
   return (
     <div
       className={cn(
         styles.sidebar,
         { [styles.invisible]: !record },
-        "profile-view__sidebar view__sidebar",
+        "profile-edit__sidebar edit-sidebar",
       )}
     >
       {record && (
-        <div className={cn(styles.container, "view-sidebar__container")}>
+        <div className={cn(styles.container, "edit-sidebar__container")}>
           <div
             id="scrollcontainer"
-            className={cn(styles.sticky, "view-sidebar__sticky")}
+            className={cn(styles.sticky, "edit-sidebar__sticky")}
           >
-            <div className={cn(styles.buttonbar, "view-sidebar__btn-bar")}>
+            <div className={cn(styles.buttonbar, "edit-sidebar__btn-bar")}>
               <Button
                 type="button"
                 title={t("header.button.back")}
@@ -49,19 +47,20 @@ export function ProfileView() {
 
               <Button
                 type="button"
-                title={t("line.button.edit")}
-                onClick={() => onRecordInput(record)}
+                title={t("line.button.save")}
+                onClick={() => onRecordUpdate(recordBackup, record)}
               >
-                {t("line.button.edit")}
+                {t("line.button.save")}
               </Button>
             </div>
 
-            <ViewRecord
+            <EditRecord
               {...{
                 schema,
                 index: "_",
                 base: record._,
                 record,
+                onRecordChange: onRecordInput,
               }}
             />
           </div>

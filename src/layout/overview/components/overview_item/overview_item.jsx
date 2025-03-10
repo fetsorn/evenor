@@ -3,14 +3,21 @@ import { useTranslation } from "react-i18next";
 import { useStore } from "@/store/index.js";
 import cn from "classnames";
 import styles from "./overview_item.module.css";
+import { ViewRecord } from "../index.js";
 
-export function OverviewItem({ record, isLast, ...others }) {
+export function OverviewItem({
+  record,
+  isLast,
+  index,
+  repoUUIDNew,
+  ...others
+}) {
   const { i18n, t } = useTranslation();
 
-  const [schema, onRecordSelect, onRecordDelete] = useStore((state) => [
+  const [schema, onRecordDelete, onRecordInput] = useStore((state) => [
     state.schema,
-    state.onRecordSelect,
     state.onRecordDelete,
+    state.onRecordInput,
   ]);
 
   // TODO add delete
@@ -40,7 +47,7 @@ export function OverviewItem({ record, isLast, ...others }) {
 
       <span> </span>
 
-      <a onClick={() => onRecordSelect(record)}>Select</a>
+      <a onClick={() => onRecordInput(record)}>edit</a>
 
       <span> or </span>
 
@@ -51,6 +58,16 @@ export function OverviewItem({ record, isLast, ...others }) {
       >
         {t("line.button.delete")}
       </a>
+
+      <ViewRecord
+        {...{
+          schema,
+          index,
+          base: record._,
+          record: record,
+          repoUUIDNew: record[record._],
+        }}
+      />
     </p>
   );
 }

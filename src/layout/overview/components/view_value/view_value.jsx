@@ -1,13 +1,20 @@
 import React from "react";
 import { useStore } from "@/store/index.js";
 
-export function ViewValue({ schema, index, description, base, value }) {
-  const [record, setQuery] = useStore((state) => [
-    state.record,
+export function ViewValue({
+  schema,
+  index,
+  description,
+  base,
+  value,
+  repoUUIDNew,
+}) {
+  const [queries, setQuery] = useStore((state) => [
+    state.queries,
     state.setQuery,
   ]);
 
-  const { _: recordBase } = record;
+  const { _: recordBase } = queries;
 
   const isRepo = recordBase !== "repo";
 

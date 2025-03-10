@@ -21,7 +21,7 @@ export function Overview() {
       state.onRecordInput,
     ]);
 
-  const parentRef = React.useRef(null);
+  const parentRef = useRef(null);
 
   const count = records.length;
   const virtualizer = useVirtualizer({
@@ -139,7 +139,10 @@ export function Overview() {
                 ref={virtualizer.measureElement}
               >
                 <div>
-                  <OverviewItem record={recordsSorted[virtualRow.index]} />
+                  <OverviewItem
+                    index={virtualRow.key}
+                    record={recordsSorted[virtualRow.index]}
+                  />
                 </div>
               </div>
             ))}

@@ -4,7 +4,14 @@ import { ViewValue, ViewRecord, ViewRemote, ViewSync } from "../index.js";
 import { AssetView, Spoiler } from "@/layout/components/index.js";
 import { useStore, isTwig } from "@/store/index.js";
 
-function ViewFieldItem({ schema, index, base, item, description }) {
+function ViewFieldItem({
+  schema,
+  repoUUIDNew,
+  index,
+  base,
+  item,
+  description,
+}) {
   const [record, { repo: repoUUID }] = useStore((state) => [
     state.record,
     state.repo,
@@ -26,6 +33,7 @@ function ViewFieldItem({ schema, index, base, item, description }) {
     return (
       <ViewValue
         schema={schema}
+        repoUUIDNew={repoUUIDNew}
         index={index}
         base={base}
         description={description}
@@ -35,7 +43,7 @@ function ViewFieldItem({ schema, index, base, item, description }) {
   }
 
   if (isFile) {
-    return <AssetView {...{ record: item, schema }} />;
+    return <AssetView {...{ record: item, schema, repoUUIDNew }} />;
   }
 
   if (isRemote) {
@@ -49,6 +57,7 @@ function ViewFieldItem({ schema, index, base, item, description }) {
   return (
     <ViewRecord
       index={`${index}-${item[base]}`}
+      repoUUIDNew={repoUUIDNew}
       schema={schema}
       base={base}
       record={item}
@@ -56,12 +65,11 @@ function ViewFieldItem({ schema, index, base, item, description }) {
   );
 }
 
-export function ViewField({ schema, index, base, items }) {
+export function ViewField({ schema, repoUUIDNew, index, base, items }) {
   const { i18n, t } = useTranslation();
 
-  const [repo, recordProfile, setRepoUUID] = useStore((state) => [
+  const [repo, setRepoUUID] = useStore((state) => [
     state.repo,
-    state.record,
     state.setRepoUUID,
   ]);
 
@@ -81,8 +89,6 @@ export function ViewField({ schema, index, base, items }) {
   const canOpenRepo = isHomeScreen && isBranch;
 
   const onRepoOpen = async (itemBase) => {
-    const repoUUIDNew = recordProfile.repo;
-
     const baseNew = itemBase;
 
     setRepoUUID(repoUUIDNew, baseNew);
@@ -119,6 +125,7 @@ export function ViewField({ schema, index, base, items }) {
             base,
             item,
             description,
+            repoUUIDNew,
           }}
         />
       ))}

@@ -48,26 +48,26 @@ export function ViewRecord({ schema, baseRecord, index, base, record }) {
         }}
       />
 
-      <span>
-        {leaves.filter(recordHasLeaf).map((leaf, idx) => {
-          const items = Array.isArray(record[leaf])
-            ? record[leaf]
-            : [record[leaf]];
+      {/* <Spoiler {...{ index, title: "", description }}> */}
+      {leaves.filter(recordHasLeaf).map((leaf, idx) => {
+        const items = Array.isArray(record[leaf])
+          ? record[leaf]
+          : [record[leaf]];
 
-          return (
-            <ViewField
-              key={idx}
-              {...{
-                schema,
-                baseRecord,
-                index: `${index}-${leaf}`,
-                base: leaf,
-                items: items,
-              }}
-            />
-          );
-        })}
-      </span>
+        return (
+          <ViewField
+            key={idx}
+            {...{
+              schema,
+              baseRecord,
+              index: `${index}-${leaf}`,
+              base: leaf,
+              items: items,
+            }}
+          />
+        );
+      })}
+      {/* </Spoiler> */}
 
       {canZip && (
         <a title="zip" onClick={() => onZip()}>

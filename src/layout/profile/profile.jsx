@@ -1,13 +1,13 @@
 import React from "react";
 import cn from "classnames";
 import { useTranslation } from "react-i18next";
-import { Button } from "@/layout/components/index.js";
+import { Button, Spoiler } from "@/layout/components/index.js";
 import { useStore } from "@/store/index.js";
 import { EditRecord } from "./components/index.js";
 import styles from "./profile.module.css";
 
 export function Profile() {
-  const { t } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const [record, onRecordSelect, onRecordUpdate, onRecordInput, schema] =
     useStore((state) => [
@@ -17,6 +17,10 @@ export function Profile() {
       state.onRecordInput,
       state.schema,
     ]);
+
+  const description =
+    record !== undefined &&
+    (schema?.[record._]?.description?.[i18n.resolvedLanguage] ?? record._);
 
   const recordBackup = structuredClone(record);
 
@@ -54,15 +58,19 @@ export function Profile() {
               </Button>
             </div>
 
-            <EditRecord
-              {...{
-                schema,
-                index: "_",
-                base: record._,
-                record,
-                onRecordChange: onRecordInput,
-              }}
-            />
+            <Spoiler
+              {...{ index: "_", title: "", description, isOpenDefault: true }}
+            >
+              <EditRecord
+                {...{
+                  schema,
+                  index: "_",
+                  base: record._,
+                  record,
+                  onRecordChange: onRecordInput,
+                }}
+              />
+            </Spoiler>
           </div>
         </div>
       )}

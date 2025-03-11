@@ -4,6 +4,7 @@ import { useStore } from "@/store/index.js";
 import cn from "classnames";
 import styles from "./overview_item.module.css";
 import { ViewRecord } from "../index.js";
+import { Spoiler } from "@/layout/components/index.js";
 
 export function OverviewItem({ record, isLast, index, ...others }) {
   const { i18n, t } = useTranslation();
@@ -16,13 +17,16 @@ export function OverviewItem({ record, isLast, index, ...others }) {
     state.onRecordInput,
   ]);
 
+  const description =
+    schema?.[record._]?.description?.[i18n.resolvedLanguage] ?? record._;
+
   // TODO add delete
   return (
     <p className={cn(styles.row, { [styles.last]: isLast })} {...others}>
       {Object.keys(record).map((key) => {
         if (key === "_") return undefined;
 
-        const description =
+        const descriptionItem =
           schema?.[key]?.description?.[i18n.resolvedLanguage] ?? key;
 
         const value = record[key];
@@ -76,15 +80,17 @@ export function OverviewItem({ record, isLast, index, ...others }) {
         </a>
       )}
 
-      <ViewRecord
-        {...{
-          schema,
-          index,
-          baseRecord: record,
-          base: record._,
-          record: record,
-        }}
-      />
+      <Spoiler {...{ index, title: "", description }}>
+        <ViewRecord
+          {...{
+            schema,
+            index,
+            baseRecord: record,
+            base: record._,
+            record: record,
+          }}
+        />
+      </Spoiler>
     </p>
   );
 }

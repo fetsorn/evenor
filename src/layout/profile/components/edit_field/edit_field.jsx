@@ -112,7 +112,7 @@ export function EditField({
 
   // TODO handle error when items is not array
   return (
-    <span>
+    <Spoiler {...{ index, title: "", description }}>
       {items.map((item, idx) => (
         <span key={idx}>
           <EditFieldItem
@@ -146,6 +146,6 @@ export function EditField({
         ))}
 
       <span> </span>
-    </span>
+    </Spoiler>
   );
 }

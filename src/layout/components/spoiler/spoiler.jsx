@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { useTranslation } from "react-i18next";
 import { create } from "zustand";
 
@@ -23,7 +23,6 @@ export function Spoiler({
   title,
   description,
   children,
-  onRemove,
   isIgnored,
   isOpenDefault = false,
   ...other
@@ -52,42 +51,12 @@ export function Spoiler({
   }
 
   return isOpen(index) ? (
-    <div key={`${index}-spoiler`}>
-      <button type="button" onClick={close}>
-        🔽️
-      </button>
-
-      {description}
-
-      {onRemove && (
-        <button
-          type="button"
-          title={t("line.button.remove", { field: title })}
-          onClick={() => onRemove()}
-        >
-          X
-        </button>
-      )}
+    <span key={`${index}-spoiler`}>
+      <a onClick={close}>{description}:</a>
 
       {children}
-    </div>
+    </span>
   ) : (
-    <div>
-      <button type="button" onClick={open}>
-        ▶️
-      </button>
-
-      {description}
-
-      {onRemove && (
-        <button
-          type="button"
-          title={t("line.button.remove", { field: title })}
-          onClick={() => onRemove()}
-        >
-          X
-        </button>
-      )}
-    </div>
+    <a onClick={open}>{description}...</a>
   );
 }

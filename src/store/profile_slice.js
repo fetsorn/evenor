@@ -55,7 +55,7 @@ export const createProfileSlice = (set, get) => ({
       await saveRepoRecord(recordNew);
     }
 
-    set({ records: recordsNew, record: recordNew });
+    set({ records: recordsNew, record: undefined });
   },
 
   // open view, close view or revert edit

@@ -91,7 +91,7 @@ export function ViewValue({
 
       <span> </span>
 
-      <span>{value}</span>
+      <span style={{ borderBottom: "thin solid" }}>{value}</span>
 
       <span> </span>
 

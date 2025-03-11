@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useStore } from "@/store/index.js";
 import cn from "classnames";
@@ -13,6 +13,8 @@ export function OverviewItem({
   ...others
 }) {
   const { i18n, t } = useTranslation();
+
+  const [confirmation, setConfirmation] = useState(false);
 
   const [schema, onRecordDelete, onRecordInput] = useStore((state) => [
     state.schema,
@@ -51,13 +53,34 @@ export function OverviewItem({
 
       <span> or </span>
 
-      <a
-        type="button"
-        title={t("line.button.delete")}
-        onClick={() => onRecordDelete(record)}
-      >
-        {t("line.button.delete")}
-      </a>
+      {confirmation ? (
+        <span>
+          really delete?
+          <a
+            type="button"
+            title={t("line.button.delete")}
+            onClick={() => onRecordDelete(record)}
+          >
+            yes
+          </a>
+          or
+          <a
+            type="button"
+            title={t("line.button.delete")}
+            onClick={() => setConfirmation(false)}
+          >
+            no
+          </a>
+        </span>
+      ) : (
+        <a
+          type="button"
+          title={t("line.button.delete")}
+          onClick={() => setConfirmation(true)}
+        >
+          {t("line.button.delete")}
+        </a>
+      )}
 
       <ViewRecord
         {...{

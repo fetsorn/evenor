@@ -5,7 +5,7 @@ import { ViewValue, ViewField } from "../index.js";
 import { Spoiler } from "@/layout/components/index.js";
 import { API } from "@/api/index.js";
 
-export function ViewRecord({ schema, index, base, record, repoUUIDNew }) {
+export function ViewRecord({ schema, baseRecord, index, base, record }) {
   const { i18n, t } = useTranslation();
 
   const [repo] = useStore((state) => [state.repo]);
@@ -40,11 +40,11 @@ export function ViewRecord({ schema, index, base, record, repoUUIDNew }) {
       <ViewValue
         {...{
           schema,
+          baseRecord,
           base,
           index,
           value: record[base],
           description,
-          repoUUIDNew,
         }}
       />
 
@@ -59,10 +59,10 @@ export function ViewRecord({ schema, index, base, record, repoUUIDNew }) {
               key={idx}
               {...{
                 schema,
+                baseRecord,
                 index: `${index}-${leaf}`,
                 base: leaf,
                 items: items,
-                repoUUIDNew,
               }}
             />
           );

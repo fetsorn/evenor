@@ -5,13 +5,7 @@ import cn from "classnames";
 import styles from "./overview_item.module.css";
 import { ViewRecord } from "../index.js";
 
-export function OverviewItem({
-  record,
-  isLast,
-  index,
-  repoUUIDNew,
-  ...others
-}) {
+export function OverviewItem({ record, isLast, index, ...others }) {
   const { i18n, t } = useTranslation();
 
   const [confirmation, setConfirmation] = useState(false);
@@ -86,9 +80,9 @@ export function OverviewItem({
         {...{
           schema,
           index,
+          baseRecord: record,
           base: record._,
           record: record,
-          repoUUIDNew: record[record._],
         }}
       />
     </p>

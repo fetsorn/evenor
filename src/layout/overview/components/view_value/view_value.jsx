@@ -1,14 +1,7 @@
 import React from "react";
 import { useStore } from "@/store/index.js";
 
-export function ViewValue({
-  schema,
-  index,
-  description,
-  base,
-  value,
-  repoUUIDNew,
-}) {
+export function ViewValue({ schema, index, description, base, value }) {
   const [queries, setQuery] = useStore((state) => [
     state.queries,
     state.setQuery,

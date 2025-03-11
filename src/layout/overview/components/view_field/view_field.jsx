@@ -4,14 +4,7 @@ import { ViewValue, ViewRecord, ViewRemote, ViewSync } from "../index.js";
 import { AssetView, Spoiler } from "@/layout/components/index.js";
 import { useStore, isTwig } from "@/store/index.js";
 
-function ViewFieldItem({
-  schema,
-  repoUUIDNew,
-  index,
-  base,
-  item,
-  description,
-}) {
+function ViewFieldItem({ schema, baseRecord, index, base, item, description }) {
   const [record, { repo: repoUUID }] = useStore((state) => [
     state.record,
     state.repo,
@@ -33,7 +26,6 @@ function ViewFieldItem({
     return (
       <ViewValue
         schema={schema}
-        repoUUIDNew={repoUUIDNew}
         index={index}
         base={base}
         description={description}
@@ -43,21 +35,21 @@ function ViewFieldItem({
   }
 
   if (isFile) {
-    return <AssetView {...{ record: item, schema, repoUUIDNew }} />;
+    return <AssetView {...{ record: item, schema }} />;
   }
 
   if (isRemote) {
-    return <ViewRemote {...{ baseRecord: record, branchRecord: item }} />;
+    return <ViewRemote {...{ baseRecord, branchRecord: item }} />;
   }
 
   if (isSync) {
-    return <ViewSync {...{ schema, baseRecord: record, branchRecord: item }} />;
+    return <ViewSync {...{ schema, baseRecord, branchRecord: item }} />;
   }
 
   return (
     <ViewRecord
       index={`${index}-${item[base]}`}
-      repoUUIDNew={repoUUIDNew}
+      baseRecord={baseRecord}
       schema={schema}
       base={base}
       record={item}
@@ -65,7 +57,7 @@ function ViewFieldItem({
   );
 }
 
-export function ViewField({ schema, repoUUIDNew, index, base, items }) {
+export function ViewField({ schema, baseRecord, index, base, items }) {
   const { i18n, t } = useTranslation();
 
   const [repo, setRepoUUID] = useStore((state) => [
@@ -91,7 +83,7 @@ export function ViewField({ schema, repoUUIDNew, index, base, items }) {
   const onRepoOpen = async (itemBase) => {
     const baseNew = itemBase;
 
-    setRepoUUID(repoUUIDNew, baseNew);
+    setRepoUUID(baseRecord.repo, baseNew);
   };
 
   // TODO handle error when items is not array
@@ -122,10 +114,10 @@ export function ViewField({ schema, repoUUIDNew, index, base, items }) {
           {...{
             schema,
             index,
+            baseRecord,
             base,
             item,
             description,
-            repoUUIDNew,
           }}
         />
       ))}

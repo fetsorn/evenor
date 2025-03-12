@@ -202,19 +202,31 @@ export function EditRecord({ schema, index, base, record, onRecordChange }) {
                 }}
               />
 
+              <span> </span>
+
               <label>
-                Add another<span> </span>
+                <span>Add another</span>
+
+                <span> </span>
+
                 <a onClick={() => addLeafValue(leaf)}>
                   {leaf}
+
                   <span> </span>
                 </a>
               </label>
             </span>
           ) : (
             <label key={"record" + leaf + idx}>
-              Add<span> </span>
+              <span> </span>
+
+              <span>Add</span>
+
+              <span> </span>
+
               <a key={leaf} onClick={() => addLeafValue(leaf)}>
                 {leaf}
+
                 <span> </span>
               </a>
             </label>

@@ -90,22 +90,30 @@ export function ViewField({ schema, baseRecord, index, base, items }) {
   return (
     <span>
       {canOpenRepo && (
-        <span>
-          {t("line.button.open")}
-          <span> </span>
-          {items.map((item, idx) => (
-            <span key={idx}>
-              <a
-                title={t("line.button.open")}
-                onClick={() => onRepoOpen(item[base])}
-              >
-                {item[base]}
-              </a>
+        <Spoiler
+          {...{
+            index: index + "open",
+            title: "",
+            description: t("line.button.open"),
+          }}
+        >
+          <span>
+            {t("line.button.open")}
+            <span> </span>
+            {items.map((item, idx) => (
+              <span key={idx}>
+                <a
+                  title={t("line.button.open")}
+                  onClick={() => onRepoOpen(item[base])}
+                >
+                  {item[base]}
+                </a>
 
-              <span> </span>
-            </span>
-          ))}
-        </span>
+                <span> </span>
+              </span>
+            ))}
+          </span>
+        </Spoiler>
       )}
 
       <Spoiler {...{ index, title: "", description }}>

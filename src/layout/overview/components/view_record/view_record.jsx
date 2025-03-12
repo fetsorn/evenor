@@ -69,6 +69,8 @@ export function ViewRecord({ schema, baseRecord, index, base, record }) {
       })}
       {/* </Spoiler> */}
 
+      <span> </span>
+
       {canZip && (
         <a title="zip" onClick={() => onZip()}>
           Can zip

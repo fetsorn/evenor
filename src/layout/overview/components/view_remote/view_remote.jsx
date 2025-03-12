@@ -33,17 +33,14 @@ export function ViewRemote({ baseRecord, branchRecord }) {
   return (
     <span>
       <span>Remote git</span>
+      <span> </span>
       <span>{branchRecord.remote_tag}</span>
+      <span> </span>
       <span>{branchRecord.remote_url}</span>
-      <button type="button" onClick={onPullRepo}>
-        ⬇️
-      </button>
-      <button type="button" onClick={onPushRepo}>
-        ⬆️
-      </button>
-      <button type="button" onClick={onRemoteSync}>
-        🔄️
-      </button>
+      <span> </span>
+      <a onClick={onPullRepo}>pull</a>
+      <span> </span>
+      <a onClick={onPushRepo}>push</a>
     </span>
   );
 }

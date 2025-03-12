@@ -1,19 +1,41 @@
-import React from "react";
+import React, { useState } from "react";
 import { API } from "@/api/index.js";
 
 export function ViewRemote({ baseRecord, branchRecord }) {
   const api = new API(baseRecord.repo);
 
-  async function onPullRepo() {
-    await api.commit();
+  const [isLoading, setLoading] = useState(false);
 
-    await api.pull(branchRecord.remote_name);
+  async function onPullRepo() {
+    setLoading(true);
+
+    try {
+      await api.commit();
+
+      await api.pull(branchRecord.remote_name);
+
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+
+      setLoading(false);
+    }
   }
 
   async function onPushRepo() {
-    await api.commit();
+    setLoading(true);
 
-    await api.push(branchRecord.remote_name);
+    try {
+      await api.commit();
+
+      await api.push(branchRecord.remote_name);
+
+      setLoading(false);
+    } catch (e) {
+      console.log(e);
+
+      setLoading(false);
+    }
   }
 
   async function onRemoteSync() {
@@ -27,6 +49,7 @@ export function ViewRemote({ baseRecord, branchRecord }) {
 
     await api.pull(branchRecord.remote_name);
 
+    u;
     await api.push(branchRecord.remote_name);
   }
 
@@ -41,6 +64,8 @@ export function ViewRemote({ baseRecord, branchRecord }) {
       <a onClick={onPullRepo}>pull</a>
       <span> </span>
       <a onClick={onPushRepo}>push</a>
+      <span> </span>
+      {isLoading ? <span>loading...</span> : <span />}
     </span>
   );
 }

@@ -53,7 +53,7 @@ export function OverviewItem({ record, isLast, index, ...others }) {
 
       {confirmation ? (
         <span>
-          really delete?
+          <span>really delete?</span>
           <a
             type="button"
             title={t("line.button.delete")}
@@ -61,7 +61,9 @@ export function OverviewItem({ record, isLast, index, ...others }) {
           >
             yes
           </a>
+          <span> </span>
           or
+          <span> </span>
           <a
             type="button"
             title={t("line.button.delete")}
@@ -79,6 +81,8 @@ export function OverviewItem({ record, isLast, index, ...others }) {
           {t("line.button.delete")}
         </a>
       )}
+
+      <span> </span>
 
       <Spoiler {...{ index, title: "", description }}>
         <ViewRecord

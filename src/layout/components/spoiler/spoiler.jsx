@@ -54,6 +54,8 @@ export function Spoiler({
     <span key={`${index}-spoiler`}>
       <a onClick={close}>{description}:</a>
 
+      <span> </span>
+
       {children}
     </span>
   ) : (

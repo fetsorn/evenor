@@ -55,21 +55,23 @@ export function ViewRecord({ schema, baseRecord, index, base, record }) {
           : [record[leaf]];
 
         return (
-          <ViewField
-            key={idx}
-            {...{
-              schema,
-              baseRecord,
-              index: `${index}-${leaf}`,
-              base: leaf,
-              items: items,
-            }}
-          />
+          <span>
+            <span> </span>
+
+            <ViewField
+              key={idx}
+              {...{
+                schema,
+                baseRecord,
+                index: `${index}-${leaf}`,
+                base: leaf,
+                items: items,
+              }}
+            />
+          </span>
         );
       })}
       {/* </Spoiler> */}
-
-      <span> </span>
 
       {canZip && (
         <a title="zip" onClick={() => onZip()}>

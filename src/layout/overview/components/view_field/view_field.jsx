@@ -116,19 +116,25 @@ export function ViewField({ schema, baseRecord, index, base, items }) {
         </Spoiler>
       )}
 
+      <span> </span>
+
       <Spoiler {...{ index, title: "", description }}>
         {items.map((item, idx) => (
-          <ViewFieldItem
-            key={idx}
-            {...{
-              schema,
-              index,
-              baseRecord,
-              base,
-              item,
-              description,
-            }}
-          />
+          <span>
+            <span> </span>
+
+            <ViewFieldItem
+              key={idx}
+              {...{
+                schema,
+                index,
+                baseRecord,
+                base,
+                item,
+                description,
+              }}
+            />
+          </span>
         ))}
       </Spoiler>
     </span>

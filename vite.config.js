@@ -2,6 +2,7 @@ import path from "path";
 import process from "process";
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const host = process.env.TAURI_DEV_HOST;
 
@@ -38,7 +39,7 @@ export default defineConfig(async () => {
       },
     },
 
-    plugins: [solidPlugin()],
+    plugins: [nodePolyfills(), solidPlugin()],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //
@@ -80,6 +81,7 @@ export default defineConfig(async () => {
     },
 
     define: {
+      global: "globalThis",
       __BUILD_MODE__: JSON.stringify(getBuildMode()),
     },
   };

@@ -1,0 +1,8 @@
+.overview {
+  width: 50vw;
+}
+
+.button_bar {
+  display: flex;
+  justify-content: space-between;
+}

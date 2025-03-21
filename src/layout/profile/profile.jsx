@@ -1,22 +1,24 @@
 import cn from "classnames";
 import styles from "./profile.module.css";
 import { useContext } from "solid-js";
-import { StoreContext } from "@/store.js";
 import {
-  EditBar,
-  EditRecord,
-  ViewBar,
-  ViewRecord,
-} from "./components/index.js";
+  StoreContext,
+  onRecordEdit,
+  onRecordWipe,
+  onRecordSave,
+} from "@/store/index.js";
+import { ProfileRecord } from "./components/index.js";
 
 export function Profile() {
   const { store } = useContext(StoreContext);
+
+  const recordBackup = structuredClone(store.record);
 
   return (
     <div
       className={cn(
         styles.sidebar,
-        { [styles.invisible]: !store.record },
+        { [styles.invisible]: store.record === undefined },
         "profile-view__sidebar view__sidebar",
       )}
     >
@@ -26,10 +28,29 @@ export function Profile() {
           className={cn(styles.sticky, "view-sidebar__sticky")}
         >
           <div className={cn(styles.buttonbar, "view-sidebar__btn-bar")}>
-            {store.isEdit ? <EditBar /> : <ViewBar />}
+            <a title={""} onClick={() => onRecordWipe(undefined)}>
+              revert
+            </a>
+            <span>{/* store.record */}</span>
+            <a
+              title={""}
+              onClick={() => onRecordSave(recordBackup, store.record)}
+            >
+              save
+            </a>
           </div>
 
-          {store.isEdit ? <EditRecord /> : <ViewRecord />}
+          {store.record === undefined ? (
+            <></>
+          ) : (
+            <ProfileRecord
+              {...{
+                baseRecord: store.record,
+                record: store.record,
+                onRecordChange: onRecordEdit,
+              }}
+            />
+          )}
         </div>
       </div>
     </div>

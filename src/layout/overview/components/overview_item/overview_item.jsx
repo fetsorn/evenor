@@ -1,5 +1,14 @@
-import { onRecordPick } from "@/store.js";
+import { onRecordEdit } from "@/store/index.js";
+import { OverviewRecord } from "../index.js";
 
 export function OverviewItem(props) {
-  return <div onClick={() => onRecordPick(props.item)}>{props.item}</div>;
+  return (
+    <span>
+      {props.item}
+
+      <a onClick={() => onRecordEdit(props.item)}>edit</a>
+
+      <OverviewRecord {...{ baseRecord: props.item, record: props.item }} />
+    </span>
+  );
 }

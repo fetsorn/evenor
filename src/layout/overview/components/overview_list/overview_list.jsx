@@ -1,6 +1,6 @@
 import { useContext } from "solid-js";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { StoreContext } from "@/store.js";
+import { StoreContext } from "@/store/index.js";
 import { OverviewItem } from "..";
 import styles from "./overview_list.module.css";
 
@@ -27,7 +27,7 @@ export function OverviewList() {
           position: "relative",
         }}
       >
-        <For each={items} fallback={<div>hui</div>}>
+        <For each={items} fallback={<span>no items</span>}>
           {(virtualRow) => (
             <div
               style={{

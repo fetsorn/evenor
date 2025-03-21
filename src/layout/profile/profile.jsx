@@ -44,7 +44,7 @@ export function Profile() {
           {store.record === undefined ? (
             <></>
           ) : (
-            <Spoiler index="_" title={store.record._}>
+            <Spoiler index="_" title={store.record._} isOpenDefault={true}>
               <ProfileRecord
                 index="_"
                 baseRecord={store.record}

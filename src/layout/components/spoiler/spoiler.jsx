@@ -1,4 +1,4 @@
-import { createContext } from "solid-js";
+import { createContext, createEffect } from "solid-js";
 import { createStore } from "solid-js/store";
 
 export const StoreContext = createContext();
@@ -16,6 +16,10 @@ function setIsOpen(index, isOpen) {
 }
 
 export function Spoiler(props) {
+  createEffect(() => {
+    setIsOpen(props.index, props.isOpenDefault);
+  });
+
   function open() {
     setIsOpen(props.index, true);
   }

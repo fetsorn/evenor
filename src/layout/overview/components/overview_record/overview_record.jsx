@@ -1,6 +1,7 @@
 import { useContext } from "solid-js";
 import { StoreContext } from "@/store/index.js";
 import { OverviewField, OverviewValue } from "../index.js";
+import { Spoiler } from "@/layout/components/index.js";
 
 export function OverviewRecord(props) {
   const { store } = useContext(StoreContext);
@@ -17,6 +18,8 @@ export function OverviewRecord(props) {
     <span>
       <OverviewValue value={props.record[props.record._]} />
 
+      <span> </span>
+
       <For
         each={leaves.filter(recordHasLeaf)}
         fallback={<span>record no items</span>}
@@ -28,6 +31,7 @@ export function OverviewRecord(props) {
 
           return (
             <OverviewField
+              index={`${props.index}-${leaf}`}
               baseRecord={props.baseRecord}
               items={items}
               branch={leaf}

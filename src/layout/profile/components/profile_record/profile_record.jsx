@@ -65,6 +65,7 @@ export function ProfileRecord(props) {
             return (
               <span>
                 <ProfileField
+                  index={`${props.index}-${leaf}`}
                   baseRecord={props.baseRecord}
                   branch={leaf}
                   items={items}

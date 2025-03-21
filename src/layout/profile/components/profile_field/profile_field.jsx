@@ -1,5 +1,6 @@
 import { createSignal } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
+import { Spoiler } from "@/layout/components/index.js";
 
 export function ProfileField(props) {
   const [confirmationBulk, setConfirmationBulk] = createSignal(false);
@@ -25,7 +26,7 @@ export function ProfileField(props) {
   }
 
   return (
-    <span>
+    <Spoiler index={props.index} title={props.branch}>
       <For each={props.items} fallback={<span>field no items</span>}>
         {(item, index) => {
           const [confirmation, setConfirmation] = createSignal(false);
@@ -33,6 +34,7 @@ export function ProfileField(props) {
           return (
             <span>
               <ProfileFieldItem
+                index={`${props.index}-${index}`}
                 baseRecord={props.baseRecord}
                 branch={props.branch}
                 item={item}
@@ -73,6 +75,6 @@ export function ProfileField(props) {
           <a onClick={() => setConfirmationBulk(false)}>No</a>
         </span>
       </Show>
-    </span>
+    </Spoiler>
   );
 }

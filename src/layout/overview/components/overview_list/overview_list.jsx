@@ -42,7 +42,10 @@ export function OverviewList(props) {
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <OverviewItem item={props.items[virtualRow.index]} />
+              <OverviewItem
+                index={virtualRow.key}
+                item={props.items[virtualRow.index]}
+              />
             </div>
           )}
         </For>

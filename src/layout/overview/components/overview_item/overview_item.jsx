@@ -1,6 +1,7 @@
 import { createSignal } from "solid-js";
 import { onRecordEdit, onRecordWipe } from "@/store/index.js";
 import { OverviewRecord } from "../index.js";
+import { Spoiler } from "@/layout/components/index.js";
 
 export function OverviewItem(props) {
   const [confirmation, setConfirmation] = createSignal(false);
@@ -24,7 +25,13 @@ export function OverviewItem(props) {
 
       <span> </span>
 
-      <OverviewRecord baseRecord={props.item} record={props.item} />
+      <Spoiler index={props.index} title={props.item._}>
+        <OverviewRecord
+          index={props.index}
+          baseRecord={props.item}
+          record={props.item}
+        />
+      </Spoiler>
     </span>
   );
 }

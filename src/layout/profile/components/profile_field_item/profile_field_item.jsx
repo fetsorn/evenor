@@ -16,6 +16,7 @@ export function ProfileFieldItem(props) {
   return (
     <span>
       <ProfileRecord
+        index={`${props.index}-${props.item[props.item._]}`}
         baseRecord={props.baseRecord}
         record={props.item}
         onRecordChange={(record) => props.onFieldItemChange(record)}

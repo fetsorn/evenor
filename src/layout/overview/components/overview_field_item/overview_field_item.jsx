@@ -11,5 +11,11 @@ export function OverviewFieldItem(props) {
     return <OverviewValue value={props.item} />;
   }
 
-  return <OverviewRecord baseRecord={props.baseRecord} record={props.item} />;
+  return (
+    <OverviewRecord
+      index={`${props.index}-${props.item[props.item._]}`}
+      baseRecord={props.baseRecord}
+      record={props.item}
+    />
+  );
 }

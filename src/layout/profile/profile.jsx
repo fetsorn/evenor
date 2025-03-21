@@ -8,6 +8,7 @@ import {
   onRecordSave,
 } from "@/store/index.js";
 import { ProfileRecord } from "./components/index.js";
+import { Spoiler } from "@/layout/components/index.js";
 
 export function Profile() {
   const { store } = useContext(StoreContext);
@@ -43,11 +44,14 @@ export function Profile() {
           {store.record === undefined ? (
             <></>
           ) : (
-            <ProfileRecord
-              baseRecord={store.record}
-              record={store.record}
-              onRecordChange={onRecordEdit}
-            />
+            <Spoiler index="_" title={store.record._}>
+              <ProfileRecord
+                index="_"
+                baseRecord={store.record}
+                record={store.record}
+                onRecordChange={onRecordEdit}
+              />
+            </Spoiler>
           )}
         </div>
       </div>

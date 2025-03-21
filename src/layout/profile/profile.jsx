@@ -44,11 +44,9 @@ export function Profile() {
             <></>
           ) : (
             <ProfileRecord
-              {...{
-                baseRecord: store.record,
-                record: store.record,
-                onRecordChange: onRecordEdit,
-              }}
+              baseRecord={store.record}
+              record={store.record}
+              onRecordChange={onRecordEdit}
             />
           )}
         </div>

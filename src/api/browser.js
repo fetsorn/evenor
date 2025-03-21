@@ -283,7 +283,7 @@ export class BrowserAPI {
     await csvs.updateRecord({
       fs,
       dir,
-      query: structuredClone(record),
+      query: record,
     });
   }
 
@@ -293,7 +293,7 @@ export class BrowserAPI {
     await csvs.deleteRecord({
       fs,
       dir: await this.dir(),
-      query: structuredClone(record),
+      query: record,
     });
   }
 

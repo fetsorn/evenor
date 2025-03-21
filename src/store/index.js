@@ -9,6 +9,7 @@ import {
   setURL,
   defaultRepoRecord,
   newUUID,
+  loadRepoRecord,
 } from "./bin.js";
 
 export const StoreContext = createContext();
@@ -33,14 +34,9 @@ export async function onSearch(field, value) {
   // start a stream that appends to store.records
   setStore("records", []);
 
-  const {
-    schema,
-    repo: { repo: repoUUID, reponame },
-  } = store;
-
   store.abortPreviousStream();
 
-  const api = new API(repoUUID);
+  const api = new API(store.repo.repo);
 
   // remove all evenor-specific queries before passing searchParams to csvs
   const { ".sortBy": omit, ...queriesWithoutSortBy } = queries;
@@ -48,7 +44,7 @@ export async function onSearch(field, value) {
   const { strm: fromStrm, closeHandler } =
     await api.selectStream(queriesWithoutSortBy);
 
-  const isHomeScreen = repoUUID === "root";
+  const isHomeScreen = store.repo.repo === "root";
 
   const canSelectRepo = isHomeScreen;
 
@@ -57,9 +53,8 @@ export async function onSearch(field, value) {
   const abortController = new AbortController();
 
   setStore("abortPreviousStream", async () => {
-    isAborted = true;
-
-    await abortController.abort();
+    // isAborted = true;
+    // await abortController.abort();
   });
 
   const toStrm = new WritableStream({
@@ -72,6 +67,8 @@ export async function onSearch(field, value) {
       const record = canSelectRepo ? await loadRepoRecord(chunk) : chunk;
 
       const records = [...store.records, record];
+
+      setStore("records", undefined);
 
       setStore("records", records);
     },
@@ -111,24 +108,21 @@ export async function onLaunch() {
 }
 
 export async function onRecordEdit(recordNew) {
-  const {
-    repo: { repo: repoUUID },
-    queries: { _: base },
-  } = store;
+  const isHomeScreen = store.repo.repo === "root";
 
-  const isHomeScreen = repoUUID === "root";
-
-  const isRepoBranch = base === "repo";
+  const isRepoBranch = store.queries._ === "repo";
 
   const isRepoRecord = isHomeScreen && isRepoBranch;
 
   const repoPartial = isRepoRecord ? defaultRepoRecord : {};
 
   const record = recordNew ?? {
-    _: base,
-    [base]: await newUUID(),
+    _: store.queries._,
+    [store.queries._]: await newUUID(),
     ...repoPartial,
   };
+
+  setStore("record", undefined);
 
   setStore("record", record);
 }
@@ -136,19 +130,19 @@ export async function onRecordEdit(recordNew) {
 export async function onRecordSave(recordOld, recordNew) {
   const api = new API(store.repo.repo);
 
-  const isHomeScreen = repoUUID === "root";
+  const isHomeScreen = store.repo.repo === "root";
 
-  const isRepoBranch = base === "repo";
+  const isRepoBranch = store.queries._ === "repo";
 
   const canSaveRepo = isHomeScreen && isRepoBranch;
 
   // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
   if (canSaveRepo) {
-    const branches = record["branch"].map(
+    const branches = recordNew["branch"].map(
       ({ trunk, ...branchWithoutTrunk }) => branchWithoutTrunk,
     );
 
-    const recordPruned = { ...record, branch: branches };
+    const recordPruned = { ...recordNew, branch: branches };
 
     await api.updateRecord(recordPruned);
   } else {

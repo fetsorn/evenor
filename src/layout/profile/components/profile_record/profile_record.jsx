@@ -14,8 +14,10 @@ export function ProfileRecord(props) {
   }
 
   function addLeafValue(leaf) {
+    const valueDefault = "";
+
     const value = isTwig(store.schema, leaf)
-      ? ""
+      ? valueDefault
       : { _: leaf, [leaf]: valueDefault };
 
     const valuesOld = props.record[leaf];
@@ -63,13 +65,11 @@ export function ProfileRecord(props) {
             return (
               <span>
                 <ProfileField
-                  {...{
-                    baseRecord: props.baseRecord,
-                    branch: leaf,
-                    items,
-                    onFieldChange,
-                    onFieldRemove,
-                  }}
+                  baseRecord={props.baseRecord}
+                  branch={leaf}
+                  items={items}
+                  onFieldChange={onFieldChange}
+                  onFieldRemove={onFieldRemove}
                 />
 
                 <a onClick={() => addLeafValue(leaf)}>Add another {leaf}</a>

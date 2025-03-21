@@ -575,3 +575,132 @@ export function baz(queries, field, value) {
 export function newUUID() {
   return sha256(uuidv4());
 }
+
+async function readRemotes(api) {
+  try {
+    const remotes = await api.listRemotes();
+
+    const remoteTags = await Promise.all(
+      remotes.map(async (remoteName) => {
+        const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
+
+        const partialToken = remoteToken ? { remote_token: remoteToken } : {};
+
+        return {
+          _: "remote_tag",
+          remote_name: remoteName,
+          remote_url: remoteUrl,
+          ...partialToken,
+        };
+      }),
+    );
+
+    return { remote_tag: remoteTags };
+  } catch {
+    return {};
+  }
+}
+
+async function readLocals(api) {
+  try {
+    const locals = await api.listAssetPaths();
+
+    return locals.reduce(
+      (acc, local) => {
+        const tagsLocalOld = acc.local_tag;
+
+        return { ...acc, remote_tag: [...tagsLocalOld, local] };
+      },
+      { local_tag: [] },
+    );
+  } catch {
+    return {};
+  }
+}
+
+// add trunk field from schema record to branch records
+// turn { _: _, branch1: [ branch2 ] }, [{ _: branch, branch: "branch2", task: "date" }]
+// into [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
+export function enrichBranchRecords(schemaRecord, metaRecords) {
+  // [[branch1, [branch2]]]
+  const schemaRelations = Object.entries(schemaRecord).filter(
+    ([key]) => key !== "_",
+  );
+
+  // list of unique branches in the schema
+  const branches = [...new Set(schemaRelations.flat(Infinity))];
+
+  const branchRecords = branches.reduce((accBranch, branch) => {
+    // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunks
+    const relationsPartial = schemaRelations.reduce(
+      (accTrunk, [trunk, leaves]) => {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+
+        const leavesPartial = trunk === branch ? leaves : [];
+
+        return {
+          trunks: [...accTrunk.trunks, ...trunkPartial],
+          leaves: [...accTrunk.leaves, ...leavesPartial],
+        };
+      },
+      { trunks: [], leaves: [] },
+    );
+
+    const branchPartial = { _: "branch", branch };
+
+    const metaPartial =
+      metaRecords.find((record) => record.branch === branch) ?? {};
+
+    // if branch has no trunks, it's a root
+    if (relationsPartial.trunks.length === 0) {
+      const rootRecord = { ...branchPartial, ...metaPartial };
+
+      return [...accBranch, rootRecord];
+    }
+
+    const branchRecord = {
+      ...branchPartial,
+      ...metaPartial,
+      ...relationsPartial,
+    };
+
+    return [...accBranch, branchRecord];
+  }, []);
+
+  return branchRecords;
+}
+
+// load git state and schema from folder into the record
+export async function loadRepoRecord(record) {
+  const repoUUID = record.repo;
+
+  const api = new API(repoUUID);
+
+  const [schemaRecord] = await api.select({ _: "_" });
+
+  // query {_:branch}
+  const metaRecords = await api.select({ _: "branch" });
+
+  // add trunk field from schema record to branch records
+  const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
+
+  const branchPartial = { branch: branchRecords };
+
+  // get remote
+  const tagsRemotePartial = await readRemotes(api);
+
+  // get locals
+  const tagsLocalPartial = await readLocals(api);
+
+  const recordNew = {
+    ...record,
+    ...branchPartial,
+    ...tagsRemotePartial,
+    ...tagsLocalPartial,
+  };
+
+  return recordNew;
+}

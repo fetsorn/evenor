@@ -15,14 +15,7 @@ export function OverviewRecord(props) {
         {(leaf, index) => {
           const items = props.record[leaf];
 
-          return (
-            <OverviewField
-              {...{
-                baseRecord: props.baseRecord,
-                items,
-              }}
-            />
-          );
+          return <OverviewField baseRecord={props.baseRecord} items={items} />;
         }}
       </For>
     </span>

@@ -5,21 +5,8 @@ export function OverviewFieldItem(props) {
   const baseIsTwig = isTwig(schema, base);
 
   if (baseIsTwig) {
-    return (
-      <OverviewValue
-        {...{
-          value: item,
-        }}
-      />
-    );
+    return <OverviewValue value={item} />;
   }
 
-  return (
-    <OverviewRecord
-      {...{
-        baseRecord: props.baseRecord,
-        record: props.item,
-      }}
-    />
-  );
+  return <OverviewRecord baseRecord={props.baseRecord} record={props.item} />;
 }

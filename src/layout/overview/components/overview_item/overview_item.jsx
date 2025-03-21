@@ -8,7 +8,7 @@ export function OverviewItem(props) {
 
       <a onClick={() => onRecordEdit(props.item)}>edit</a>
 
-      <OverviewRecord {...{ baseRecord: props.item, record: props.item }} />
+      <OverviewRecord baseRecord={props.item} record={props.item} />
     </span>
   );
 }

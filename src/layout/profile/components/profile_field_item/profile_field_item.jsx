@@ -10,24 +10,16 @@ export function ProfileFieldItem(props) {
   const branchIsTwig = isTwig(store.schema, props.branch);
 
   if (branchIsTwig) {
-    return (
-      <ProfileValue
-        {...{
-          value: props.item,
-        }}
-      />
-    );
+    return <ProfileValue value={props.item} />;
   }
 
   return (
     <span>
       <ProfileRecord
-        {...{
-          baseRecord: props.baseRecord,
-          record: props.item,
-          onRecordChange: (record) => props.onFieldItemChange(record),
-          onRecordRemove: () => onFieldItemRemove(),
-        }}
+        baseRecord={props.baseRecord}
+        record={props.item}
+        onRecordChange={(record) => props.onFieldItemChange(record)}
+        onRecordRemove={() => onFieldItemRemove()}
       />
 
       <Show

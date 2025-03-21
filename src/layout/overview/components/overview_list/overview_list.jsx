@@ -27,7 +27,7 @@ export function OverviewList() {
           position: "relative",
         }}
       >
-        <For each={items} fallback={<span>no items</span>}>
+        <For each={items} fallback={<span>list no items</span>}>
           {(virtualRow) => (
             <div
               style={{

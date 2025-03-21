@@ -33,13 +33,11 @@ export function ProfileField(props) {
           return (
             <span>
               <ProfileFieldItem
-                {...{
-                  baseRecord: props.baseRecord,
-                  branch: props.branch,
-                  item,
-                  onFieldItemChange: (i) => onFieldItemChange(index, i),
-                  onFieldItemRemove: () => onFieldItemRemove(index),
-                }}
+                baseRecord={props.baseRecord}
+                branch={props.branch}
+                item={item}
+                onFieldItemChange={(i) => onFieldItemChange(index, i)}
+                onFieldItemRemove={() => onFieldItemRemove(index)}
               />
 
               <Show

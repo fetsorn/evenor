@@ -21,7 +21,7 @@ export function Overview() {
 
       <OverviewFilter />
 
-      <OverviewList />
+      <OverviewList items={store.records} />
     </div>
   );
 }

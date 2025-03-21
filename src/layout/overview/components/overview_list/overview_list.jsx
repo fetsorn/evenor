@@ -4,13 +4,16 @@ import { StoreContext } from "@/store/index.js";
 import { OverviewItem } from "..";
 import styles from "./overview_list.module.css";
 
-export function OverviewList() {
+export function OverviewList(props) {
   let parentRef;
 
   const { store } = useContext(StoreContext);
 
   const virtualizer = createVirtualizer({
-    count: store.records.length,
+    // TODO: remove get and reflect
+    get count() {
+      return Reflect.get(props.items ?? [], "length");
+    },
     getScrollElement: () => parentRef,
     estimateSize: () => 35,
     overscan: 5,
@@ -39,7 +42,7 @@ export function OverviewList() {
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <OverviewItem item={store.records[virtualRow.index]} />
+              <OverviewItem item={props.items[virtualRow.index]} />
             </div>
           )}
         </For>

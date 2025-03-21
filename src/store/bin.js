@@ -704,3 +704,165 @@ export async function loadRepoRecord(record) {
 
   return recordNew;
 }
+
+async function writeRemotes(api, tags) {
+  if (tags) {
+    const tagsList = Array.isArray(tags) ? tags : [tags];
+
+    for (const tag of tagsList) {
+      try {
+        await api.addRemote(
+          tag.remote_tag,
+          tag.remote_url[0],
+          tag.remote_token,
+        );
+      } catch (e) {
+        console.log(e);
+        // do nothing
+      }
+    }
+  }
+}
+
+async function writeLocals(api, tags) {
+  if (tags) {
+    const tagList = Array.isArray(tags) ? tags : [tags];
+
+    for (const tag of tagList) {
+      try {
+        api.addAssetPath(tag);
+      } catch {
+        // do nothing
+      }
+    }
+  }
+}
+
+// extract schema record with trunks from branch records
+// turn [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
+// into [{ _: _, branch1: branch2 }, { _: branch, branch: "branch2", task: "date" }]
+export function extractSchemaRecords(branchRecords) {
+  const records = branchRecords.reduce(
+    (acc, branchRecord) => {
+      const { trunk, ...branchRecordOmitted } = branchRecord;
+
+      const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+      const schemaRecord =
+        trunk !== undefined
+          ? {
+              ...acc.schemaRecord,
+              [trunk]: [branchRecord.branch, ...accLeaves],
+            }
+          : acc.schemaRecord;
+
+      const metaRecords = [branchRecordOmitted, ...acc.metaRecords];
+
+      return { schemaRecord, metaRecords };
+    },
+    { schemaRecord: { _: "_" }, metaRecords: [] },
+  );
+
+  return [records.schemaRecord, ...records.metaRecords];
+}
+
+// turn
+// { _: "_", event: [ "datum" ] },
+// [ { _: branch, branch: "event", description_en: "", description_ru: "" },
+//   { _: branch, branch: "datum" }
+// ]
+// into
+// { event: { description: { en: "", ru: "" } }, datum: { trunk: "event" } }
+export function recordsToSchema(schemaRecord, metaRecords) {
+  // [[branch1, [branch2]]]
+  const schemaRelations = Object.entries(schemaRecord).filter(
+    ([key]) => key !== "_",
+  );
+
+  // list of unique branches in the schema
+  const branches = [...new Set(schemaRelations.flat(Infinity))];
+
+  const schema = branches.reduce((accBranch, branch) => {
+    const relationsPartial = schemaRelations.reduce(
+      (accTrunk, [trunk, leaves]) => {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+
+        const leavesPartial = trunk === branch ? leaves : [];
+
+        return {
+          trunks: [...accTrunk.trunks, ...trunkPartial],
+          leaves: [...accTrunk.leaves, ...leavesPartial],
+        };
+      },
+      { trunks: [], leaves: [] },
+    );
+
+    const metaRecord =
+      metaRecords.find((record) => record.branch === branch) ?? {};
+
+    const { task, cognate, description_en, description_ru } = metaRecord;
+
+    const taskPartial = task !== undefined ? { task } : {};
+
+    const cognatePartial = cognate !== undefined ? { cognate } : {};
+
+    const enPartial =
+      description_en !== undefined ? { en: description_en } : undefined;
+
+    const ruPartial =
+      description_ru !== undefined ? { ru: description_ru } : undefined;
+
+    const descriptionPartial =
+      enPartial || ruPartial
+        ? { description: { ...enPartial, ...ruPartial } }
+        : {};
+
+    const branchPartial = {
+      [branch]: {
+        ...relationsPartial,
+        ...taskPartial,
+        ...cognatePartial,
+        ...descriptionPartial,
+      },
+    };
+
+    return { ...accBranch, ...branchPartial };
+  }, {});
+
+  return schema;
+}
+
+// clone or populate repo, write git state
+export async function saveRepoRecord(record) {
+  const repoUUID = record.repo;
+
+  const api = new API(repoUUID);
+
+  // extract schema record with trunks from branch records
+  const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
+
+  const schema = recordsToSchema(schemaRecord, metaRecords);
+
+  // create repo directory with a schema
+  // TODO record.reponame is a list, iterate over items
+  await api.ensure(record.reponame[0]);
+
+  await api.updateRecord(schemaRecord);
+
+  for (const metaRecord of metaRecords) {
+    await api.updateRecord(metaRecord);
+  }
+
+  // write remotes to .git/config
+  await writeRemotes(api, record.remote_tag);
+
+  // write locals to .git/config
+  await writeLocals(api, record.local_tag);
+
+  await api.commit();
+
+  return;
+}

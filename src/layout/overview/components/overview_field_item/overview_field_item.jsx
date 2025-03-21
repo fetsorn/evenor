@@ -1,11 +1,14 @@
-import { isTwig } from "@/store/index.js";
+import { useContext } from "solid-js";
+import { StoreContext, isTwig } from "@/store/index.js";
 import { OverviewRecord, OverviewValue } from "../index.js";
 
 export function OverviewFieldItem(props) {
-  const baseIsTwig = isTwig(schema, base);
+  const { store } = useContext(StoreContext);
+
+  const baseIsTwig = isTwig(store.schema, props.branch);
 
   if (baseIsTwig) {
-    return <OverviewValue value={item} />;
+    return <OverviewValue value={props.item} />;
   }
 
   return <OverviewRecord baseRecord={props.baseRecord} record={props.item} />;

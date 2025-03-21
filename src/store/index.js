@@ -10,6 +10,7 @@ import {
   defaultRepoRecord,
   newUUID,
   loadRepoRecord,
+  saveRepoRecord,
 } from "./bin.js";
 
 export const StoreContext = createContext();
@@ -151,6 +152,10 @@ export async function onRecordSave(recordOld, recordNew) {
 
   await api.commit();
 
+  if (canSaveRepo) {
+    await saveRepoRecord(recordNew);
+  }
+
   const records = store.records
     .filter((r) => r[base] !== recordOld[base])
     .concat([recordNew]);
@@ -173,7 +178,9 @@ export async function onRecordWipe(record) {
 
   await api.commit();
 
-  const records = store.records.filter((r) => r[base] !== record[base]);
+  const records = store.records.filter(
+    (r) => r[store.queries._] !== record[store.queries._],
+  );
 
   setStore("records", records);
 }

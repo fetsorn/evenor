@@ -27,7 +27,7 @@ export function Spoiler(props) {
   return (
     <Show
       when={isOpen(props.index)}
-      fallback={<a onClick={open}>{props.title}...</a>}
+      fallback={<a onClick={open}>{props.title}... </a>}
     >
       <span>
         <a onClick={close}>{props.title}:</a>

@@ -23,6 +23,8 @@ export function ProfileFieldItem(props) {
         onRecordRemove={() => onFieldItemRemove()}
       />
 
+      <span> </span>
+
       <Show
         when={confirmation()}
         fallback={
@@ -34,6 +36,7 @@ export function ProfileFieldItem(props) {
         <span>
           really remove?
           <a onClick={() => onFieldItemRemove()}>Yes</a>
+          <span> </span>
           <a onClick={() => setConfirmation(false)}>No</a>
         </span>
       </Show>

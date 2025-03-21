@@ -33,6 +33,8 @@ export function ProfileField(props) {
 
           return (
             <span>
+              <span> </span>
+
               <ProfileFieldItem
                 index={`${props.index}-${index}`}
                 baseRecord={props.baseRecord}
@@ -41,6 +43,8 @@ export function ProfileField(props) {
                 onFieldItemChange={(i) => onFieldItemChange(index, i)}
                 onFieldItemRemove={() => onFieldItemRemove(index)}
               />
+
+              <span> </span>
 
               <Show
                 when={confirmation()}
@@ -53,6 +57,7 @@ export function ProfileField(props) {
                 <span>
                   really remove?
                   <a onClick={() => onFieldItemRemove(index)}>Yes</a>
+                  <span> </span>
                   <a onClick={() => setConfirmation(false)}>No</a>
                 </span>
               </Show>
@@ -60,6 +65,8 @@ export function ProfileField(props) {
           );
         }}
       </For>
+
+      <span> </span>
 
       <Show
         when={confirmationBulk()}
@@ -72,6 +79,7 @@ export function ProfileField(props) {
         <span>
           really remove?
           <a onClick={() => props.onFieldRemove(props.branch)}>Yes</a>
+          <span> </span>
           <a onClick={() => setConfirmationBulk(false)}>No</a>
         </span>
       </Show>

@@ -64,6 +64,8 @@ export function ProfileRecord(props) {
 
             return (
               <span>
+                <span> </span>
+
                 <ProfileField
                   index={`${props.index}-${leaf}`}
                   baseRecord={props.baseRecord}
@@ -73,11 +75,13 @@ export function ProfileRecord(props) {
                   onFieldRemove={onFieldRemove}
                 />
 
-                <a onClick={() => addLeafValue(leaf)}>Add another {leaf}</a>
+                <span> </span>
+
+                <a onClick={() => addLeafValue(leaf)}>Add another {leaf} </a>
               </span>
             );
           } else {
-            return <a onClick={() => addLeafValue(leaf)}>Add {leaf}</a>;
+            return <a onClick={() => addLeafValue(leaf)}>Add {leaf} </a>;
           }
         }}
       </For>

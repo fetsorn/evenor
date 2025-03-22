@@ -1,13 +1,9 @@
-import { useContext } from "solid-js";
 import { createVirtualizer } from "@tanstack/solid-virtual";
-import { StoreContext } from "@/store/index.js";
 import { OverviewItem } from "..";
 import styles from "./overview_list.module.css";
 
 export function OverviewList(props) {
   let parentRef;
-
-  const { store } = useContext(StoreContext);
 
   const virtualizer = createVirtualizer({
     // TODO: remove get and reflect
@@ -42,10 +38,21 @@ export function OverviewList(props) {
                 transform: `translateY(${virtualRow.start}px)`,
               }}
             >
-              <OverviewItem
-                index={virtualRow.key}
-                item={props.items[virtualRow.index]}
-              />
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={(node) => {
+                  // https://github.com/TanStack/virtual/issues/930
+                  node.dataset.index = virtualRow.index.toString();
+
+                  virtualizer.measureElement(node);
+                }}
+              >
+                <OverviewItem
+                  index={virtualRow.key}
+                  item={props.items[virtualRow.index]}
+                />
+              </div>
             </div>
           )}
         </For>

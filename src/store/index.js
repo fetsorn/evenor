@@ -5,6 +5,7 @@ import {
   foo,
   bar,
   baz,
+  bux,
   qux,
   schemaRoot,
   setURL,
@@ -74,9 +75,7 @@ export async function onSearch(field, value) {
       // when selecting a repo, load git state and schema from folder into the record
       const record = canSelectRepo ? await loadRepoRecord(chunk) : chunk;
 
-      const records = [...store.records, record];
-
-      setStore({ records });
+      setStore("records", store.records.length, record);
     },
 
     abort() {
@@ -98,14 +97,16 @@ export async function onLaunch() {
   // ensure there is a root dataset
   await foo();
 
+  const { schema, repo } = await bux();
+
+  setStore("repo", repo);
+
+  setStore("schema", schema);
+
   // get queries from url
-  const { queries, base, sortBy } = bar();
+  const queries = bar();
 
-  setStore("schema", schemaRoot);
-
-  setStore("queries", { ...queries, _: base, ".sortBy": sortBy });
-
-  setStore("repo", { _: "repo", repo: "root" });
+  setStore("queries", queries);
 
   // start a search stream
   await onSearch("", undefined);

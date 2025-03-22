@@ -13,10 +13,7 @@ import { sha256 } from "js-sha256";
  * @returns {object} - A condensed record.
  */
 export function isTwig(schema, branch) {
-  return (
-    Object.keys(schema).filter((b) => schema[b].trunks.includes(branch))
-      .length === 0
-  );
+  return schema[branch].leaves.length === 0;
 }
 
 export const schemaRoot = {
@@ -507,10 +504,101 @@ export async function foo() {
   await apiRoot.commit();
 }
 
-export function bar() {
-  const searchString = history.location.search;
+async function foobar(searchParams) {
+  // if uri specifies a remote
+  // try to clone remote to store
+  // where repo uuid is a digest of remote
+  // and repo name is uri-encoded remote
+  const remote = searchParams.get("~");
 
-  const searchParams = new URLSearchParams(searchString);
+  const token = searchParams.get("-") ?? "";
+
+  const repoUUIDRemote = await digestMessage(remote);
+
+  try {
+    const api = new API(repoUUIDRemote);
+
+    // TODO rimraf the folder if it already exists
+
+    await api.cloneView(remote, token);
+
+    // TODO add new repo to root
+    // TODO return a repo record
+
+    const pathname = new URL(remote).pathname;
+
+    // get repo name from remote
+    const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
+
+    const schemaClone = await readSchema(repoUUIDRemote);
+
+    const [schemaRecordClone, ...metaRecordsClone] =
+      schemaToBranchRecords(schemaClone);
+
+    const branchRecordsClone = enrichBranchRecords(
+      schemaRecordClone,
+      metaRecordsClone,
+    );
+
+    const recordClone = {
+      _: "repo",
+      repo: repoUUIDRemote,
+      reponame: reponameClone,
+      branch: branchRecordsClone,
+      remote_tag: {
+        _: "remote_tag",
+        remote_tag: "",
+        remote_token: token,
+        remote_url: remote,
+      },
+    };
+
+    await get().onRecordUpdate({}, recordClone);
+
+    return { schema: schemaClone, repo: repoClone };
+  } catch (e) {
+    // proceed to choose root repo uuid
+    console.log(e);
+  }
+}
+
+async function fux(repoRoute) {
+  // if repo is in store, find uuid in root folder
+  try {
+    const [repo] = await apiRoot.select({ _: "repo", reponame: repoRoute });
+
+    const { repo: repoUUID } = repo;
+
+    const api = new API(repoUUID);
+
+    const schema = await readSchema(repoUUID);
+
+    return { schema, repo };
+  } catch {
+    // proceed to set repo uuid as root
+  }
+}
+
+export async function bux() {
+  const searchParams = new URLSearchParams(history.location.search);
+
+  const repoRoute = history.location.pathname.replace("/", "");
+
+  if (searchParams.has("~")) {
+    return foobar(searchParams);
+  }
+
+  if (repoRoute !== "") {
+    return fux(repoRoute);
+  }
+
+  return { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
+}
+
+export function bar() {
+  const searchParams = new URLSearchParams(history.location.search);
+
+  const repoRoute = history.location.pathname.replace("/", "");
 
   const sortByURL = searchParams.get(".sortBy");
 
@@ -532,13 +620,11 @@ export function bar() {
   // convert to object, skip reserved fields
   const queries = paramsToQueries(searchParams);
 
-  const repoRoute = history.location.pathname.replace("/", "");
-
   const base = queries._ ?? "repo";
 
   const sortBy = sortByURL ?? getDefaultSortBy(schemaRoot, base, []);
 
-  return { queries, base, sortBy };
+  return { ...queries, _: base, ".sortBy": sortBy };
 }
 
 export function baz(schema, queries, field, value) {

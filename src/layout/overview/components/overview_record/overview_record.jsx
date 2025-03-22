@@ -7,8 +7,6 @@ export function OverviewRecord(props) {
 
   const { _: branch } = props.record;
 
-  const { leaves } = store.schema[branch];
-
   function recordHasLeaf(leaf) {
     return Object.hasOwn(props.record, leaf);
   }
@@ -20,7 +18,7 @@ export function OverviewRecord(props) {
       <span> </span>
 
       <For
-        each={leaves.filter(recordHasLeaf)}
+        each={store.schema[branch].leaves.filter(recordHasLeaf)}
         fallback={<span>record no items</span>}
       >
         {(leaf, index) => {

@@ -1,6 +1,7 @@
 import { useContext } from "solid-js";
-import { StoreContext, isTwig } from "@/store/index.js";
+import { StoreContext, isTwig, newUUID } from "@/store/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
+import { API } from "@/api/index.js";
 
 export function ProfileRecord(props) {
   const { store } = useContext(StoreContext);
@@ -9,12 +10,108 @@ export function ProfileRecord(props) {
     return Object.hasOwn(props.record, leaf);
   }
 
+  async function onClone() {
+    try {
+      const repoUUIDClone = store.record.repo;
+
+      const reponameClone = store.record.reponame[0] ?? props.record.remote_tag;
+
+      const api = new API(repoUUIDClone);
+
+      await api.clone(props.record.remote_url[0], props.record.remote_token[0]);
+
+      const schemaClone = await readSchema(repoUUIDClone);
+
+      await api.ensure(reponameClone);
+
+      const [schemaRecordClone, ...metaRecordsClone] =
+        schemaToBranchRecords(schemaClone);
+
+      const branchRecordsClone = enrichBranchRecords(
+        schemaRecordClone,
+        metaRecordsClone,
+      );
+
+      const recordClone = {
+        _: "repo",
+        repo: repoUUIDClone,
+        reponame: reponameClone,
+        branch: branchRecordsClone,
+        remote_tag: props.record,
+      };
+
+      onRecordInput(recordClone);
+    } catch (e) {
+      console.log("clone failed", e);
+      // do nothing
+    }
+  }
+
+  async function addFileValue(branch) {
+    const filehashBranch = Object.keys(schema).find(
+      (b) => schema[b].trunks.includes(branch) && schema[b].task === "filehash",
+    );
+
+    const filenameBranch = Object.keys(schema).find(
+      (b) => schema[b].trunks.includes(branch) && schema[b].task === "filename",
+    );
+
+    const fileextBranch = Object.keys(schema).find(
+      (b) => schema[b].trunks.includes(branch) && schema[b].task === "fileext",
+    );
+
+    const api = new API(repoUUID);
+
+    const metadata = await api.uploadFile();
+
+    const records = metadata.map(({ hash, name, extension }) => {
+      const filehashPartial = filehashBranch ? { [filehashBranch]: hash } : {};
+
+      const filenamePartial = filenameBranch ? { [filenameBranch]: name } : {};
+
+      const fileextPartial = fileextBranch
+        ? { [fileextBranch]: extension }
+        : {};
+
+      return {
+        _: branch,
+        [branch]: newUUID(),
+        ...filehashPartial,
+        ...filenamePartial,
+        ...fileextPartial,
+      };
+    });
+
+    const valuesOld = props.record[branch];
+
+    const valuesNew =
+      valuesOld === undefined ? records : [...valuesOld, ...records];
+
+    const objectNew = { ...props.record, [branch]: valuesNew };
+
+    onRecordChange(objectNew);
+  }
+
+  const isFile = store.schema[props.record._].task === "file";
+
   function addLeafValue(leaf) {
-    const valueDefault = "";
+    const isLeafFile = store.schema[branch].task === "file";
+
+    if (isLeafFile) {
+      return addFileValue(branch);
+    }
+
+    const isRemote = repoUUID === "root" && branch === "remote_tag";
+
+    const needsUUID = isRemote;
+
+    const valueDefault = needsUUID ? newUUID() : "";
+
+    const remotePartial = isRemote ? { remote_url: "", remote_token: "" } : {};
 
     const value = isTwig(store.schema, leaf)
       ? valueDefault
-      : { _: leaf, [leaf]: valueDefault };
+      : { _: leaf, [leaf]: valueDefault, ...remotePartial };
 
     const valuesOld = props.record[leaf];
 
@@ -45,6 +142,12 @@ export function ProfileRecord(props) {
         branch={props.record._}
         onValueChange={(value) => onFieldChange(props.record._, value)}
       />
+
+      <span> </span>
+
+      <Show when={confirmation()} fallback={<></>}>
+        <a onClick={() => onClone()}>clone</a>
+      </Show>
 
       <span> </span>
 
@@ -83,6 +186,10 @@ export function ProfileRecord(props) {
           }
         }}
       </Index>
+
+      <Show when={isFile} fallback={<></>}>
+        <AssetView record={record} />
+      </Show>
     </span>
   );
 }

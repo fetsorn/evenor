@@ -46,6 +46,7 @@
     "isomorphic-git": "1.29.0",
     "js-sha256": "^0.11.0",
     "jszip": "^3.10.1",
+    "mime": "^4.0.6",
     "solid-js": "^1.9.3",
     "uuid": "^11.0.5",
     "web-streams-polyfill": "^4.1.0",

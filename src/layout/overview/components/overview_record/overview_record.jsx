@@ -5,20 +5,21 @@ import { OverviewField, OverviewValue } from "../index.js";
 export function OverviewRecord(props) {
   const { store } = useContext(StoreContext);
 
-  const { _: branch } = props.record;
-
   function recordHasLeaf(leaf) {
     return Object.hasOwn(props.record, leaf);
   }
 
   return (
     <span>
-      <OverviewValue value={props.record[props.record._]} />
+      <OverviewValue
+        branch={props.record._}
+        value={props.record[props.record._]}
+      />
 
       <span> </span>
 
       <For
-        each={store.schema[branch].leaves.filter(recordHasLeaf)}
+        each={store.schema[props.record._].leaves.filter(recordHasLeaf)}
         fallback={<span>record no items</span>}
       >
         {(leaf, index) => {

@@ -17,7 +17,9 @@ function setIsOpen(index, isOpen) {
 
 export function Spoiler(props) {
   createEffect(() => {
-    setIsOpen(props.index, props.isOpenDefault);
+    if (isOpen(props.index) === undefined) {
+      setIsOpen(props.index, props.isOpenDefault);
+    }
   });
 
   function open() {

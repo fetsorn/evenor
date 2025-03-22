@@ -126,6 +126,9 @@ export async function onRecordEdit(recordNew) {
     ...repoPartial,
   };
 
+  // TODO figure out a way to merge store without undefined
+  setStore({ record: undefined });
+
   setStore({ record });
 }
 

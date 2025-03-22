@@ -9,7 +9,9 @@ export function Overview() {
 
   // if base is twig, it has no connections
   // we can add new values only if base has connections
-  const canAdd = () => store.schema[store.queries._].leaves.length > 0;
+  const canAdd = () =>
+    store.schema[store.queries._] &&
+    store.schema[store.queries._].leaves.length > 0;
 
   // find first available string value for sorting
   function findFirstSortBy(branch, value) {

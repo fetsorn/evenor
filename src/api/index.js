@@ -34,16 +34,12 @@ export class API {
   constructor(uuid) {
     this.uuid = uuid;
 
-    // TODO is unnecessarily created in electron
     this.#browser = new BrowserAPI(uuid);
   }
 
   async helloWorld(someVariable = "") {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return;
-
       case "tauri":
         return invoke("hello_world", { someVariable });
 
@@ -55,9 +51,6 @@ export class API {
   async fetchAsset(filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.fetchAsset(this.uuid, filename);
-
       case "tauri":
         return invoke("fetch_asset", { uuid: this.uuid, filename });
 
@@ -69,9 +62,6 @@ export class API {
   async downloadAsset(content, filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.downloadAsset(this.uuid, content, filename);
-
       case "tauri":
         return invoke("download_asset", { uuid: this.uuid, content, filename });
 
@@ -83,9 +73,6 @@ export class API {
   async putAsset(filename, buffer) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.putAsset(this.uuid, filename, buffer);
-
       case "tauri":
         return invoke("put_asset", { uuid: this.uuid, filename, buffer });
 
@@ -97,9 +84,6 @@ export class API {
   async uploadFile() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.uploadFile(this.uuid);
-
       case "tauri":
         return invoke("upload_file", { uuid: this.uuid });
 
@@ -111,9 +95,6 @@ export class API {
   async select(query) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.select(this.uuid, query);
-
       case "tauri":
         return invoke("select", { uuid: this.uuid, query });
 
@@ -131,37 +112,6 @@ export class API {
 
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return {
-          strm: new ReadableStream({
-            start(controller) {
-              function enqueueHandler(event, record) {
-                try {
-                  controller.enqueue(record);
-                } catch {
-                  // do nothing
-                }
-              }
-
-              closeHandler = () => {
-                try {
-                  controller.close();
-                } catch {
-                  // do nothing
-                }
-              };
-
-              return window.electron.selectStream(
-                uuid,
-                query,
-                enqueueHandler,
-                closeHandler,
-              );
-            },
-          }),
-          closeHandler,
-        };
-
       case "tauri":
         return {
           strm: new ReadableStream({
@@ -202,9 +152,6 @@ export class API {
   async updateRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.updateRecord(this.uuid, record);
-
       case "tauri":
         return invoke("update_record", { uuid: this.uuid, record });
 
@@ -216,9 +163,6 @@ export class API {
   async deleteRecord(record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.deleteRecord(this.uuid, record);
-
       case "tauri":
         return invoke("delete_record", { uuid: this.uuid, record });
 
@@ -230,9 +174,6 @@ export class API {
   async ensure(name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.ensure(this.uuid, name);
-
       case "tauri":
         return invoke("ensure", { uuid: this.uuid, name });
 
@@ -244,9 +185,6 @@ export class API {
   async commit() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.commit(this.uuid);
-
       case "tauri":
         return invoke("commit", { uuid: this.uuid });
 
@@ -259,9 +197,6 @@ export class API {
   async clone(remoteUrl, remoteToken, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.clone(this.uuid, remoteUrl, remoteToken, name);
-
       case "tauri":
         return invoke("clone", {
           uuid: this.uuid,
@@ -278,9 +213,6 @@ export class API {
   async push(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.push(this.uuid, remote);
-
       case "tauri":
         return invoke("push", { uuid: this.uuid, remote });
 
@@ -292,9 +224,6 @@ export class API {
   async pull(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.pull(this.uuid, remote);
-
       case "tauri":
         return invoke("pull", { uuid: this.uuid, remote });
 
@@ -306,9 +235,6 @@ export class API {
   async uploadBlobsLFS(remote, files) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.uploadBlobsLFS(this.uuid, remote, files);
-
       case "tauri":
         return invoke("upload_blobs_LFS", { uuid: this.uuid, remote, files });
 
@@ -320,9 +246,6 @@ export class API {
   async zip() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.zip(this.uuid);
-
       case "tauri":
         return invoke("zip", { uuid: this.uuid });
 
@@ -334,9 +257,6 @@ export class API {
   async listRemotes() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.listRemotes(this.uuid);
-
       case "tauri":
         return invoke("list_remotes", { uuid: this.uuid });
 
@@ -348,14 +268,6 @@ export class API {
   async addRemote(remoteName, remoteUrl, remoteToken) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.addRemote(
-          this.uuid,
-          remoteName,
-          remoteUrl,
-          remoteToken,
-        );
-
       case "tauri":
         return invoke("add_remote", {
           uuid: this.uuid,
@@ -372,9 +284,6 @@ export class API {
   async getRemote(remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.getRemote(this.uuid, remote);
-
       case "tauri":
         return invoke("get_remote", { uuid: this.uuid, remote });
 
@@ -386,9 +295,6 @@ export class API {
   async addAssetPath(assetPath) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.addAssetPath(this.uuid, assetPath);
-
       case "tauri":
         return invoke("add_asset_path", { uuid: this.uuid, assetPath });
 
@@ -400,9 +306,6 @@ export class API {
   async listAssetPaths() {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.listAssetPaths(this.uuid);
-
       case "tauri":
         return invoke("list_asset_paths", { uuid: this.uuid });
 
@@ -414,14 +317,6 @@ export class API {
   async downloadUrlFromPointer(url, token, pointerInfo) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
-      case "electron":
-        return window.electron.downloadUrlFromPointer(
-          this.uuid,
-          url,
-          token,
-          pointerInfo,
-        );
-
       case "tauri":
         return invoke("download_url_from_pointer", {
           uuid: this.uuid,

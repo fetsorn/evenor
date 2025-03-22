@@ -1,5 +1,6 @@
-import { findCrown } from "@fetsorn/csvs-js";
+import history from "history/hash";
 import { API } from "../api/index.js";
+import { findCrown } from "@fetsorn/csvs-js";
 import { v4 as uuidv4 } from "uuid";
 import { sha256 } from "js-sha256";
 
@@ -12,536 +13,7 @@ import { sha256 } from "js-sha256";
  * @returns {object} - A condensed record.
  */
 export function isTwig(schema, branch) {
-  return (
-    Object.keys(schema).filter((b) => schema[b].trunks.includes(branch))
-      .length === 0
-  );
-}
-
-// add trunk field from schema record to branch records
-// turn { _: _, branch1: [ branch2 ] }, [{ _: branch, branch: "branch2", task: "date" }]
-// into [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
-export function enrichBranchRecords(schemaRecord, metaRecords) {
-  // [[branch1, [branch2]]]
-  const schemaRelations = Object.entries(schemaRecord).filter(
-    ([key]) => key !== "_",
-  );
-
-  // list of unique branches in the schema
-  const branches = [...new Set(schemaRelations.flat(Infinity))];
-
-  const branchRecords = branches.reduce((accBranch, branch) => {
-    // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunks
-    const relationsPartial = schemaRelations.reduce(
-      (accTrunk, [trunk, leaves]) => {
-        // if old is array, [ ...old, new ]
-        // if old is string, [ old, new ]
-        // is old is undefined, [ new ]
-        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
-
-        const leavesPartial = trunk === branch ? leaves : [];
-
-        return {
-          trunks: [...accTrunk.trunks, ...trunkPartial],
-          leaves: [...accTrunk.leaves, ...leavesPartial],
-        };
-      },
-      { trunks: [], leaves: [] },
-    );
-
-    const branchPartial = { _: "branch", branch };
-
-    const metaPartial =
-      metaRecords.find((record) => record.branch === branch) ?? {};
-
-    // if branch has no trunks, it's a root
-    if (relationsPartial.trunks.length === 0) {
-      const rootRecord = { ...branchPartial, ...metaPartial };
-
-      return [...accBranch, rootRecord];
-    }
-
-    const branchRecord = {
-      ...branchPartial,
-      ...metaPartial,
-      ...relationsPartial,
-    };
-
-    return [...accBranch, branchRecord];
-  }, []);
-
-  return branchRecords;
-}
-
-export function getDefaultBase(schema) {
-  // find a sane default branch to select
-  const base = Object.keys(schema).find((branch) => {
-    // does not have a trunk
-    const isRoot = !Object.hasOwn(schema[branch], "trunk");
-
-    // not the metadata schema branch
-    const isData = branch !== "branch";
-
-    return isRoot && isData;
-  });
-
-  return base;
-}
-
-// pick a param to group data by
-export function getDefaultSortBy(schema, base, records) {
-  // TODO rewrite to const and tertials
-  let sortBy;
-
-  const crown = findCrown(schema, base);
-
-  const record = records[0] ?? {};
-
-  // fallback to first date param present in data
-  sortBy = crown.find(
-    (branch) => schema[branch].task === "date" && Object.hasOwn(record, branch),
-  );
-
-  // fallback to first param present in data
-  if (!sortBy) {
-    sortBy = crown.find((branch) => Object.hasOwn(record, branch));
-  }
-
-  // fallback to first date param present in schema
-  if (!sortBy) {
-    sortBy = crown.find((branch) => schema[branch].task === "date");
-  }
-
-  // fallback to first param present in schema
-  if (!sortBy) {
-    [sortBy] = crown;
-  }
-
-  // unreachable with a valid scheme
-  if (!sortBy) {
-    return base;
-    // throw Error("failed to find default sortBy in the schema");
-  }
-
-  return sortBy;
-}
-
-async function readRemotes(api) {
-  try {
-    const remotes = await api.listRemotes();
-
-    const remoteTags = await Promise.all(
-      remotes.map(async (remoteName) => {
-        const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
-
-        const partialToken = remoteToken ? { remote_token: remoteToken } : {};
-
-        return {
-          _: "remote_tag",
-          remote_name: remoteName,
-          remote_url: remoteUrl,
-          ...partialToken,
-        };
-      }),
-    );
-
-    return { remote_tag: remoteTags };
-  } catch {
-    return {};
-  }
-}
-
-async function readLocals(api) {
-  try {
-    const locals = await api.listAssetPaths();
-
-    return locals.reduce(
-      (acc, local) => {
-        const tagsLocalOld = acc.local_tag;
-
-        return { ...acc, remote_tag: [...tagsLocalOld, local] };
-      },
-      { local_tag: [] },
-    );
-  } catch {
-    return {};
-  }
-}
-
-// load git state and schema from folder into the record
-export async function loadRepoRecord(record) {
-  const repoUUID = record.repo;
-
-  const api = new API(repoUUID);
-
-  const [schemaRecord] = await api.select({ _: "_" });
-
-  // query {_:branch}
-  const metaRecords = await api.select({ _: "branch" });
-
-  // add trunk field from schema record to branch records
-  const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
-
-  const branchPartial = { branch: branchRecords };
-
-  // get remote
-  const tagsRemotePartial = await readRemotes(api);
-
-  // get locals
-  const tagsLocalPartial = await readLocals(api);
-
-  const recordNew = {
-    ...record,
-    ...branchPartial,
-    ...tagsRemotePartial,
-    ...tagsLocalPartial,
-  };
-
-  return recordNew;
-}
-
-async function writeRemotes(api, tags) {
-  if (tags) {
-    const tagsList = Array.isArray(tags) ? tags : [tags];
-
-    for (const tag of tagsList) {
-      try {
-        await api.addRemote(
-          tag.remote_tag,
-          tag.remote_url[0],
-          tag.remote_token,
-        );
-      } catch (e) {
-        console.log(e);
-        // do nothing
-      }
-    }
-  }
-}
-
-async function writeLocals(api, tags) {
-  if (tags) {
-    const tagList = Array.isArray(tags) ? tags : [tags];
-
-    for (const tag of tagList) {
-      try {
-        api.addAssetPath(tag);
-      } catch {
-        // do nothing
-      }
-    }
-  }
-}
-
-// extract schema record with trunks from branch records
-// turn [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
-// into [{ _: _, branch1: branch2 }, { _: branch, branch: "branch2", task: "date" }]
-export function extractSchemaRecords(branchRecords) {
-  const records = branchRecords.reduce(
-    (acc, branchRecord) => {
-      const { trunk, ...branchRecordOmitted } = branchRecord;
-
-      const accLeaves = acc.schemaRecord[trunk] ?? [];
-
-      const schemaRecord =
-        trunk !== undefined
-          ? {
-              ...acc.schemaRecord,
-              [trunk]: [branchRecord.branch, ...accLeaves],
-            }
-          : acc.schemaRecord;
-
-      const metaRecords = [branchRecordOmitted, ...acc.metaRecords];
-
-      return { schemaRecord, metaRecords };
-    },
-    { schemaRecord: { _: "_" }, metaRecords: [] },
-  );
-
-  return [records.schemaRecord, ...records.metaRecords];
-}
-
-// clone or populate repo, write git state
-export async function saveRepoRecord(record) {
-  const repoUUID = record.repo;
-
-  const api = new API(repoUUID);
-
-  // extract schema record with trunks from branch records
-  const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
-
-  const schema = recordsToSchema(schemaRecord, metaRecords);
-
-  // create repo directory with a schema
-  // TODO record.reponame is a list, iterate over items
-  await api.ensure(record.reponame[0]);
-
-  await api.updateRecord(schemaRecord);
-
-  for (const metaRecord of metaRecords) {
-    await api.updateRecord(metaRecord);
-  }
-
-  // write remotes to .git/config
-  await writeRemotes(api, record.remote_tag);
-
-  // write locals to .git/config
-  await writeLocals(api, record.local_tag);
-
-  await api.commit();
-
-  return;
-}
-
-function queriesToParams(queriesObject) {
-  const searchParams = new URLSearchParams();
-
-  Object.keys(queriesObject).map((key) =>
-    queriesObject[key] === ""
-      ? null
-      : searchParams.set(key, queriesObject[key]),
-  );
-
-  return searchParams;
-}
-
-export function setURL(queries, base, sortBy, repoUUID, reponame) {
-  const searchParams = queriesToParams(queries);
-
-  searchParams.set("_", base);
-
-  if (sortBy) {
-    searchParams.set(".sortBy", sortBy);
-  }
-
-  const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
-
-  const searchStringNew = searchParams.toString();
-
-  const urlNew = `${pathname}?${searchStringNew}`;
-
-  window.history.replaceState(null, null, urlNew);
-
-  return searchParams;
-}
-
-/**
- * This generates a UUID.
- * @name randomUUIDPolyfill
- * @function
- * @returns {string} - UUID compliant with RFC 4122.
- */
-export async function randomUUID() {
-  if (typeof window === "undefined") {
-    const crypto = await import("crypto");
-
-    return crypto.randomUUID();
-  }
-  if (crypto.randomUUID) {
-    return crypto.randomUUID();
-  }
-
-  return ([1e7] + -1e3 + -4e3 + -8e3 + -1e11).replace(/[018]/g, (c) =>
-    (
-      c ^
-      (crypto.getRandomValues(new Uint8Array(1))[0] & (15 >> (c / 4)))
-    ).toString(16),
-  );
-}
-
-/**
- * This generates a SHA-256 hashsum.
- * @name digestMessage
- * @function
- * @param {string} message - A string.
- * @returns {string} - SHA-256 hashsum.
- */
-export async function digestMessage(message) {
-  // hash as buffer
-  // const hashBuffer = await digest(message);
-
-  let hashBuffer;
-
-  if (typeof window === "undefined") {
-    const crypto = await import("crypto");
-
-    // hashBuffer = crypto.createHash('sha256').update(message, 'utf8').digest();
-    hashBuffer = await crypto.webcrypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(message),
-    );
-  } else {
-    hashBuffer = await crypto.subtle.digest(
-      "SHA-256",
-      new TextEncoder().encode(message),
-    );
-  }
-
-  // convert buffer to byte array
-  const hashArray = Array.from(new Uint8Array(hashBuffer));
-
-  // convert bytes to hex string
-  const hashHex = hashArray
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-
-  return hashHex;
-}
-
-/**
- * This returns an array of records from the dataset.
- * @name searchParamsToQuery
- * @export function
- * @param {URLSearchParams} urlSearchParams - search params from a query string.
- * @returns {Object}
- */
-export function searchParamsToQuery(schema, searchParams) {
-  // TODO rewrite to schemaRecord
-  const urlSearchParams = new URLSearchParams(searchParams.toString());
-
-  if (!urlSearchParams.has("_")) return {};
-
-  const base = urlSearchParams.get("_");
-
-  urlSearchParams.delete("_");
-
-  urlSearchParams.delete("__");
-
-  const entries = Array.from(urlSearchParams.entries());
-
-  // TODO: if key is leaf, add it to value of trunk
-  const query = entries.reduce(
-    (acc, [branch, value]) => {
-      // TODO: can handly only two levels of nesting, suffices for compatibility
-      // push to [trunk]: { [key]: [ value ] }
-
-      const trunk1 =
-        schema[branch] !== undefined ? schema[branch].trunks[0] : undefined;
-
-      if (trunk1 === base || branch === base) {
-        return { ...acc, [branch]: value };
-      }
-
-      const trunk2 =
-        schema[trunk1] !== undefined ? schema[trunk1].trunks[0] : undefined;
-
-      if (trunk2 === base) {
-        const trunk1Record = acc[trunk1] ?? { _: trunk1 };
-
-        return { ...acc, [trunk1]: { ...trunk1Record, [branch]: value } };
-      }
-
-      const trunk3 =
-        schema[trunk2] !== undefined ? schema[trunk2].trunks[0] : undefined;
-
-      if (trunk3 === base) {
-        const trunk2Record = acc[trunk2] ?? { _: trunk2 };
-
-        const trunk1Record = trunk2Record[trunk1] ?? { _: trunk1 };
-
-        return {
-          ...acc,
-          [trunk2]: {
-            ...trunk2Record,
-            [trunk1]: {
-              ...trunk1Record,
-              [branch]: value,
-            },
-          },
-        };
-      }
-
-      return acc;
-    },
-    { _: base },
-  );
-
-  return query;
-}
-
-// turn
-// { _: "_", event: [ "datum" ] },
-// [ { _: branch, branch: "event", description_en: "", description_ru: "" },
-//   { _: branch, branch: "datum" }
-// ]
-// into
-// { event: { description: { en: "", ru: "" } }, datum: { trunk: "event" } }
-export function recordsToSchema(schemaRecord, metaRecords) {
-  // [[branch1, [branch2]]]
-  const schemaRelations = Object.entries(schemaRecord).filter(
-    ([key]) => key !== "_",
-  );
-
-  // list of unique branches in the schema
-  const branches = [...new Set(schemaRelations.flat(Infinity))];
-
-  const schema = branches.reduce((accBranch, branch) => {
-    const relationsPartial = schemaRelations.reduce(
-      (accTrunk, [trunk, leaves]) => {
-        // if old is array, [ ...old, new ]
-        // if old is string, [ old, new ]
-        // is old is undefined, [ new ]
-        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
-
-        const leavesPartial = trunk === branch ? leaves : [];
-
-        return {
-          trunks: [...accTrunk.trunks, ...trunkPartial],
-          leaves: [...accTrunk.leaves, ...leavesPartial],
-        };
-      },
-      { trunks: [], leaves: [] },
-    );
-
-    const metaRecord =
-      metaRecords.find((record) => record.branch === branch) ?? {};
-
-    const { task, cognate, description_en, description_ru } = metaRecord;
-
-    const taskPartial = task !== undefined ? { task } : {};
-
-    const cognatePartial = cognate !== undefined ? { cognate } : {};
-
-    const enPartial =
-      description_en !== undefined ? { en: description_en } : undefined;
-
-    const ruPartial =
-      description_ru !== undefined ? { ru: description_ru } : undefined;
-
-    const descriptionPartial =
-      enPartial || ruPartial
-        ? { description: { ...enPartial, ...ruPartial } }
-        : {};
-
-    const branchPartial = {
-      [branch]: {
-        ...relationsPartial,
-        ...taskPartial,
-        ...cognatePartial,
-        ...descriptionPartial,
-      },
-    };
-
-    return { ...accBranch, ...branchPartial };
-  }, {});
-
-  return schema;
-}
-
-export async function readSchema(uuid) {
-  if (uuid === "root") {
-    return schemaRoot;
-  }
-
-  const api = new API(uuid);
-
-  const [schemaRecord] = await api.select({ _: "_" });
-
-  const branchRecords = await api.select({ _: "branch" });
-
-  const schema = recordsToSchema(schemaRecord, branchRecords);
-
-  return schema;
+  return schema[branch].leaves.length === 0;
 }
 
 export const schemaRoot = {
@@ -828,10 +300,6 @@ export const defaultRepoRecord = {
   ],
 };
 
-export function newUUID() {
-  return sha256(uuidv4());
-}
-
 // turn
 // { event: { description: { en: "", ru: "" } }, datum: { trunk: "event" } }
 // into
@@ -879,4 +347,649 @@ export function schemaToBranchRecords(schema) {
   );
 
   return [records.schemaRecord, ...records.metaRecords];
+}
+
+// pick a param to group data by
+export function getDefaultSortBy(schema, base, records) {
+  // TODO rewrite to const and tertials
+  let sortBy;
+
+  const crown = findCrown(schema, base);
+
+  const record = records[0] ?? {};
+
+  // fallback to first date param present in data
+  sortBy = crown.find(
+    (branch) => schema[branch].task === "date" && Object.hasOwn(record, branch),
+  );
+
+  // fallback to first param present in data
+  if (!sortBy) {
+    sortBy = crown.find((branch) => Object.hasOwn(record, branch));
+  }
+
+  // fallback to first date param present in schema
+  if (!sortBy) {
+    sortBy = crown.find((branch) => schema[branch].task === "date");
+  }
+
+  // fallback to first param present in schema
+  if (!sortBy) {
+    [sortBy] = crown;
+  }
+
+  // unreachable with a valid scheme
+  if (!sortBy) {
+    return base;
+    // throw Error("failed to find default sortBy in the schema");
+  }
+
+  return sortBy;
+}
+
+export function queriesToParams(queriesObject) {
+  const searchParams = new URLSearchParams();
+
+  Object.keys(queriesObject).map((key) =>
+    queriesObject[key] === ""
+      ? null
+      : searchParams.set(key, queriesObject[key]),
+  );
+
+  return searchParams;
+}
+
+export function setURL(queries, base, sortBy, repoUUID, reponame) {
+  const searchParams = queriesToParams(queries);
+
+  searchParams.set("_", base);
+
+  if (sortBy) {
+    searchParams.set(".sortBy", sortBy);
+  }
+
+  const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
+
+  const searchStringNew = searchParams.toString();
+
+  const urlNew = `${pathname}?${searchStringNew}`;
+
+  window.history.replaceState(null, null, urlNew);
+
+  return searchParams;
+}
+
+/**
+ * This returns an array of records from the dataset.
+ * @name searchParamsToQuery
+ * @export function
+ * @param {URLSearchParams} urlSearchParams - search params from a query string.
+ * @returns {Object}
+ */
+export function searchParamsToQuery(schema, searchParams) {
+  // TODO rewrite to schemaRecord
+  const urlSearchParams = new URLSearchParams(searchParams.toString());
+
+  if (!urlSearchParams.has("_")) return {};
+
+  const base = urlSearchParams.get("_");
+
+  urlSearchParams.delete("_");
+
+  urlSearchParams.delete("__");
+
+  const entries = Array.from(urlSearchParams.entries());
+
+  // TODO: if key is leaf, add it to value of trunk
+  const query = entries.reduce(
+    (acc, [branch, value]) => {
+      // TODO: can handly only two levels of nesting, suffices for compatibility
+      // push to [trunk]: { [key]: [ value ] }
+
+      const trunk1 =
+        schema[branch] !== undefined ? schema[branch].trunks[0] : undefined;
+
+      if (trunk1 === base || branch === base) {
+        return { ...acc, [branch]: value };
+      }
+
+      const trunk2 =
+        schema[trunk1] !== undefined ? schema[trunk1].trunks[0] : undefined;
+
+      if (trunk2 === base) {
+        const trunk1Record = acc[trunk1] ?? { _: trunk1 };
+
+        return { ...acc, [trunk1]: { ...trunk1Record, [branch]: value } };
+      }
+
+      const trunk3 =
+        schema[trunk2] !== undefined ? schema[trunk2].trunks[0] : undefined;
+
+      if (trunk3 === base) {
+        const trunk2Record = acc[trunk2] ?? { _: trunk2 };
+
+        const trunk1Record = trunk2Record[trunk1] ?? { _: trunk1 };
+
+        return {
+          ...acc,
+          [trunk2]: {
+            ...trunk2Record,
+            [trunk1]: {
+              ...trunk1Record,
+              [branch]: value,
+            },
+          },
+        };
+      }
+
+      return acc;
+    },
+    { _: base },
+  );
+
+  return query;
+}
+
+export async function foo() {
+  const apiRoot = new API("root");
+
+  await apiRoot.ensure();
+
+  const branchRecords = schemaToBranchRecords(schemaRoot);
+
+  for (const branchRecord of branchRecords) {
+    await apiRoot.updateRecord(branchRecord);
+  }
+
+  await apiRoot.commit();
+}
+
+async function foobar(searchParams) {
+  // if uri specifies a remote
+  // try to clone remote to store
+  // where repo uuid is a digest of remote
+  // and repo name is uri-encoded remote
+  const remote = searchParams.get("~");
+
+  const token = searchParams.get("-") ?? "";
+
+  const repoUUIDRemote = await digestMessage(remote);
+
+  try {
+    const api = new API(repoUUIDRemote);
+
+    // TODO rimraf the folder if it already exists
+
+    await api.cloneView(remote, token);
+
+    // TODO add new repo to root
+    // TODO return a repo record
+
+    const pathname = new URL(remote).pathname;
+
+    // get repo name from remote
+    const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
+
+    const schemaClone = await readSchema(repoUUIDRemote);
+
+    const [schemaRecordClone, ...metaRecordsClone] =
+      schemaToBranchRecords(schemaClone);
+
+    const branchRecordsClone = enrichBranchRecords(
+      schemaRecordClone,
+      metaRecordsClone,
+    );
+
+    const recordClone = {
+      _: "repo",
+      repo: repoUUIDRemote,
+      reponame: reponameClone,
+      branch: branchRecordsClone,
+      remote_tag: {
+        _: "remote_tag",
+        remote_tag: "",
+        remote_token: token,
+        remote_url: remote,
+      },
+    };
+
+    await get().onRecordUpdate({}, recordClone);
+
+    return { schema: schemaClone, repo: repoClone };
+  } catch (e) {
+    // proceed to choose root repo uuid
+    console.log(e);
+  }
+}
+
+async function fux(repoRoute) {
+  // if repo is in store, find uuid in root folder
+  try {
+    const [repo] = await apiRoot.select({ _: "repo", reponame: repoRoute });
+
+    const { repo: repoUUID } = repo;
+
+    const api = new API(repoUUID);
+
+    const schema = await readSchema(repoUUID);
+
+    return { schema, repo };
+  } catch {
+    // proceed to set repo uuid as root
+  }
+}
+
+export async function bux() {
+  const searchParams = new URLSearchParams(history.location.search);
+
+  const repoRoute = history.location.pathname.replace("/", "");
+
+  if (searchParams.has("~")) {
+    return foobar(searchParams);
+  }
+
+  if (repoRoute !== "") {
+    return fux(repoRoute);
+  }
+
+  return { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
+}
+
+export function bar() {
+  const searchParams = new URLSearchParams(history.location.search);
+
+  const repoRoute = history.location.pathname.replace("/", "");
+
+  const sortByURL = searchParams.get(".sortBy");
+
+  function paramsToQueries(searchParamsSet) {
+    const searchParamsObject = Array.from(searchParamsSet).reduce(
+      (acc, [key, value]) => ({ ...acc, [key]: value }),
+      {},
+    );
+
+    const queries = Object.fromEntries(
+      Object.entries(searchParamsObject).filter(
+        ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
+      ),
+    );
+
+    return queries;
+  }
+
+  // convert to object, skip reserved fields
+  const queries = paramsToQueries(searchParams);
+
+  const base = queries._ ?? "repo";
+
+  const sortBy = sortByURL ?? getDefaultSortBy(schemaRoot, base, []);
+
+  return { ...queries, _: base, ".sortBy": sortBy };
+}
+
+export function baz(schema, queries, field, value) {
+  if (field === ".sortBy") {
+    return { ...queries, [field]: value };
+  }
+
+  // if query field is undefined, delete queries
+  if (field === undefined) {
+    return {};
+  } else if (field === "_") {
+    // if query field is base, update default sort by
+    const sortBy = getDefaultSortBy(schema, value, []);
+
+    return { _: value, ".sortBy": sortBy };
+  } else if (field !== "") {
+    // if query field is defined, update queries
+    if (value === undefined) {
+      // if query value is undefined, remove query field
+      const { [field]: omit, ...queriesWithoutField } = queries;
+
+      return queriesWithoutField;
+    } else {
+      // if query value is defined, set query field
+      return { ...queries, [field]: value };
+    }
+  }
+
+  return queries;
+}
+
+export function newUUID() {
+  return sha256(uuidv4());
+}
+
+async function readRemotes(api) {
+  try {
+    const remotes = await api.listRemotes();
+
+    const remoteTags = await Promise.all(
+      remotes.map(async (remoteName) => {
+        const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
+
+        const partialToken = remoteToken ? { remote_token: remoteToken } : {};
+
+        return {
+          _: "remote_tag",
+          remote_name: remoteName,
+          remote_url: remoteUrl,
+          ...partialToken,
+        };
+      }),
+    );
+
+    return { remote_tag: remoteTags };
+  } catch {
+    return {};
+  }
+}
+
+async function readLocals(api) {
+  try {
+    const locals = await api.listAssetPaths();
+
+    return locals.reduce(
+      (acc, local) => {
+        const tagsLocalOld = acc.local_tag;
+
+        return { ...acc, remote_tag: [...tagsLocalOld, local] };
+      },
+      { local_tag: [] },
+    );
+  } catch {
+    return {};
+  }
+}
+
+// add trunk field from schema record to branch records
+// turn { _: _, branch1: [ branch2 ] }, [{ _: branch, branch: "branch2", task: "date" }]
+// into [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
+export function enrichBranchRecords(schemaRecord, metaRecords) {
+  // [[branch1, [branch2]]]
+  const schemaRelations = Object.entries(schemaRecord).filter(
+    ([key]) => key !== "_",
+  );
+
+  // list of unique branches in the schema
+  const branches = [...new Set(schemaRelations.flat(Infinity))];
+
+  const branchRecords = branches.reduce((accBranch, branch) => {
+    // check each key of schemaRecord, if array has branch, push trunk to metaRecord.trunks
+    const relationsPartial = schemaRelations.reduce(
+      (accTrunk, [trunk, leaves]) => {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+
+        const leavesPartial = trunk === branch ? leaves : [];
+
+        return {
+          trunks: [...accTrunk.trunks, ...trunkPartial],
+          leaves: [...accTrunk.leaves, ...leavesPartial],
+        };
+      },
+      { trunks: [], leaves: [] },
+    );
+
+    const branchPartial = { _: "branch", branch };
+
+    const metaPartial =
+      metaRecords.find((record) => record.branch === branch) ?? {};
+
+    // if branch has no trunks, it's a root
+    if (relationsPartial.trunks.length === 0) {
+      const rootRecord = { ...branchPartial, ...metaPartial };
+
+      return [...accBranch, rootRecord];
+    }
+
+    const branchRecord = {
+      ...branchPartial,
+      ...metaPartial,
+      ...relationsPartial,
+    };
+
+    return [...accBranch, branchRecord];
+  }, []);
+
+  return branchRecords;
+}
+
+// load git state and schema from folder into the record
+export async function loadRepoRecord(record) {
+  const repoUUID = record.repo;
+
+  const api = new API(repoUUID);
+
+  const [schemaRecord] = await api.select({ _: "_" });
+
+  // query {_:branch}
+  const metaRecords = await api.select({ _: "branch" });
+
+  // add trunk field from schema record to branch records
+  const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
+
+  const branchPartial = { branch: branchRecords };
+
+  // get remote
+  const tagsRemotePartial = await readRemotes(api);
+
+  // get locals
+  const tagsLocalPartial = await readLocals(api);
+
+  const recordNew = {
+    ...record,
+    ...branchPartial,
+    ...tagsRemotePartial,
+    ...tagsLocalPartial,
+  };
+
+  return recordNew;
+}
+
+async function writeRemotes(api, tags) {
+  if (tags) {
+    const tagsList = Array.isArray(tags) ? tags : [tags];
+
+    for (const tag of tagsList) {
+      try {
+        await api.addRemote(
+          tag.remote_tag,
+          tag.remote_url[0],
+          tag.remote_token,
+        );
+      } catch (e) {
+        console.log(e);
+        // do nothing
+      }
+    }
+  }
+}
+
+async function writeLocals(api, tags) {
+  if (tags) {
+    const tagList = Array.isArray(tags) ? tags : [tags];
+
+    for (const tag of tagList) {
+      try {
+        api.addAssetPath(tag);
+      } catch {
+        // do nothing
+      }
+    }
+  }
+}
+
+// extract schema record with trunks from branch records
+// turn [{ _: branch, branch: "branch2", trunk: "branch1", task: "date" }]
+// into [{ _: _, branch1: branch2 }, { _: branch, branch: "branch2", task: "date" }]
+export function extractSchemaRecords(branchRecords) {
+  const records = branchRecords.reduce(
+    (acc, branchRecord) => {
+      const { trunk, ...branchRecordOmitted } = branchRecord;
+
+      const accLeaves = acc.schemaRecord[trunk] ?? [];
+
+      const schemaRecord =
+        trunk !== undefined
+          ? {
+              ...acc.schemaRecord,
+              [trunk]: [branchRecord.branch, ...accLeaves],
+            }
+          : acc.schemaRecord;
+
+      const metaRecords = [branchRecordOmitted, ...acc.metaRecords];
+
+      return { schemaRecord, metaRecords };
+    },
+    { schemaRecord: { _: "_" }, metaRecords: [] },
+  );
+
+  return [records.schemaRecord, ...records.metaRecords];
+}
+
+// turn
+// { _: "_", event: [ "datum" ] },
+// [ { _: branch, branch: "event", description_en: "", description_ru: "" },
+//   { _: branch, branch: "datum" }
+// ]
+// into
+// { event: { description: { en: "", ru: "" } }, datum: { trunk: "event" } }
+export function recordsToSchema(schemaRecord, metaRecords) {
+  // [[branch1, [branch2]]]
+  const schemaRelations = Object.entries(schemaRecord).filter(
+    ([key]) => key !== "_",
+  );
+
+  // list of unique branches in the schema
+  const branches = [...new Set(schemaRelations.flat(Infinity))];
+
+  const schema = branches.reduce((accBranch, branch) => {
+    const relationsPartial = schemaRelations.reduce(
+      (accTrunk, [trunk, leaves]) => {
+        // if old is array, [ ...old, new ]
+        // if old is string, [ old, new ]
+        // is old is undefined, [ new ]
+        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+
+        const leavesPartial = trunk === branch ? leaves : [];
+
+        return {
+          trunks: [...accTrunk.trunks, ...trunkPartial],
+          leaves: [...accTrunk.leaves, ...leavesPartial],
+        };
+      },
+      { trunks: [], leaves: [] },
+    );
+
+    const metaRecord =
+      metaRecords.find((record) => record.branch === branch) ?? {};
+
+    const { task, cognate, description_en, description_ru } = metaRecord;
+
+    const taskPartial = task !== undefined ? { task } : {};
+
+    const cognatePartial = cognate !== undefined ? { cognate } : {};
+
+    const enPartial =
+      description_en !== undefined ? { en: description_en } : undefined;
+
+    const ruPartial =
+      description_ru !== undefined ? { ru: description_ru } : undefined;
+
+    const descriptionPartial =
+      enPartial || ruPartial
+        ? { description: { ...enPartial, ...ruPartial } }
+        : {};
+
+    const branchPartial = {
+      [branch]: {
+        ...relationsPartial,
+        ...taskPartial,
+        ...cognatePartial,
+        ...descriptionPartial,
+      },
+    };
+
+    return { ...accBranch, ...branchPartial };
+  }, {});
+
+  return schema;
+}
+
+// clone or populate repo, write git state
+export async function saveRepoRecord(record) {
+  const repoUUID = record.repo;
+
+  const api = new API(repoUUID);
+
+  // extract schema record with trunks from branch records
+  const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
+
+  const schema = recordsToSchema(schemaRecord, metaRecords);
+
+  // create repo directory with a schema
+  // TODO record.reponame is a list, iterate over items
+  // TODO what if record.reponame is undefined
+  await api.ensure(record.reponame[0]);
+
+  await api.updateRecord(schemaRecord);
+
+  for (const metaRecord of metaRecords) {
+    await api.updateRecord(metaRecord);
+  }
+
+  // write remotes to .git/config
+  await writeRemotes(api, record.remote_tag);
+
+  // write locals to .git/config
+  await writeLocals(api, record.local_tag);
+
+  await api.commit();
+
+  return;
+}
+
+export async function readSchema(uuid) {
+  if (uuid === "root") {
+    return schemaRoot;
+  }
+
+  const api = new API(uuid);
+
+  const [schemaRecord] = await api.select({ _: "_" });
+
+  const branchRecords = await api.select({ _: "branch" });
+
+  const schema = recordsToSchema(schemaRecord, branchRecords);
+
+  return schema;
+}
+
+export async function qux(uuid, baseNew) {
+  if (uuid === "root") {
+    return {
+      repo: { _: "repo", repo: uuid },
+      schema: schemaRoot,
+      queries: { _: "repo", ".sortBy": "reponame" },
+    };
+  } else {
+    const api = new API("root");
+
+    const [repo] = await api.select({ _: "repo", repo: uuid });
+
+    const schema = await readSchema(uuid);
+
+    const base = baseNew ?? getDefaultBase(schema);
+
+    const sortBy = getDefaultSortBy(schema, base, []);
+
+    return {
+      repo,
+      schema,
+      queries: { _: base, ".sortBy": sortBy },
+    };
+  }
 }

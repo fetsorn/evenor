@@ -1,7 +1,7 @@
 import path from "path";
 import process from "process";
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import solidPlugin from "vite-plugin-solid";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 const host = process.env.TAURI_DEV_HOST;
@@ -39,22 +39,7 @@ export default defineConfig(async () => {
       },
     },
 
-    plugins: [
-      react({
-        presets: [
-          [
-            "@babel/preset-env",
-            { targets: "safari13", useBuiltins: "entry", corejs: "3.36" },
-          ],
-          "@babel/preset-react",
-        ],
-        // Use .babelrc files
-        babelrc: false,
-        // Use babel.config.js files
-        configFile: false,
-      }),
-      nodePolyfills(),
-    ],
+    plugins: [nodePolyfills(), solidPlugin()],
 
     // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
     //
@@ -96,6 +81,7 @@ export default defineConfig(async () => {
     },
 
     define: {
+      global: "globalThis",
       __BUILD_MODE__: JSON.stringify(getBuildMode()),
     },
   };

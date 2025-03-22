@@ -1,64 +1,47 @@
-import React from "react";
-import { useTranslation } from "react-i18next";
-import { create } from "zustand";
+import { createContext, createEffect } from "solid-js";
+import { createStore } from "solid-js/store";
 
-const useSpoilerStore = create()((set, get) => ({
-  mapIsOpen: {},
+export const StoreContext = createContext();
 
-  isOpen: (index) => {
-    const { mapIsOpen } = get();
+export const [store, setStore] = createStore({
+  indexMap: {},
+});
 
-    return mapIsOpen[index];
-  },
+function isOpen(index) {
+  return store.indexMap[index];
+}
 
-  setIsOpen: (index, isOpen) => {
-    const { mapIsOpen } = get();
+function setIsOpen(index, isOpen) {
+  setStore("indexMap", { [index]: isOpen });
+}
 
-    set({ mapIsOpen: { ...mapIsOpen, [index]: isOpen } });
-  },
-}));
-
-export function Spoiler({
-  index,
-  title,
-  description,
-  children,
-  isIgnored,
-  isOpenDefault = false,
-  ...other
-}) {
-  const { t } = useTranslation();
-
-  const [isOpen, setIsOpen] = useSpoilerStore((state) => [
-    state.isOpen,
-    state.setIsOpen,
-  ]);
-
-  if (isOpen(index) === undefined) {
-    setIsOpen(index, isOpenDefault);
-  }
+export function Spoiler(props) {
+  createEffect(() => {
+    if (isOpen(props.index) === undefined) {
+      setIsOpen(props.index, props.isOpenDefault);
+    }
+  });
 
   function open() {
-    setIsOpen(index, true);
+    setIsOpen(props.index, true);
   }
 
   function close() {
-    setIsOpen(index, false);
+    setIsOpen(props.index, false);
   }
 
-  if (isIgnored) {
-    return <div>{children}</div>;
-  }
+  return (
+    <Show
+      when={isOpen(props.index)}
+      fallback={<a onClick={open}>{props.title}... </a>}
+    >
+      <span>
+        <a onClick={close}>{props.title}:</a>
 
-  return isOpen(index) ? (
-    <span key={`${index}-spoiler`}>
-      <a onClick={close}>{description}:</a>
+        <span> </span>
 
-      <span> </span>
-
-      {children}
-    </span>
-  ) : (
-    <a onClick={open}>{description}...</a>
+        {props.children}
+      </span>
+    </Show>
   );
 }

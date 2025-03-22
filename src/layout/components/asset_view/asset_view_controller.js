@@ -146,19 +146,19 @@
 //}
 
 // buf: ArrayBuffer
-async function rtfToHtml(buf) {
-  const { RTFJS } = await import("rtf.js");
-
-  RTFJS.loggingEnabled(false);
-
-  const doc = new RTFJS.Document(buf);
-
-  const divs = await doc.render();
-
-  const html = divs.map((e) => e.outerHTML);
-
-  return html;
-}
+//async function rtfToHtml(buf) {
+//  const { RTFJS } = await import("rtf.js");
+//
+//  RTFJS.loggingEnabled(false);
+//
+//  const doc = new RTFJS.Document(buf);
+//
+//  const divs = await doc.render();
+//
+//  const html = divs.map((e) => e.outerHTML);
+//
+//  return html;
+//}
 
 // importing mammoth fails
 // async function docxToHtml(buf) {
@@ -192,9 +192,9 @@ async function toHtml(path, buf) {
   //   return pptToHtml(buf);
   // }
 
-  if (/.rtf$/.test(path)) {
-    return rtfToHtml(buf);
-  }
+  //if (/.rtf$/.test(path)) {
+  //  return rtfToHtml(buf);
+  //}
 
   throw Error("unknown extension");
 }

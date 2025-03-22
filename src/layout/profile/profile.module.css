@@ -1,6 +1,6 @@
 .sidebar {
   box-sizing: border-box;
-  width: calc(var(--col) * 20);
+  width: 50vw;
 
   flex-grow: 0;
   flex-shrink: 0;
@@ -42,7 +42,7 @@
   /* width: calc(var(--col) * 16); */
 
   overflow-y: auto;
-  max-height: 100vh;
+  max-height: 60vh;
 }
 
 .input {

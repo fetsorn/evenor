@@ -269,7 +269,8 @@ export class BrowserAPI {
 
     const strm = queryStream.pipeThrough(selectStream);
 
-    let closeHandler = () => strm.cancel();
+    // let closeHandler = () => strm.cancel();
+    let closeHandler = () => {};
 
     return { strm, closeHandler };
   }
@@ -282,7 +283,7 @@ export class BrowserAPI {
     await csvs.updateRecord({
       fs,
       dir,
-      query: structuredClone(record),
+      query: record,
     });
   }
 
@@ -292,7 +293,7 @@ export class BrowserAPI {
     await csvs.deleteRecord({
       fs,
       dir: await this.dir(),
-      query: structuredClone(record),
+      query: record,
     });
   }
 

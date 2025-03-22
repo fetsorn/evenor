@@ -1,7 +1,4 @@
-export { InputDate } from "./input_date/index.js";
-export { InputText } from "./input_text/index.js";
-export { InputTextarea } from "./input_textarea/index.js";
-export { InputContenteditable } from "./input_contenteditable/index.js";
-export { EditInput } from "./edit_input/index.js";
-export { EditRecord } from "./edit_record/index.js";
-export { EditField } from "./edit_field/index.js";
+export { ProfileRecord } from "./profile_record/profile_record.jsx";
+export { ProfileField } from "./profile_field/profile_field.jsx";
+export { ProfileFieldItem } from "./profile_field_item/profile_field_item.jsx";
+export { ProfileValue } from "./profile_value/profile_value.jsx";

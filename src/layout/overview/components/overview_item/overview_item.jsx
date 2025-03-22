@@ -1,100 +1,78 @@
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next";
-import { useStore } from "@/store/index.js";
-import cn from "classnames";
-import styles from "./overview_item.module.css";
-import { ViewRecord } from "../index.js";
+import { createSignal, useContext } from "solid-js";
+import { StoreContext } from "@/store/index.js";
+import { onRecordEdit, onRecordWipe, onRepoChange } from "@/store/index.js";
+import { OverviewRecord } from "../index.js";
 import { Spoiler } from "@/layout/components/index.js";
+import { API } from "@/api/index.js";
 
-export function OverviewItem({ record, isLast, index, ...others }) {
-  const { i18n, t } = useTranslation();
+export function OverviewItem(props) {
+  const { store } = useContext(StoreContext);
 
-  const [confirmation, setConfirmation] = useState(false);
+  const [confirmation, setConfirmation] = createSignal(false);
 
-  const [schema, onRecordDelete, onRecordInput] = useStore((state) => [
-    state.schema,
-    state.onRecordDelete,
-    state.onRecordInput,
-  ]);
+  const isHomeScreen = store.repo.repo === "root";
 
-  const description =
-    schema?.[record._]?.description?.[i18n.resolvedLanguage] ?? record._;
+  const isRepo = store.queries._ === "repo";
 
-  // TODO add delete
+  const canOpenRepo = isHomeScreen && isRepo;
+
+  const onZip = async () => {
+    const api = new API(props.item.repo);
+
+    await api.zip();
+  };
+
   return (
-    <p className={cn(styles.row, { [styles.last]: isLast })} {...others}>
-      {Object.keys(record).map((key) => {
-        if (key === "_") return undefined;
-
-        const descriptionItem =
-          schema?.[key]?.description?.[i18n.resolvedLanguage] ?? key;
-
-        const value = record[key];
-
-        const isString = typeof value === "string";
-
-        const valueShort = value.length > 200 ? value.slice(0, 200) : value;
-
-        const item = isString ? (
-          <span key={key}>
-            {key === record._ ? value.slice(0, 5) : valueShort}
-            <span> </span>
-          </span>
-        ) : undefined;
-
-        return item;
-      })}
+    <span>
+      <a onClick={() => onRecordEdit(props.item)}>edit</a>
 
       <span> </span>
 
-      <a onClick={() => onRecordInput(record)}>edit</a>
-
-      <span> or </span>
-
-      {confirmation ? (
+      <Show
+        when={confirmation()}
+        fallback={<a onClick={() => setConfirmation(true)}>delete</a>}
+      >
         <span>
-          <span>really delete?</span>
-          <a
-            type="button"
-            title={t("line.button.delete")}
-            onClick={() => onRecordDelete(record)}
-          >
-            yes
-          </a>
-          <span> </span>
-          or
-          <span> </span>
-          <a
-            type="button"
-            title={t("line.button.delete")}
-            onClick={() => setConfirmation(false)}
-          >
-            no
-          </a>
+          really remove?
+          <a onClick={() => onRecordWipe(props.item)}>Yes</a>
+          <a onClick={() => setConfirmation(false)}>No</a>
         </span>
-      ) : (
-        <a
-          type="button"
-          title={t("line.button.delete")}
-          onClick={() => setConfirmation(true)}
-        >
-          {t("line.button.delete")}
-        </a>
-      )}
+      </Show>
 
       <span> </span>
 
-      <Spoiler {...{ index, title: "", description }}>
-        <ViewRecord
-          {...{
-            schema,
-            index,
-            baseRecord: record,
-            base: record._,
-            record: record,
-          }}
+      <Show when={canOpenRepo} fallback={<></>}>
+        <Spoiler index={`${props.index}-open`} title="open">
+          <For each={props.item["branch"]} fallback={<span>no items</span>}>
+            {(item, index) => {
+              const branch = item["branch"];
+
+              return (
+                <a onClick={() => onRepoChange(props.item.repo, branch)}>
+                  {branch}
+                  <span> </span>
+                </a>
+              );
+            }}
+          </For>
+        </Spoiler>
+      </Show>
+
+      <span> </span>
+
+      <Show when={canOpenRepo} fallback={<></>}>
+        <a title="zip" onClick={() => onZip()}>
+          Zip
+        </a>
+      </Show>
+
+      <Spoiler index={props.index} title={props.item._}>
+        <OverviewRecord
+          index={props.index}
+          baseRecord={props.item}
+          record={props.item}
         />
       </Spoiler>
-    </p>
+    </span>
   );
 }

@@ -12,7 +12,9 @@ export function App() {
       <div class={styles.main}>
         <Overview />
 
-        <Profile />
+        <Show when={store.record !== undefined} fallback={<></>}>
+          <Profile />
+        </Show>
       </div>
     </StoreContext.Provider>
   );

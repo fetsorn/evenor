@@ -1,13 +1,9 @@
 import { useContext } from "solid-js";
 import { StoreContext, isTwig } from "@/store/index.js";
-import { ProfileField } from "../index.js";
+import { ProfileField, ProfileValue } from "../index.js";
 
 export function ProfileRecord(props) {
   const { store } = useContext(StoreContext);
-
-  const { _: branch } = props.record;
-
-  const { leaves } = store.schema[branch];
 
   function recordHasLeaf(leaf) {
     return Object.hasOwn(props.record, leaf);
@@ -31,32 +27,34 @@ export function ProfileRecord(props) {
   }
 
   function onFieldRemove(field) {
-    const record = { ...props.record };
+    const { [field]: omit, ...recordWithoutField } = props.record;
 
-    delete record[field];
-
-    props.onRecordChange(record);
+    props.onRecordChange(recordWithoutField);
   }
 
   function onFieldChange(field, value) {
-    const record = { ...props.record };
-
-    record[field] = value;
+    const record = { ...props.record, [field]: value };
 
     props.onRecordChange(record);
   }
 
   return (
     <span>
-      <span>
-        {branch}: <span contenteditable={true}>{props.record[branch]}</span>{" "}
-        <span> </span>
-      </span>
+      <ProfileValue
+        value={props.record[props.record._]}
+        branch={props.record._}
+        onValueChange={(value) => onFieldChange(props.record._, value)}
+      />
 
       <span> </span>
 
-      <For each={leaves} fallback={<span>record no items</span>}>
-        {(leaf, index) => {
+      <Index
+        each={store.schema[props.record._].leaves}
+        fallback={<span>record no items</span>}
+      >
+        {(item, index) => {
+          const leaf = item();
+
           if (recordHasLeaf(leaf)) {
             const value = props.record[leaf];
 
@@ -84,7 +82,7 @@ export function ProfileRecord(props) {
             return <a onClick={() => addLeafValue(leaf)}>Add {leaf} </a>;
           }
         }}
-      </For>
+      </Index>
     </span>
   );
 }

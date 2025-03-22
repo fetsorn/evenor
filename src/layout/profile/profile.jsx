@@ -1,6 +1,6 @@
 import cn from "classnames";
 import styles from "./profile.module.css";
-import { useContext } from "solid-js";
+import { useContext, createSignal } from "solid-js";
 import {
   StoreContext,
   onRecordEdit,
@@ -13,7 +13,7 @@ import { Spoiler } from "@/layout/components/index.js";
 export function Profile() {
   const { store } = useContext(StoreContext);
 
-  const recordBackup = structuredClone(store.record);
+  const [recordBackup] = createSignal(store.record);
 
   return (
     <div
@@ -35,24 +35,20 @@ export function Profile() {
             <span>{/* store.record */}</span>
             <a
               title={""}
-              onClick={() => onRecordSave(recordBackup, store.record)}
+              onClick={() => onRecordSave(recordBackup(), store.record)}
             >
               save
             </a>
           </div>
 
-          {store.record === undefined ? (
-            <></>
-          ) : (
-            <Spoiler index="_" title={store.record._} isOpenDefault={true}>
-              <ProfileRecord
-                index="_"
-                baseRecord={store.record}
-                record={store.record}
-                onRecordChange={onRecordEdit}
-              />
-            </Spoiler>
-          )}
+          <Spoiler index="_" title={store.record._} isOpenDefault={true}>
+            <ProfileRecord
+              index="_"
+              baseRecord={store.record}
+              record={store.record}
+              onRecordChange={onRecordEdit}
+            />
+          </Spoiler>
         </div>
       </div>
     </div>

@@ -10,7 +10,12 @@ export function ProfileFieldItem(props) {
   const branchIsTwig = isTwig(store.schema, props.branch);
 
   if (branchIsTwig) {
-    return <ProfileValue value={props.item} />;
+    return (
+      <ProfileValue
+        value={props.item}
+        onValueChange={props.onFieldItemChange}
+      />
+    );
   }
 
   return (
@@ -20,7 +25,7 @@ export function ProfileFieldItem(props) {
         baseRecord={props.baseRecord}
         record={props.item}
         onRecordChange={(record) => props.onFieldItemChange(record)}
-        onRecordRemove={() => onFieldItemRemove()}
+        onRecordRemove={() => props.onFieldItemRemove()}
       />
 
       <span> </span>
@@ -35,7 +40,7 @@ export function ProfileFieldItem(props) {
       >
         <span>
           really remove?
-          <a onClick={() => onFieldItemRemove()}>Yes</a>
+          <a onClick={() => props.onFieldItemRemove()}>Yes</a>
           <span> </span>
           <a onClick={() => setConfirmation(false)}>No</a>
         </span>

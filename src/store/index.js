@@ -158,7 +158,7 @@ export async function onRecordSave(recordOld, recordNew) {
   }
 
   const records = store.records
-    .filter((r) => r[base] !== recordOld[base])
+    .filter((r) => r[store.queries._] !== recordOld[store.queries._])
     .concat([recordNew]);
 
   setStore("records", records);

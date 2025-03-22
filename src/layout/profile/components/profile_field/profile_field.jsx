@@ -27,7 +27,7 @@ export function ProfileField(props) {
 
   return (
     <Spoiler index={props.index} title={props.branch}>
-      <For each={props.items} fallback={<span>field no items</span>}>
+      <Index each={props.items} fallback={<span>field no items</span>}>
         {(item, index) => {
           const [confirmation, setConfirmation] = createSignal(false);
 
@@ -39,7 +39,7 @@ export function ProfileField(props) {
                 index={`${props.index}-${index}`}
                 baseRecord={props.baseRecord}
                 branch={props.branch}
-                item={item}
+                item={item()}
                 onFieldItemChange={(i) => onFieldItemChange(index, i)}
                 onFieldItemRemove={() => onFieldItemRemove(index)}
               />
@@ -64,7 +64,7 @@ export function ProfileField(props) {
             </span>
           );
         }}
-      </For>
+      </Index>
 
       <span> </span>
 

@@ -846,6 +846,7 @@ export async function saveRepoRecord(record) {
 
   // create repo directory with a schema
   // TODO record.reponame is a list, iterate over items
+  // TODO what if record.reponame is undefined
   await api.ensure(record.reponame[0]);
 
   await api.updateRecord(schemaRecord);

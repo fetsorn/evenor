@@ -27,11 +27,11 @@ export const [store, setStore] = createStore({
 
 export async function onSearch(field, value) {
   // update queries in store
-  const queries = baz(store.queries, field, value);
+  const queries = baz(store.schema, store.queries, field, value);
+
+  setStore({ queries });
 
   setURL(queries, queries._, value, store.repo.repo, store.repo.reponame);
-
-  setStore("queries", queries);
 
   // stop previous stream
   await store.abortPreviousStream();
@@ -76,9 +76,7 @@ export async function onSearch(field, value) {
 
       const records = [...store.records, record];
 
-      setStore("records", undefined);
-
-      setStore("records", records);
+      setStore({ records });
     },
 
     abort() {
@@ -128,9 +126,7 @@ export async function onRecordEdit(recordNew) {
     ...repoPartial,
   };
 
-  setStore("record", undefined);
-
-  setStore("record", record);
+  setStore({ record });
 }
 
 export async function onRecordSave(recordOld, recordNew) {

@@ -30,6 +30,7 @@
     "vite-plugin-solid": "^2.11.1"
   },
   "dependencies": {
+    "@bigmistqke/solid-contenteditable": "^0.0.10",
     "@fetsorn/csvs-js": "0.21.1",
     "@fetsorn/isogit-lfs": "^0.5.1",
     "@isomorphic-git/lightning-fs": "4.6.0",

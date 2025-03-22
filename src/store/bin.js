@@ -541,11 +541,9 @@ export function bar() {
   return { queries, base, sortBy };
 }
 
-export function baz(queries, field, value) {
+export function baz(schema, queries, field, value) {
   if (field === ".sortBy") {
-    queries[field] = value;
-
-    return queries;
+    return { ...queries, [field]: value };
   }
 
   // if query field is undefined, delete queries
@@ -560,13 +558,13 @@ export function baz(queries, field, value) {
     // if query field is defined, update queries
     if (value === undefined) {
       // if query value is undefined, remove query field
-      delete queries[field];
+      const { [field]: omit, ...queriesWithoutField } = queries;
+
+      return queriesWithoutField;
     } else {
       // if query value is defined, set query field
-      queries[field] = value;
+      return { ...queries, [field]: value };
     }
-
-    return queries;
   }
 
   return queries;

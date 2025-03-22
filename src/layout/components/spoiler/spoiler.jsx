@@ -20,6 +20,26 @@ export function Spoiler(props) {
     setIsOpen(props.index, props.isOpenDefault);
   });
 
+  function hasChildren() {
+    const children = props.children();
+
+    const isOne = children.length === 1;
+
+    if (isOne) {
+      const isArray = Array.isArray(children[0]);
+
+      if (isArray) {
+        const isEmptyArray = children[0].length === 0;
+
+        if (isEmptyArray) {
+          return false;
+        }
+      }
+    }
+
+    return true;
+  }
+
   function open() {
     setIsOpen(props.index, true);
   }
@@ -29,17 +49,19 @@ export function Spoiler(props) {
   }
 
   return (
-    <Show
-      when={isOpen(props.index)}
-      fallback={<a onClick={open}>{props.title}... </a>}
-    >
-      <span>
-        <a onClick={close}>{props.title}:</a>
+    <Show when={hasChildren()} fallback={<></>}>
+      <Show
+        when={isOpen(props.index)}
+        fallback={<a onClick={open}>{props.title}... </a>}
+      >
+        <span>
+          <a onClick={close}>{props.title}:</a>
 
-        <span> </span>
+          <span> </span>
 
-        {props.children}
-      </span>
+          {props.children}
+        </span>
+      </Show>
     </Show>
   );
 }

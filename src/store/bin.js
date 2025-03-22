@@ -866,3 +866,45 @@ export async function saveRepoRecord(record) {
 
   return;
 }
+
+export async function readSchema(uuid) {
+  if (uuid === "root") {
+    return schemaRoot;
+  }
+
+  const api = new API(uuid);
+
+  const [schemaRecord] = await api.select({ _: "_" });
+
+  const branchRecords = await api.select({ _: "branch" });
+
+  const schema = recordsToSchema(schemaRecord, branchRecords);
+
+  return schema;
+}
+
+export async function qux(uuid, baseNew) {
+  if (uuid === "root") {
+    return {
+      repo: { _: "repo", repo: uuid },
+      schema: schemaRoot,
+      queries: { _: "repo", ".sortBy": "reponame" },
+    };
+  } else {
+    const api = new API("root");
+
+    const [repo] = await api.select({ _: "repo", repo: uuid });
+
+    const schema = await readSchema(uuid);
+
+    const base = baseNew ?? getDefaultBase(schema);
+
+    const sortBy = getDefaultSortBy(schema, base, []);
+
+    return {
+      repo,
+      schema,
+      queries: { _: base, ".sortBy": sortBy },
+    };
+  }
+}

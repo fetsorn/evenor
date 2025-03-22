@@ -5,6 +5,7 @@ import {
   foo,
   bar,
   baz,
+  qux,
   schemaRoot,
   setURL,
   defaultRepoRecord,
@@ -32,11 +33,25 @@ export async function onSearch(field, value) {
 
   setStore("queries", queries);
 
-  // start a stream that appends to store.records
+  // stop previous stream
+  await store.abortPreviousStream();
+
+  // prepare a controller to stop the new stream
+  let isAborted = false;
+
+  const abortController = new AbortController();
+
+  // solid store tries to call the function, so pass a factory here
+  setStore("abortPreviousStream", () => () => {
+    isAborted = true;
+
+    abortController.abort();
+  });
+
+  // erase existing records
   setStore("records", []);
 
-  store.abortPreviousStream();
-
+  // prepare a new stream
   const api = new API(store.repo.repo);
 
   // remove all evenor-specific queries before passing searchParams to csvs
@@ -49,15 +64,7 @@ export async function onSearch(field, value) {
 
   const canSelectRepo = isHomeScreen;
 
-  let isAborted = false;
-
-  const abortController = new AbortController();
-
-  setStore("abortPreviousStream", async () => {
-    // isAborted = true;
-    // await abortController.abort();
-  });
-
+  // create a stream that appends to store.records
   const toStrm = new WritableStream({
     async write(chunk) {
       if (isAborted) {
@@ -81,10 +88,8 @@ export async function onSearch(field, value) {
     },
   });
 
-  // TODO: remove await here to free the main thread
   try {
-    // await fromStrm.pipeTo(toStrm, { signal: abortController.signal });
-    await fromStrm.pipeTo(toStrm);
+    fromStrm.pipeTo(toStrm, { signal: abortController.signal });
   } catch (e) {
     // stream interrupted
     console.log(e);
@@ -185,8 +190,17 @@ export async function onRecordWipe(record) {
   setStore("records", records);
 }
 
-export async function onRepoChange(uuid) {
-  setStore("repo", { _: repo, repo: uuid });
+export async function onRepoChange(uuid, base) {
+  const { repo, schema, queries } = await qux(uuid, base);
+
+  setStore("repo", repo);
+
+  setStore("schema", schema);
+
+  setStore("queries", queries);
+
+  // start a search stream
+  await onSearch("", undefined);
 }
 
 export { isTwig } from "./bin.js";

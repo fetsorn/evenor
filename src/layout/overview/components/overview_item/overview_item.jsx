@@ -1,10 +1,19 @@
-import { createSignal } from "solid-js";
-import { onRecordEdit, onRecordWipe } from "@/store/index.js";
+import { createSignal, useContext } from "solid-js";
+import { StoreContext } from "@/store/index.js";
+import { onRecordEdit, onRecordWipe, onRepoChange } from "@/store/index.js";
 import { OverviewRecord } from "../index.js";
 import { Spoiler } from "@/layout/components/index.js";
 
 export function OverviewItem(props) {
+  const { store } = useContext(StoreContext);
+
   const [confirmation, setConfirmation] = createSignal(false);
+
+  const isHomeScreen = store.repo.repo === "root";
+
+  const isRepo = store.queries._ === "repo";
+
+  const canOpenRepo = isHomeScreen && isRepo;
 
   return (
     <span>
@@ -24,6 +33,23 @@ export function OverviewItem(props) {
       </Show>
 
       <span> </span>
+
+      <Show when={canOpenRepo} fallback={<></>}>
+        <Spoiler index={`${props.index}-open`} title="open">
+          <For each={props.item["branch"]} fallback={<span>no items</span>}>
+            {(item, index) => {
+              const branch = item["branch"];
+
+              return (
+                <a onClick={() => onRepoChange(props.item.repo, branch)}>
+                  {branch}
+                  <span> </span>
+                </a>
+              );
+            }}
+          </For>
+        </Spoiler>
+      </Show>
 
       <Spoiler index={props.index} title={props.item._}>
         <OverviewRecord

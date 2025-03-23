@@ -209,4 +209,5 @@ export async function onRepoChange(uuid, base) {
   await onSearch("", undefined);
 }
 
-export { isTwig, newUUID } from "./bin.js";
+export { isTwig } from "./pure.js";
+export { newUUID } from "./bin.js";

@@ -8,7 +8,7 @@ export function Overview() {
   const { store } = useContext(StoreContext);
 
   // if base is twig, it has no connections
-  // we can add new values only if base has connections
+  // we can add new values to csvs only if base has some connections
   const canAdd = () =>
     store.schema[store.queries._] &&
     store.schema[store.queries._].leaves.length > 0;

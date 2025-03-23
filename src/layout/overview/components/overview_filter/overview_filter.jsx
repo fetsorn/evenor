@@ -2,6 +2,7 @@ import { useContext } from "solid-js";
 import { StoreContext, onSearch } from "@/store/index.js";
 import { Spoiler } from "@/layout/components/index.js";
 import { ContentEditable } from "@bigmistqke/solid-contenteditable";
+import styles from "./overview_filter.module.css";
 
 export function OverviewFilter() {
   const { store } = useContext(StoreContext);
@@ -25,7 +26,7 @@ export function OverviewFilter() {
   // because For considers an item deleted on every input and rerenders
   // and Index only rerenders when an index is deleted or added
   return (
-    <span>
+    <span className={styles.filter}>
       <Index each={Object.entries(store.queries)}>
         {(item, index) => {
           // item of Index is a signal

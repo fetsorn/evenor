@@ -24,6 +24,12 @@ export function OverviewItem(props) {
 
   return (
     <span>
+      <Show when={canOpenRepo} fallback={<></>}>
+        <span>{props.item.reponame}</span>
+      </Show>
+
+      <span> </span>
+
       <a onClick={() => onRecordEdit(props.item)}>edit</a>
 
       <span> </span>
@@ -68,7 +74,7 @@ export function OverviewItem(props) {
 
       <span> </span>
 
-      <Spoiler index={props.index} title={props.item._}>
+      <Spoiler index={props.index} title={props.item._} isOpenDefault={true}>
         <OverviewRecord
           index={props.index}
           baseRecord={props.item}

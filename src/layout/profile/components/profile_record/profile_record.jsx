@@ -10,6 +10,9 @@ export function ProfileRecord(props) {
     return Object.hasOwn(props.record, leaf);
   }
 
+  const isRemote =
+    store.repo.repo === "root" && props.record._ === "remote_tag";
+
   async function onClone() {
     try {
       const repoUUIDClone = store.record.repo;
@@ -47,6 +50,7 @@ export function ProfileRecord(props) {
     }
   }
 
+  // TODO move to a file related component
   async function addFileValue(branch) {
     const filehashBranch = Object.keys(schema).find(
       (b) => schema[b].trunks.includes(branch) && schema[b].task === "filehash",
@@ -95,19 +99,21 @@ export function ProfileRecord(props) {
   const isFile = store.schema[props.record._].task === "file";
 
   function addLeafValue(leaf) {
-    const isLeafFile = store.schema[branch].task === "file";
+    const isLeafFile = store.schema[leaf].task === "file";
 
     if (isLeafFile) {
-      return addFileValue(branch);
+      return addFileValue(leaf);
     }
 
-    const isRemote = repoUUID === "root" && branch === "remote_tag";
+    const isLeafRemote = repoUUID === "root" && leaf === "remote_tag";
 
-    const needsUUID = isRemote;
+    const needsUUID = isLeafRemote;
 
     const valueDefault = needsUUID ? newUUID() : "";
 
-    const remotePartial = isRemote ? { remote_url: "", remote_token: "" } : {};
+    const remotePartial = isLeafRemote
+      ? { remote_url: "", remote_token: "" }
+      : {};
 
     const value = isTwig(store.schema, leaf)
       ? valueDefault
@@ -145,7 +151,7 @@ export function ProfileRecord(props) {
 
       <span> </span>
 
-      <Show when={confirmation()} fallback={<></>}>
+      <Show when={isRemote} fallback={<></>}>
         <a onClick={() => onClone()}>clone</a>
       </Show>
 

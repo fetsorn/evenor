@@ -66,6 +66,8 @@ export function OverviewItem(props) {
         </a>
       </Show>
 
+      <span> </span>
+
       <Spoiler index={props.index} title={props.item._}>
         <OverviewRecord
           index={props.index}

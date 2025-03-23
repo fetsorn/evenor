@@ -34,6 +34,8 @@ export async function onSearch(field, value) {
 
   setURL(queries, queries._, value, store.repo.repo, store.repo.reponame);
 
+  if (field === ".sortBy" || field === ".sortDirection") return;
+
   // stop previous stream
   await store.abortPreviousStream();
 

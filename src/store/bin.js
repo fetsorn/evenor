@@ -628,7 +628,7 @@ export function bar() {
 }
 
 export function baz(schema, queries, field, value) {
-  if (field === ".sortBy") {
+  if (field === ".sortBy" || field === ".sortDirection") {
     return { ...queries, [field]: value };
   }
 

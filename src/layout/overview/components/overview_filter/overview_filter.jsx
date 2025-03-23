@@ -20,6 +20,11 @@ export function OverviewFilter() {
   const notAddedFields = () =>
     leafFields().filter((key) => !addedFields().includes(key));
 
+  const queries = () =>
+    Object.entries(store.queries).filter(
+      ([key, value]) => key !== ".sortDirection",
+    );
+
   // TODO base and sortby as spoiler options.
 
   // use Index here to retain focus on contenteditable when editing
@@ -27,7 +32,7 @@ export function OverviewFilter() {
   // and Index only rerenders when an index is deleted or added
   return (
     <span className={styles.filter}>
-      <Index each={Object.entries(store.queries)}>
+      <Index each={queries()}>
         {(item, index) => {
           // item of Index is a signal
           const [field, value] = item();
@@ -51,9 +56,9 @@ export function OverviewFilter() {
       </Index>
       <span> </span>
       <Show
-        when={store.queries[".sortDirection"]}
+        when={store.queries[".sortDirection"] === "first"}
         fallback={
-          <a onClick={onSearch(".sortDirection", "first")}>sort last</a>
+          <a onClick={() => onSearch(".sortDirection", "first")}>sort last</a>
         }
       >
         <a onClick={() => onSearch(".sortDirection", "last")}>sort first</a>

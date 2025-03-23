@@ -88,6 +88,11 @@ export default defineConfig(async () => {
       __BUILD_MODE__: JSON.stringify(getBuildMode()),
       __COMMIT_HASH__: JSON.stringify(commitHash),
     },
+    test: {
+      coverage: {
+        provider: "v8",
+      },
+    },
   };
 
   return config;

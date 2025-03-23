@@ -74,6 +74,10 @@ export function OverviewFilter() {
           )}
         </For>
       </Spoiler>
+      <span> </span>
+      <span>found {store.records.length}</span>
+      <span> </span>
+      <a onClick={() => window.scrollTo(0, 0)}>scroll to top</a>
     </span>
   );
 }

@@ -49,6 +49,15 @@ export function OverviewFilter() {
         }}
       </Index>
       <span> </span>
+      <Show
+        when={store.queries[".sortDirection"]}
+        fallback={
+          <a onClick={onSearch(".sortDirection", "first")}>sort last</a>
+        }
+      >
+        <a onClick={() => onSearch(".sortDirection", "last")}>sort first</a>
+      </Show>
+      <span> </span>
       <Spoiler index="add" title="more" fallback={<></>}>
         <For each={notAddedFields()} fallback={<></>}>
           {(field, index) => (

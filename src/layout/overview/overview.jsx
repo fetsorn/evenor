@@ -35,7 +35,16 @@ export function Overview() {
 
       const valueB = findFirstSortBy(sortBy, b[sortBy]);
 
-      return valueA.localeCompare(valueB);
+      const sortDirection = store.queries[".sortDirection"];
+
+      switch (sortDirection) {
+        case "first":
+          return valueA.localeCompare(valueB);
+        case "last":
+          return valueB.localeCompare(valueA);
+        default:
+          return valueA.localeCompare(valueB);
+      }
     });
 
   return (

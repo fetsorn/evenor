@@ -56,7 +56,11 @@ export async function onSearch(field, value) {
   const api = new API(store.repo.repo);
 
   // remove all evenor-specific queries before passing searchParams to csvs
-  const { ".sortBy": omit, ...queriesWithoutSortBy } = queries;
+  const {
+    ".sortBy": omitSortBy,
+    ".sortDirection": omitSortDirection,
+    ...queriesWithoutSortBy
+  } = queries;
 
   const { strm: fromStrm, closeHandler } =
     await api.selectStream(queriesWithoutSortBy);

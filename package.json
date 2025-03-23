@@ -9,6 +9,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
+    "test": "vitest",
     "tauri": "tauri",
     "lint": "eslint ."
   },
@@ -20,14 +21,19 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/preset-env": "^7.26.8",
+    "@solidjs/testing-library": "^0.8.10",
     "@stylistic/eslint-plugin": "^3.1.0",
     "@tauri-apps/cli": "^2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/user-event": "^14.6.1",
     "eslint": "^9.20.1",
     "eslint-config-prettier": "^10.0.1",
+    "jsdom": "^26.0.0",
     "prettier": "^3.5.1",
     "vite": "^6.0.0",
     "vite-plugin-node-polyfills": "^0.23.0",
-    "vite-plugin-solid": "^2.11.1"
+    "vite-plugin-solid": "^2.11.1",
+    "vitest": "^3.0.9"
   },
   "dependencies": {
     "@bigmistqke/solid-contenteditable": "^0.0.10",

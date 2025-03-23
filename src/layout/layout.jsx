@@ -16,6 +16,7 @@ export function App() {
           <Profile />
         </Show>
       </div>
+      <span style={{ display: "none" }}>{__COMMIT_HASH__}</span>
     </StoreContext.Provider>
   );
 }

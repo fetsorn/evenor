@@ -3,8 +3,11 @@ import process from "process";
 import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
 import { nodePolyfills } from "vite-plugin-node-polyfills";
+import { execSync } from "child_process";
 
 const host = process.env.TAURI_DEV_HOST;
+
+const commitHash = execSync("git rev-parse --short HEAD").toString();
 
 function getBuildMode() {
   if (process.env.BUILD_MODE) {
@@ -83,6 +86,7 @@ export default defineConfig(async () => {
     define: {
       global: "globalThis",
       __BUILD_MODE__: JSON.stringify(getBuildMode()),
+      __COMMIT_HASH__: JSON.stringify(commitHash),
     },
   };
 

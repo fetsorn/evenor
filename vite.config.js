@@ -30,7 +30,7 @@ export default defineConfig(async () => {
     publicDir: "assets",
 
     build: {
-      outDir: "public",
+      outDir: "dist",
       target: "safari13",
     },
 

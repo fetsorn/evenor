@@ -1,20 +1,23 @@
-import path from "path";
-import process from "process";
-import { defineConfig } from "vite";
 import solidPlugin from "vite-plugin-solid";
-import { nodePolyfills } from "vite-plugin-node-polyfills";
+import { defineConfig } from "vite";
+import { dirname, resolve } from "path";
+import { env } from "process";
 import { execSync } from "child_process";
+import { fileURLToPath } from "url";
+// wdio breaks with vite-plugin-node-polyfills
+// import { nodePolyfills } from "vite-plugin-node-polyfills";
 
-const host = process.env.TAURI_DEV_HOST;
-
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const commitHash = execSync("git rev-parse --short HEAD").toString();
+const host = env.TAURI_DEV_HOST;
 
 function getBuildMode() {
-  if (process.env.BUILD_MODE) {
-    return process.env.BUILD_MODE;
+  if (env.BUILD_MODE) {
+    return env.BUILD_MODE;
   }
 
-  const isTauri = process.env.TAURI_ENV_ARCH != undefined;
+  const isTauri = env.TAURI_ENV_ARCH != undefined;
 
   if (isTauri) {
     return "tauri";
@@ -23,77 +26,44 @@ function getBuildMode() {
   return "browser";
 }
 
-// https://vitejs.dev/config/
-export default defineConfig(async () => {
-  /** @type {import('vite').UserConfig} */
-  const config = {
-    publicDir: "assets",
-
-    build: {
-      outDir: "dist",
-      target: "safari13",
+export default defineConfig({
+  plugins: [solidPlugin()],
+  publicDir: "assets",
+  build: {
+    outDir: "dist",
+    target: "safari13",
+  },
+  envPrefix: ["VITE_", "TAURI_"],
+  server: {
+    host: host || false,
+    port: 1420,
+    strictPort: true,
+    hmr: host
+      ? {
+          protocol: "ws",
+          host,
+          port: 1430,
+        }
+      : undefined,
+    watch: {
+      ignored: ["**/src-tauri/**"],
     },
-
-    worker: {
-      rollupOptions: {
-        output: {
-          inlineDynamicImports: true,
-        },
-      },
+  },
+  clearScreen: false,
+  resolve: {
+    alias: {
+      "@": resolve(__dirname, "./src/"),
+      path: "path-browserify",
     },
-
-    plugins: [nodePolyfills(), solidPlugin()],
-
-    // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`
-    //
-    // 1. prevent vite from obscuring rust errors
-    clearScreen: false,
-    // 2. tauri expects a fixed port, fail if that port is not available
-    // server: {
-    //   port: 1420,
-    //   strictPort: true,
-    // },
-    server: {
-      host: host || false, // listen on all addresses
-      port: 1420, // 4173 is a port for `vite preview` because `vite dev` fails on legacy mobile
-      strictPort: true,
-      hmr: host
-        ? {
-            protocol: "ws",
-            // host: "192.168.1.3",
-            host,
-            port: 1430,
-          }
-        : undefined,
-      watch: {
-        // 3. tell vite to ignore watching `src-tauri`
-        ignored: ["**/src-tauri/**"],
-      },
+  },
+  define: {
+    global: "globalThis",
+    __BUILD_MODE__: JSON.stringify(getBuildMode()),
+    __COMMIT_HASH__: JSON.stringify(commitHash),
+  },
+  test: {
+    coverage: {
+      provider: "istanbul",
     },
-    // TODO: check for build, https://github.com/vitejs/vite/issues/8427
-    // https://github.com/vitejs/vite/issues/11672
-    // optimizeDeps: { exclude: {} },
-    // 3. to make use of `TAURI_DEBUG` and other env variables
-    // https://tauri.app/v1/api/config#buildconfig.beforedevcommand
-    envPrefix: ["VITE_", "TAURI_"],
-
-    resolve: {
-      alias: {
-        "@": path.resolve(__dirname, "./src/"),
-      },
-    },
-
-    define: {
-      global: "globalThis",
-      __BUILD_MODE__: JSON.stringify(getBuildMode()),
-      __COMMIT_HASH__: JSON.stringify(commitHash),
-    },
-    test: {
-      coverage: {
-        provider: "v8",
-      },
-    },
-  };
-
-  return config;
+  },
 });

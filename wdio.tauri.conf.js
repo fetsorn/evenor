@@ -1,5 +1,5 @@
-import os from "os";
-import path from "path";
+import { homedir } from "os";
+import { resolve } from "path";
 import { spawn, spawnSync } from "child_process";
 
 // keep track of the `tauri-driver` child process
@@ -32,7 +32,7 @@ export const config = {
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
   beforeSession: () =>
     (tauriDriver = spawn(
-      path.resolve(os.homedir(), ".cargo", "bin", "tauri-driver"),
+      resolve(homedir(), ".cargo", "bin", "tauri-driver"),
       [],
       { stdio: [null, process.stdout, process.stderr] },
     )),

@@ -62,8 +62,9 @@ export default defineConfig({
     __COMMIT_HASH__: JSON.stringify(commitHash),
   },
   test: {
+    include: ["./src/**/*.test.jsx"],
     coverage: {
-      provider: "istanbul",
+      provider: "v8",
     },
   },
 });

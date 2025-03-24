@@ -6,6 +6,9 @@ import { spawn, spawnSync } from "child_process";
 let tauriDriver;
 
 export const config = {
+  runner: "local",
+  hostname: "localhost",
+  port: 4444,
   specs: ["./test/specs/**/*.js"],
   maxInstances: 1,
   capabilities: [

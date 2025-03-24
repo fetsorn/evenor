@@ -9,6 +9,7 @@ export function App() {
 
   return (
     <StoreContext.Provider value={{ store }}>
+      <h1>Hello world!</h1>
       <div class={styles.main}>
         <Overview />
 

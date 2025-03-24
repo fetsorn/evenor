@@ -13,13 +13,13 @@ function luma(hex) {
 
 describe("Hello Tauri", () => {
   it("should be cordial", async () => {
-    const header = await $("body > h1");
+    const header = await $("body > div > h1");
     const text = await header.getText();
     expect(text).toMatch(/^[hH]ello/);
   });
 
   it("should be excited", async () => {
-    const header = await $("body > h1");
+    const header = await $("body > div > h1");
     const text = await header.getText();
     expect(text).toMatch(/!$/);
   });

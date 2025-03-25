@@ -1,7 +1,7 @@
 import viteConfig from "./vite.config.js";
 
 export const config = {
-  specs: [["./test/specs/**/*.jsx"]],
+  specs: [["./test/specs/**/*.test.jsx"]],
   exclude: [],
   runner: [
     "browser",

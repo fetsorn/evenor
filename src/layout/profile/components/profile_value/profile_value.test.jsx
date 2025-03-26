@@ -4,7 +4,7 @@ import { createSignal } from "solid-js";
 import { ProfileValue } from "./profile_value.jsx";
 import { ContentEditable } from "@bigmistqke/solid-contenteditable";
 
-test("types contenteditable", async () => {
+test("contenteditable", async () => {
   const [a, setA] = createSignal("a");
 
   const { getByRole } = render(() => (
@@ -32,10 +32,10 @@ test("types contenteditable", async () => {
   expect(input).toHaveTextContent(/^ca$/);
 });
 
-test("types contenteditable", async () => {
+test("profile value", async () => {
   const [a, setA] = createSignal("a");
 
-  const { getByText } = render(() => (
+  const { getByText, getByRole } = render(() => (
     <ProfileValue
       value={a()}
       branch="b"
@@ -46,7 +46,23 @@ test("types contenteditable", async () => {
     />
   ));
 
-  const input = getByText(/^b is$/);
+  const label = getByText(/^b is$/);
 
-  expect(input).toHaveTextContent(/^b is a$/);
+  expect(label).toHaveTextContent(/^b is a$/);
+
+  const input = getByRole("textbox");
+
+  expect(input).toHaveTextContent("a");
+
+  input.focus();
+
+  // cannot use user.keyboard because jsdom needs innerText
+  // https://github.com/jsdom/jsdom/issues/1245
+  fireEvent.input(input, {
+    target: { innerText: a() },
+    inputType: "insertText",
+    data: "c",
+  });
+
+  expect(input).toHaveTextContent(/^ca$/);
 });

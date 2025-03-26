@@ -1,0 +1,150 @@
+{
+  "_": "repo",
+  "reponame": "",
+  "branch": [
+    {
+      "_": "branch",
+      "branch": "event",
+      "description_en": "Record",
+      "description_ru": "Запись"
+    },
+    {
+      "_": "branch",
+      "branch": "datum",
+      "trunk": "event",
+      "task": "text",
+      "description_en": "Description of the event",
+      "description_ru": "Описание события"
+    },
+    {
+      "_": "branch",
+      "branch": "actdate",
+      "trunk": "event",
+      "task": "date",
+      "description_en": "Date of the event",
+      "description_ru": "Дата события"
+    },
+    {
+      "_": "branch",
+      "branch": "actname",
+      "trunk": "event",
+      "description_en": "Name of the person in the event",
+      "description_ru": "Имя человека участвовавшего в событии",
+      "cognate": ["sayname", "person", "parent"]
+    },
+    {
+      "_": "branch",
+      "branch": "saydate",
+      "trunk": "event",
+      "task": "date",
+      "description_en": "Date of record",
+      "description_ru": "Дата записи"
+    },
+    {
+      "_": "branch",
+      "branch": "person",
+      "cognate": ["sayname", "actname", "parent"]
+    },
+    {
+      "_": "branch",
+      "branch": "parent",
+      "trunk": "person",
+      "cognate": ["sayname", "actname", "person"]
+    },
+    {
+      "_": "branch",
+      "branch": "sayname",
+      "trunk": "event",
+      "description_en": "Name of the person who made the record",
+      "description_ru": "Имя автора записи",
+      "cognate": ["actname", "person", "parent"]
+    },
+    {
+      "_": "branch",
+      "branch": "category",
+      "trunk": "event",
+      "description_en": "Category of the dataset",
+      "description_ru": "Категория"
+    },
+    {
+      "_": "branch",
+      "branch": "privacy",
+      "trunk": "event",
+      "description_en": "Privacy",
+      "description_ru": "Публичность"
+    },
+    {
+      "_": "branch",
+      "branch": "file",
+      "trunk": "event",
+      "task": "file",
+      "description_en": "Digital asset",
+      "description_ru": "Файл"
+    },
+    {
+      "_": "branch",
+      "branch": "filename",
+      "trunk": "file",
+      "task": "filename",
+      "description_en": "Name of digital asset",
+      "description_ru": "Название файла"
+    },
+    {
+      "_": "branch",
+      "branch": "fileext",
+      "trunk": "file",
+      "task": "fileext",
+      "description_en": "Extension of the file",
+      "description_ru": "Расширение файла"
+    },
+    {
+      "_": "branch",
+      "branch": "filehash",
+      "trunk": "file",
+      "task": "filehash",
+      "description_en": "Hashsum of the file",
+      "description_ru": "Хэш файла"
+    },
+    {
+      "_": "branch",
+      "branch": "branch",
+      "description_en": "Branch name",
+      "description_ru": "Название ветки"
+    },
+    {
+      "_": "branch",
+      "branch": "trunk",
+      "trunk": "branch",
+      "description_en": "Branch trunk",
+      "description_ru": "Ствол ветки"
+    },
+    {
+      "_": "branch",
+      "branch": "task",
+      "trunk": "branch",
+      "description_en": "Branch task",
+      "description_ru": "Предназначение ветки"
+    },
+    {
+      "_": "branch",
+      "branch": "cognate",
+      "trunk": "branch",
+      "description_en": "Branch cognate",
+      "description_ru": "Родственная ветка"
+    },
+    {
+      "_": "branch",
+      "branch": "description_en",
+      "trunk": "branch",
+      "description_en": "Branch description EN",
+      "description_ru": "Описание ветки на английском"
+    },
+    {
+      "_": "branch",
+      "branch": "description_ru",
+      "trunk": "branch",
+      "description_en": "Branch description RU",
+      "description_ru": "Описание ветки на русском"
+    }
+  ]
+}

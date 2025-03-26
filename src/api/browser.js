@@ -673,18 +673,6 @@ export class BrowserAPI {
     }
   }
 
-  async readGedcom() {
-    const gedcom = await this.readFile("index.ged");
-
-    return gedcom;
-  }
-
-  async readIndex() {
-    const index = await this.readFile("index.html");
-
-    return index;
-  }
-
   downloadAsset(content, filename) {
     saveAs(content, filename);
   }
@@ -810,10 +798,6 @@ export class BrowserAPI {
     }
 
     return content;
-  }
-
-  async writeFeed(xml) {
-    await this.writeFile("feed.xml", xml);
   }
 
   async listRemotes() {

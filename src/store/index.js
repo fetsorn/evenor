@@ -7,13 +7,13 @@ import {
   baz,
   bux,
   qux,
-  schemaRoot,
   setURL,
-  defaultRepoRecord,
-  newUUID,
   loadRepoRecord,
   saveRepoRecord,
-} from "./bin.js";
+  newUUID,
+} from "./action.js";
+import schemaRoot from "./schema_root.json";
+import defaultRepoRecord from "./default_repo_record.json";
 
 export const StoreContext = createContext();
 
@@ -210,4 +210,4 @@ export async function onRepoChange(uuid, base) {
 }
 
 export { isTwig } from "./pure.js";
-export { newUUID } from "./bin.js";
+export { newUUID } from "./action.js";

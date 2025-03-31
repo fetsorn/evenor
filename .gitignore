@@ -92,3 +92,4 @@ out/
 /src-tauri/gen/
 /.vite/
 /public/
+__screenshots__

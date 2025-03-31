@@ -79,11 +79,6 @@ export class BrowserAPI {
   }
 
   async fetchFile(filepath) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === "server") {
-      return (await fetch(`/api/${filepath}`)).arrayBuffer();
-    }
-
     const dir = await this.dir();
 
     // check if path exists in the repo
@@ -128,21 +123,6 @@ export class BrowserAPI {
   }
 
   async writeFile(filepath, content) {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === "server") {
-      await fetch(`/api/${filepath}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          content,
-        }),
-      });
-
-      return;
-    }
-
     const dir = await this.dir();
 
     // if path doesn't exist, create it
@@ -353,15 +333,6 @@ export class BrowserAPI {
   }
 
   async commit() {
-    // eslint-disable-next-line
-    if (__BUILD_MODE__ === "server") {
-      await fetch("api/", {
-        method: "PUT",
-      });
-
-      return;
-    }
-
     const dir = await this.dir();
 
     const message = [];

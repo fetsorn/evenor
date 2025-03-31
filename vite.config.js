@@ -62,9 +62,19 @@ export default defineConfig({
     __COMMIT_HASH__: JSON.stringify(commitHash),
   },
   test: {
-    include: ["./src/**/*.test.jsx"],
+    include: ["./src/**/*test*"],
+    exclude: ["./test/specs/*"],
     coverage: {
       provider: "v8",
+    },
+    browser: {
+      provider: "webdriverio",
+      enabled: true,
+      instances: [
+        {
+          browser: "firefox",
+        },
+      ],
     },
   },
 });

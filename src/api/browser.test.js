@@ -1,6 +1,6 @@
 import { expect, test, describe, beforeAll } from "vitest";
 import { page, userEvent } from "@vitest/browser/context";
-import { BrowserAPI } from "./browser.js";
+import browser from "./browser.js";
 import { Buffer } from "buffer";
 window.Buffer = window.Buffer || Buffer;
 
@@ -8,9 +8,7 @@ const uuid = "a";
 
 describe("ensure", () => {
   beforeAll(async () => {
-    const browser = new BrowserAPI(uuid);
-
-    await browser.ensure("b");
+    await browser.ensure(uuid, "b");
   });
 
   test("creates a directory", async () => {
@@ -47,12 +45,10 @@ describe("ensure", () => {
 });
 
 test("dir", async () => {
-  const browser = new BrowserAPI(uuid);
-
   // TODO replace with write test dataset
-  await browser.ensure("b");
+  await browser.ensure(uuid, "b");
 
-  const dir = await browser.dir();
+  const dir = await browser.findDir(uuid);
 
   expect(dir).toBe("/a-b");
 });

@@ -1,7 +1,7 @@
 import { useContext } from "solid-js";
 import { StoreContext, isTwig, newUUID } from "@/store/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
-import { API } from "@/api/index.js";
+import api from "@/api/index.js";
 
 export function ProfileRecord(props) {
   const { store } = useContext(StoreContext);
@@ -19,13 +19,15 @@ export function ProfileRecord(props) {
 
       const reponameClone = store.record.reponame[0] ?? props.record.remote_tag;
 
-      const api = new API(repoUUIDClone);
-
-      await api.clone(props.record.remote_url[0], props.record.remote_token[0]);
+      await api.clone(
+        repoUUIDClone,
+        props.record.remote_url[0],
+        props.record.remote_token[0],
+      );
 
       const schemaClone = await readSchema(repoUUIDClone);
 
-      await api.ensure(reponameClone);
+      await api.ensure(repoUUIDClone, reponameClone);
 
       const [schemaRecordClone, ...metaRecordsClone] =
         schemaToBranchRecords(schemaClone);
@@ -64,9 +66,7 @@ export function ProfileRecord(props) {
       (b) => schema[b].trunks.includes(branch) && schema[b].task === "fileext",
     );
 
-    const api = new API(repoUUID);
-
-    const metadata = await api.uploadFile();
+    const metadata = await api.uploadFile(repoUUID);
 
     const records = metadata.map(({ hash, name, extension }) => {
       const filehashPartial = filehashBranch ? { [filehashBranch]: hash } : {};

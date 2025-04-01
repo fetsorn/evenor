@@ -1,5 +1,5 @@
 import history from "history/hash";
-import { API } from "../api/index.js";
+import api from "../api/index.js";
 import { v4 as uuidv4 } from "uuid";
 import { sha256 } from "js-sha256";
 import {
@@ -27,11 +27,9 @@ async function foobar(searchParams) {
   const repoUUIDRemote = await digestMessage(remote);
 
   try {
-    const api = new API(repoUUIDRemote);
-
     // TODO rimraf the folder if it already exists
 
-    await api.cloneView(remote, token);
+    await api.cloneView(repoUUIDRemote, remote, token);
 
     // TODO add new repo to root
     // TODO return a repo record
@@ -76,11 +74,9 @@ async function foobar(searchParams) {
 async function fux(repoRoute) {
   // if repo is in store, find uuid in root folder
   try {
-    const [repo] = await apiRoot.select({ _: "repo", reponame: repoRoute });
+    const [repo] = await api.select("root", { _: "repo", reponame: repoRoute });
 
     const { repo: repoUUID } = repo;
-
-    const api = new API(repoUUID);
 
     const schema = await readSchema(repoUUID);
 
@@ -90,13 +86,13 @@ async function fux(repoRoute) {
   }
 }
 
-async function readRemotes(api) {
+async function readRemotes(uuid) {
   try {
-    const remotes = await api.listRemotes();
+    const remotes = await api.listRemotes(uuid);
 
     const remoteTags = await Promise.all(
       remotes.map(async (remoteName) => {
-        const [remoteUrl, remoteToken] = await api.getRemote(remoteName);
+        const [remoteUrl, remoteToken] = await api.getRemote(uuid, remoteName);
 
         const partialToken = remoteToken ? { remote_token: remoteToken } : {};
 
@@ -115,9 +111,9 @@ async function readRemotes(api) {
   }
 }
 
-async function readLocals(api) {
+async function readLocals(uuid) {
   try {
-    const locals = await api.listAssetPaths();
+    const locals = await api.listAssetPaths(uuid);
 
     return locals.reduce(
       (acc, local) => {
@@ -132,13 +128,14 @@ async function readLocals(api) {
   }
 }
 
-async function writeRemotes(api, tags) {
+async function writeRemotes(uuid, tags) {
   if (tags) {
     const tagsList = Array.isArray(tags) ? tags : [tags];
 
     for (const tag of tagsList) {
       try {
         await api.addRemote(
+          uuid,
           tag.remote_tag,
           tag.remote_url[0],
           tag.remote_token,
@@ -151,13 +148,13 @@ async function writeRemotes(api, tags) {
   }
 }
 
-async function writeLocals(api, tags) {
+async function writeLocals(uuid, tags) {
   if (tags) {
     const tagList = Array.isArray(tags) ? tags : [tags];
 
     for (const tag of tagList) {
       try {
-        api.addAssetPath(tag);
+        api.addAssetPath(uuid, tag);
       } catch {
         // do nothing
       }
@@ -170,11 +167,9 @@ export async function readSchema(uuid) {
     return schemaRoot;
   }
 
-  const api = new API(uuid);
+  const [schemaRecord] = await api.select(uuid, { _: "_" });
 
-  const [schemaRecord] = await api.select({ _: "_" });
-
-  const branchRecords = await api.select({ _: "branch" });
+  const branchRecords = await api.select(uuid, { _: "branch" });
 
   const schema = recordsToSchema(schemaRecord, branchRecords);
 
@@ -182,17 +177,15 @@ export async function readSchema(uuid) {
 }
 
 export async function foo() {
-  const apiRoot = new API("root");
-
-  await apiRoot.ensure();
+  await api.ensure("root");
 
   const branchRecords = schemaToBranchRecords(schemaRoot);
 
   for (const branchRecord of branchRecords) {
-    await apiRoot.updateRecord(branchRecord);
+    await api.updateRecord("root", branchRecord);
   }
 
-  await apiRoot.commit();
+  await api.commit("root");
 }
 
 export function bar() {
@@ -280,9 +273,7 @@ export async function qux(uuid, baseNew) {
       queries: { _: "repo", ".sortBy": "reponame" },
     };
   } else {
-    const api = new API("root");
-
-    const [repo] = await api.select({ _: "repo", repo: uuid });
+    const [repo] = await api.select("root", { _: "repo", repo: uuid });
 
     const schema = await readSchema(uuid);
 
@@ -322,12 +313,10 @@ export function setURL(queries, base, sortBy, repoUUID, reponame) {
 export async function loadRepoRecord(record) {
   const repoUUID = record.repo;
 
-  const api = new API(repoUUID);
-
-  const [schemaRecord] = await api.select({ _: "_" });
+  const [schemaRecord] = await api.select(repoUUID, { _: "_" });
 
   // query {_:branch}
-  const metaRecords = await api.select({ _: "branch" });
+  const metaRecords = await api.select(repoUUID, { _: "branch" });
 
   // add trunk field from schema record to branch records
   const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
@@ -335,10 +324,10 @@ export async function loadRepoRecord(record) {
   const branchPartial = { branch: branchRecords };
 
   // get remote
-  const tagsRemotePartial = await readRemotes(api);
+  const tagsRemotePartial = await readRemotes(repoUUID);
 
   // get locals
-  const tagsLocalPartial = await readLocals(api);
+  const tagsLocalPartial = await readLocals(repoUUID);
 
   const recordNew = {
     ...record,
@@ -354,8 +343,6 @@ export async function loadRepoRecord(record) {
 export async function saveRepoRecord(record) {
   const repoUUID = record.repo;
 
-  const api = new API(repoUUID);
-
   // extract schema record with trunks from branch records
   const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
 
@@ -364,21 +351,21 @@ export async function saveRepoRecord(record) {
   // create repo directory with a schema
   // TODO record.reponame is a list, iterate over items
   // TODO what if record.reponame is undefined
-  await api.ensure(record.reponame[0]);
+  await api.ensure(repoUUID, record.reponame[0]);
 
-  await api.updateRecord(schemaRecord);
+  await api.updateRecord(repoUUID, schemaRecord);
 
   for (const metaRecord of metaRecords) {
-    await api.updateRecord(metaRecord);
+    await api.updateRecord(repoUUID, metaRecord);
   }
 
   // write remotes to .git/config
-  await writeRemotes(api, record.remote_tag);
+  await writeRemotes(repoUUID, record.remote_tag);
 
   // write locals to .git/config
-  await writeLocals(api, record.local_tag);
+  await writeLocals(repoUUID, record.local_tag);
 
-  await api.commit();
+  await api.commit(repoUUID);
 
   return;
 }

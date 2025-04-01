@@ -1,4 +1,4 @@
-import { API } from "@/api/index.js";
+import api from "@/api/index.js";
 
 export function OverviewMerge(props) {
   async function onMerge() {
@@ -9,13 +9,9 @@ export function OverviewMerge(props) {
 
     searchParams.set("reponame", props.branchRecord.sync_tag);
 
-    const rootAPI = new API("root");
-
     const query = searchParamsToQuery(schema, searchParams);
 
-    const [{ repo: subsetUUID }] = await rootAPI.select(query);
-
-    const subsetAPI = new API(subsetUUID);
+    const [{ repo: subsetUUID }] = await api.select("root", query);
 
     const subsetSearchParams = new URLSearchParams(
       props.branchRecord.sync_tag_search,
@@ -24,16 +20,14 @@ export function OverviewMerge(props) {
     const subsetQuery = searchParamsToQuery(schema, subsetSearchParams);
 
     // find entries to sync from subset
-    const entries = await subsetAPI.select(subsetQuery);
-
-    const supersetAPI = new API(props.baseRecord.repo);
+    const entries = await api.select(subsetUUID, subsetQuery);
 
     // sync entries to superset
     for (const record of entries) {
-      await supersetAPI.updateRecord(record);
+      await api.updateRecord(props.baseRecord.repo, record);
     }
 
-    await supersetAPI.commit();
+    await api.commit(props.baseRecord.repo);
   }
 
   return (

@@ -1,6 +1,6 @@
 import { useContext, createSignal } from "solid-js";
 import { StoreContext } from "@/store/index.js";
-import { API } from "@/api/index.js";
+import api from "@/api/index.js";
 import { convert, isIFrameable } from "./asset_view_controller.js";
 
 export function AssetView(props) {
@@ -32,13 +32,11 @@ export function AssetView(props) {
 
   const filenameFull = `${props.record[filehashBranch]}.${props.record[fileextBranch]}`;
 
-  const api = new API(store.repo.repo);
-
   async function fetchAsset() {
     let contents;
 
     try {
-      contents = await api.fetchAsset(filenameFull);
+      contents = await api.fetchAsset(store.repo.repo, filenameFull);
     } catch (e) {
       console.log(e);
     }

@@ -1,6 +1,6 @@
 import { createContext } from "solid-js";
 import { createStore } from "solid-js/store";
-import { API } from "../api/index.js";
+import api from "../api/index.js";
 import {
   foo,
   bar,
@@ -54,9 +54,6 @@ export async function onSearch(field, value) {
   // erase existing records
   setStore("records", []);
 
-  // prepare a new stream
-  const api = new API(store.repo.repo);
-
   // remove all evenor-specific queries before passing searchParams to csvs
   const {
     ".sortBy": omitSortBy,
@@ -64,8 +61,11 @@ export async function onSearch(field, value) {
     ...queriesWithoutSortBy
   } = queries;
 
-  const { strm: fromStrm, closeHandler } =
-    await api.selectStream(queriesWithoutSortBy);
+  // prepare a new stream
+  const { strm: fromStrm, closeHandler } = await api.selectStream(
+    store.repo.repo,
+    queriesWithoutSortBy,
+  );
 
   const isHomeScreen = store.repo.repo === "root";
 
@@ -140,8 +140,6 @@ export async function onRecordEdit(recordNew) {
 }
 
 export async function onRecordSave(recordOld, recordNew) {
-  const api = new API(store.repo.repo);
-
   const isHomeScreen = store.repo.repo === "root";
 
   const isRepoBranch = store.queries._ === "repo";
@@ -156,12 +154,12 @@ export async function onRecordSave(recordOld, recordNew) {
 
     const recordPruned = { ...recordNew, branch: branches };
 
-    await api.updateRecord(recordPruned);
+    await api.updateRecord(store.repo.repo, recordPruned);
   } else {
-    await api.updateRecord(recordNew);
+    await api.updateRecord(store.repo.repo, recordNew);
   }
 
-  await api.commit();
+  await api.commit(store.repo.repo);
 
   if (canSaveRepo) {
     await saveRepoRecord(recordNew);
@@ -183,11 +181,9 @@ export async function onRecordWipe(record) {
     return;
   }
 
-  const api = new API(store.repo.repo);
+  await api.deleteRecord(store.repo.repo, record);
 
-  await api.deleteRecord(record);
-
-  await api.commit();
+  await api.commit(store.repo.repo);
 
   const records = store.records.filter(
     (r) => r[store.queries._] !== record[store.queries._],

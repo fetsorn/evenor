@@ -1,4 +1,4 @@
-import { API } from "@/api/index.js";
+import api from "@/api/index.js";
 
 export function OverviewRemote(props) {
   const [loading, setLoading] = createSignal(false);
@@ -6,12 +6,10 @@ export function OverviewRemote(props) {
   async function onPullRepo() {
     setLoading(true);
 
-    const api = new API(props.baseRecord.repo);
-
     try {
-      await api.commit();
+      await api.commit(props.baseRecord.repo);
 
-      await api.pull(props.branchRecord.remote_name);
+      await api.pull(props.baseRecord.repo, props.branchRecord.remote_name);
 
       setLoading(false);
     } catch (e) {
@@ -24,12 +22,10 @@ export function OverviewRemote(props) {
   async function onPushRepo() {
     setLoading(true);
 
-    const api = new API(props.baseRecord.repo);
-
     try {
-      await api.commit();
+      await api.commit(props.baseRecord.repo);
 
-      await api.push(props.branchRecord.remote_name);
+      await api.push(props.baseRecord.repo, props.branchRecord.remote_name);
 
       setLoading(false);
     } catch (e) {

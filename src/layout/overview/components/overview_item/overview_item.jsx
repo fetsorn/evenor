@@ -3,7 +3,7 @@ import { StoreContext } from "@/store/index.js";
 import { onRecordEdit, onRecordWipe, onRepoChange } from "@/store/index.js";
 import { OverviewRecord } from "../index.js";
 import { Spoiler } from "@/layout/components/index.js";
-import { API } from "@/api/index.js";
+import api from "@/api/index.js";
 
 export function OverviewItem(props) {
   const { store } = useContext(StoreContext);
@@ -17,9 +17,7 @@ export function OverviewItem(props) {
   const canOpenRepo = isHomeScreen && isRepo;
 
   const onZip = async () => {
-    const api = new API(props.item.repo);
-
-    await api.zip();
+    await api.zip(props.item.repo);
   };
 
   return (

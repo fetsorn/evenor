@@ -1,14 +1,15 @@
 // import axios from "axios";
 import { invoke, Channel } from "@tauri-apps/api/core";
-import { BrowserAPI } from "./browser.js";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
+import browser from "./browser.js";
 
 if (!window.WritableStream) {
   window.WritableStream = WritableStreamPolyfill;
   window.ReadableStream = ReadableStreamPolyfill;
 }
 
+// NOTE which code needs this polyfill?
 (function () {
   File.prototype.arrayBuffer = File.prototype.arrayBuffer || myArrayBuffer;
   Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || myArrayBuffer;
@@ -25,88 +26,74 @@ if (!window.WritableStream) {
   }
 })();
 
-export class API {
-  // UUID of repo in the store
-  uuid;
-
-  #browser;
-
-  constructor(uuid) {
-    this.uuid = uuid;
-
-    this.#browser = new BrowserAPI(uuid);
-  }
-
-  async helloWorld(someVariable = "") {
+export async function helloWorld(uuid, someVariable = "") {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
         return invoke("hello_world", { someVariable });
 
       default:
-        return this.#browser.helloWorld(someVariable);
+        return browser.helloWorld(someVariable);
     }
   }
 
-  async fetchAsset(filename) {
+export async function fetchAsset(uuid, filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("fetch_asset", { uuid: this.uuid, filename });
+        return invoke("fetch_asset", { uuid, filename });
 
       default:
-        return this.#browser.fetchAsset(filename);
+        return browser.fetchAsset(filename);
     }
   }
 
-  async downloadAsset(content, filename) {
+export async function downloadAsset(uuid, content, filename) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("download_asset", { uuid: this.uuid, content, filename });
+        return invoke("download_asset", { uuid, content, filename });
 
       default:
-        return this.#browser.downloadAsset(content, filename);
+        return browser.downloadAsset(content, filename);
     }
   }
 
-  async putAsset(filename, buffer) {
+export async function putAsset(uuid, filename, buffer) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("put_asset", { uuid: this.uuid, filename, buffer });
+        return invoke("put_asset", { uuid, filename, buffer });
 
       default:
-        return this.#browser.putAsset(filename, buffer);
+        return browser.putAsset(filename, buffer);
     }
   }
 
-  async uploadFile() {
+export async function uploadFile(uuid) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("upload_file", { uuid: this.uuid });
+        return invoke("upload_file", { uuid });
 
       default:
-        return this.#browser.uploadFile();
+        return browser.uploadFile();
     }
   }
 
-  async select(query) {
+export async function select(uuid, query) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("select", { uuid: this.uuid, query });
+        return invoke("select", { uuid, query });
 
       default:
-        return this.#browser.select(query);
+        return browser.select(query);
     }
   }
 
-  async selectStream(query) {
+export async function selectStream(uuid, query) {
     // console.log('api/selectStream', query);
-
-    const { uuid } = this;
 
     let closeHandler;
 
@@ -145,181 +132,181 @@ export class API {
         };
 
       default:
-        return this.#browser.selectStream(query);
+        return browser.selectStream(query);
     }
   }
 
-  async updateRecord(record) {
+export async function updateRecord(uuid, record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("update_record", { uuid: this.uuid, record });
+        return invoke("update_record", { uuid, record });
 
       default:
-        return this.#browser.updateRecord(record);
+        return browser.updateRecord(record);
     }
   }
 
-  async deleteRecord(record) {
+export async function deleteRecord(uuid, record) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("delete_record", { uuid: this.uuid, record });
+        return invoke("delete_record", { uuid, record });
 
       default:
-        return this.#browser.deleteRecord(record);
+        return browser.deleteRecord(record);
     }
   }
 
-  async ensure(name) {
+export async function ensure(uuid, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("ensure", { uuid: this.uuid, name });
+        return invoke("ensure", { uuid, name });
 
       default:
-        return this.#browser.ensure(name);
+        return browser.ensure(name);
     }
   }
 
-  async commit() {
+export async function commit(uuid) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("commit", { uuid: this.uuid });
+        return invoke("commit", { uuid });
 
       default:
-        return this.#browser.commit();
+        return browser.commit();
     }
   }
 
   // fresh clone from url to uuid dir, symlink to name
-  async clone(remoteUrl, remoteToken, name) {
+export async function clone(uuid, remoteUrl, remoteToken, name) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
         return invoke("clone", {
-          uuid: this.uuid,
+          uuid,
           remoteUrl,
           remoteToken: "",
           name,
         });
 
       default:
-        return this.#browser.clone(remoteUrl, remoteToken, name);
+        return browser.clone(remoteUrl, remoteToken, name);
     }
   }
 
-  async push(remote) {
+export async function push(uuid remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("push", { uuid: this.uuid, remote });
+        return invoke("push", { uuid, remote });
 
       default:
-        return this.#browser.push(remote);
+        return browser.push(remote);
     }
   }
 
-  async pull(remote) {
+export async function pull(uuid, remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("pull", { uuid: this.uuid, remote });
+        return invoke("pull", { uuid, remote });
 
       default:
-        return this.#browser.pull(remote);
+        return browser.pull(remote);
     }
   }
 
-  async uploadBlobsLFS(remote, files) {
+export async function uploadBlobsLFS(uuid, remote, files) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("upload_blobs_LFS", { uuid: this.uuid, remote, files });
+        return invoke("upload_blobs_LFS", { uuid, remote, files });
 
       default:
-        return this.#browser.uploadBlobsLFS(remote, files);
+        return browser.uploadBlobsLFS(remote, files);
     }
   }
 
-  async zip() {
+export async function zip(uuid) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("zip", { uuid: this.uuid });
+        return invoke("zip", { uuid });
 
       default:
-        return this.#browser.zip();
+        return browser.zip();
     }
   }
 
-  async listRemotes() {
+export async function listRemotes(uuid) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("list_remotes", { uuid: this.uuid });
+        return invoke("list_remotes", { uuid });
 
       default:
-        return this.#browser.listRemotes();
+        return browser.listRemotes(uuid);
     }
   }
 
-  async addRemote(remoteName, remoteUrl, remoteToken) {
+export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
         return invoke("add_remote", {
-          uuid: this.uuid,
+          uuid,
           remoteName,
           remoteUrl,
           remoteToken: "",
         });
 
       default:
-        return this.#browser.addRemote(remoteName, remoteUrl, remoteToken);
+        return browser.addRemote(remoteName, remoteUrl, remoteToken);
     }
   }
 
-  async getRemote(remote) {
+export async function getRemote(uuid, remote) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("get_remote", { uuid: this.uuid, remote });
+        return invoke("get_remote", { uuid, remote });
 
       default:
-        return this.#browser.getRemote(remote);
+        return browser.getRemote(remote);
     }
   }
 
-  async addAssetPath(assetPath) {
+export async function addAssetPath(uuid, assetPath) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("add_asset_path", { uuid: this.uuid, assetPath });
+        return invoke("add_asset_path", { uuid, assetPath });
 
       default:
-        return this.#browser.addAssetPath(assetPath);
+        return browser.addAssetPath(assetPath);
     }
   }
 
-  async listAssetPaths() {
+export async function listAssetPaths(uuid) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
-        return invoke("list_asset_paths", { uuid: this.uuid });
+        return invoke("list_asset_paths", { uuid });
 
       default:
-        return this.#browser.listAssetPaths();
+        return browser.listAssetPaths();
     }
   }
 
-  async downloadUrlFromPointer(url, token, pointerInfo) {
+export async function downloadUrlFromPointer(uuid, url, token, pointerInfo) {
     // eslint-disable-next-line
     switch (__BUILD_MODE__) {
       case "tauri":
         return invoke("download_url_from_pointer", {
-          uuid: this.uuid,
+          uuid,
           url,
           token,
           pointerInfo,
@@ -329,4 +316,3 @@ export class API {
         return BrowserAPI.downloadUrlFromPointer(url, token, pointerInfo);
     }
   }
-}

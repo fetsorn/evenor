@@ -64,6 +64,7 @@ export default defineConfig({
   test: {
     include: ["./src/**/*test*"],
     exclude: ["./test/specs/*"],
+    setupFiles: ["./test/setup.js"],
     coverage: {
       provider: "v8",
     },

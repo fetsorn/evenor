@@ -2,7 +2,7 @@
 import { invoke, Channel } from "@tauri-apps/api/core";
 import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import { WritableStream as WritableStreamPolyfill } from "web-streams-polyfill";
-import browser from "./browser.js";
+import browser from "./browser/index.js";
 
 if (!window.WritableStream) {
   window.WritableStream = WritableStreamPolyfill;

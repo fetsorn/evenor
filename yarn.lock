@@ -1521,10 +1521,10 @@
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
 
-"@fetsorn/isogit-lfs@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.1.tgz#8a65e51bb4ee087d9ca7d7939781b2244f93beaa"
-  integrity sha512-ZJsf/G6meisAKbojfaA85c+g+avfeEWgLOlBAN5tUsF3x5aQVpB1/1TOyvuc+JMtAJKLmQdQVHsG0GtyeQ49Xw==
+"@fetsorn/isogit-lfs@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.2.tgz#3cab49a8e0794ba1b33f879bf0c743a281ab3321"
+  integrity sha512-G3kVfijZrqWy34M6DD0GEuRXO+lqhH7NNgnhmwY8uoUpaUVztogqEQeugo/QMXbLnJu2uxsoafQnOZcl8KQgYg==
   dependencies:
     isomorphic-git "1.25.6"
 

@@ -4,7 +4,7 @@ import tauri from "./tauri/index.js";
 const api = __BUILD_MODE__ === "tauri" ? tauri : browser;
 
 // reexport each method again to make sure it's safe and uniform
-export {
+export const {
   zip,
   putAsset,
   uploadFile,

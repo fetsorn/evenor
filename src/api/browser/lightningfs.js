@@ -1,5 +1,4 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
-import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 
 export function createReadStream(filepath) {
   return new ReadableStream({

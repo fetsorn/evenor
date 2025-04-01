@@ -1,4 +1,4 @@
-import { findDir, fetchFile, readFile, writeFile, zip } from "./io.js";
+import { zip } from "./io.js";
 import {
   fetchAsset,
   putAsset,
@@ -21,12 +21,7 @@ import {
   getRemote,
 } from "./git.js";
 
-export default {
-  findDir,
-  fetchFile,
-  readFile,
-  writeFile,
-  ensure,
+export {
   zip,
   putAsset,
   uploadFile,
@@ -39,6 +34,31 @@ export default {
   selectStream,
   updateRecord,
   deleteRecord,
+  ensure,
+  clone,
+  commit,
+  push,
+  pull,
+  fetchAsset,
+  listRemotes,
+  addRemote,
+  getRemote,
+};
+
+export default {
+  zip,
+  putAsset,
+  uploadFile,
+  uploadBlobsLFS,
+  downloadAsset,
+  downloadUrlFromPointer,
+  addAssetPath,
+  listAssetPaths,
+  select,
+  selectStream,
+  updateRecord,
+  deleteRecord,
+  ensure,
   clone,
   commit,
   push,

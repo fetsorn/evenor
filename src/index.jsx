@@ -3,6 +3,9 @@ import { render } from "solid-js/web";
 
 import "./index.css";
 import App from "./layout/layout.jsx";
+import { polyfill } from "./polyfill.js";
+
+polyfill();
 
 const root = document.getElementById("root");
 

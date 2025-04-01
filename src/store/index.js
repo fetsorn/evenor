@@ -11,6 +11,19 @@ import {
   onRepoChange,
 } from "./crud.js";
 
+export {
+  StoreContext,
+  store,
+  onSearch,
+  onLaunch,
+  onRecordEdit,
+  onRecordSave,
+  onRecordWipe,
+  onRepoChange,
+  isTwig,
+  newUUID,
+};
+
 export default {
   StoreContext,
   store,

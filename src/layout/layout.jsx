@@ -4,9 +4,6 @@ import styles from "./layout.module.css";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
 
-import { Buffer } from "buffer";
-window.Buffer = window.Buffer || Buffer;
-
 export function App() {
   onMount(onLaunch);
 

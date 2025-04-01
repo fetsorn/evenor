@@ -29,7 +29,6 @@ export const config = {
   connectionRetryTimeout: 120000,
   connectionRetryCount: 3,
   services: [],
-
   framework: "mocha",
   reporters: ["spec"],
   mochaOpts: {

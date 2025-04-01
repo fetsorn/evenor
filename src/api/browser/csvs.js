@@ -1,6 +1,6 @@
-import { ReadableStream as ReadableStreamPolyfill } from "web-streams-polyfill";
 import csvs from "@fetsorn/csvs-js";
 import { findDir } from "./io.js";
+import { fs } from "./lightningfs.js";
 
 export async function select(uuid, query) {
   const dir = await findDir(uuid);

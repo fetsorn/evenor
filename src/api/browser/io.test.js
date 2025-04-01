@@ -50,12 +50,3 @@ test("ls", async () => {
   // check that console logs paths
   expect(false).toBe(true);
 });
-
-test("zip", async () => {
-  // write test dataset
-  // prepare to test file-saver
-  // zip
-  // choose path with page
-  // check contents
-  expect(false).toBe(true);
-});

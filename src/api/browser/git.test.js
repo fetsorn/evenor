@@ -6,7 +6,7 @@ const uuid = "a";
 
 describe("createRoot", () => {
   beforeAll(async () => {
-    // await browser.ensure(uuid, "b");
+    // await browser.createRoot();
   });
 
   test("creates a directory", async () => {
@@ -28,7 +28,7 @@ describe("createRoot", () => {
 
 describe("createRepo", () => {
   beforeAll(async () => {
-    // await browser.ensure(uuid, "b");
+    // await browser.createRepo(uuid, "b");
   });
 
   test("creates a directory", async () => {

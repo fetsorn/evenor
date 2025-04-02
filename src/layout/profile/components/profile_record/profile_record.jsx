@@ -27,7 +27,7 @@ export function ProfileRecord(props) {
 
       const schemaClone = await readSchema(repoUUIDClone);
 
-      await api.ensure(repoUUIDClone, reponameClone);
+      await api.createRepo(repoUUIDClone, reponameClone);
 
       const [schemaRecordClone, ...metaRecordsClone] =
         schemaToBranchRecords(schemaClone);

@@ -29,10 +29,10 @@ export async function fetchFile(uuid, filepath) {
       root += pathElement;
     } else {
       // console.log(
-      //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`,
+      //   `Cannot load file. Make sure there is a file called ${pathElement} in ${root}.`,
       // );
       // throw Error(
-      //   `Cannot load file. Ensure there is a file called ${pathElement} in ${root}.`
+      //   `Cannot load file. Make sure there is a file called ${pathElement} in ${root}.`
       // );
       return undefined;
     }

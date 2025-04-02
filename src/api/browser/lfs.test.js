@@ -4,7 +4,7 @@ import browser from "./index.js";
 
 describe("createLFS", () => {
   beforeAll(async () => {
-    // await browser.ensure(uuid, "b");
+    // await browser.createLFS(uuid, "b");
   });
 
   test("writes .gitattributes", async () => {

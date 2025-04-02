@@ -67,8 +67,16 @@ export async function deleteRecord(uuid, record) {
   return invoke("delete_record", { uuid, record });
 }
 
-export async function ensure(uuid, name) {
-  return invoke("ensure", { uuid, name });
+export async function createRoot() {
+  return invoke("createRoot", {});
+}
+
+export async function createRepo(uuid, name) {
+  return invoke("createRepo", { uuid, name });
+}
+
+export async function createLFS(uuid, name) {
+  return invoke("createLFS", { uuid, name });
 }
 
 export async function commit(uuid) {
@@ -147,7 +155,9 @@ export default {
   selectStream,
   updateRecord,
   deleteRecord,
-  ensure,
+  createRoot,
+  createRepo,
+  createLFS,
   clone,
   commit,
   push,

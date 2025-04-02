@@ -15,7 +15,7 @@ import {
 import schemaRoot from "./schema_root.json";
 import defaultRepoRecord from "./default_repo_record.json";
 
-async function foobar(searchParams) {
+async function cloneAndOpen(searchParams) {
   // if uri specifies a remote
   // try to clone remote to store
   // where repo uuid is a digest of remote
@@ -71,7 +71,7 @@ async function foobar(searchParams) {
   }
 }
 
-async function fux(repoRoute) {
+async function findAndOpen(repoRoute) {
   // if repo is in store, find uuid in root folder
   try {
     const [repo] = await api.select("root", { _: "repo", reponame: repoRoute });
@@ -176,19 +176,39 @@ export async function readSchema(uuid) {
   return schema;
 }
 
-export async function foo() {
-  await api.ensure("root");
+export async function repoFromUrl() {
+  const searchParams = new URLSearchParams(history.location.search);
 
-  const branchRecords = schemaToBranchRecords(schemaRoot);
+  const repoRoute = history.location.pathname.replace("/", "");
 
-  for (const branchRecord of branchRecords) {
-    await api.updateRecord("root", branchRecord);
+  const root = { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
+
+  if (searchParams.has("~")) {
+    // clone from remote and open
+    try {
+      return cloneAndOpen(searchParams);
+    } catch (e) {
+      console.log(e);
+
+      return root;
+    }
   }
 
-  await api.commit("root");
+  if (repoRoute !== "") {
+    // open
+    try {
+      return findAndOpen(repoRoute);
+    } catch (e) {
+      console.log(e);
+
+      return root;
+    }
+  }
+
+  return root;
 }
 
-export function bar() {
+export function queriesFromUrl() {
   const searchParams = new URLSearchParams(history.location.search);
 
   const repoRoute = history.location.pathname.replace("/", "");
@@ -220,7 +240,7 @@ export function bar() {
   return { ...queries, _: base, ".sortBy": sortBy };
 }
 
-export function baz(schema, queries, field, value) {
+export function changeQueries(schema, queries, field, value) {
   if (field === ".sortBy" || field === ".sortDirection") {
     return { ...queries, [field]: value };
   }
@@ -249,23 +269,7 @@ export function baz(schema, queries, field, value) {
   return queries;
 }
 
-export async function bux() {
-  const searchParams = new URLSearchParams(history.location.search);
-
-  const repoRoute = history.location.pathname.replace("/", "");
-
-  if (searchParams.has("~")) {
-    return foobar(searchParams);
-  }
-
-  if (repoRoute !== "") {
-    return fux(repoRoute);
-  }
-
-  return { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
-}
-
-export async function qux(uuid, baseNew) {
+export async function changeRepo(uuid, baseNew) {
   if (uuid === "root") {
     return {
       repo: { _: "repo", repo: uuid },
@@ -339,6 +343,23 @@ export async function loadRepoRecord(record) {
   return recordNew;
 }
 
+export async function createRoot() {
+  try {
+    // fails if root exists
+    await api.createRoot();
+
+    const branchRecords = schemaToBranchRecords(schemaRoot);
+
+    for (const branchRecord of branchRecords) {
+      await api.updateRecord("root", branchRecord);
+    }
+
+    await api.commit("root");
+  } catch {
+    // do nothing
+  }
+}
+
 // clone or populate repo, write git state
 export async function saveRepoRecord(record) {
   const repoUUID = record.repo;
@@ -351,7 +372,9 @@ export async function saveRepoRecord(record) {
   // create repo directory with a schema
   // TODO record.reponame is a list, iterate over items
   // TODO what if record.reponame is undefined
-  await api.ensure(repoUUID, record.reponame[0]);
+  await api.createRepo(repoUUID, record.reponame[0]);
+
+  await api.createLFS(repoUUID);
 
   await api.updateRecord(repoUUID, schemaRecord);
 

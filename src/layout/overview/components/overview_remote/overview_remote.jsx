@@ -25,6 +25,8 @@ export function OverviewRemote(props) {
     try {
       await api.commit(props.baseRecord.repo);
 
+      await api.uploadBlobsLFS(props.branchRecord.remote_name);
+
       await api.push(props.baseRecord.repo, props.branchRecord.remote_name);
 
       setLoading(false);

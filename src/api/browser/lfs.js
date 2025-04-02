@@ -2,10 +2,68 @@ import lfs from "@fetsorn/isogit-lfs";
 import git from "isomorphic-git";
 import http from "isomorphic-git/http/web/index.cjs";
 import { saveAs } from "file-saver";
+import { fs } from "./lightningfs.js";
 import { findDir } from "./io.js";
 import { fetchFile, writeFile } from "./io.js";
 
 export const lfsDir = "lfs";
+
+export async function createLFS(uuid) {
+  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
+    new RegExp(`^${uuid}`).test(repo),
+  );
+
+  const dir = `/${existingRepo}`;
+
+  await fs.promises.writeFile(
+    `${dir}/.gitattributes`,
+    `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
+    "utf8",
+  );
+
+  await fs.promises.writeFile(`${dir}/.git/config`, "\n", "utf8");
+
+  await git.setConfig({
+    fs,
+    dir,
+    path: "filter.lfs.clean",
+    value: "git-lfs clean -- %f",
+  });
+
+  await git.setConfig({
+    fs,
+    dir,
+    path: "filter.lfs.smudge",
+    value: "git-lfs smudge -- %f",
+  });
+
+  await git.setConfig({
+    fs,
+    dir,
+    path: "filter.lfs.process",
+    value: "git-lfs filter-process",
+  });
+
+  await git.setConfig({
+    fs,
+    dir,
+    path: "filter.lfs.required",
+    value: true,
+  });
+}
+
+export async function addLFS(dir, filepath) {
+  if (filepath.startsWith(lfsDir)) {
+    // stage files in remoteEndpoint as LFS pointers
+    await lfs.addLFS({
+      fs,
+      dir,
+      filepath,
+    });
+  } else {
+    throw Error("not lfs filepath");
+  }
+}
 
 export async function putAsset(uuid, filename, content) {
   // write buffer to assetEndpoint/filename

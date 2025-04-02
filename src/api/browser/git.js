@@ -1,8 +1,7 @@
 import http from "isomorphic-git/http/web/index.cjs";
 import git from "isomorphic-git";
-import lfs from "@fetsorn/isogit-lfs";
+import { addLFS } from "./lfs.js";
 import { fs } from "./lightningfs.js";
-import { lfsDir } from "./lfs.js";
 import { findDir, rimraf } from "./io.js";
 
 export async function commit(uuid) {
@@ -48,14 +47,10 @@ export async function commit(uuid) {
           filepath,
         });
       } else {
-        // stage files in remoteEndpoint as LFS pointers
-        if (filepath.startsWith(lfsDir)) {
-          await lfs.addLFS({
-            fs,
-            dir,
-            filepath,
-          });
-        } else {
+        try {
+          // fails if filepath is not lfs
+          await addLFS(dir, filepath);
+        } catch {
           await git.add({
             fs,
             dir,
@@ -87,7 +82,27 @@ export async function commit(uuid) {
   }
 }
 
-export async function ensure(uuid, name) {
+export async function createRoot() {
+  const dir = `/root`;
+
+  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
+    new RegExp(`^root$`).test(repo),
+  );
+
+  if (existingRepo === undefined) {
+    await fs.promises.mkdir(dir);
+
+    await git.init({ fs, dir, defaultBranch: "main" });
+  } else {
+    throw Error("root exists");
+  }
+
+  await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
+
+  await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
+}
+
+export async function createRepo(uuid, name) {
   const dir = `/${uuid}${name !== undefined ? `-${name}` : ""}`;
 
   const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
@@ -104,51 +119,7 @@ export async function ensure(uuid, name) {
 
   await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
 
-  await fs.promises.writeFile(
-    `${dir}/.gitattributes`,
-    `${lfsDir}/** filter=lfs diff=lfs merge=lfs -text\n`,
-    "utf8",
-  );
-
-  try {
-    await fs.promises.mkdir(`${dir}/.git`);
-  } catch {
-    // do nothing
-  }
-
-  await fs.promises.writeFile(`${dir}/.git/config`, "\n", "utf8");
-
-  await git.setConfig({
-    fs,
-    dir,
-    path: "filter.lfs.clean",
-    value: "git-lfs clean -- %f",
-  });
-
-  await git.setConfig({
-    fs,
-    dir,
-    path: "filter.lfs.smudge",
-    value: "git-lfs smudge -- %f",
-  });
-
-  await git.setConfig({
-    fs,
-    dir,
-    path: "filter.lfs.process",
-    value: "git-lfs filter-process",
-  });
-
-  await git.setConfig({
-    fs,
-    dir,
-    path: "filter.lfs.required",
-    value: true,
-  });
-
   await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
-
-  await commit(uuid);
 }
 
 export async function clone(uuid, remoteUrl, remoteToken, name) {
@@ -229,12 +200,6 @@ export async function pull(uuid, remote) {
 
 export async function push(uuid, remote) {
   const [remoteUrl, remoteToken] = await getRemote(remote);
-
-  try {
-    await uploadBlobsLFS(remote);
-  } catch (e) {
-    console.log("api/browser/uploadBlobsLFS failed", e);
-  }
 
   const dir = await findDir(uuid);
 

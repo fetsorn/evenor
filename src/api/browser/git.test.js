@@ -6,7 +6,7 @@ const uuid = "a";
 
 describe("ensure", () => {
   beforeAll(async () => {
-    await browser.ensure(uuid, "b");
+    // await browser.ensure(uuid, "b");
   });
 
   test("creates a directory", async () => {

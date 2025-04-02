@@ -2,11 +2,11 @@ import { createContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import api from "../api/index.js";
 import {
-  foo,
-  bar,
-  baz,
-  bux,
-  qux,
+  createRoot,
+  changeQueries,
+  repoFromUrl,
+  queriesFromUrl,
+  changeRepo,
   setURL,
   loadRepoRecord,
   saveRepoRecord,
@@ -28,7 +28,7 @@ export const [store, setStore] = createStore({
 
 export async function onSearch(field, value) {
   // update queries in store
-  const queries = baz(store.schema, store.queries, field, value);
+  const queries = changeQueries(store.schema, store.queries, field, value);
 
   setStore({ queries });
 
@@ -100,17 +100,14 @@ export async function onSearch(field, value) {
 }
 
 export async function onLaunch() {
-  // ensure there is a root dataset
-  await foo();
-
-  const { schema, repo } = await bux();
+  const { schema, repo } = await repoFromUrl();
 
   setStore("repo", repo);
 
   setStore("schema", schema);
 
   // get queries from url
-  const queries = bar();
+  const queries = queriesFromUrl();
 
   setStore("queries", queries);
 
@@ -145,6 +142,9 @@ export async function onRecordSave(recordOld, recordNew) {
   const isRepoBranch = store.queries._ === "repo";
 
   const canSaveRepo = isHomeScreen && isRepoBranch;
+
+  // if no root here try to create
+  await createRoot();
 
   // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
   if (canSaveRepo) {
@@ -193,7 +193,7 @@ export async function onRecordWipe(record) {
 }
 
 export async function onRepoChange(uuid, base) {
-  const { repo, schema, queries } = await qux(uuid, base);
+  const { repo, schema, queries } = await changeRepo(uuid, base);
 
   setStore("repo", repo);
 

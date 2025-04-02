@@ -1,7 +1,8 @@
 import { zip } from "./zip.js";
 import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
 import {
-  ensure,
+  createRoot,
+  createRepo,
   clone,
   commit,
   pull,
@@ -11,6 +12,7 @@ import {
   getRemote,
 } from "./git.js";
 import {
+  createLFS,
   fetchAsset,
   putAsset,
   uploadFile,
@@ -34,7 +36,9 @@ export {
   selectStream,
   updateRecord,
   deleteRecord,
-  ensure,
+  createRoot,
+  createRepo,
+  createLFS,
   clone,
   commit,
   push,
@@ -58,7 +62,9 @@ export default {
   selectStream,
   updateRecord,
   deleteRecord,
-  ensure,
+  createRoot,
+  createRepo,
+  createLFS,
   clone,
   commit,
   push,

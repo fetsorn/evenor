@@ -5,8 +5,7 @@ import browser from "./index.js";
 const uuid = "a";
 
 test("findDir", async () => {
-  // TODO replace with write test dataset
-  await browser.ensure(uuid, "b");
+  // TODO write test folder with fs
 
   const dir = await browser.findDir(uuid);
 

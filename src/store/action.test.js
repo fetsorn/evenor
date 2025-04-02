@@ -1,10 +1,10 @@
 import { expect, test } from "vitest";
 
-test("foobar", () => {
+test("cloneAndOpen", () => {
   expect(false).toBe(true);
 });
 
-test("fux", () => {
+test("findAndOpen", () => {
   expect(false).toBe(true);
 });
 
@@ -28,23 +28,23 @@ test("readSchema", () => {
   expect(false).toBe(true);
 });
 
-test("foo", () => {
+test("repoFromUrl", () => {
   expect(false).toBe(true);
 });
 
-test("bar", () => {
+test("queriesFromUrl", () => {
   expect(false).toBe(true);
 });
 
-test("baz", () => {
+test("changeQueries", () => {
   expect(false).toBe(true);
 });
 
-test("bux", () => {
+test("changeRepo", () => {
   expect(false).toBe(true);
 });
 
-test("qux", () => {
+test("createRoot", () => {
   expect(false).toBe(true);
 });
 

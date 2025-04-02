@@ -189,6 +189,7 @@ export async function repoFromUrl() {
       return cloneAndOpen(searchParams);
     } catch (e) {
       console.log(e);
+      // TODO set url to root
 
       return root;
     }
@@ -200,6 +201,7 @@ export async function repoFromUrl() {
       return findAndOpen(repoRoute);
     } catch (e) {
       console.log(e);
+      // TODO set url to root
 
       return root;
     }

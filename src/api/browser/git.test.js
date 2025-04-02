@@ -4,7 +4,29 @@ import browser from "./index.js";
 
 const uuid = "a";
 
-describe("ensure", () => {
+describe("createRoot", () => {
+  beforeAll(async () => {
+    // await browser.ensure(uuid, "b");
+  });
+
+  test("creates a directory", async () => {
+    expect(false).toBe(true);
+  });
+
+  test("writes .gitignore", async () => {
+    expect(false).toBe(true);
+  });
+
+  test("creates .git directory", async () => {
+    expect(false).toBe(true);
+  });
+
+  test("writes .csvs.csv", async () => {
+    expect(false).toBe(true);
+  });
+});
+
+describe("createRepo", () => {
   beforeAll(async () => {
     // await browser.ensure(uuid, "b");
   });
@@ -21,23 +43,7 @@ describe("ensure", () => {
     expect(false).toBe(true);
   });
 
-  test("writes .gitattributes", async () => {
-    expect(false).toBe(true);
-  });
-
-  test("creates .git directory", async () => {
-    expect(false).toBe(true);
-  });
-
-  test("sets git config", async () => {
-    expect(false).toBe(true);
-  });
-
   test("writes .csvs.csv", async () => {
-    expect(false).toBe(true);
-  });
-
-  test("commits", async () => {
     expect(false).toBe(true);
   });
 });

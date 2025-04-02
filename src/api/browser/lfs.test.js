@@ -2,6 +2,20 @@ import { expect, test, describe, beforeAll } from "vitest";
 import { page, userEvent } from "@vitest/browser/context";
 import browser from "./index.js";
 
+describe("createLFS", () => {
+  beforeAll(async () => {
+    // await browser.ensure(uuid, "b");
+  });
+
+  test("writes .gitattributes", async () => {
+    expect(false).toBe(true);
+  });
+
+  test("sets git config", async () => {
+    expect(false).toBe(true);
+  });
+});
+
 test("putAsset", async () => {
   // assign stub contents
   // put

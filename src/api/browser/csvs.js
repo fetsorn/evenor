@@ -1,6 +1,6 @@
 import csvs from "@fetsorn/csvs-js";
-import { findDir } from "./io.js";
 import { fs } from "./lightningfs.js";
+import { findDir } from "./io.js";
 
 export async function select(uuid, query) {
   const dir = await findDir(uuid);
@@ -21,7 +21,6 @@ export async function selectStream(uuid, query) {
   const selectStream = csvs.selectRecordStream({
     fs,
     dir,
-    query,
   });
 
   const queryStream = new ReadableStream({
@@ -51,9 +50,11 @@ export async function updateRecord(uuid, record) {
 }
 
 export async function deleteRecord(uuid, record) {
+  const dir = await findDir(uuid);
+
   await csvs.deleteRecord({
     fs,
-    dir: await findDir(uuid),
+    dir,
     query: record,
   });
 }

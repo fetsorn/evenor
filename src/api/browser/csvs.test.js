@@ -1,72 +1,118 @@
-import { expect, test, describe, beforeAll, vi } from "vitest";
-import { page, userEvent } from "@vitest/browser/context";
-import { selectRecord } from "@fetsorn/csvs-js";
-import browser from "./index.js";
+import { expect, test, describe, vi } from "vitest";
+import csvs from "@fetsorn/csvs-js";
+import { findDir } from "./io.js";
+import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
 
-const datasetPath = "path/to/dir";
+const mockDir = "path/to/dir";
 
 const mockUUID = "a";
 
-const records = ["a"];
-
 const mockQuery = { a: "b" };
 
-test.only("select", async () => {
-  vi.mock("./io.js", async (importOriginal) => {
-    const mod = await importOriginal();
+const mockEntry = { c: "d" };
 
-    return {
-      ...mod,
-      findDir: async (uuid) => {
-        expect(uuid).toBe(mockUUID);
+const mockOverview = [mockEntry];
 
-        return datasetPath;
-      },
-    };
+vi.mock("./io.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  const findDir = vi.fn(async (uuid) => {
+    expect(uuid).toBe(mockUUID);
+    return mockDir;
   });
 
-  vi.mock("@fetsorn/csvs-js", (importOriginal) => {
-    const mod = importOriginal();
+  return {
+    ...mod,
+    findDir,
+  };
+});
 
-    return {
-      ...mod,
-      default: {
-        ...mod,
-        selectRecord: async ({ fs, dir, query }) => {
-          expect(dir).toBe(datasetPath);
+vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
+  const mod = await importOriginal();
 
+  const selectRecord = vi.fn(async ({ fs, dir, query }) => {
+    expect(dir).toBe(mockDir);
+    expect(query).toEqual(mockQuery);
+    return mockOverview;
+  });
+
+  const selectRecordStream = vi.fn(
+    ({ fs, dir }) =>
+      new TransformStream({
+        transform(query, controller) {
+          expect(dir).toBe(mockDir);
           expect(query).toEqual(mockQuery);
-
-          return records;
+          controller.enqueue(mockEntry);
         },
-      },
-    };
+      }),
+  );
+
+  const updateRecord = vi.fn(({ fs, dir, query }) => {
+    expect(dir).toBe(mockDir);
+    expect(query).toEqual(mockEntry);
   });
 
-  const out = await browser.select(mockUUID, mockQuery);
+  const deleteRecord = vi.fn(({ fs, dir, query }) => {
+    expect(dir).toBe(mockDir);
+    expect(query).toEqual(mockEntry);
+  });
 
-  expect(out).toEqual(records);
+  return {
+    ...mod,
+    default: {
+      ...mod,
+      selectRecord,
+      selectRecordStream,
+      updateRecord,
+      deleteRecord,
+    },
+  };
 });
 
-test("selectStream", async () => {
-  // write test dataset
-  // consume select stream
-  // check return value
-  expect(false).toBe(true);
-});
+describe("csvs", () => {
+  test("select", async () => {
+    const overview = await select(mockUUID, mockQuery);
 
-test("updateRecord", async () => {
-  // write test dataset
-  // assign stub record
-  // update
-  // check dataset contents
-  expect(false).toBe(true);
-});
+    expect(findDir).toHaveBeenCalled();
 
-test("deleteRecord", async () => {
-  // write test dataset
-  // assign stub record
-  // delete
-  // check dataset contents
-  expect(false).toBe(true);
+    expect(csvs.selectRecord).toHaveBeenCalled();
+
+    expect(overview).toEqual(mockOverview);
+  });
+
+  test("selectStream", async () => {
+    const { strm } = await selectStream(mockUUID, mockQuery);
+
+    let overview = [];
+
+    const outputStream = new WritableStream({
+      write(entry) {
+        overview.push(entry);
+      },
+    });
+
+    await strm.pipeTo(outputStream);
+
+    expect(findDir).toHaveBeenCalled();
+
+    expect(csvs.selectRecordStream).toHaveBeenCalled();
+
+    expect(overview).toEqual(mockOverview);
+  });
+
+  test("updateRecord", async () => {
+    await updateRecord(mockUUID, mockEntry);
+
+    expect(findDir).toHaveBeenCalled();
+
+    expect(csvs.updateRecord).toHaveBeenCalled();
+  });
+
+  test("deleteRecord", async () => {
+    await deleteRecord(mockUUID, mockEntry);
+
+    expect(findDir).toHaveBeenCalled();
+
+    expect(csvs.deleteRecord).toHaveBeenCalled();
+  });
 });

@@ -1,5 +1,7 @@
 import LightningFS from "@isomorphic-git/lightning-fs";
 
+export const fs = new LightningFS("fs");
+
 export function createReadStream(filepath) {
   return new ReadableStream({
     async start(controller) {
@@ -51,8 +53,6 @@ export async function appendFile(filepath, tail) {
     await fs.promises.writeFile(filepath, tail);
   }
 }
-
-export const fs = new LightningFS("fs");
 
 fs.createReadStream = createReadStream;
 fs.createWriteStream = createWriteStream;

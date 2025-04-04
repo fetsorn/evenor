@@ -2,7 +2,7 @@ import { createContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import api from "../api/index.js";
 import {
-  createRoot,
+  createRepo,
   changeQueries,
   repoFromUrl,
   queriesFromUrl,
@@ -144,7 +144,7 @@ export async function onRecordSave(recordOld, recordNew) {
   const canSaveRepo = isHomeScreen && isRepoBranch;
 
   // if no root here try to create
-  await createRoot();
+  await createRepo();
 
   // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
   if (canSaveRepo) {

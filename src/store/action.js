@@ -348,7 +348,7 @@ export async function loadRepoRecord(record) {
 export async function createRoot() {
   try {
     // fails if root exists
-    await api.createRoot();
+    await api.createRepo("root");
 
     const branchRecords = schemaToBranchRecords(schemaRoot);
 

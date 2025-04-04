@@ -4,26 +4,6 @@ import { addLFS } from "./lfs.js";
 import { fs } from "./lightningfs.js";
 import { findDir, rimraf } from "./io.js";
 
-export async function createRoot() {
-  const dir = `/root`;
-
-  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
-    new RegExp(`^root$`).test(repo),
-  );
-
-  if (existingRepo === undefined) {
-    await fs.promises.mkdir(dir);
-
-    await git.init({ fs, dir, defaultBranch: "main" });
-  } else {
-    throw Error("root exists");
-  }
-
-  await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
-
-  await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
-}
-
 export async function createRepo(uuid, name) {
   const dir = `/${uuid}${name !== undefined ? `-${name}` : ""}`;
 
@@ -36,6 +16,9 @@ export async function createRepo(uuid, name) {
 
     await git.init({ fs, dir, defaultBranch: "main" });
   } else if (`/${existingRepo}` !== dir) {
+    if (uuid === "root") {
+      throw Error("root exists");
+    }
     await fs.promises.rename(`/${existingRepo}`, dir);
   }
 

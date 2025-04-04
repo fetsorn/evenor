@@ -18,6 +18,7 @@ vi.mock("./io.js", async (importOriginal) => {
 
   const findDir = vi.fn(async (uuid) => {
     expect(uuid).toBe(mockUUID);
+
     return mockDir;
   });
 
@@ -32,7 +33,9 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
 
   const selectRecord = vi.fn(async ({ fs, dir, query }) => {
     expect(dir).toBe(mockDir);
+
     expect(query).toEqual(mockQuery);
+
     return mockOverview;
   });
 
@@ -49,11 +52,13 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
 
   const updateRecord = vi.fn(({ fs, dir, query }) => {
     expect(dir).toBe(mockDir);
+
     expect(query).toEqual(mockEntry);
   });
 
   const deleteRecord = vi.fn(({ fs, dir, query }) => {
     expect(dir).toBe(mockDir);
+
     expect(query).toEqual(mockEntry);
   });
 

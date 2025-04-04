@@ -4,28 +4,6 @@ import browser from "./index.js";
 
 const uuid = "a";
 
-describe("createRoot", () => {
-  beforeAll(async () => {
-    // await browser.createRoot();
-  });
-
-  test("creates a directory", async () => {
-    expect(false).toBe(true);
-  });
-
-  test("writes .gitignore", async () => {
-    expect(false).toBe(true);
-  });
-
-  test("creates .git directory", async () => {
-    expect(false).toBe(true);
-  });
-
-  test("writes .csvs.csv", async () => {
-    expect(false).toBe(true);
-  });
-});
-
 describe("createRepo", () => {
   beforeAll(async () => {
     // await browser.createRepo(uuid, "b");

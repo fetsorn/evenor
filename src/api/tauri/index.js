@@ -67,10 +67,6 @@ export async function deleteRecord(uuid, record) {
   return invoke("delete_record", { uuid, record });
 }
 
-export async function createRoot() {
-  return invoke("createRoot", {});
-}
-
 export async function createRepo(uuid, name) {
   return invoke("createRepo", { uuid, name });
 }
@@ -155,7 +151,6 @@ export default {
   selectStream,
   updateRecord,
   deleteRecord,
-  createRoot,
   createRepo,
   createLFS,
   clone,

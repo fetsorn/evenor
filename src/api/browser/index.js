@@ -1,7 +1,6 @@
 import { zip } from "./zip.js";
 import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
 import {
-  createRoot,
   createRepo,
   clone,
   commit,
@@ -36,7 +35,6 @@ export {
   selectStream,
   updateRecord,
   deleteRecord,
-  createRoot,
   createRepo,
   createLFS,
   clone,
@@ -62,7 +60,6 @@ export default {
   selectStream,
   updateRecord,
   deleteRecord,
-  createRoot,
   createRepo,
   createLFS,
   clone,

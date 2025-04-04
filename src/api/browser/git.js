@@ -7,20 +7,20 @@ import { findDir, rimraf } from "./io.js";
 export async function createRepo(uuid, name) {
   const dir = `/${uuid}${name !== undefined ? `-${name}` : ""}`;
 
-  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
-    new RegExp(`^${uuid}`).test(repo),
-  );
-
-  if (existingRepo === undefined) {
+  if (uuid === "root") {
+    // should fail if root exists
     await fs.promises.mkdir(dir);
+  } else {
+    try {
+      const existingRepo = await findDir(uuid);
 
-    await git.init({ fs, dir, defaultBranch: "main" });
-  } else if (`/${existingRepo}` !== dir) {
-    if (uuid === "root") {
-      throw Error("root exists");
+      await fs.promises.rename(`/${existingRepo}`, dir);
+    } catch {
+      await fs.promises.mkdir(dir);
     }
-    await fs.promises.rename(`/${existingRepo}`, dir);
   }
+
+  await git.init({ fs, dir, defaultBranch: "main" });
 
   await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
 

@@ -9,11 +9,7 @@ import { fetchFile, writeFile } from "./io.js";
 export const lfsDir = "lfs";
 
 export async function createLFS(uuid) {
-  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
-    new RegExp(`^${uuid}`).test(repo),
-  );
-
-  const dir = `/${existingRepo}`;
+  const dir = await findDir(uuid);
 
   await fs.promises.writeFile(
     `${dir}/.gitattributes`,

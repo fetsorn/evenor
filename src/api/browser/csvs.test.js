@@ -2,24 +2,15 @@ import { expect, test, describe, vi } from "vitest";
 import csvs from "@fetsorn/csvs-js";
 import { findDir } from "./io.js";
 import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
-
-const mockDir = "path/to/dir";
-
-const mockUUID = "a";
-
-const mockQuery = { a: "b" };
-
-const mockEntry = { c: "d" };
-
-const mockOverview = [mockEntry];
+import stub from "./stub.js";
 
 vi.mock("./io.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   const findDir = vi.fn(async (uuid) => {
-    expect(uuid).toBe(mockUUID);
+    expect(uuid).toBe(stub.uuid);
 
-    return mockDir;
+    return stub.dir;
   });
 
   return {
@@ -32,34 +23,36 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
   const mod = await importOriginal();
 
   const selectRecord = vi.fn(async ({ fs, dir, query }) => {
-    expect(dir).toBe(mockDir);
+    expect(dir).toBe(stub.dir);
 
-    expect(query).toEqual(mockQuery);
+    expect(query).toEqual(stub.query);
 
-    return mockOverview;
+    return stub.overview;
   });
 
   const selectRecordStream = vi.fn(
     ({ fs, dir }) =>
       new TransformStream({
         transform(query, controller) {
-          expect(dir).toBe(mockDir);
-          expect(query).toEqual(mockQuery);
-          controller.enqueue(mockEntry);
+          expect(dir).toBe(stub.dir);
+
+          expect(query).toEqual(stub.query);
+
+          controller.enqueue(stub.entry);
         },
       }),
   );
 
   const updateRecord = vi.fn(({ fs, dir, query }) => {
-    expect(dir).toBe(mockDir);
+    expect(dir).toBe(stub.dir);
 
-    expect(query).toEqual(mockEntry);
+    expect(query).toEqual(stub.entry);
   });
 
   const deleteRecord = vi.fn(({ fs, dir, query }) => {
-    expect(dir).toBe(mockDir);
+    expect(dir).toBe(stub.dir);
 
-    expect(query).toEqual(mockEntry);
+    expect(query).toEqual(stub.entry);
   });
 
   return {
@@ -76,17 +69,17 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
 
 describe("csvs", () => {
   test("select", async () => {
-    const overview = await select(mockUUID, mockQuery);
+    const overview = await select(stub.uuid, stub.query);
 
     expect(findDir).toHaveBeenCalled();
 
     expect(csvs.selectRecord).toHaveBeenCalled();
 
-    expect(overview).toEqual(mockOverview);
+    expect(overview).toEqual(stub.overview);
   });
 
   test("selectStream", async () => {
-    const { strm } = await selectStream(mockUUID, mockQuery);
+    const { strm } = await selectStream(stub.uuid, stub.query);
 
     let overview = [];
 
@@ -102,11 +95,11 @@ describe("csvs", () => {
 
     expect(csvs.selectRecordStream).toHaveBeenCalled();
 
-    expect(overview).toEqual(mockOverview);
+    expect(overview).toEqual(stub.overview);
   });
 
   test("updateRecord", async () => {
-    await updateRecord(mockUUID, mockEntry);
+    await updateRecord(stub.uuid, stub.entry);
 
     expect(findDir).toHaveBeenCalled();
 
@@ -114,7 +107,7 @@ describe("csvs", () => {
   });
 
   test("deleteRecord", async () => {
-    await deleteRecord(mockUUID, mockEntry);
+    await deleteRecord(stub.uuid, stub.entry);
 
     expect(findDir).toHaveBeenCalled();
 

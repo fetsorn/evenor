@@ -2,9 +2,15 @@ import git from "isomorphic-git";
 import { fs } from "./lightningfs.js";
 
 export async function findDir(uuid) {
-  return `/${(await fs.promises.readdir("/")).find((repo) =>
+  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
     new RegExp(`^${uuid}`).test(repo),
-  )}`;
+  );
+
+  if (existingRepo === undefined) {
+    throw Error("no repo found");
+  } else {
+    return `/${existingRepo}`;
+  }
 }
 
 export async function fetchFile(uuid, filepath) {

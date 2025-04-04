@@ -7,6 +7,7 @@ const uuid = "a";
 test("findDir", async () => {
   // TODO write test folder with fs
 
+  // throws when no repo
   const dir = await browser.findDir(uuid);
 
   expect(dir).toBe("/a-b");

@@ -22,9 +22,9 @@ vi.mock("isomorphic-git", async (importOriginal) => {
     ...mod,
     default: {
       ...mod,
-      init: vi.fn(),
+      init: vi.fn(mod.init),
       clone: vi.fn(),
-      statusMatrix: vi.fn(),
+      statusMatrix: vi.fn(mod.statusMatrix),
       resetIndex: vi.fn(),
       remove: vi.fn(),
       add: vi.fn(),
@@ -161,20 +161,46 @@ describe("clone", () => {
   });
 });
 
-//describe("commit", () => {
-//  test("adds", async () => {
-//    expect(false).toBe(true);
-//  });
-//
-//  test("creates message", async () => {
-//    expect(false).toBe(true);
-//  });
-//
-//  test("smudges lfs", async () => {
-//    expect(false).toBe(true);
-//  });
-//});
-//
+describe("commit", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  test("throws when no repo", async () => {
+    await expect(commit(stub.uuid)).rejects.toThrowError();
+  });
+
+  test("adds", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    expect(git.statusMatrix).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+      }),
+    );
+
+    expect(git.add).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        filepath: ".csvs.csv",
+      }),
+    );
+
+    expect(git.commit).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        author: {
+          name: "name",
+          email: "name@mail.com",
+        },
+        message: ".csvs.csv added,.gitignore added",
+      }),
+    );
+  });
+});
+
 //test("push", async () => {
 //  // write test dataset
 //  // push

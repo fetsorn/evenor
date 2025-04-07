@@ -12,55 +12,6 @@ export function isTwig(schema, branch) {
   return schema[branch].leaves.length === 0;
 }
 
-// turn
-// { event: { description: { en: "", ru: "" } }, datum: { trunk: "event" } }
-// into
-// [ {_: "_", event: [ "datum" ]},
-//   {_: branch, branch: "event", description_en: "", description_ru: ""},
-//   {_: branch, branch: "datum"}
-// ]
-export function schemaToBranchRecords(schema) {
-  const branches = Object.keys(schema);
-
-  const records = branches.reduce(
-    (acc, branch) => {
-      const { leaves, task, cognate, description } = schema[branch];
-
-      const schemaRecord =
-        leaves.length > 0
-          ? { ...acc.schemaRecord, [branch]: leaves }
-          : acc.schemaRecord;
-
-      const partialEn =
-        description && description.en ? { description_en: description.en } : {};
-
-      const partialRu =
-        description && description.ru ? { description_ru: description.ru } : {};
-
-      const partialTask = task ? { task } : {};
-
-      const partialCognate = cognate ? { cognate } : {};
-
-      const metaRecords = [
-        {
-          _: "branch",
-          branch,
-          ...partialTask,
-          ...partialCognate,
-          ...partialEn,
-          ...partialRu,
-        },
-        ...acc.metaRecords,
-      ];
-
-      return { schemaRecord, metaRecords };
-    },
-    { schemaRecord: { _: "_" }, metaRecords: [] },
-  );
-
-  return [records.schemaRecord, ...records.metaRecords];
-}
-
 // pick a param to group data by
 export function getDefaultSortBy(schema, base, records) {
   // TODO rewrite to const and tertials
@@ -256,6 +207,55 @@ export function extractSchemaRecords(branchRecords) {
           : acc.schemaRecord;
 
       const metaRecords = [branchRecordOmitted, ...acc.metaRecords];
+
+      return { schemaRecord, metaRecords };
+    },
+    { schemaRecord: { _: "_" }, metaRecords: [] },
+  );
+
+  return [records.schemaRecord, ...records.metaRecords];
+}
+
+// turn
+// { event: { description: { en: "", ru: "" } }, datum: { trunk: "event" } }
+// into
+// [ {_: "_", event: [ "datum" ]},
+//   {_: branch, branch: "event", description_en: "", description_ru: ""},
+//   {_: branch, branch: "datum"}
+// ]
+export function schemaToBranchRecords(schema) {
+  const branches = Object.keys(schema);
+
+  const records = branches.reduce(
+    (acc, branch) => {
+      const { leaves, task, cognate, description } = schema[branch];
+
+      const schemaRecord =
+        leaves.length > 0
+          ? { ...acc.schemaRecord, [branch]: leaves }
+          : acc.schemaRecord;
+
+      const partialEn =
+        description && description.en ? { description_en: description.en } : {};
+
+      const partialRu =
+        description && description.ru ? { description_ru: description.ru } : {};
+
+      const partialTask = task ? { task } : {};
+
+      const partialCognate = cognate ? { cognate } : {};
+
+      const metaRecords = [
+        {
+          _: "branch",
+          branch,
+          ...partialTask,
+          ...partialCognate,
+          ...partialEn,
+          ...partialRu,
+        },
+        ...acc.metaRecords,
+      ];
 
       return { schemaRecord, metaRecords };
     },

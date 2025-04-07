@@ -10,6 +10,10 @@ export const entry = { c: "d" };
 
 export const overview = [entry];
 
+export const remote = "e";
+
+export const token = "f";
+
 export default {
   dir,
   uuid,
@@ -17,4 +21,6 @@ export default {
   query,
   entry,
   overview,
+  remote,
+  token,
 };

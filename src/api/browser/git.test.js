@@ -1,5 +1,6 @@
-import { expect, test, describe, beforeAll, vi } from "vitest";
+import { expect, test, describe, beforeEach, vi } from "vitest";
 import { page, userEvent } from "@vitest/browser/context";
+import git from "isomorphic-git";
 import { fs } from "./lightningfs.js";
 import browser from "./index.js";
 import {
@@ -14,25 +15,36 @@ import {
 } from "./git.js";
 import stub from "./stub.js";
 
-vi.mock("./io.js", async (importOriginal) => {
+vi.mock("isomorphic-git", async (importOriginal) => {
   const mod = await importOriginal();
-
-  const findDir = vi.fn(async (uuid) => {
-    expect(uuid).toBe(stub.uuid);
-
-    return stub.dir;
-  });
 
   return {
     ...mod,
-    findDir,
+    default: {
+      ...mod,
+      init: vi.fn(),
+      clone: vi.fn(),
+      statusMatrix: vi.fn(),
+      resetIndex: vi.fn(),
+      remove: vi.fn(),
+      add: vi.fn(),
+      commit: vi.fn(),
+      setConfig: vi.fn(),
+      fastForward: vi.fn(),
+      push: vi.fn(),
+      listRemotes: vi.fn(),
+      addRemote: vi.fn(),
+      getConfig: vi.fn(),
+    },
   };
 });
 
 describe("createRepo", () => {
-  test("creates a directory", async () => {
+  beforeEach(() => {
     fs.init("test", { wipe: true });
+  });
 
+  test("creates a directory", async () => {
     await createRepo(stub.uuid, stub.name);
 
     const listing = await fs.promises.readdir("/");
@@ -52,11 +64,16 @@ describe("createRepo", () => {
     );
 
     expect(dotcsvs).toBe("csvs,0.0.2");
+
+    expect(git.init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        defaultBranch: "main",
+      }),
+    );
   });
 
   test("creates root", async () => {
-    fs.init("test", { wipe: true });
-
     await createRepo("root");
 
     const listing = await fs.promises.readdir("/");
@@ -70,27 +87,80 @@ describe("createRepo", () => {
     const dotcsvs = await fs.promises.readFile(`/root/.csvs.csv`, "utf8");
 
     expect(dotcsvs).toBe("csvs,0.0.2");
+
+    expect(git.init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/root`,
+        defaultBranch: "main",
+      }),
+    );
   });
 
   test("throws when root exists", async () => {
-    fs.init("test", { wipe: true });
-
     await createRepo("root");
 
     await expect(createRepo("root")).rejects.toThrowError();
   });
 });
 
-//describe("clone", () => {
-//  test("fetches", async () => {
-//    expect(false).toBe(true);
-//  });
-//
-//  test("writes remote", async () => {
-//    expect(false).toBe(true);
-//  });
-//});
-//
+describe("clone", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  test("throws if dir exists", async () => {
+    // create dir
+    await fs.promises.mkdir(`/${stub.dir}`);
+
+    // try to clone
+    await expect(
+      clone(stub.uuid, stub.remote, stub.token, stub.name),
+    ).rejects.toThrowError();
+  });
+
+  test("calls git.clone", async () => {
+    await clone(stub.uuid, stub.remote, undefined, stub.name);
+
+    expect(git.clone).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        url: stub.remote,
+        singleBranch: true,
+        //onAuth: undefined
+      }),
+    );
+
+    expect(git.setConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        path: "remote.origin.url",
+        value: stub.remote,
+      }),
+    );
+  });
+
+  test("passes token", async () => {
+    await clone(stub.uuid, stub.remote, stub.token, stub.name);
+
+    expect(git.clone).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        url: stub.remote,
+        singleBranch: true,
+        onAuth: expect.any(Function),
+      }),
+    );
+
+    expect(git.setConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        path: "remote.origin.url",
+        value: stub.remote,
+      }),
+    );
+  });
+});
+
 //describe("commit", () => {
 //  test("adds", async () => {
 //    expect(false).toBe(true);

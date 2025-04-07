@@ -4,8 +4,12 @@ import { addLFS } from "./lfs.js";
 import { fs } from "./lightningfs.js";
 import { findDir, rimraf } from "./io.js";
 
+function nameDir(uuid, name) {
+  return `/${uuid}${name !== undefined ? `-${name}` : ""}`;
+}
+
 export async function createRepo(uuid, name) {
-  const dir = `/${uuid}${name !== undefined ? `-${name}` : ""}`;
+  const dir = nameDir(uuid, name);
 
   if (uuid === "root") {
     // should fail if root exists
@@ -106,15 +110,19 @@ export async function commit(uuid) {
 }
 
 export async function clone(uuid, remoteUrl, remoteToken, name) {
-  if (
-    (await fs.promises.readdir("/")).some((repo) =>
-      new RegExp(`^${uuid}`).test(repo),
-    )
-  ) {
-    throw Error(`could not clone, directory ${uuid} exists`);
+  try {
+    await findDir(uuid);
+
+    throw Error("1");
+  } catch (e) {
+    if (e.message === "1") {
+      throw Error(`could not clone, directory for ${uuid} exists`);
+    }
+
+    // do nothing
   }
 
-  const dir = `/${uuid}-${name}`;
+  const dir = nameDir(uuid, name);
 
   const options = {
     fs,
@@ -124,7 +132,7 @@ export async function clone(uuid, remoteUrl, remoteToken, name) {
     singleBranch: true,
   };
 
-  if (remoteToken) {
+  if (remoteToken !== undefined) {
     options.onAuth = () => ({
       username: remoteToken,
     });
@@ -146,7 +154,7 @@ export async function clone(uuid, remoteUrl, remoteToken, name) {
     value: remoteUrl,
   });
 
-  if (remoteToken) {
+  if (remoteToken !== undefined) {
     await git.setConfig({
       fs,
       dir,
@@ -226,7 +234,7 @@ export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
     url: remoteUrl,
   });
 
-  if (remoteToken) {
+  if (remoteToken !== undefined) {
     await git.setConfig({
       fs,
       dir,

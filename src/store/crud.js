@@ -26,6 +26,8 @@ export const [store, setStore] = createStore({
   records: [],
 });
 
+// TODO: leave on setStore here and calls to imported functions
+
 export async function onSearch(field, value) {
   // update queries in store
   const queries = changeQueries(store.schema, store.queries, field, value);
@@ -36,6 +38,7 @@ export async function onSearch(field, value) {
 
   if (field === ".sortBy" || field === ".sortDirection") return;
 
+  // TODO move stream to an imported function
   // stop previous stream
   await store.abortPreviousStream();
 

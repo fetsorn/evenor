@@ -95,6 +95,8 @@ describe("csvs", () => {
 
     expect(csvs.selectRecordStream).toHaveBeenCalled();
 
+    // TODO: test that previous stream is interrupted
+
     expect(overview).toEqual(stub.overview);
   });
 

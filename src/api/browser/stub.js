@@ -10,9 +10,11 @@ export const entry = { c: "d" };
 
 export const overview = [entry];
 
-export const remote = "e";
+export const url = "e";
 
 export const token = "f";
+
+export const remote = "g";
 
 export default {
   dir,
@@ -23,4 +25,5 @@ export default {
   overview,
   remote,
   token,
+  url,
 };

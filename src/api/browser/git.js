@@ -163,56 +163,6 @@ export async function clone(uuid, remoteUrl, remoteToken, name) {
     });
   }
 }
-
-export async function pull(uuid, remote) {
-  const [remoteUrl, remoteToken] = await getRemote(remote);
-
-  const dir = await findDir(uuid);
-
-  const tokenPartial = remoteToken
-    ? {
-        onAuth: () => ({
-          username: remoteToken,
-        }),
-      }
-    : {};
-
-  // fastForward instead of pull
-  // https://github.com/isomorphic-git/isomorphic-git/issues/1073
-  await git.fastForward({
-    fs,
-    http,
-    dir,
-    url: remoteUrl,
-    remote,
-    ...tokenPartial,
-  });
-}
-
-export async function push(uuid, remote) {
-  const [remoteUrl, remoteToken] = await getRemote(remote);
-
-  const dir = await findDir(uuid);
-
-  const tokenPartial = remoteToken
-    ? {
-        onAuth: () => ({
-          username: remoteToken,
-        }),
-      }
-    : {};
-
-  await git.push({
-    fs,
-    http,
-    force: true,
-    dir,
-    url: remoteUrl,
-    remote,
-    ...tokenPartial,
-  });
-}
-
 export async function listRemotes(uuid) {
   const dir = await findDir(uuid);
 
@@ -244,6 +194,10 @@ export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
   }
 }
 
+// TODO add an overarching pull function
+// which lists remotes
+// and pulls each
+
 export async function getRemote(uuid, remoteName) {
   const dir = await findDir(uuid);
 
@@ -260,4 +214,65 @@ export async function getRemote(uuid, remoteName) {
   });
 
   return [remoteUrl, remoteToken];
+}
+
+// TODO rename to pullRemote
+// TODO pass url and token here instead
+export async function pull(uuid, remote) {
+  // move this elsewhere
+  const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
+
+  if (remoteUrl === undefined) throw Error("can't pull, remote undefined");
+
+  const dir = await findDir(uuid);
+
+  const tokenPartial = remoteToken
+    ? {
+        onAuth: () => ({
+          username: remoteToken,
+        }),
+      }
+    : {};
+
+  // fastForward instead of pull
+  // https://github.com/isomorphic-git/isomorphic-git/issues/1073
+  await git.fastForward({
+    fs,
+    http,
+    dir,
+    url: remoteUrl,
+    remote,
+    ...tokenPartial,
+  });
+}
+
+// TODO create an overarching push function
+// which lists remotes
+// and pushes each
+
+// TODO rename to pushRemote
+// TODO pass url and token here instead
+export async function push(uuid, remote) {
+  // TODO remove this
+  const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
+
+  const dir = await findDir(uuid);
+
+  const tokenPartial = remoteToken
+    ? {
+        onAuth: () => ({
+          username: remoteToken,
+        }),
+      }
+    : {};
+
+  await git.push({
+    fs,
+    http,
+    force: true,
+    dir,
+    url: remoteUrl,
+    remote,
+    ...tokenPartial,
+  });
 }

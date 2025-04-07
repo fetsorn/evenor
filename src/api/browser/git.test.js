@@ -25,16 +25,16 @@ vi.mock("isomorphic-git", async (importOriginal) => {
       init: vi.fn(mod.init),
       clone: vi.fn(),
       statusMatrix: vi.fn(mod.statusMatrix),
-      resetIndex: vi.fn(),
-      remove: vi.fn(),
-      add: vi.fn(),
-      commit: vi.fn(),
-      setConfig: vi.fn(),
+      resetIndex: vi.fn(mod.resetIndex),
+      remove: vi.fn(mod.remove),
+      add: vi.fn(mod.add),
+      commit: vi.fn(mod.commit),
+      setConfig: vi.fn(mod.setConfig),
       fastForward: vi.fn(),
       push: vi.fn(),
-      listRemotes: vi.fn(),
-      addRemote: vi.fn(),
-      getConfig: vi.fn(),
+      listRemotes: vi.fn(mod.listRemotes),
+      addRemote: vi.fn(mod.addRemote),
+      getConfig: vi.fn(mod.getConfig),
     },
   };
 });
@@ -114,17 +114,17 @@ describe("clone", () => {
 
     // try to clone
     await expect(
-      clone(stub.uuid, stub.remote, stub.token, stub.name),
+      clone(stub.uuid, stub.url, stub.token, stub.name),
     ).rejects.toThrowError();
   });
 
   test("calls git.clone", async () => {
-    await clone(stub.uuid, stub.remote, undefined, stub.name);
+    await clone(stub.uuid, stub.url, undefined, stub.name);
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: `/${stub.dir}`,
-        url: stub.remote,
+        url: stub.url,
         singleBranch: true,
         //onAuth: undefined
       }),
@@ -134,18 +134,18 @@ describe("clone", () => {
       expect.objectContaining({
         dir: `/${stub.dir}`,
         path: "remote.origin.url",
-        value: stub.remote,
+        value: stub.url,
       }),
     );
   });
 
   test("passes token", async () => {
-    await clone(stub.uuid, stub.remote, stub.token, stub.name);
+    await clone(stub.uuid, stub.url, stub.token, stub.name);
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: `/${stub.dir}`,
-        url: stub.remote,
+        url: stub.url,
         singleBranch: true,
         onAuth: expect.any(Function),
       }),
@@ -155,7 +155,7 @@ describe("clone", () => {
       expect.objectContaining({
         dir: `/${stub.dir}`,
         path: "remote.origin.url",
-        value: stub.remote,
+        value: stub.url,
       }),
     );
   });
@@ -201,20 +201,44 @@ describe("commit", () => {
   });
 });
 
-//test("push", async () => {
-//  // write test dataset
-//  // push
-//  // check remote git server
-//  expect(false).toBe(true);
-//});
-//
-//test("pull", async () => {
-//  // write test dataset
-//  // pull
-//  // check git log
-//  expect(false).toBe(true);
-//});
-//
+describe("pull", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  test("throws if no repo", async () => {
+    await expect(pull(stub.uuid, undefined)).rejects.toThrowError();
+  });
+
+  test("throws if remote is undefined", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await expect(pull(stub.uuid, undefined)).rejects.toThrowError();
+  });
+
+  test("calls git", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+
+    await pull(stub.uuid, stub.url);
+
+    expect(git.fastForward).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        url: stub.url,
+        onAuth: expect.any(Function),
+      }),
+    );
+  });
+
+  test("passes token", async () => {});
+});
+
 //test("listRemotes", async () => {
 //  // write test dataset
 //  // list remotes

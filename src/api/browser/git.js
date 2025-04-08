@@ -4,7 +4,9 @@ import { addLFS } from "./lfs.js";
 import { fs } from "./lightningfs.js";
 import { findDir, rimraf } from "./io.js";
 
-function nameDir(uuid, name) {
+export function nameDir(uuid, name) {
+  if (uuid === undefined) throw "uuid is undefined";
+
   return `/${uuid}${name !== undefined ? `-${name}` : ""}`;
 }
 
@@ -219,8 +221,6 @@ export async function getRemote(uuid, remoteName) {
 // mast pass remote name for fastForward
 export async function pull(uuid, remote) {
   const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
-
-  console.log("!!", remoteUrl);
 
   if (remoteUrl === undefined) throw Error("can't pull, remote undefined");
 

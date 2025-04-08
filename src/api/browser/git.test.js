@@ -1,9 +1,8 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
-import { page, userEvent } from "@vitest/browser/context";
 import git from "isomorphic-git";
 import { fs } from "./lightningfs.js";
-import browser from "./index.js";
 import {
+  nameDir,
   createRepo,
   commit,
   clone,
@@ -39,6 +38,20 @@ vi.mock("isomorphic-git", async (importOriginal) => {
   };
 });
 
+describe("nameDir", () => {
+  test("throws if uuid is undefined", async () => {
+    expect(() => nameDir(undefined, stub.name)).toThrowError();
+  });
+
+  test("concatenates a name", async () => {
+    expect(nameDir(stub.uuid, stub.name)).toBe(stub.dirpath);
+  });
+
+  test("returns uuid when name is undefined", async () => {
+    expect(nameDir("root", undefined)).toBe("/root");
+  });
+});
+
 describe("createRepo", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
@@ -57,14 +70,14 @@ describe("createRepo", () => {
     expect(listing).toEqual([stub.dir]);
 
     const gitignore = await fs.promises.readFile(
-      `/${stub.dir}/.gitignore`,
+      `${stub.dirpath}/.gitignore`,
       "utf8",
     );
 
     expect(gitignore).toBe(".DS_Store");
 
     const dotcsvs = await fs.promises.readFile(
-      `/${stub.dir}/.csvs.csv`,
+      `${stub.dirpath}/.csvs.csv`,
       "utf8",
     );
 
@@ -72,7 +85,7 @@ describe("createRepo", () => {
 
     expect(git.init).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         defaultBranch: "main",
       }),
     );
@@ -101,6 +114,10 @@ describe("createRepo", () => {
     );
   });
 
+  test("renames a directory", async () => {
+    expect(false).toBe(true);
+  });
+
   test("throws when root exists", async () => {
     await createRepo("root");
 
@@ -120,7 +137,7 @@ describe("clone", () => {
 
   test("throws if dir exists", async () => {
     // create dir
-    await fs.promises.mkdir(`/${stub.dir}`);
+    await fs.promises.mkdir(stub.dirpath);
 
     // try to clone
     await expect(
@@ -133,7 +150,7 @@ describe("clone", () => {
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         url: stub.url,
         singleBranch: true,
         onAuth: expect.any(Function),
@@ -142,7 +159,7 @@ describe("clone", () => {
 
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         path: "remote.origin.url",
         value: stub.url,
       }),
@@ -150,7 +167,7 @@ describe("clone", () => {
 
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         path: "remote.origin.token",
         value: stub.token,
       }),
@@ -179,20 +196,20 @@ describe("commit", () => {
 
     expect(git.statusMatrix).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
       }),
     );
 
     expect(git.add).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         filepath: ".csvs.csv",
       }),
     );
 
     expect(git.commit).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         author: {
           name: "name",
           email: "name@mail.com",
@@ -236,14 +253,14 @@ describe("getRemote", () => {
 
     expect(git.getConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         path: `remote.${stub.remote}.url`,
       }),
     );
 
     expect(git.getConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         path: `remote.${stub.remote}.token`,
       }),
     );
@@ -279,7 +296,7 @@ describe("addRemote", () => {
 
     expect(git.addRemote).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         remote: stub.remote,
         url: stub.url,
       }),
@@ -287,7 +304,7 @@ describe("addRemote", () => {
 
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         path: `remote.${stub.remote}.token`,
         value: stub.token,
       }),
@@ -318,7 +335,7 @@ describe("listRemotes", () => {
 
     expect(git.listRemotes).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
       }),
     );
 
@@ -336,7 +353,7 @@ describe("listRemotes", () => {
 
     expect(git.listRemotes).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
       }),
     );
 
@@ -377,7 +394,7 @@ describe("pull", () => {
 
     expect(git.fastForward).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         url: stub.url,
         remote: stub.remote,
         onAuth: expect.any(Function),
@@ -419,7 +436,7 @@ describe("push", () => {
 
     expect(git.push).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: `/${stub.dir}`,
+        dir: stub.dirpath,
         url: stub.url,
         remote: stub.remote,
         onAuth: expect.any(Function),

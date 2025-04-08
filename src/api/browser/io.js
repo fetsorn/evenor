@@ -120,7 +120,7 @@ export async function rimraf(rimrafpath) {
   await fs.promises.rmdir(rimrafpath);
 }
 
-export async function ls(uuid, lspath) {
+export async function ls(lspath) {
   let files;
 
   try {
@@ -129,7 +129,9 @@ export async function ls(uuid, lspath) {
     throw Error(`can't read ${lspath} to list it`);
   }
 
-  console.log("list ", lspath, ":", files);
+  let message = "";
+
+  message += `list ${lspath}: ${files}\n`;
 
   for (const file of files) {
     const filepath = `${lspath}/${file}`;
@@ -137,7 +139,9 @@ export async function ls(uuid, lspath) {
     const { type } = await fs.promises.stat(filepath);
 
     if (type === "dir") {
-      await ls(filepath);
+      message += await ls(filepath);
     }
   }
+
+  return message;
 }

@@ -145,3 +145,17 @@ export async function ls(lspath) {
 
   return message;
 }
+
+export async function pickFile() {
+  const input = document.createElement("input");
+
+  input.type = "file";
+
+  input.multiple = "multiple";
+
+  return new Promise((res, rej) => {
+    input.onchange = async (e) => {
+      res(e.target.files);
+    };
+  });
+}

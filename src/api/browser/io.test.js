@@ -47,10 +47,8 @@ describe("fetchFile", () => {
 
     const content = await fetchFile(stub.uuid, stub.filename);
 
-    const encoded = new TextEncoder().encode(stub.content);
-
     // stringify to get rid of prototype methods on Uint8Array
-    expect(JSON.stringify(content)).toEqual(JSON.stringify(encoded));
+    expect(JSON.stringify(content)).toEqual(JSON.stringify(stub.encoded));
   });
 
   test("reads file recursive", async () => {
@@ -70,10 +68,8 @@ describe("fetchFile", () => {
 
     const content = await fetchFile(stub.uuid, relativeFile);
 
-    const encoded = new TextEncoder().encode(stub.content);
-
     // stringify to get rid of prototype methods on Uint8Array
-    expect(JSON.stringify(content)).toEqual(JSON.stringify(encoded));
+    expect(JSON.stringify(content)).toEqual(JSON.stringify(stub.encoded));
   });
 });
 
@@ -229,9 +225,9 @@ describe("ls", () => {
 
     const listing = await ls("/");
 
-    expect(listing).toEqual(`list /: a-e
-list //a-e: a-e
-list //a-e/a-e: h
+    expect(listing).toEqual(`list /: ${stub.dir}
+list //${stub.dir}: ${stub.dir}
+list //${stub.dir}/${stub.dir}: ${stub.filename}
 `);
   });
 });

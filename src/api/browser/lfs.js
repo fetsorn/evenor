@@ -3,8 +3,8 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/web/index.cjs";
 import { saveAs } from "file-saver";
 import { fs } from "./lightningfs.js";
-import { findDir } from "./io.js";
-import { fetchFile, writeFile } from "./io.js";
+import { findDir, fetchFile, writeFile, pickFile } from "./io.js";
+import { listRemotes, getRemote } from "./git.js";
 
 export const lfsDir = "lfs";
 
@@ -61,6 +61,39 @@ export async function addLFS(dir, filepath) {
   }
 }
 
+export async function downloadUrlFromPointer(url, token, pointerInfo) {
+  return lfs.downloadUrlFromPointer({
+    http,
+    url,
+    auth: {
+      username: token,
+      password: token,
+    },
+    info: pointerInfo,
+  });
+}
+
+export async function addAssetPath(uuid, assetPath) {
+  const dir = await findDir(uuid);
+
+  await git.setConfig({
+    fs,
+    dir,
+    path: "asset.path",
+    value: assetPath,
+  });
+}
+
+export async function listAssetPaths(uuid) {
+  const dir = await findDir(uuid);
+
+  return git.getConfigAll({
+    fs,
+    dir,
+    path: "asset.path",
+  });
+}
+
 export async function putAsset(uuid, filename, content) {
   // write buffer to assetEndpoint/filename
   const assetEndpoint = `${lfsDir}/${filename}`;
@@ -68,96 +101,7 @@ export async function putAsset(uuid, filename, content) {
   await writeFile(uuid, assetEndpoint, content);
 }
 
-export async function uploadFile(uuid) {
-  const input = document.createElement("input");
-
-  input.type = "file";
-
-  input.multiple = "multiple";
-
-  return new Promise((res, rej) => {
-    let metadata = [];
-
-    input.onchange = async (e) => {
-      for (const file of e.target.files) {
-        const fileArrayBuffer = await file.arrayBuffer();
-
-        const hashArrayBuffer = await crypto.subtle.digest(
-          "SHA-256",
-          fileArrayBuffer,
-        );
-
-        const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
-
-        const hashHexString = hashByteArray
-          .map((b) => b.toString(16).padStart(2, "0"))
-          .join("");
-
-        const name = file.name.replace(/\.[^/.]+$/, "");
-
-        const extension = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
-
-        const assetname = `${hashHexString}.${extension}`;
-
-        await putAsset(uuid, assetname, fileArrayBuffer);
-
-        const metadatum = { hash: hashHexString, name, extension };
-
-        metadata.push(metadatum);
-      }
-
-      res(metadata);
-    };
-
-    input.click();
-  });
-}
-
-// called without "files" on push
-export async function uploadBlobsLFS(uuid, remote, files) {
-  const [remoteUrl, remoteToken] = await getRemote(remote);
-
-  const dir = await findDir(uuid);
-
-  let assets;
-
-  // if no files are specified
-  // for every file in remoteEndpoint/
-  // if file is not LFS pointer,
-  // upload file to remote
-  if (files === undefined) {
-    const filenames = await fs.promises.readdir(`${dir}/${lfsDir}/`);
-
-    assets = (
-      await Promise.all(
-        filenames.map(async (filename) => {
-          const file = await fetchFile(uuid, `${lfsDir}/${filename}`);
-
-          if (!lfs.pointsToLFS(file)) {
-            return file;
-          }
-
-          return undefined;
-        }),
-      )
-    ).filter(Boolean);
-  } else {
-    assets = files;
-  }
-
-  await lfs.uploadBlobs(
-    {
-      url: remoteUrl,
-      auth: {
-        username: remoteToken,
-        password: remoteToken,
-      },
-    },
-    assets,
-  );
-}
-
-export function downloadAsset(uuid, content, filename) {
+export function downloadAsset(content, filename) {
   saveAs(content, filename);
 }
 
@@ -214,21 +158,19 @@ export async function fetchAsset(uuid, filename) {
 
     // loop over remotes trying to resolve LFS
     for (const remote of remotes) {
-      const [remoteUrl, remoteToken] = await getRemote(remote);
+      const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
 
       try {
-        content = await lfs.downloadBlobFromPointer(
+        content = await lfs.downloadBlobFromPointer({
           fs,
-          {
-            http,
-            url: remoteUrl,
-            auth: {
-              username: remoteToken,
-              password: remoteToken,
-            },
+          http,
+          url: remoteUrl,
+          auth: {
+            username: remoteToken,
+            password: remoteToken,
           },
           pointer,
-        );
+        });
 
         return content;
       } catch (e) {
@@ -240,35 +182,83 @@ export async function fetchAsset(uuid, filename) {
   return content;
 }
 
-export async function downloadUrlFromPointer(url, token, pointerInfo) {
-  return lfs.downloadUrlFromPointer({
-    http,
-    url,
-    auth: {
-      username: token,
-      password: token,
+// called without "files" on push
+export async function uploadBlobsLFS(uuid, remote, files) {
+  const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
+
+  const dir = await findDir(uuid);
+
+  let assets;
+
+  // if no files are specified
+  // for every file in remoteEndpoint/
+  // if file is not LFS pointer,
+  // upload file to remote
+  if (files === undefined) {
+    const filenames = await fs.promises.readdir(`${dir}/${lfsDir}/`);
+
+    assets = (
+      await Promise.all(
+        filenames.map(async (filename) => {
+          const file = await fetchFile(uuid, `${lfsDir}/${filename}`);
+
+          if (!lfs.pointsToLFS(file)) {
+            return file;
+          }
+
+          return undefined;
+        }),
+      )
+    ).filter(Boolean);
+  } else {
+    assets = files;
+  }
+
+  await lfs.uploadBlobs(
+    {
+      url: remoteUrl,
+      auth: {
+        username: remoteToken,
+        password: remoteToken,
+      },
     },
-    info: pointerInfo,
-  });
+    assets,
+  );
 }
 
-export async function addAssetPath(uuid, assetPath) {
-  const dir = await findDir(uuid);
+// pick file, write file and return metadata
+export async function uploadFile(uuid) {
+  let metadata = [];
 
-  await git.setConfig({
-    fs,
-    dir,
-    path: "asset.path",
-    value: assetPath,
-  });
-}
+  const files = await pickFile();
 
-export async function listAssetPaths(uuid) {
-  const dir = await findDir(uuid);
+  for (const file of files) {
+    const fileArrayBuffer = await file.arrayBuffer();
 
-  await git.getConfigAll({
-    fs,
-    dir,
-    path: "asset.path",
-  });
+    const hashArrayBuffer = await crypto.subtle.digest(
+      "SHA-256",
+      fileArrayBuffer,
+    );
+
+    const hashByteArray = Array.from(new Uint8Array(hashArrayBuffer));
+
+    const hashHexString = hashByteArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+
+    const name = file.name.replace(/\.[^/.]+$/, "");
+
+    const extension = /(?:\.([^.]+))?$/.exec(file.name)[1]?.trim();
+
+    const assetname =
+      extension !== undefined ? `${hashHexString}.${extension}` : hashHexString;
+
+    await putAsset(uuid, assetname, fileArrayBuffer);
+
+    const metadatum = { hash: hashHexString, name, extension };
+
+    metadata.push(metadatum);
+  }
+
+  return metadata;
 }

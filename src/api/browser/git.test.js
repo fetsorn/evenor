@@ -114,14 +114,24 @@ describe("createRepo", () => {
     );
   });
 
-  test("renames a directory", async () => {
-    expect(false).toBe(true);
-  });
-
   test("throws when root exists", async () => {
     await createRepo("root");
 
     await expect(createRepo("root")).rejects.toThrowError();
+  });
+
+  test("renames a directory", async () => {
+    await createRepo(stub.dir);
+
+    const newName = "newName";
+
+    const newDir = `${stub.uuid}-${newName}`;
+
+    await createRepo(stub.uuid, newName);
+
+    const listing = await fs.promises.readdir("/");
+
+    expect(listing).toEqual([newDir]);
   });
 });
 

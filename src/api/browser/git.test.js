@@ -1,4 +1,4 @@
-import { expect, test, describe, beforeEach, vi } from "vitest";
+import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import { page, userEvent } from "@vitest/browser/context";
 import git from "isomorphic-git";
 import { fs } from "./lightningfs.js";
@@ -42,6 +42,11 @@ vi.mock("isomorphic-git", async (importOriginal) => {
 describe("createRepo", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
   test("creates a directory", async () => {
@@ -108,6 +113,11 @@ describe("clone", () => {
     fs.init("test", { wipe: true });
   });
 
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
   test("throws if dir exists", async () => {
     // create dir
     await fs.promises.mkdir(`/${stub.dir}`);
@@ -119,27 +129,6 @@ describe("clone", () => {
   });
 
   test("calls git.clone", async () => {
-    await clone(stub.uuid, stub.url, undefined, stub.name);
-
-    expect(git.clone).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dir: `/${stub.dir}`,
-        url: stub.url,
-        singleBranch: true,
-        //onAuth: undefined
-      }),
-    );
-
-    expect(git.setConfig).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dir: `/${stub.dir}`,
-        path: "remote.origin.url",
-        value: stub.url,
-      }),
-    );
-  });
-
-  test("passes token", async () => {
     await clone(stub.uuid, stub.url, stub.token, stub.name);
 
     expect(git.clone).toHaveBeenCalledWith(
@@ -158,12 +147,25 @@ describe("clone", () => {
         value: stub.url,
       }),
     );
+
+    expect(git.setConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        path: "remote.origin.token",
+        value: stub.token,
+      }),
+    );
   });
 });
 
 describe("commit", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
   test("throws when no repo", async () => {
@@ -201,9 +203,155 @@ describe("commit", () => {
   });
 });
 
+describe("getRemote", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
+  test("throws when no repo", async () => {
+    await expect(getRemote(stub.uuid, stub.remote)).rejects.toThrowError();
+  });
+
+  test("throws when remote undefined", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await expect(getRemote(stub.uuid, undefined)).rejects.toThrowError();
+  });
+
+  test("calls git", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+
+    const [remoteUrl, remoteToken] = await getRemote(stub.uuid, stub.remote);
+
+    expect(git.getConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        path: `remote.${stub.remote}.url`,
+      }),
+    );
+
+    expect(git.getConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        path: `remote.${stub.remote}.token`,
+      }),
+    );
+
+    expect(remoteUrl).toBe(stub.url);
+
+    expect(remoteToken).toBe(stub.token);
+  });
+});
+
+describe("addRemote", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
+  test("throws when no repo", async () => {
+    await expect(
+      addRemote(stub.uuid, stub.remote, stub.url, stub.token),
+    ).rejects.toThrowError();
+  });
+
+  test("calls git", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+
+    expect(git.addRemote).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        remote: stub.remote,
+        url: stub.url,
+      }),
+    );
+
+    expect(git.setConfig).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        path: `remote.${stub.remote}.token`,
+        value: stub.token,
+      }),
+    );
+  });
+});
+
+describe("listRemotes", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
+  test("throws when no repo", async () => {
+    await expect(listRemotes(stub.uuid)).rejects.toThrowError();
+  });
+
+  test("empty when no remotes", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    const remotes = await listRemotes(stub.uuid);
+
+    expect(git.listRemotes).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+      }),
+    );
+
+    expect(remotes).toEqual([]);
+  });
+
+  test("finds remotes", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+
+    const remotes = await listRemotes(stub.uuid);
+
+    expect(git.listRemotes).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+      }),
+    );
+
+    expect(remotes).toEqual([stub.remote]);
+  });
+});
+
 describe("pull", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
   test("throws if no repo", async () => {
@@ -225,37 +373,57 @@ describe("pull", () => {
 
     await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
 
-    await pull(stub.uuid, stub.url);
+    await pull(stub.uuid, stub.remote);
 
     expect(git.fastForward).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: `/${stub.dir}`,
         url: stub.url,
+        remote: stub.remote,
         onAuth: expect.any(Function),
       }),
     );
   });
-
-  test("passes token", async () => {});
 });
 
-//test("listRemotes", async () => {
-//  // write test dataset
-//  // list remotes
-//  // check remotes
-//  expect(false).toBe(true);
-//});
-//
-//test("addRemote", async () => {
-//  // write test dataset
-//  // add remote
-//  // check remotes
-//  expect(false).toBe(true);
-//});
-//
-//test("getRemote", async () => {
-//  // write test dataset
-//  // get remote
-//  // check remote
-//  expect(false).toBe(true);
-//});
+describe("push", () => {
+  beforeEach(() => {
+    fs.init("test", { wipe: true });
+  });
+
+  afterEach(async () => {
+    // for lightning fs to release mutex on indexedDB
+    await new Promise((resolve) => setTimeout(resolve, 500));
+  });
+
+  test("throws if no repo", async () => {
+    await expect(push(stub.uuid, undefined)).rejects.toThrowError();
+  });
+
+  test("throws if remote is undefined", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await expect(push(stub.uuid, undefined)).rejects.toThrowError();
+  });
+
+  test("calls git", async () => {
+    await createRepo(stub.uuid, stub.name);
+
+    await commit(stub.uuid);
+
+    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+
+    await push(stub.uuid, stub.remote);
+
+    expect(git.push).toHaveBeenCalledWith(
+      expect.objectContaining({
+        dir: `/${stub.dir}`,
+        url: stub.url,
+        remote: stub.remote,
+        onAuth: expect.any(Function),
+      }),
+    );
+  });
+});

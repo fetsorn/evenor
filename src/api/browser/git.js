@@ -163,6 +163,7 @@ export async function clone(uuid, remoteUrl, remoteToken, name) {
     });
   }
 }
+
 export async function listRemotes(uuid) {
   const dir = await findDir(uuid);
 
@@ -194,11 +195,10 @@ export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
   }
 }
 
-// TODO add an overarching pull function
-// which lists remotes
-// and pulls each
-
 export async function getRemote(uuid, remoteName) {
+  if (remoteName === undefined)
+    throw Error("can't get remote, remote undefined");
+
   const dir = await findDir(uuid);
 
   const remoteUrl = await git.getConfig({
@@ -216,11 +216,11 @@ export async function getRemote(uuid, remoteName) {
   return [remoteUrl, remoteToken];
 }
 
-// TODO rename to pullRemote
-// TODO pass url and token here instead
+// mast pass remote name for fastForward
 export async function pull(uuid, remote) {
-  // move this elsewhere
   const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
+
+  console.log("!!", remoteUrl);
 
   if (remoteUrl === undefined) throw Error("can't pull, remote undefined");
 
@@ -246,15 +246,11 @@ export async function pull(uuid, remote) {
   });
 }
 
-// TODO create an overarching push function
-// which lists remotes
-// and pushes each
-
-// TODO rename to pushRemote
-// TODO pass url and token here instead
+// must pass remote name here for push
 export async function push(uuid, remote) {
-  // TODO remove this
   const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
+
+  if (remoteUrl === undefined) throw Error("can't push, remote undefined");
 
   const dir = await findDir(uuid);
 

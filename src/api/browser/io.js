@@ -96,7 +96,7 @@ export async function writeFile(uuid, filepath, content) {
   await fs.promises.writeFile(`${dir}/${filepath}`, content, "utf8");
 }
 
-export async function rimraf(uuid, rimrafpath) {
+export async function rimraf(rimrafpath) {
   let files;
 
   try {

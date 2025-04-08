@@ -48,7 +48,7 @@
   "dependencies": {
     "@bigmistqke/solid-contenteditable": "^0.0.10",
     "@fetsorn/csvs-js": "0.21.1",
-    "@fetsorn/isogit-lfs": "^0.5.2",
+    "@fetsorn/isogit-lfs": "^0.5.3",
     "@isomorphic-git/lightning-fs": "4.6.0",
     "@tanstack/solid-virtual": "^3.13.0",
     "@tauri-apps/api": "^2",

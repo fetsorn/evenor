@@ -8,9 +8,7 @@ import {
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
-  getDefaultSortBy,
   queriesToParams,
-  searchParamsToQuery,
 } from "./pure.js";
 import schemaRoot from "./schema_root.json";
 import defaultRepoRecord from "./default_repo_record.json";
@@ -237,7 +235,8 @@ export function queriesFromUrl() {
 
   const base = queries._ ?? "repo";
 
-  const sortBy = sortByURL ?? getDefaultSortBy(schemaRoot, base, []);
+  // TODO pick default sortBy from task === "date"
+  const sortBy = sortByURL ?? base;
 
   return { ...queries, _: base, ".sortBy": sortBy };
 }
@@ -252,7 +251,8 @@ export function changeQueries(schema, queries, field, value) {
     return {};
   } else if (field === "_") {
     // if query field is base, update default sort by
-    const sortBy = getDefaultSortBy(schema, value, []);
+    // TODO pick default sortBy from task === "date"
+    const sortBy = value;
 
     return { _: value, ".sortBy": sortBy };
   } else if (field !== "") {
@@ -285,7 +285,8 @@ export async function changeRepo(uuid, baseNew) {
 
     const base = baseNew ?? getDefaultBase(schema);
 
-    const sortBy = getDefaultSortBy(schema, base, []);
+    // TODO pick default sortBy from task === "date"
+    const sortBy = base;
 
     return {
       repo,

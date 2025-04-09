@@ -26,7 +26,7 @@ export const [store, setStore] = createStore({
   records: [],
 });
 
-// TODO: leave on setStore here and calls to imported functions
+// TODO: leave only setStore here and calls to imported functions
 
 export async function onSearch(field, value) {
   // update queries in store

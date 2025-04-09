@@ -1,34 +1,55 @@
-import { expect, test } from "vitest";
-import { isTwig } from "./pure.js";
+import { describe, expect, test } from "vitest";
+import {
+  isTwig,
+  queriesToParams,
+  searchParamsToQueries,
+  enrichBranchRecords,
+  extractSchemaRecords,
+  schemaToBranchRecords,
+  recordsToSchema,
+} from "./pure.js";
+import stub from "./stub.js";
 
-test("isTwig", () => {
-  expect(isTwig({ a: { trunks: [], leaves: [] } }, "a")).toBe(true);
+describe("isTwig", () => {
+  test("finds trunk", () => {
+    expect(isTwig(stub.schema, stub.trunk)).toBe(false);
+  });
+
+  test("finds twig", () => {
+    expect(isTwig(stub.schema, stub.twig)).toBe(true);
+  });
+
+  test("throws on non-existing branch", () => {
+    expect(() => isTwig(stub.schema, stub.nonExisting)).toThrowError();
+  });
 });
 
-test("schemaToBranchRecords", () => {
-  expect(false).toBe(true);
+describe("queriesToParams", () => {
+  test("queriesToParams", () => {
+    expect(queriesToParams(stub.queries)).toEqual(stub.searchParams);
+  });
 });
 
-test("getDefaultSortBy", () => {
-  expect(false).toBe(true);
+describe("searchParamsToQueries", () => {
+  test("searchParamsToQueries", () => {
+    expect(searchParamsToQueries(stub.schema, stub.searchParams)).toEqual(
+      stub.queries,
+    );
+  });
 });
 
-test("queriesToParams", () => {
-  expect(false).toBe(true);
-});
-
-test("searchParamsToQuery", () => {
-  expect(false).toBe(true);
-});
-
-test("enrichBranchRecords", () => {
-  expect(false).toBe(true);
-});
-
-test("extractSchemaRecords", () => {
-  expect(false).toBe(true);
-});
-
-test("recordsToSchema", () => {
-  expect(false).toBe(true);
-});
+//test("enrichBranchRecords", () => {
+//  expect(false).toBe(true);
+//});
+//
+//test("extractSchemaRecords", () => {
+//  expect(false).toBe(true);
+//});
+//
+//test("recordsToSchema", () => {
+//  expect(false).toBe(true);
+//});
+//
+//test("schemaToBranchRecords", () => {
+//  expect(false).toBe(true);
+//});

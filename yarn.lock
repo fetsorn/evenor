@@ -1513,18 +1513,18 @@
     "@eslint/core" "^0.10.0"
     levn "^0.4.1"
 
-"@fetsorn/csvs-js@0.21.1":
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.21.1.tgz#22e36d261c2efdebcf933af1c7ae9d4a20e2eee0"
-  integrity sha512-BDoJ/J0H1RSzlywtVAJBMGHACrRjfIHDXtC2gC24XWzg5DTYwZxRo3cwtAENmhXm8NqSVVTMjSb1BjB03hFUBQ==
+"@fetsorn/csvs-js@0.21.2":
+  version "0.21.2"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.21.2.tgz#2b68e10c0cd104a350101065e6afdf4da164bc79"
+  integrity sha512-CjZUD5dyeHNci/qqsuG5dCS7YCH/UJzy61Wssi5k3BvTCzMOdXuvYJRDZPa8Vvl1lAKEdRfc1bDGowBTp8guXw==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
 
-"@fetsorn/isogit-lfs@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.2.tgz#3cab49a8e0794ba1b33f879bf0c743a281ab3321"
-  integrity sha512-G3kVfijZrqWy34M6DD0GEuRXO+lqhH7NNgnhmwY8uoUpaUVztogqEQeugo/QMXbLnJu2uxsoafQnOZcl8KQgYg==
+"@fetsorn/isogit-lfs@^0.5.3":
+  version "0.5.3"
+  resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.3.tgz#999ad29e8fe9565b488262ae49593dcc84184634"
+  integrity sha512-KOpnjOFib3yAYGcS3GMi20ETYRTF49eqYJRPEvRftaXGYXMgVHLRqa9Q2b2QbaG/eObmqVsPaaaGl62SIRCg+A==
   dependencies:
     isomorphic-git "1.25.6"
 

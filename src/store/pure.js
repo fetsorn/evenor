@@ -22,7 +22,11 @@ export function isTwig(schema, branch) {
  * @returns {URLSearchParams} urlSearchParams - search params from a query string.
  */
 export function queriesToParams(queries) {
+  if (!Object.hasOwn(queries, "_")) throw "no base in query";
+
   const searchParams = new URLSearchParams();
+
+  const base = searchParams.get("_");
 
   Object.keys(queries).map((key) =>
     queries[key] === "" ? null : searchParams.set(key, queries[key]),
@@ -45,35 +49,34 @@ export function searchParamsToQueries(schema, searchParams) {
   // root-leaf relationships between keys
   // queries are a nested object where each leaf is inside a root
   // the limit level of nesting is defined by the schema
-  // and so ideally this function would walk the schema
-  // checking if the given branch has value
-  // and inserting a key to queries
-  // csvs-js uses the sow function for this
-  // TODO if this fails, throw
+  // walk the schema checking if a given branch has value
+  // and insert the key to queries with sow
+
   const base = searchParams.get("_");
 
-  // TODO if this fails, do not set
+  if (base === null) throw "no base in query";
+
   const baseValue = searchParams.get(base);
 
   const entries = searchParams.entries().filter(([key, value]) => key !== "_");
 
   // sort so trunks come first
-  const sorted = entries.sort(sortNestingDescending(schema));
+  const sorted = entries; //.sort(sortNestingDescending(schema));
 
-  // sow each
-  const queries = sorted.reduce(
-    (withEntry, [key, value]) => {
-      // if has no trunks, sow to root somehow
-      const trunks = schema[key];
+  const first =
+    baseValue === null ? { _: base } : { _: base, [base]: baseValue };
 
-      const grain = { _: key, [key]: value };
+  const queries = sorted.reduce((withEntry, [leaf, value]) => {
+    const { trunks } = schema[leaf];
 
-      return sow(withEntry, grain, trunk, leaf);
-    },
-    { _: base },
-  );
+    const grain = { _: leaf, [leaf]: value };
 
-  return {};
+    return trunks.reduce((withTrunk, trunk) => {
+      return sow(withTrunk, grain, trunk, leaf);
+    }, withEntry);
+  }, first);
+
+  return queries;
 }
 
 // add trunk field from schema record to branch records

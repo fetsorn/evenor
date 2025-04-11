@@ -25,15 +25,61 @@ describe("isTwig", () => {
 });
 
 describe("queriesToParams", () => {
-  test("queriesToParams", () => {
-    expect(queriesToParams(stub.queries)).toEqual(stub.searchParams);
+  test("throws when no base", () => {
+    const testCase = stub.cases.noBase;
+
+    expect(() => queriesToParams(stub.queries)).toThrowError();
+  });
+
+  test("query base value", () => {
+    const testCase = stub.cases.baseValue;
+
+    expect(queriesToParams(testCase.queries)).toEqual(testCase.searchParams);
+  });
+
+  test("query leaf value", () => {
+    const testCase = stub.cases.leafValue;
+
+    expect(queriesToParams(testCase.queries)).toEqual(testCase.searchParams);
+  });
+
+  test("query twig out of order", () => {
+    const testCase = stub.cases.twigOutOfOrder;
+
+    expect(queriesToParams(testCase.queries)).toEqual(testCase.searchParams);
   });
 });
 
 describe("searchParamsToQueries", () => {
-  test("searchParamsToQueries", () => {
-    expect(searchParamsToQueries(stub.schema, stub.searchParams)).toEqual(
-      stub.queries,
+  test("throws when no base", () => {
+    const testCase = stub.cases.noBase;
+
+    expect(() =>
+      searchParamsToQueries(stub.schema, testCase.searchParams),
+    ).toThrowError();
+  });
+
+  test("query base value", () => {
+    const testCase = stub.cases.baseValue;
+
+    expect(searchParamsToQueries(stub.schema, testCase.searchParams)).toEqual(
+      testCase.queries,
+    );
+  });
+
+  test("query leaf value", () => {
+    const testCase = stub.cases.leafValue;
+
+    expect(searchParamsToQueries(stub.schema, testCase.searchParams)).toEqual(
+      testCase.queries,
+    );
+  });
+
+  test("query leaf value", () => {
+    const testCase = stub.cases.twigOutOfOrder;
+
+    expect(searchParamsToQueries(stub.schema, testCase.searchParams)).toEqual(
+      testCase.queries,
     );
   });
 });

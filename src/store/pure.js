@@ -26,8 +26,7 @@ export function queriesToParams(queries) {
 
   const searchParams = new URLSearchParams();
 
-  const base = searchParams.get("_");
-
+  // TODO empty query should not be null here?
   Object.keys(queries).map((key) =>
     queries[key] === "" ? null : searchParams.set(key, queries[key]),
   );

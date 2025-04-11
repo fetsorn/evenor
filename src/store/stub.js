@@ -29,6 +29,10 @@ export const cases = {
     queries: { _: "a", b: { _: "b", b: "2", d: "3" } },
     searchParams: new URLSearchParams("?_=a&d=3&b=2"),
   },
+  emptyQuery: {
+    queries: { _: "a", a: "" },
+    searchParams: new URLSearchParams("?_=a&a="),
+  },
 };
 
 export default {

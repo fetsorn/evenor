@@ -1,4 +1,4 @@
-import { findCrown } from "@fetsorn/csvs-js";
+import { findCrown, sow, sortNestingDescending } from "@fetsorn/csvs-js";
 
 /**
  * This function is true when branch has no leaves
@@ -14,26 +14,65 @@ export function isTwig(schema, branch) {
   return schema[branch].leaves.length === 0;
 }
 
-export function queriesToParams(queriesObject) {
+/**
+ * This returns search params from a queries object
+ * @name searchParamsToQueries
+ * @export function
+ * @param {Object} queries - a queries object
+ * @returns {URLSearchParams} urlSearchParams - search params from a query string.
+ */
+export function queriesToParams(queries) {
   const searchParams = new URLSearchParams();
 
-  Object.keys(queriesObject).map((key) =>
-    queriesObject[key] === ""
-      ? null
-      : searchParams.set(key, queriesObject[key]),
+  Object.keys(queries).map((key) =>
+    queries[key] === "" ? null : searchParams.set(key, queries[key]),
   );
 
   return searchParams;
 }
 
 /**
- * This returns an array of records from the dataset.
+ * This returns a queries object from search params
  * @name searchParamsToQueries
  * @export function
- * @param {URLSearchParams} urlSearchParams - search params from a query string.
+ * @param {Object} schema - dataset schema.
+ * @param {URLSearchParams} searchParams - search params from a query string.
  * @returns {Object}
  */
 export function searchParamsToQueries(schema, searchParams) {
+  // search params is a flat key-value thing
+  // schema is also flat, but it describes
+  // root-leaf relationships between keys
+  // queries are a nested object where each leaf is inside a root
+  // the limit level of nesting is defined by the schema
+  // and so ideally this function would walk the schema
+  // checking if the given branch has value
+  // and inserting a key to queries
+  // csvs-js uses the sow function for this
+  // TODO if this fails, throw
+  const base = searchParams.get("_");
+
+  // TODO if this fails, do not set
+  const baseValue = searchParams.get(base);
+
+  const entries = searchParams.entries().filter(([key, value]) => key !== "_");
+
+  // sort so trunks come first
+  const sorted = entries.sort(sortNestingDescending(schema));
+
+  // sow each
+  const queries = sorted.reduce(
+    (withEntry, [key, value]) => {
+      // if has no trunks, sow to root somehow
+      const trunks = schema[key];
+
+      const grain = { _: key, [key]: value };
+
+      return sow(withEntry, grain, trunk, leaf);
+    },
+    { _: base },
+  );
+
   return {};
 }
 

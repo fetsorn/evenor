@@ -14,24 +14,28 @@ export const nonExisting = "c";
 
 export const cases = {
   noBase: {
-    queries: { _: "a", a: "1" },
-    searchParams: new URLSearchParams("a=1"),
+    queryObject: { _: "a", a: "1" },
+    queryString: "a=1",
   },
   baseValue: {
-    queries: { _: "a", a: "1" },
-    searchParams: new URLSearchParams("?_=a&a=1"),
+    queryObject: { _: "a", a: "1" },
+    queryString: "_=a&a=1",
   },
   leafValue: {
-    queries: { _: "a", b: "2" },
-    searchParams: new URLSearchParams("?_=a&b=2"),
+    queryObject: { _: "a", b: "2" },
+    queryString: "_=a&b=2",
+  },
+  nestedValue: {
+    queryObject: { _: "a", b: { _: "b", b: "2", d: "3" } },
+    queryString: "_=a&b=2&d=3",
   },
   twigOutOfOrder: {
-    queries: { _: "a", b: { _: "b", b: "2", d: "3" } },
-    searchParams: new URLSearchParams("?_=a&d=3&b=2"),
+    queryObject: { _: "a", b: { _: "b", b: "2", d: "3" } },
+    queryString: "_=a&d=3&b=2",
   },
   emptyQuery: {
-    queries: { _: "a", a: "" },
-    searchParams: new URLSearchParams("?_=a&a="),
+    queryObject: { _: "a", a: "" },
+    queryString: "_=a&a=",
   },
 };
 

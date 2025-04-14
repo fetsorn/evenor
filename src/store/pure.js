@@ -16,22 +16,35 @@ export function isTwig(schema, branch) {
 
 /**
  * This returns search params from a queries object
- * @name searchParamsToQueries
+ * @name queryToQueryString
  * @export function
  * @param {Object} queries - a queries object
  * @returns {URLSearchParams} urlSearchParams - search params from a query string.
  */
-export function queriesToParams(queries) {
-  if (!Object.hasOwn(queries, "_")) throw "no base in query";
+export function queryToQueryString(query) {
+  if (!Object.hasOwn(query, "_")) throw Error("no base in query");
 
-  const searchParams = new URLSearchParams();
+  const searchParams = Object.entries(query).reduce(
+    (withField, [key, value]) => {
+      const queryString =
+        typeof value === "object"
+          ? queryToQueryString(value) // TODO remove base here
+          : `${key}=${value}`;
 
-  // TODO empty query should not be null here?
-  Object.keys(queries).map((key) =>
-    queries[key] === "" ? null : searchParams.set(key, queries[key]),
+      const params = new URLSearchParams(queryString);
+
+      return new URLSearchParams([...withField, ...params]);
+    },
+    new URLSearchParams(),
   );
 
-  return searchParams;
+  searchParams.set("_", query._);
+
+  searchParams.sort();
+
+  const queryString = searchParams.toString();
+
+  return queryString;
 }
 
 /**
@@ -42,7 +55,7 @@ export function queriesToParams(queries) {
  * @param {URLSearchParams} searchParams - search params from a query string.
  * @returns {Object}
  */
-export function searchParamsToQueries(schema, searchParams) {
+export function queryStringToQuery(schema, queryString) {
   // search params is a flat key-value thing
   // schema is also flat, but it describes
   // root-leaf relationships between keys
@@ -51,11 +64,15 @@ export function searchParamsToQueries(schema, searchParams) {
   // walk the schema checking if a given branch has value
   // and insert the key to queries with sow
 
+  const searchParams = new URLSearchParams(queryString);
+
   const base = searchParams.get("_");
 
-  if (base === null) throw "no base in query";
+  if (base === null) throw Error("no base in query");
 
   const baseValue = searchParams.get(base);
+
+  // TODO check that value is nested and enrich object
 
   const entries = searchParams.entries().filter(([key, value]) => key !== "_");
 

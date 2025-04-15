@@ -8,6 +8,9 @@ import {
   extractSchemaRecords,
   schemaToBranchRecords,
   recordsToSchema,
+  changeQueries,
+  makeURL,
+  queriesFromURL,
 } from "./pure.js";
 import stub from "./stub.js";
 
@@ -222,5 +225,60 @@ describe("recordsToSchema", () => {
     ];
 
     expect(recordsToSchema(schemaRecord, metaRecords)).toEqual(schema);
+  });
+});
+
+describe("changeQueries", () => {
+  test("", () => {
+    expect(changeQueries(stub.schema, { _: "a", a: 1 }, "b", 2)).toEqual({
+      _: "a",
+      a: 1,
+      b: 2,
+    });
+  });
+});
+
+describe("makeURL", () => {
+  test("", () => {
+    expect(
+      makeURL(
+        {
+          _: "a",
+          a: 1,
+          b: 2,
+        },
+        "a",
+        undefined,
+        "root",
+        "name",
+      ),
+    ).toEqual("#?_=a&a=1&b=2");
+  });
+
+  test("", () => {
+    expect(
+      makeURL(
+        {
+          _: "a",
+          a: 1,
+          b: 2,
+        },
+        "a",
+        undefined,
+        "uuid",
+        "name",
+      ),
+    ).toEqual("#/name?_=a&a=1&b=2");
+  });
+});
+
+// TODO should this return csvs nested query?
+describe("queriesFromURL", () => {
+  test("", () => {
+    expect(queriesFromURL("_=a&a=1", "/uuid")).toEqual({
+      _: "a",
+      a: "1",
+      ".sortBy": "a",
+    });
   });
 });

@@ -8,14 +8,17 @@ import {
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
-  queriesToParams,
 } from "./pure.js";
 import schemaRoot from "./schema_root.json";
 import defaultRepoRecord from "./default_repo_record.json";
 
-async function cloneAndOpen(searchParams) {
+export function newUUID() {
+  return sha256(uuidv4());
+}
+
+export async function cloneAndOpen(searchParams) {
   // if uri specifies a remote
-  // try to clone remote to store
+  // try to clone remote
   // where repo uuid is a digest of remote
   // and repo name is uri-encoded remote
   const remote = searchParams.get("~");
@@ -69,8 +72,8 @@ async function cloneAndOpen(searchParams) {
   }
 }
 
-async function findAndOpen(repoRoute) {
-  // if repo is in store, find uuid in root folder
+export async function findAndOpen(repoRoute) {
+  // find uuid in root folder
   try {
     const [repo] = await api.select("root", { _: "repo", reponame: repoRoute });
 
@@ -84,7 +87,7 @@ async function findAndOpen(repoRoute) {
   }
 }
 
-async function readRemotes(uuid) {
+export async function readRemotes(uuid) {
   try {
     const remotes = await api.listRemotes(uuid);
 
@@ -109,7 +112,7 @@ async function readRemotes(uuid) {
   }
 }
 
-async function readLocals(uuid) {
+export async function readLocals(uuid) {
   try {
     const locals = await api.listAssetPaths(uuid);
 
@@ -126,7 +129,7 @@ async function readLocals(uuid) {
   }
 }
 
-async function writeRemotes(uuid, tags) {
+export async function writeRemotes(uuid, tags) {
   if (tags) {
     const tagsList = Array.isArray(tags) ? tags : [tags];
 
@@ -146,7 +149,7 @@ async function writeRemotes(uuid, tags) {
   }
 }
 
-async function writeLocals(uuid, tags) {
+export async function writeLocals(uuid, tags) {
   if (tags) {
     const tagList = Array.isArray(tags) ? tags : [tags];
 
@@ -172,148 +175,6 @@ export async function readSchema(uuid) {
   const schema = recordsToSchema(schemaRecord, branchRecords);
 
   return schema;
-}
-
-export async function repoFromUrl() {
-  const searchParams = new URLSearchParams(history.location.search);
-
-  const repoRoute = history.location.pathname.replace("/", "");
-
-  const root = { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
-
-  if (searchParams.has("~")) {
-    // clone from remote and open
-    try {
-      return cloneAndOpen(searchParams);
-    } catch (e) {
-      console.log(e);
-      // TODO set url to root
-
-      return root;
-    }
-  }
-
-  if (repoRoute !== "") {
-    // open
-    try {
-      return findAndOpen(repoRoute);
-    } catch (e) {
-      console.log(e);
-      // TODO set url to root
-
-      return root;
-    }
-  }
-
-  return root;
-}
-
-export function queriesFromUrl() {
-  const searchParams = new URLSearchParams(history.location.search);
-
-  const repoRoute = history.location.pathname.replace("/", "");
-
-  const sortByURL = searchParams.get(".sortBy");
-
-  function paramsToQueries(searchParamsSet) {
-    const searchParamsObject = Array.from(searchParamsSet).reduce(
-      (acc, [key, value]) => ({ ...acc, [key]: value }),
-      {},
-    );
-
-    const queries = Object.fromEntries(
-      Object.entries(searchParamsObject).filter(
-        ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
-      ),
-    );
-
-    return queries;
-  }
-
-  // convert to object, skip reserved fields
-  const queries = paramsToQueries(searchParams);
-
-  const base = queries._ ?? "repo";
-
-  // TODO pick default sortBy from task === "date"
-  const sortBy = sortByURL ?? base;
-
-  return { ...queries, _: base, ".sortBy": sortBy };
-}
-
-export function changeQueries(schema, queries, field, value) {
-  if (field === ".sortBy" || field === ".sortDirection") {
-    return { ...queries, [field]: value };
-  }
-
-  // if query field is undefined, delete queries
-  if (field === undefined) {
-    return {};
-  } else if (field === "_") {
-    // if query field is base, update default sort by
-    // TODO pick default sortBy from task === "date"
-    const sortBy = value;
-
-    return { _: value, ".sortBy": sortBy };
-  } else if (field !== "") {
-    // if query field is defined, update queries
-    if (value === undefined) {
-      // if query value is undefined, remove query field
-      const { [field]: omit, ...queriesWithoutField } = queries;
-
-      return queriesWithoutField;
-    } else {
-      // if query value is defined, set query field
-      return { ...queries, [field]: value };
-    }
-  }
-
-  return queries;
-}
-
-export async function changeRepo(uuid, baseNew) {
-  if (uuid === "root") {
-    return {
-      repo: { _: "repo", repo: uuid },
-      schema: schemaRoot,
-      queries: { _: "repo", ".sortBy": "reponame" },
-    };
-  } else {
-    const [repo] = await api.select("root", { _: "repo", repo: uuid });
-
-    const schema = await readSchema(uuid);
-
-    const base = baseNew ?? getDefaultBase(schema);
-
-    // TODO pick default sortBy from task === "date"
-    const sortBy = base;
-
-    return {
-      repo,
-      schema,
-      queries: { _: base, ".sortBy": sortBy },
-    };
-  }
-}
-
-export function setURL(queries, base, sortBy, repoUUID, reponame) {
-  const searchParams = queriesToParams(queries);
-
-  searchParams.set("_", base);
-
-  if (sortBy) {
-    searchParams.set(".sortBy", sortBy);
-  }
-
-  const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
-
-  const searchStringNew = searchParams.toString();
-
-  const urlNew = `${pathname}?${searchStringNew}`;
-
-  window.history.replaceState(null, null, urlNew);
-
-  return searchParams;
 }
 
 // load git state and schema from folder into the record
@@ -396,6 +257,186 @@ export async function saveRepoRecord(record) {
   return;
 }
 
-export function newUUID() {
-  return sha256(uuidv4());
+export async function findRecord(repo, appendRecord, queries) {
+  // prepare a controller to stop the new stream
+  let isAborted = false;
+
+  const abortController = new AbortController();
+
+  function abortPreviousStream() {
+    isAborted = true;
+
+    abortController.abort();
+  }
+
+  // remove all evenor-specific queries before passing searchParams to csvs
+  const {
+    ".sortBy": omitSortBy,
+    ".sortDirection": omitSortDirection,
+    ...queriesWithoutCustom
+  } = queries;
+
+  // prepare a new stream
+  const { strm: fromStrm, closeHandler } = await api.selectStream(
+    repo,
+    queriesWithoutCustom, // TODO is this a flat query or a csvs nested query?
+  );
+
+  const isHomeScreen = repo === "root";
+
+  const canSelectRepo = isHomeScreen;
+
+  // create a stream that appends to records
+  const toStrm = new WritableStream({
+    async write(chunk) {
+      if (isAborted) {
+        return;
+      }
+
+      // when selecting a repo, load git state and schema from folder into the record
+      const record = canSelectRepo ? await loadRepoRecord(chunk) : chunk;
+
+      appendRecord(record);
+    },
+
+    abort() {
+      // stream interrupted
+      // no need to await on the promise, closing api stream for cleanup
+      closeHandler();
+    },
+  });
+
+  function startStream() {
+    try {
+      fromStrm.pipeTo(toStrm, { signal: abortController.signal });
+    } catch (e) {
+      // stream interrupted
+      console.log(e);
+    }
+  }
+
+  return { abortPreviousStream, startStream };
+}
+
+export async function saveRecord(repo, base, recordOld, recordNew) {
+  // if no root here try to create
+  await createRoot();
+
+  const isHomeScreen = repo === "root";
+
+  const isRepoBranch = base === "repo";
+
+  const canSaveRepo = isHomeScreen && isRepoBranch;
+
+  // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
+  if (canSaveRepo) {
+    const branches = recordNew["branch"].map(
+      ({ trunk, ...branchWithoutTrunk }) => branchWithoutTrunk,
+    );
+
+    const recordPruned = { ...recordNew, branch: branches };
+
+    await api.updateRecord(repo, recordPruned);
+  } else {
+    await api.updateRecord(repo, recordNew);
+  }
+
+  await api.commit(repo);
+
+  if (canSaveRepo) {
+    await saveRepoRecord(recordNew);
+  }
+
+  const recordsNew = records
+    .filter((r) => r[base] !== recordOld[base])
+    .concat([recordNew]);
+
+  return recordsNew;
+}
+
+export async function editRecord(repo, base, recordNew) {
+  const isHomeScreen = repo === "root";
+
+  const isRepoBranch = base === "repo";
+
+  const isRepoRecord = isHomeScreen && isRepoBranch;
+
+  const repoPartial = isRepoRecord ? defaultRepoRecord : {};
+
+  const record = recordNew ?? {
+    _: base,
+    [base]: await newUUID(),
+    ...repoPartial,
+  };
+
+  return record;
+}
+
+export async function wipeRecord(repo, base, records, record) {
+  await api.deleteRecord(repo, record);
+
+  await api.commit(repo);
+
+  const recordsNew = records.filter((r) => r[base] !== record[base]);
+
+  return recordsNew;
+}
+
+export async function changeRepo(uuid, baseNew) {
+  if (uuid === "root") {
+    return {
+      repo: { _: "repo", repo: uuid },
+      schema: schemaRoot,
+      queries: { _: "repo", ".sortBy": "reponame" },
+    };
+  } else {
+    const [repo] = await api.select("root", { _: "repo", repo: uuid });
+
+    const schema = await readSchema(uuid);
+
+    const base = baseNew ?? getDefaultBase(schema);
+
+    // TODO pick default sortBy from task === "date"
+    const sortBy = base;
+
+    return {
+      repo,
+      schema,
+      queries: { _: base, ".sortBy": sortBy },
+    };
+  }
+}
+
+export async function repoFromURL(search, pathname) {
+  const searchParams = new URLSearchParams(search);
+
+  const repoRoute = pathname.replace("/", "");
+
+  const root = { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
+
+  if (searchParams.has("~")) {
+    // clone from remote and open
+    try {
+      return cloneAndOpen(searchParams);
+    } catch (e) {
+      console.log(e);
+      // TODO set url to root
+
+      return root;
+    }
+  }
+
+  if (repoRoute !== "") {
+    // open
+    try {
+      return findAndOpen(repoRoute);
+    } catch (e) {
+      console.log(e);
+      // TODO set url to root
+
+      return root;
+    }
+  }
+
+  return root;
 }

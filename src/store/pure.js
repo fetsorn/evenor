@@ -92,6 +92,7 @@ export function ensureTrunk(schema, record, trunk, leaf) {
  * @param {URLSearchParams} searchParams - search params from a query string.
  * @returns {Object}
  */
+// TODO make this work with flat queries
 export function queryStringToQuery(schema, queryString) {
   const searchParams = new URLSearchParams(queryString);
 
@@ -346,4 +347,87 @@ export function recordsToSchema(schemaRecord, metaRecords) {
   }, {});
 
   return schema;
+}
+
+export function changeQueries(schema, queries, field, value) {
+  if (field === ".sortBy" || field === ".sortDirection") {
+    return { ...queries, [field]: value };
+  }
+
+  // if query field is undefined, delete queries
+  if (field === undefined) {
+    return {};
+  } else if (field === "_") {
+    // if query field is base, update default sort by
+    // TODO pick default sortBy from task === "date"
+    const sortBy = value;
+
+    return { _: value, ".sortBy": sortBy };
+  } else if (field !== "") {
+    // if query field is defined, update queries
+    if (value === undefined) {
+      // if query value is undefined, remove query field
+      const { [field]: omit, ...queriesWithoutField } = queries;
+
+      return queriesWithoutField;
+    } else {
+      // if query value is defined, set query field
+      return { ...queries, [field]: value };
+    }
+  }
+
+  return queries;
+}
+
+export function makeURL(queries, base, sortBy, repoUUID, reponame) {
+  const queryString = queryToQueryString(queries);
+
+  const searchParams = new URLSearchParams(queryString);
+
+  searchParams.set("_", base);
+
+  if (sortBy) {
+    searchParams.set(".sortBy", sortBy);
+  }
+
+  const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
+
+  const searchStringNew = searchParams.toString();
+
+  const url = `${pathname}?${searchStringNew}`;
+
+  return url;
+}
+
+export function queriesFromURL(search, pathname) {
+  const searchParams = new URLSearchParams(search);
+
+  const repoRoute = pathname.replace("/", "");
+
+  const sortByURL = searchParams.get(".sortBy");
+
+  function paramsToQueries(searchParamsSet) {
+    const searchParamsObject = Array.from(searchParamsSet).reduce(
+      (acc, [key, value]) => ({ ...acc, [key]: value }),
+      {},
+    );
+
+    const queries = Object.fromEntries(
+      Object.entries(searchParamsObject).filter(
+        ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
+      ),
+    );
+
+    return queries;
+  }
+
+  // convert to object, skip reserved fields
+  const queries = paramsToQueries(searchParams);
+
+  const base = queries._ ?? "repo";
+
+  // TODO pick default sortBy from task === "date"
+  const sortBy = sortByURL ?? base;
+
+  return { ...queries, _: base, ".sortBy": sortBy };
 }

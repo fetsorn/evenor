@@ -14,7 +14,7 @@ export const nonExisting = "c";
 
 export const cases = {
   noBase: {
-    queryObject: { _: "a", a: "1" },
+    queryObject: { a: "1" },
     queryString: "a=1",
   },
   baseValue: {

@@ -1,4 +1,4 @@
-import { findCrown, sow, sortNestingDescending } from "@fetsorn/csvs-js";
+import { findCrown, sow, mow, sortNestingDescending } from "@fetsorn/csvs-js";
 
 /**
  * This function is true when branch has no leaves
@@ -28,7 +28,7 @@ export function queryToQueryString(query) {
     (withField, [key, value]) => {
       const queryString =
         typeof value === "object"
-          ? queryToQueryString(value) // TODO remove base here
+          ? queryToQueryString(value)
           : `${key}=${value}`;
 
       const params = new URLSearchParams(queryString);
@@ -47,15 +47,54 @@ export function queryToQueryString(query) {
   return queryString;
 }
 
+// make sure record has trunk and all trunks of trunk until root
+export function ensureTrunk(schema, record, trunk, leaf) {
+  if (!Object.hasOwn(record, "_")) throw Error("record has no base");
+
+  // if query has branch, return query
+  const hasTrunk = mow(record, trunk, leaf).length > 0;
+
+  if (hasTrunk) return record;
+
+  // mains are trunks of trunk
+  const { trunks: mains } = schema[trunk];
+
+  // if this reaches root return query
+  if (mains === undefined) return record;
+
+  // for each main
+  // ensure record has main, and sow trunk
+  const withMains = mains.reduce((withMain, main) => {
+    const ensured = ensureTrunk(schema, withMain, main, trunk);
+
+    const mainValues = mow(ensured, main, trunk).map((grain) => grain[main]);
+
+    const withMainValues = mainValues.reduce((withMainValue, mainValue) => {
+      const grain = { _: main, [main]: mainValue, [trunk]: { _: trunk } };
+
+      // now that query has trunk, sow trait
+      const sown = sow(withMainValue, grain, main, trunk);
+
+      return sown;
+    }, ensured);
+
+    return withMainValues;
+  }, record);
+
+  return withMains;
+}
+
 /**
  * This returns a queries object from search params
- * @name searchParamsToQueries
+ * @name queryStringToQuery
  * @export function
  * @param {Object} schema - dataset schema.
  * @param {URLSearchParams} searchParams - search params from a query string.
  * @returns {Object}
  */
 export function queryStringToQuery(schema, queryString) {
+  const searchParams = new URLSearchParams(queryString);
+
   // search params is a flat key-value thing
   // schema is also flat, but it describes
   // root-leaf relationships between keys
@@ -64,33 +103,53 @@ export function queryStringToQuery(schema, queryString) {
   // walk the schema checking if a given branch has value
   // and insert the key to queries with sow
 
-  const searchParams = new URLSearchParams(queryString);
-
   const base = searchParams.get("_");
 
   if (base === null) throw Error("no base in query");
 
   const baseValue = searchParams.get(base);
 
-  // TODO check that value is nested and enrich object
-
-  const entries = searchParams.entries().filter(([key, value]) => key !== "_");
-
-  // sort so trunks come first
-  const sorted = entries; //.sort(sortNestingDescending(schema));
-
-  const first =
+  const baseQuery =
     baseValue === null ? { _: base } : { _: base, [base]: baseValue };
+
+  const entries = Array.from(searchParams.entries()).filter(
+    ([key, value]) => key !== "_",
+  );
+
+  // sort so that trunks come first
+  const sorted = entries.toSorted(([a], [b]) =>
+    sortNestingDescending(schema)(a, b),
+  );
 
   const queries = sorted.reduce((withEntry, [leaf, value]) => {
     const { trunks } = schema[leaf];
 
-    const grain = { _: leaf, [leaf]: value };
+    // check that value is nested and enrich object
+    // if the entry does not have trunk yet in sow, sow it.
+    // all values from trunk queries were already sowed
+    // because the entries are sorted in ascending order
+    // so if this still does not have a trunk, sow the trunk
+    // and the trunk of the trunk recursive until root
+    const sown = trunks.reduce((withTrunk, trunk) => {
+      const withTrunkOfLeaf = ensureTrunk(schema, withTrunk, trunk, leaf);
 
-    return trunks.reduce((withTrunk, trunk) => {
-      return sow(withTrunk, grain, trunk, leaf);
+      const trunkValues = mow(withTrunkOfLeaf, trunk, leaf).map(
+        (grain) => grain[trunk],
+      );
+
+      const withLeaf = trunkValues.reduce((withTrunkValue, trunkValue) => {
+        const grain = { _: trunk, [trunk]: trunkValue, [leaf]: value };
+
+        const withGrain = sow(withTrunkValue, grain, trunk, leaf);
+
+        return withGrain;
+      }, withTrunkOfLeaf);
+
+      return withLeaf;
     }, withEntry);
-  }, first);
+
+    return sown;
+  }, baseQuery);
 
   return queries;
 }

@@ -1,4 +1,3 @@
-import history from "history/hash";
 import api from "../api/index.js";
 import { v4 as uuidv4 } from "uuid";
 import { sha256 } from "js-sha256";
@@ -9,7 +8,7 @@ import {
   recordsToSchema,
   schemaToBranchRecords,
 } from "./pure.js";
-import schemaRoot from "./schema_root.json";
+import schemaRoot from "./default_root_schema.json";
 import defaultRepoRecord from "./default_repo_record.json";
 
 export function newUUID() {

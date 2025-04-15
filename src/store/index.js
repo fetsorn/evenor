@@ -9,7 +9,7 @@ import {
   onRecordSave,
   onRecordWipe,
   onRepoChange,
-} from "./crud.js";
+} from "./store.js";
 
 export {
   StoreContext,

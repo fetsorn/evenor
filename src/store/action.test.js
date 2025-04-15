@@ -67,15 +67,7 @@ describe("newUUID", () => {
 //  expect(false).toBe(true);
 //});
 //
-//test("repoFromUrl", () => {
-//  expect(false).toBe(true);
-//});
-//
-//test("queriesFromUrl", () => {
-//  expect(false).toBe(true);
-//});
-//
-//test("changeQueries", () => {
+//test("repoFromURL", () => {
 //  expect(false).toBe(true);
 //});
 //

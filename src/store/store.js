@@ -1,5 +1,6 @@
 import { createContext } from "solid-js";
 import { createStore } from "solid-js/store";
+import history from "history/hash";
 import {
   findRecord,
   saveRecord,
@@ -9,7 +10,7 @@ import {
   changeRepo,
 } from "./action.js";
 import { changeQueries, makeURL, queriesFromURL } from "./pure.js";
-import schemaRoot from "./schema_root.json";
+import schemaRoot from "./default_root_schema.json";
 
 export const StoreContext = createContext();
 

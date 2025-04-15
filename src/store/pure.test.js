@@ -133,18 +133,94 @@ describe("queryStringToQuery", () => {
   });
 });
 
-//test("enrichBranchRecords", () => {
-//  expect(false).toBe(true);
-//});
-//
-//test("extractSchemaRecords", () => {
-//  expect(false).toBe(true);
-//});
-//
-//test("recordsToSchema", () => {
-//  expect(false).toBe(true);
-//});
-//
-//test("schemaToBranchRecords", () => {
-//  expect(false).toBe(true);
-//});
+describe("enrichBranchRecords", () => {
+  test("enriches", () => {
+    const schemaRecord = { _: "_", branch1: ["branch2"] };
+
+    const metaRecords = [
+      { _: "branch", branch: "branch1" },
+      { _: "branch", branch: "branch2", task: "date" },
+    ];
+
+    const branchRecords = [
+      { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
+      {
+        _: "branch",
+        branch: "branch2",
+        trunks: ["branch1"],
+        leaves: [],
+        task: "date",
+      },
+    ];
+
+    expect(enrichBranchRecords(schemaRecord, metaRecords)).toEqual(
+      branchRecords,
+    );
+  });
+});
+
+describe("extractSchemaRecords", () => {
+  test("extracts", () => {
+    const schemaRecord = { _: "_", branch1: ["branch2"] };
+
+    const metaRecords = [
+      { _: "branch", branch: "branch2", task: "date" },
+      { _: "branch", branch: "branch1" },
+    ];
+
+    const branchRecords = [
+      { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
+      {
+        _: "branch",
+        branch: "branch2",
+        trunks: ["branch1"],
+        leaves: [],
+        task: "date",
+      },
+    ];
+
+    expect(extractSchemaRecords(branchRecords)).toEqual([
+      schemaRecord,
+      ...metaRecords,
+    ]);
+  });
+});
+
+describe("schemaToBranchRecords", () => {
+  test("converts", () => {
+    const schema = {
+      event: { trunks: [], leaves: ["datum"], description: { en: "", ru: "" } },
+      datum: { trunks: ["event"], leaves: [] },
+    };
+
+    const schemaRecord = { _: "_", event: ["datum"] };
+
+    const metaRecords = [
+      { _: "branch", branch: "event", description_en: "", description_ru: "" },
+      { _: "branch", branch: "datum" },
+    ];
+
+    expect(schemaToBranchRecords(schema)).toEqual([
+      schemaRecord,
+      ...metaRecords,
+    ]);
+  });
+});
+
+describe("recordsToSchema", () => {
+  test("converts", () => {
+    const schema = {
+      event: { trunks: [], leaves: ["datum"], description: { en: "", ru: "" } },
+      datum: { trunks: ["event"], leaves: [] },
+    };
+
+    const schemaRecord = { _: "_", event: ["datum"] };
+
+    const metaRecords = [
+      { _: "branch", branch: "event", description_en: "", description_ru: "" },
+      { _: "branch", branch: "datum" },
+    ];
+
+    expect(recordsToSchema(schemaRecord, metaRecords)).toEqual(schema);
+  });
+});

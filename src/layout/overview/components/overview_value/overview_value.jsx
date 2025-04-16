@@ -5,7 +5,8 @@ export function OverviewValue(props) {
   const { store } = useContext(StoreContext);
 
   // TODO: add schema[base].cognate from branch-cognate.csv
-  const basePartial = props.branch === store.queries._ ? [] : [props.branch];
+  const basePartial =
+    props.branch === store.searchParams.get("_") ? [] : [props.branch];
 
   const cognatePartial = store.schema[props.branch].cognate
     ? [store.schema[props.branch].cognate].flat()
@@ -36,7 +37,7 @@ export function OverviewValue(props) {
   async function leapfrog(cognate) {
     await setQuery(undefined, undefined);
 
-    await setQuery("_", store.queries._);
+    await setQuery("_", store.searchParams.get("_"));
 
     await setQuery("__", cognate);
 

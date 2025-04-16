@@ -2,15 +2,15 @@ import { describe, expect, test } from "vitest";
 import {
   isTwig,
   ensureTrunk,
-  queryToQueryString,
-  queryStringToQuery,
+  queryToSearchParams,
+  searchParamsToQuery,
   enrichBranchRecords,
   extractSchemaRecords,
   schemaToBranchRecords,
   recordsToSchema,
-  changeQueries,
+  changeSearchParams,
   makeURL,
-  queriesFromURL,
+  searchParamsFromURL,
 } from "./pure.js";
 import stub from "./stub.js";
 
@@ -28,17 +28,17 @@ describe("isTwig", () => {
   });
 });
 
-describe("queryToQueryString", () => {
+describe("queryToSearchParams", () => {
   test("throws when no base", () => {
     const testCase = stub.cases.noBase;
 
-    expect(() => queryToQueryString(stub.queryObject)).toThrowError();
+    expect(() => queryToSearchParams(stub.queryObject)).toThrowError();
   });
 
   test("query base value", () => {
     const testCase = stub.cases.baseValue;
 
-    expect(queryToQueryString(testCase.queryObject)).toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).toEqual(
       testCase.queryString,
     );
   });
@@ -46,7 +46,7 @@ describe("queryToQueryString", () => {
   test("query leaf value", () => {
     const testCase = stub.cases.leafValue;
 
-    expect(queryToQueryString(testCase.queryObject)).toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).toEqual(
       testCase.queryString,
     );
   });
@@ -54,7 +54,7 @@ describe("queryToQueryString", () => {
   test("query nested value", () => {
     const testCase = stub.cases.nestedValue;
 
-    expect(queryToQueryString(testCase.queryObject)).toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).toEqual(
       testCase.queryString,
     );
   });
@@ -62,7 +62,7 @@ describe("queryToQueryString", () => {
   test("query twig out of order", () => {
     const testCase = stub.cases.twigOutOfOrder;
 
-    expect(queryToQueryString(testCase.queryObject)).not.toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).not.toEqual(
       testCase.queryString,
     );
   });
@@ -94,45 +94,60 @@ describe("ensureTrunk", () => {
   });
 });
 
-describe("queryStringToQuery", () => {
+describe("searchParamsToQuery", () => {
   test("throws when no base", () => {
     const testCase = stub.cases.noBase;
 
     expect(() =>
-      queryStringToQuery(stub.schema, testCase.queryString),
+      searchParamsToQuery(
+        stub.schema,
+        new URLSearchParams(testCase.queryString),
+      ),
     ).toThrowError();
   });
 
   test("query base value", () => {
     const testCase = stub.cases.baseValue;
 
-    expect(queryStringToQuery(stub.schema, testCase.queryString)).toEqual(
-      testCase.queryObject,
-    );
+    expect(
+      searchParamsToQuery(
+        stub.schema,
+        new URLSearchParams(testCase.queryString),
+      ),
+    ).toEqual(testCase.queryObject);
   });
 
   test("query leaf value", () => {
     const testCase = stub.cases.leafValue;
 
-    expect(queryStringToQuery(stub.schema, testCase.queryString)).toEqual(
-      testCase.queryObject,
-    );
+    expect(
+      searchParamsToQuery(
+        stub.schema,
+        new URLSearchParams(testCase.queryString),
+      ),
+    ).toEqual(testCase.queryObject);
   });
 
   test("query nested value", () => {
     const testCase = stub.cases.nestedValue;
 
-    expect(queryStringToQuery(stub.schema, testCase.queryString)).toEqual(
-      testCase.queryObject,
-    );
+    expect(
+      searchParamsToQuery(
+        stub.schema,
+        new URLSearchParams(testCase.queryString),
+      ),
+    ).toEqual(testCase.queryObject);
   });
 
   test("query twig out of order", () => {
     const testCase = stub.cases.twigOutOfOrder;
 
-    expect(queryStringToQuery(stub.schema, testCase.queryString)).toEqual(
-      testCase.queryObject,
-    );
+    expect(
+      searchParamsToQuery(
+        stub.schema,
+        new URLSearchParams(testCase.queryString),
+      ),
+    ).toEqual(testCase.queryObject);
   });
 });
 
@@ -228,57 +243,37 @@ describe("recordsToSchema", () => {
   });
 });
 
-describe("changeQueries", () => {
+describe("changeSearchParams", () => {
   test("", () => {
-    expect(changeQueries(stub.schema, { _: "a", a: 1 }, "b", 2)).toEqual({
-      _: "a",
-      a: 1,
-      b: 2,
-    });
+    expect(
+      changeSearchParams(
+        stub.schema,
+        new URLSearchParams("_=a&a=1"),
+        "b",
+        2,
+      ).toString(),
+    ).toEqual("_=a&a=1&b=2");
   });
 });
 
 describe("makeURL", () => {
   test("", () => {
     expect(
-      makeURL(
-        {
-          _: "a",
-          a: 1,
-          b: 2,
-        },
-        "a",
-        undefined,
-        "root",
-        "name",
-      ),
+      makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "root", "name"),
     ).toEqual("#?_=a&a=1&b=2");
   });
 
   test("", () => {
     expect(
-      makeURL(
-        {
-          _: "a",
-          a: 1,
-          b: 2,
-        },
-        "a",
-        undefined,
-        "uuid",
-        "name",
-      ),
+      makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "uuid", "name"),
     ).toEqual("#/name?_=a&a=1&b=2");
   });
 });
 
-// TODO should this return csvs nested query?
-describe("queriesFromURL", () => {
+describe("searchParamsFromURL", () => {
   test("", () => {
-    expect(queriesFromURL("_=a&a=1", "/uuid")).toEqual({
-      _: "a",
-      a: "1",
-      ".sortBy": "a",
-    });
+    expect(searchParamsFromURL("_=a&a=1").toString()).toEqual(
+      "_=a&a=1&.sortBy=a",
+    );
   });
 });

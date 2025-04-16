@@ -15,23 +15,21 @@ export function isTwig(schema, branch) {
 }
 
 /**
- * This returns search params from a queries object
- * @name queryToQueryString
+ * This returns a query string from a csvs query
+ * @name queryToSearchParams
  * @export function
- * @param {Object} queries - a queries object
+ * @param {Object} query - a csvs query object
  * @returns {URLSearchParams} urlSearchParams - search params from a query string.
  */
-export function queryToQueryString(query) {
+export function queryToSearchParams(query) {
   if (!Object.hasOwn(query, "_")) throw Error("no base in query");
 
   const searchParams = Object.entries(query).reduce(
     (withField, [key, value]) => {
-      const queryString =
+      const params =
         typeof value === "object"
-          ? queryToQueryString(value)
-          : `${key}=${value}`;
-
-      const params = new URLSearchParams(queryString);
+          ? queryToSearchParams(value)
+          : new URLSearchParams(`${key}=${value}`);
 
       return new URLSearchParams([...withField, ...params]);
     },
@@ -42,9 +40,7 @@ export function queryToQueryString(query) {
 
   searchParams.sort();
 
-  const queryString = searchParams.toString();
-
-  return queryString;
+  return searchParams;
 }
 
 // make sure record has trunk and all trunks of trunk until root
@@ -85,24 +81,21 @@ export function ensureTrunk(schema, record, trunk, leaf) {
 }
 
 /**
- * This returns a queries object from search params
- * @name queryStringToQuery
+ * This returns a csvs query from a query string
+ * @name searchParamsToQuery
  * @export function
  * @param {Object} schema - dataset schema.
  * @param {URLSearchParams} searchParams - search params from a query string.
  * @returns {Object}
  */
-// TODO make this work with flat queries
-export function queryStringToQuery(schema, queryString) {
-  const searchParams = new URLSearchParams(queryString);
-
+export function searchParamsToQuery(schema, searchParams) {
   // search params is a flat key-value thing
   // schema is also flat, but it describes
   // root-leaf relationships between keys
-  // queries are a nested object where each leaf is inside a root
+  // query is a nested object where each leaf is inside a root
   // the limit level of nesting is defined by the schema
   // walk the schema checking if a given branch has value
-  // and insert the key to queries with sow
+  // and insert the key to query with sow
 
   const base = searchParams.get("_");
 
@@ -122,16 +115,16 @@ export function queryStringToQuery(schema, queryString) {
     sortNestingDescending(schema)(a, b),
   );
 
-  const queries = sorted.reduce((withEntry, [leaf, value]) => {
+  const query = sorted.reduce((withEntry, [leaf, value]) => {
     const { trunks } = schema[leaf];
 
-    // check that value is nested and enrich object
-    // if the entry does not have trunk yet in sow, sow it.
-    // all values from trunk queries were already sowed
-    // because the entries are sorted in ascending order
-    // so if this still does not have a trunk, sow the trunk
-    // and the trunk of the trunk recursive until root
     const sown = trunks.reduce((withTrunk, trunk) => {
+      // check that value is nested and enrich object
+      // if the entry does not have trunk yet in sow, sow it.
+      // all trunk values were already sowed
+      // because the entries are sorted in ascending order
+      // so if this still does not have a trunk, sow the trunk
+      // and the trunk of the trunk recursively until root
       const withTrunkOfLeaf = ensureTrunk(schema, withTrunk, trunk, leaf);
 
       const trunkValues = mow(withTrunkOfLeaf, trunk, leaf).map(
@@ -152,7 +145,7 @@ export function queryStringToQuery(schema, queryString) {
     return sown;
   }, baseQuery);
 
-  return queries;
+  return query;
 }
 
 // add trunk field from schema record to branch records
@@ -349,85 +342,69 @@ export function recordsToSchema(schemaRecord, metaRecords) {
   return schema;
 }
 
-export function changeQueries(schema, queries, field, value) {
+export function changeSearchParams(schema, searchParams, field, value) {
   if (field === ".sortBy" || field === ".sortDirection") {
-    return { ...queries, [field]: value };
+    searchParams.set(field, value);
+
+    return searchParams;
   }
 
-  // if query field is undefined, delete queries
+  // if query field is undefined, delete searchParams
   if (field === undefined) {
-    return {};
+    return new URLSearchParams();
   } else if (field === "_") {
     // if query field is base, update default sort by
     // TODO pick default sortBy from task === "date"
     const sortBy = value;
 
-    return { _: value, ".sortBy": sortBy };
+    return new URLSearchParams(`_=${value}&.sortBy=${sortBy}`);
   } else if (field !== "") {
-    // if query field is defined, update queries
+    // if query field is defined, update searchParams
     if (value === undefined) {
       // if query value is undefined, remove query field
-      const { [field]: omit, ...queriesWithoutField } = queries;
+      searchParams.delete(field);
 
-      return queriesWithoutField;
+      return searchParams;
     } else {
       // if query value is defined, set query field
-      return { ...queries, [field]: value };
+      searchParams.set(field, value);
+
+      return searchParams;
     }
   }
 
-  return queries;
+  return searchParams;
 }
 
-export function makeURL(queries, base, sortBy, repoUUID, reponame) {
-  const queryString = queryToQueryString(queries);
-
-  const searchParams = new URLSearchParams(queryString);
-
-  searchParams.set("_", base);
-
+export function makeURL(searchParams, sortBy, repoUUID, reponame) {
   if (sortBy) {
     searchParams.set(".sortBy", sortBy);
   }
 
   const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
 
-  const searchStringNew = searchParams.toString();
+  const queryString = searchParams.toString();
 
-  const url = `${pathname}?${searchStringNew}`;
+  const url = `${pathname}?${queryString}`;
 
   return url;
 }
 
-export function queriesFromURL(search, pathname) {
+export function searchParamsFromURL(search) {
   const searchParams = new URLSearchParams(search);
-
-  const repoRoute = pathname.replace("/", "");
 
   const sortByURL = searchParams.get(".sortBy");
 
-  function paramsToQueries(searchParamsSet) {
-    const searchParamsObject = Array.from(searchParamsSet).reduce(
-      (acc, [key, value]) => ({ ...acc, [key]: value }),
-      {},
-    );
+  // TODO filter out ~, -, startsWith(.)
 
-    const queries = Object.fromEntries(
-      Object.entries(searchParamsObject).filter(
-        ([key]) => key !== "~" && key !== "-" && !key.startsWith("."),
-      ),
-    );
-
-    return queries;
-  }
-
-  // convert to object, skip reserved fields
-  const queries = paramsToQueries(searchParams);
-
-  const base = queries._ ?? "repo";
+  const base = searchParams.get("_") ?? "repo";
 
   // TODO pick default sortBy from task === "date"
   const sortBy = sortByURL ?? base;
 
-  return { ...queries, _: base, ".sortBy": sortBy };
+  searchParams.set("_", base);
+
+  searchParams.set(".sortBy", sortBy);
+
+  return searchParams;
 }

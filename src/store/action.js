@@ -256,7 +256,7 @@ export async function saveRepoRecord(record) {
   return;
 }
 
-export async function findRecord(repo, appendRecord, queries) {
+export async function findRecord(repo, appendRecord, searchParams) {
   // prepare a controller to stop the new stream
   let isAborted = false;
 
@@ -268,18 +268,17 @@ export async function findRecord(repo, appendRecord, queries) {
     abortController.abort();
   }
 
-  // remove all evenor-specific queries before passing searchParams to csvs
+  // remove all evenor-specific searchParams before passing searchParams to csvs
   const {
     ".sortBy": omitSortBy,
     ".sortDirection": omitSortDirection,
-    ...queriesWithoutCustom
-  } = queries;
+    ...searchParamsWithoutCustom
+  } = searchParams;
+
+  const query = searchParamsToQuery(schema, searchParamsWithoutCustom);
 
   // prepare a new stream
-  const { strm: fromStrm, closeHandler } = await api.selectStream(
-    repo,
-    queriesWithoutCustom, // TODO is this a flat query or a csvs nested query?
-  );
+  const { strm: fromStrm, closeHandler } = await api.selectStream(repo, query);
 
   const isHomeScreen = repo === "root";
 
@@ -386,7 +385,7 @@ export async function changeRepo(uuid, baseNew) {
     return {
       repo: { _: "repo", repo: uuid },
       schema: schemaRoot,
-      queries: { _: "repo", ".sortBy": "reponame" },
+      searchParams: new URLSearchParams("_=repo&.sortBy=reponame"),
     };
   } else {
     const [repo] = await api.select("root", { _: "repo", repo: uuid });
@@ -401,7 +400,7 @@ export async function changeRepo(uuid, baseNew) {
     return {
       repo,
       schema,
-      queries: { _: base, ".sortBy": sortBy },
+      searchParams: new URLSearchParams(`_=${base}&.sortBy=${sortBy}`),
     };
   }
 }

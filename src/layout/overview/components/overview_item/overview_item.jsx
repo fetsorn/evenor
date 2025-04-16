@@ -12,7 +12,7 @@ export function OverviewItem(props) {
 
   const isHomeScreen = store.repo.repo === "root";
 
-  const isRepo = store.queries._ === "repo";
+  const isRepo = store.searchParams.get("_") === "repo";
 
   const canOpenRepo = isHomeScreen && isRepo;
 

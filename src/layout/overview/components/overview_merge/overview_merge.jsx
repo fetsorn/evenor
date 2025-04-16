@@ -1,5 +1,5 @@
 import api from "@/api/index.js";
-import { searchParamsToQueries } from "@/store/index.js";
+import { searchParamsToQuery } from "@/store/index.js";
 
 export function OverviewMerge(props) {
   async function onMerge() {
@@ -7,11 +7,10 @@ export function OverviewMerge(props) {
 
     const [{ repo: subsetUUID }] = await api.select("root", query);
 
-    const subsetSearchParams = new URLSearchParams(
-      props.branchRecord.sync_tag_search,
+    const subsetQuery = searchParamsToQuery(
+      schema,
+      new URLSearchParams(props.branchRecord.sync_tag_search),
     );
-
-    const subsetQuery = searchParamsToQueries(schema, subsetSearchParams);
 
     // find entries to sync from subset
     const entries = await api.select(subsetUUID, subsetQuery);

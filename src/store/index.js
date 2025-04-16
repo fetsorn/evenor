@@ -1,4 +1,4 @@
-import { isTwig, searchParamsToQueries } from "./pure.js";
+import { isTwig, searchParamsToQuery } from "./pure.js";
 import { newUUID } from "./action.js";
 import {
   StoreContext,

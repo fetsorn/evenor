@@ -30,7 +30,7 @@ describe("newUUID", () => {
     };
   });
 
-  test("", () => {
+  test("generates a uuid", () => {
     const uuid = newUUID();
 
     expect(sha256).toHaveBeenCalled();

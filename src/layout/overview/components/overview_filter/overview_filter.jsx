@@ -11,19 +11,20 @@ export function OverviewFilter() {
 
   // find all fields name
   const leafFields = () =>
-    store.schema[store.queries._].leaves.concat([store.queries._, "__"]);
+    store.schema[store.searchParams.get("_")].leaves.concat([
+      store.searchParams.get("_"),
+      "__",
+    ]);
 
-  // find field name which added to filterqueries
-  const addedFields = () => Object.keys(store.queries);
+  // find field name which is added to filter search params
+  const addedFields = () => store.searchParams.keys();
 
-  // find name fields which is not added to filterqueries
+  // find name fields which is not added to filter search params
   const notAddedFields = () =>
     leafFields().filter((key) => !addedFields().includes(key));
 
   const queries = () =>
-    Object.entries(store.queries).filter(
-      ([key, value]) => key !== ".sortDirection",
-    );
+    store.searchParams.entries().filter(([key]) => key !== ".sortDirection");
 
   // TODO base and sortby as spoiler options.
 
@@ -56,7 +57,7 @@ export function OverviewFilter() {
       </Index>
       <span> </span>
       <Show
-        when={store.queries[".sortDirection"] === "first"}
+        when={store.searchParams.get(".sortDirection") === "first"}
         fallback={
           <a onClick={() => onSearch(".sortDirection", "first")}>sort last</a>
         }

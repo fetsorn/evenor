@@ -1,6 +1,8 @@
 import history from "history/hash";
 import api from "../api/index.js";
 import {
+  foo,
+  createRecord,
   createRoot,
   saveRepoRecord,
   loadRepoRecord,
@@ -17,30 +19,7 @@ export async function saveRecord(repo, base, records, recordOld, recordNew) {
   // if no root here try to create
   await createRoot();
 
-  const isHomeScreen = repo === "root";
-
-  const isRepoBranch = base === "repo";
-
-  const canSaveRepo = isHomeScreen && isRepoBranch;
-
-  // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
-  if (canSaveRepo) {
-    const branches = recordNew["branch"].map(
-      ({ trunk, ...branchWithoutTrunk }) => branchWithoutTrunk,
-    );
-
-    const recordPruned = { ...recordNew, branch: branches };
-
-    await api.updateRecord(repo, recordPruned);
-  } else {
-    await api.updateRecord(repo, recordNew);
-  }
-
-  await api.commit(repo);
-
-  if (canSaveRepo) {
-    await saveRepoRecord(recordNew);
-  }
+  await saveRecord(repo, base, recordNew);
 
   const recordsNew = records
     .filter((r) => r[base] !== recordOld[base])
@@ -50,37 +29,29 @@ export async function saveRecord(repo, base, records, recordOld, recordNew) {
 }
 
 export async function editRecord(repo, base, recordNew) {
+  // undefined -> delete record
   if (recordNew === undefined) {
     return undefined;
   }
 
-  const isHomeScreen = repo === "root";
+  // {} -> create record
+  const isNew = !Object.hasOwn(recordNew, "_");
 
-  const isRepoBranch = base === "repo";
-
-  const isRepoRecord = isHomeScreen && isRepoBranch;
-
-  const repoPartial = isRepoRecord ? defaultRepoRecord : {};
-
-  const record = recordNew ?? {
-    _: base,
-    [base]: await newUUID(),
-    ...repoPartial,
-  };
+  // { _: base } -> set record
+  const record = isNew ? await createRecord(repo, base) : recordNew;
 
   return record;
 }
 
 export async function wipeRecord(repo, base, records, record) {
-  await api.deleteRecord(repo, record);
-
-  await api.commit(repo);
+  await deleteRecord(repo, record);
 
   const recordsNew = records.filter((r) => r[base] !== record[base]);
 
   return recordsNew;
 }
 
+// TODO merge with repoFromURL and findAndOpen
 export async function changeRepo(uuid, baseNew) {
   if (uuid === "root") {
     return {

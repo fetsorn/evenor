@@ -12,6 +12,57 @@ export function newUUID() {
   return sha256(uuidv4());
 }
 
+export async function deleteRecord(repo, record) {
+  await api.deleteRecord(repo, record);
+
+  await api.commit(repo);
+}
+
+export async function foo(repo, base, recordNew) {
+  const isHomeScreen = repo === "root";
+
+  const isRepoBranch = base === "repo";
+
+  const canSaveRepo = isHomeScreen && isRepoBranch;
+
+  // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
+  if (canSaveRepo) {
+    const branches = recordNew["branch"].map(
+      ({ trunk, ...branchWithoutTrunk }) => branchWithoutTrunk,
+    );
+
+    const recordPruned = { ...recordNew, branch: branches };
+
+    await api.updateRecord(repo, recordPruned);
+  } else {
+    await api.updateRecord(repo, recordNew);
+  }
+
+  await api.commit(repo);
+
+  if (canSaveRepo) {
+    await saveRepoRecord(recordNew);
+  }
+}
+
+export async function createRecord(repo, base) {
+  const isHomeScreen = repo === "root";
+
+  const isRepoBranch = base === "repo";
+
+  const isRepoRecord = isHomeScreen && isRepoBranch;
+
+  const repoPartial = isRepoRecord ? defaultRepoRecord : {};
+
+  const record = {
+    _: base,
+    [base]: await newUUID(),
+    ...repoPartial,
+  };
+
+  return record;
+}
+
 export async function readSchema(uuid) {
   if (uuid === "root") {
     return schemaRoot;

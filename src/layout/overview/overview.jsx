@@ -51,11 +51,11 @@ export function Overview() {
     <div className={styles.overview}>
       <div className={styles.button_bar}>
         <Show when={store.repo.repo !== "root"} fallback={<span></span>}>
-          <a onClick={() => onRepoChange("root")}>back</a>
+          <a onClick={() => onRepoChange("root", "repo")}>back</a>
         </Show>
 
         <Show when={canAdd()} fallback={<></>}>
-          <a onClick={() => onRecordEdit(undefined)}>add</a>
+          <a onClick={() => onRecordEdit({})}>add</a>
         </Show>
       </div>
 

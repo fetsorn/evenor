@@ -1,15 +1,13 @@
 import { createContext } from "solid-js";
 import { createStore } from "solid-js/store";
-import history from "history/hash";
 import {
-  findRecord,
-  saveRecord,
   editRecord,
+  saveRecord,
   wipeRecord,
-  repoFromURL,
   changeRepo,
+  search,
+  launch,
 } from "./action.js";
-import { changeSearchParams, makeURL, searchParamsFromURL } from "./pure.js";
 import schemaRoot from "./default_root_schema.json";
 
 export const StoreContext = createContext();
@@ -30,6 +28,8 @@ export async function onRecordEdit(recordNew) {
     recordNew,
   );
 
+  // TODO use store path to overwrite the record
+
   // set to undefined to delete from store
   // without this the object would shallow merge
   // and deleted fields would restore
@@ -48,18 +48,16 @@ export async function onRecordSave(recordOld, recordNew) {
     recordNew,
   );
 
+  // TODO use store path to update the record
+
+  setStore("records", undefined);
+
   setStore("records", records);
 
   setStore("record", undefined);
 }
 
 export async function onRecordWipe(record) {
-  if (record === undefined) {
-    setStore("record", undefined);
-
-    return;
-  }
-
   const records = await wipeRecord(
     store.repo.repo,
     store.searchParams.get("_"),
@@ -67,16 +65,26 @@ export async function onRecordWipe(record) {
     record,
   );
 
+  // TODO use store path to delete the record
+
+  setStore("records", undefined);
+
   setStore("records", records);
 }
 
 export async function onSearch(field, value) {
-  // update searchParams in store
-  const searchParams = changeSearchParams(
+  function appendRecord(record) {
+    setStore("records", store.records.length, record);
+  }
+
+  const { searchParams, abortPreviousStream, startStream } = search(
     store.schema,
     store.searchParams,
+    store.repo.repo,
+    store.repo.reponame,
     field,
     value,
+    appendRecord,
   );
 
   // set to undefined to overwrite
@@ -84,29 +92,8 @@ export async function onSearch(field, value) {
 
   setStore({ searchParams });
 
-  const url = makeURL(
-    searchParams,
-    value,
-    store.repo.repo,
-    store.repo.reponame,
-  );
-
-  window.history.replaceState(null, null, urlNew);
-
-  if (field === ".sortBy" || field === ".sortDirection") return;
-
   // stop previous stream
   await store.abortPreviousStream();
-
-  function appendRecord(record) {
-    setStore("records", store.records.length, record);
-  }
-
-  const { abortPreviousStream, startStream } = findRecord(
-    store.repo.repo,
-    appendRecord,
-    searchParams,
-  );
 
   // solid store tries to call the function, so pass a factory here
   setStore("abortPreviousStream", () => abortPreviousStream);
@@ -114,6 +101,7 @@ export async function onSearch(field, value) {
   // erase existing records
   setStore("records", []);
 
+  // start appending records
   await startStream();
 }
 
@@ -137,10 +125,7 @@ export async function onRepoChange(uuid, base) {
 }
 
 export async function onLaunch() {
-  const { schema, repo } = await repoFromURL(
-    history.location.search,
-    history.location.pathname,
-  );
+  const { searchParams, schema, repo } = await launch();
 
   setStore("repo", repo);
 
@@ -148,9 +133,6 @@ export async function onLaunch() {
   setStore("schema", undefined);
 
   setStore("schema", schema);
-
-  // get searchParams from url
-  const searchParams = searchParamsFromURL(history.location.search);
 
   // set to undefined to overwrite
   setStore("searchParams", undefined);

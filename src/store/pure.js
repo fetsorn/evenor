@@ -342,13 +342,7 @@ export function recordsToSchema(schemaRecord, metaRecords) {
   return schema;
 }
 
-export function changeSearchParams(schema, searchParams, field, value) {
-  if (field === ".sortBy" || field === ".sortDirection") {
-    searchParams.set(field, value);
-
-    return searchParams;
-  }
-
+export function changeSearchParams(searchParams, field, value) {
   // if query field is undefined, delete searchParams
   if (field === undefined) {
     return new URLSearchParams();
@@ -393,16 +387,16 @@ export function makeURL(searchParams, sortBy, repoUUID, reponame) {
 export function searchParamsFromURL(search) {
   const searchParams = new URLSearchParams(search);
 
-  const sortByURL = searchParams.get(".sortBy");
-
-  // TODO filter out ~, -, startsWith(.)
+  // TODO filter out ~, -
 
   const base = searchParams.get("_") ?? "repo";
 
+  searchParams.set("_", base);
+
+  const sortByURL = searchParams.get(".sortBy");
+
   // TODO pick default sortBy from task === "date"
   const sortBy = sortByURL ?? base;
-
-  searchParams.set("_", base);
 
   searchParams.set(".sortBy", sortBy);
 

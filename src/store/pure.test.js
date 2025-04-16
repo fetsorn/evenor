@@ -244,29 +244,62 @@ describe("recordsToSchema", () => {
 });
 
 describe("changeSearchParams", () => {
-  test("", () => {
+  test("ignores empty field", () => {
+    expect(
+      changeSearchParams(new URLSearchParams("_=a&a=1"), "", 2).toString(),
+    ).toEqual("_=a&a=1");
+  });
+
+  test("erases params", () => {
     expect(
       changeSearchParams(
-        stub.schema,
         new URLSearchParams("_=a&a=1"),
-        "b",
-        2,
+        undefined,
+        undefined,
       ).toString(),
+    ).toEqual("");
+  });
+
+  test("sets base and sortBy", () => {
+    expect(
+      changeSearchParams(new URLSearchParams("_=a&a=1"), "_", "b").toString(),
+    ).toEqual("_=b&.sortBy=b");
+  });
+
+  test("deletes value", () => {
+    expect(
+      changeSearchParams(
+        new URLSearchParams("_=a&a=1"),
+        "a",
+        undefined,
+      ).toString(),
+    ).toEqual("_=a");
+  });
+
+  test("sets value", () => {
+    expect(
+      changeSearchParams(new URLSearchParams("_=a&a=1"), "b", 2).toString(),
     ).toEqual("_=a&a=1&b=2");
   });
 });
 
 describe("makeURL", () => {
-  test("", () => {
+  test("sets root", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "root", "name"),
     ).toEqual("#?_=a&a=1&b=2");
   });
 
-  test("", () => {
+  test("sets repo", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "uuid", "name"),
     ).toEqual("#/name?_=a&a=1&b=2");
+  });
+
+  test("sets sortBy", () => {
+    expect(
+      makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "uuid", "name"),
+    ).toEqual("#/name?_=a&a=1&b=2&.sortBy=b");
   });
 });
 

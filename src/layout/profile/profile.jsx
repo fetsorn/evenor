@@ -29,7 +29,7 @@ export function Profile() {
           className={cn(styles.sticky, "view-sidebar__sticky")}
         >
           <div className={cn(styles.buttonbar, "view-sidebar__btn-bar")}>
-            <a title={""} onClick={() => onRecordWipe(undefined)}>
+            <a title={""} onClick={() => onRecordEdit(undefined)}>
               revert
             </a>
             <span>{/* store.record */}</span>

@@ -1,7 +1,7 @@
 import history from "history/hash";
 import api from "../api/index.js";
 import {
-  foo,
+  updateRecord,
   createRecord,
   createRoot,
   saveRepoRecord,
@@ -19,7 +19,7 @@ export async function saveRecord(repo, base, records, recordOld, recordNew) {
   // if no root here try to create
   await createRoot();
 
-  await saveRecord(repo, base, recordNew);
+  await updateRecord(repo, base, recordNew);
 
   const recordsNew = records
     .filter((r) => r[base] !== recordOld[base])

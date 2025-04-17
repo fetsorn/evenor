@@ -1,62 +1,97 @@
 import { describe, expect, test, vi } from "vitest";
-import { sha256 } from "js-sha256";
 import api from "../api/index.js";
 import {
-  newUUID,
+  updateRecord,
   readSchema,
   cloneAndOpen,
   findAndOpen,
   repoFromURL,
-  readRemotes,
-  readLocals,
-  loadRepoRecord,
   createRoot,
-  writeRemotes,
-  writeLocals,
-  saveRepoRecord,
   findRecord,
 } from "./impure.js";
+import {
+  newUUID,
+  updateRepo,
+  updateEntry,
+  deleteRecord,
+  saveRepoRecord,
+  loadRepoRecord,
+} from "./foo.js";
+import stub from "./stub.js";
+import schemaRoot from "./default_root_schema.json";
 
-describe("newUUID", () => {
-  vi.mock("js-sha256", async (importOriginal) => {
-    const mod = await importOriginal();
+vi.mock("../api/index.js", async (importOriginal) => {
+  const mod = await importOriginal();
 
-    return {
-      ...mod,
-      sha256: vi.fn(() => 1),
-    };
+  return {
+    ...mod,
+    default: {
+      deleteRecord: vi.fn(),
+      updateRecord: vi.fn(),
+      select: vi.fn(),
+      commit: vi.fn(),
+    },
+  };
+});
+
+vi.mock("./foo.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    newUUID: vi.fn(),
+    updateRepo: vi.fn(),
+    updateEntry: vi.fn(),
+    deleteRecord: vi.fn(),
+    saveRepoRecord: vi.fn(),
+    loadRepoRecord: vi.fn(),
+  };
+});
+
+describe("updateRecord", () => {
+  test("root", async () => {
+    updateEntry.mockReset();
+
+    saveRepoRecord.mockReset();
+
+    await updateRecord("root", "repo", {});
+
+    expect(updateRepo).toHaveBeenCalledWith("root", {});
+
+    expect(saveRepoRecord).toHaveBeenCalledWith({});
   });
 
-  test("generates a uuid", () => {
-    const uuid = newUUID();
+  test("uuid", async () => {
+    updateEntry.mockReset();
 
-    expect(sha256).toHaveBeenCalled();
+    saveRepoRecord.mockReset();
 
-    expect(uuid).toBe(1);
+    await updateRecord(stub.uuid, stub.trunk, {});
+
+    expect(updateEntry).toHaveBeenCalledWith(stub.uuid, {});
+
+    expect(saveRepoRecord).not.toHaveBeenCalled();
   });
 });
 
 describe("readSchema", () => {
-  vi.mock("../api/index.js", async (importOriginal) => {
-    const mod = await importOriginal();
+  test("root", async () => {
+    const schema = await readSchema("root");
 
-    return {
-      ...mod,
-      default: {
-        select: vi.fn(),
-      },
-    };
+    expect(schema).toEqual(schemaRoot);
   });
 
-  test("root", () => {
-    const schema = readSchema("root");
+  test("uuid", async () => {
+    const testCase = stub.cases.trunk;
 
-    expect(uuid).toBe(1);
-  });
+    api.select
+      .mockImplementationOnce(() => [testCase.schemaRecord])
+      .mockImplementationOnce(() => testCase.branchRecords);
 
-  test("", () => {
-    const schema = readSchema(stub.uuid);
+    const schema = await readSchema(stub.uuid);
 
-    expect(uuid).toBe(1);
+    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "_" });
+
+    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
   });
 });

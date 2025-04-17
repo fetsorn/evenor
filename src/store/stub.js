@@ -12,6 +12,8 @@ export const twig = "d";
 
 export const nonExisting = "c";
 
+export const uuid = "uuid";
+
 export const cases = {
   noBase: {
     queryObject: { a: "1" },
@@ -37,6 +39,34 @@ export const cases = {
     queryObject: { _: "a", a: "" },
     queryString: "_=a&a=",
   },
+  trunk: {
+    schemaRecord: { _: "_", branch1: ["branch2"] },
+    metaRecords: [
+      { _: "branch", branch: "branch2", task: "date" },
+      { _: "branch", branch: "branch1" },
+    ],
+    branchRecords: [
+      { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
+      {
+        _: "branch",
+        branch: "branch2",
+        trunks: ["branch1"],
+        leaves: [],
+        task: "date",
+      },
+    ],
+  },
+  description: {
+    schema: {
+      event: { trunks: [], leaves: ["datum"], description: { en: "", ru: "" } },
+      datum: { trunks: ["event"], leaves: [] },
+    },
+    schemaRecord: { _: "_", event: ["datum"] },
+    metaRecords: [
+      { _: "branch", branch: "event", description_en: "", description_ru: "" },
+      { _: "branch", branch: "datum" },
+    ],
+  },
 };
 
 export default {
@@ -45,5 +75,6 @@ export default {
   trunk,
   twig,
   nonExisting,
+  uuid,
   cases,
 };

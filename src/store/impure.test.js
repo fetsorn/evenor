@@ -18,6 +18,12 @@ import {
   saveRepoRecord,
   loadRepoRecord,
 } from "./foo.js";
+import {
+  extractSchemaRecords,
+  enrichBranchRecords,
+  recordsToSchema,
+  schemaToBranchRecords,
+} from "./pure.js";
 import stub from "./stub.js";
 import schemaRoot from "./default_root_schema.json";
 import defaultRepoRecord from "./default_repo_record.json";
@@ -28,11 +34,24 @@ vi.mock("../api/index.js", async (importOriginal) => {
   return {
     ...mod,
     default: {
+      createRepo: vi.fn(),
       deleteRecord: vi.fn(),
       updateRecord: vi.fn(),
       select: vi.fn(),
       commit: vi.fn(),
     },
+  };
+});
+
+vi.mock("./pure.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    extractSchemaRecords: vi.fn(),
+    enrichBranchRecords: vi.fn(),
+    recordsToSchema: vi.fn(),
+    schemaToBranchRecords: vi.fn(),
   };
 });
 
@@ -58,7 +77,7 @@ describe("updateRecord", () => {
 
     await updateRecord("root", "repo", {});
 
-    expect(updateRepo).toHaveBeenCalledWith("root", {});
+    expect(updateRepo).toHaveBeenCalledWith({});
 
     expect(saveRepoRecord).toHaveBeenCalledWith({});
   });
@@ -93,6 +112,24 @@ describe("createRecord", () => {
     const record = await createRecord(stub.uuid, stub.trunk);
 
     expect(record).toEqual({ _: stub.trunk, [stub.trunk]: stub.uuid });
+  });
+});
+
+describe("createRoot", () => {
+  test("", async () => {
+    const testCase = stub.cases.trunk;
+
+    schemaToBranchRecords.mockImplementation(() => testCase.branchRecords);
+
+    await createRoot();
+
+    expect(api.createRepo).toHaveBeenCalledWith("root");
+
+    for (const branchRecord of testCase.branchRecords) {
+      expect(api.updateRecord).toHaveBeenCalledWith("root", branchRecord);
+    }
+
+    expect(api.commit).toHaveBeenCalledWith("root");
   });
 });
 

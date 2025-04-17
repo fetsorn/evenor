@@ -10,7 +10,7 @@ export async function deleteRecord(repo, record) {
   await api.commit(repo);
 }
 
-export async function updateRepo(repo, recordNew) {
+export async function updateRepo(recordNew) {
   // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
   const branchesPartial =
     recordNew.branch !== undefined
@@ -23,9 +23,9 @@ export async function updateRepo(repo, recordNew) {
 
   const recordPruned = { ...recordNew, ...branchesPartial };
 
-  await api.updateRecord(repo, recordPruned);
+  await api.updateRecord("root", recordPruned);
 
-  await api.commit(repo);
+  await api.commit("root");
 }
 
 export async function updateEntry(repo, recordNew) {

@@ -8,7 +8,7 @@ import {
   findAndOpen,
   repoFromURL,
   createRoot,
-  findRecord,
+  selectStream,
 } from "./impure.js";
 import {
   newUUID,
@@ -38,6 +38,7 @@ vi.mock("../api/index.js", async (importOriginal) => {
       deleteRecord: vi.fn(),
       updateRecord: vi.fn(),
       select: vi.fn(),
+      selectStream: vi.fn(),
       commit: vi.fn(),
     },
   };
@@ -115,24 +116,6 @@ describe("createRecord", () => {
   });
 });
 
-describe("createRoot", () => {
-  test("", async () => {
-    const testCase = stub.cases.trunk;
-
-    schemaToBranchRecords.mockImplementation(() => testCase.branchRecords);
-
-    await createRoot();
-
-    expect(api.createRepo).toHaveBeenCalledWith("root");
-
-    for (const branchRecord of testCase.branchRecords) {
-      expect(api.updateRecord).toHaveBeenCalledWith("root", branchRecord);
-    }
-
-    expect(api.commit).toHaveBeenCalledWith("root");
-  });
-});
-
 describe("readSchema", () => {
   test("root", async () => {
     const schema = await readSchema("root");
@@ -152,5 +135,85 @@ describe("readSchema", () => {
     expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "_" });
 
     expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
+  });
+});
+
+describe("createRoot", () => {
+  test("", async () => {
+    const testCase = stub.cases.trunk;
+
+    schemaToBranchRecords.mockImplementation(() => testCase.branchRecords);
+
+    await createRoot();
+
+    expect(api.createRepo).toHaveBeenCalledWith("root");
+
+    for (const branchRecord of testCase.branchRecords) {
+      expect(api.updateRecord).toHaveBeenCalledWith("root", branchRecord);
+    }
+
+    expect(api.commit).toHaveBeenCalledWith("root");
+  });
+});
+
+describe("selectStream", () => {
+  test("root", async () => {
+    const testCase = stub.cases.baseValue;
+
+    const appendRecord = vi.fn();
+
+    api.selectStream.mockImplementation(() => ({
+      strm: ReadableStream.from([{}]),
+      closeHandler: vi.fn(),
+    }));
+
+    loadRepoRecord.mockReset();
+
+    loadRepoRecord.mockImplementation(() => ({}));
+
+    const { abortPreviousStream, startStream } = await selectStream(
+      stub.schema,
+      "root",
+      appendRecord,
+      new URLSearchParams(testCase.queryString),
+    );
+
+    // mock api.selectStream to return stub.record
+    // call start stream and check stub.record
+    await startStream();
+
+    // check that loadRepoRecord() was called with stub.record
+    expect(loadRepoRecord).toHaveBeenCalledWith({});
+    // check that appendRecord was called with stub.record
+    expect(appendRecord).toHaveBeenCalledWith({});
+  });
+
+  test("uuid", async () => {
+    const testCase = stub.cases.baseValue;
+
+    const appendRecord = vi.fn();
+
+    api.selectStream.mockImplementation(() => ({
+      strm: ReadableStream.from([{}]),
+      closeHandler: vi.fn(),
+    }));
+
+    loadRepoRecord.mockReset();
+
+    const { abortPreviousStream, startStream } = await selectStream(
+      stub.schema,
+      stub.uuid,
+      appendRecord,
+      new URLSearchParams(testCase.queryString),
+    );
+
+    // mock api.selectStream to return stub.record
+    // call start stream and check stub.record
+    await startStream();
+
+    // check that appendRecord was called with stub.record
+    expect(appendRecord).toHaveBeenCalledWith({});
+    // check that loadRepoRecord() was called with stub.record
+    expect(loadRepoRecord).not.toHaveBeenCalled();
   });
 });

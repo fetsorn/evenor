@@ -8,7 +8,7 @@ import {
   loadRepoRecord,
   newUUID,
   readSchema,
-  findRecord,
+  selectStream,
   repoFromURL,
 } from "./impure.js";
 import { changeSearchParams, makeURL, searchParamsFromURL } from "./pure.js";
@@ -100,7 +100,7 @@ export async function search(
       startStream: () => {},
     };
 
-  const { abortPreviousStream, startStream } = findRecord(
+  const { abortPreviousStream, startStream } = selectStream(
     schema,
     repo,
     appendRecord,

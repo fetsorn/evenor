@@ -6,6 +6,7 @@ import {
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
+  searchParamsToQuery,
 } from "./pure.js";
 import {
   newUUID,
@@ -83,7 +84,7 @@ export async function createRoot() {
   }
 }
 
-export async function findRecord(schema, repo, appendRecord, searchParams) {
+export async function selectStream(schema, repo, appendRecord, searchParams) {
   // prepare a controller to stop the new stream
   let isAborted = false;
 

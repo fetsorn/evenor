@@ -2,6 +2,7 @@ import { describe, expect, test, vi } from "vitest";
 import api from "../api/index.js";
 import {
   updateRecord,
+  createRecord,
   readSchema,
   cloneAndOpen,
   findAndOpen,
@@ -19,6 +20,7 @@ import {
 } from "./foo.js";
 import stub from "./stub.js";
 import schemaRoot from "./default_root_schema.json";
+import defaultRepoRecord from "./default_repo_record.json";
 
 vi.mock("../api/index.js", async (importOriginal) => {
   const mod = await importOriginal();
@@ -71,6 +73,26 @@ describe("updateRecord", () => {
     expect(updateEntry).toHaveBeenCalledWith(stub.uuid, {});
 
     expect(saveRepoRecord).not.toHaveBeenCalled();
+  });
+});
+
+describe("createRecord", () => {
+  newUUID.mockImplementation(() => stub.uuid);
+
+  test("root", async () => {
+    const record = await createRecord("root", "repo");
+
+    expect(record).toEqual({
+      _: "repo",
+      repo: stub.uuid,
+      ...defaultRepoRecord,
+    });
+  });
+
+  test("uuid", async () => {
+    const record = await createRecord(stub.uuid, stub.trunk);
+
+    expect(record).toEqual({ _: stub.trunk, [stub.trunk]: stub.uuid });
   });
 });
 

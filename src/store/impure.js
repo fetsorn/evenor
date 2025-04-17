@@ -16,6 +16,7 @@ import {
   loadRepoRecord,
 } from "./foo.js";
 import schemaRoot from "./default_root_schema.json";
+import defaultRepoRecord from "./default_repo_record.json";
 
 export async function updateRecord(repo, base, recordNew) {
   const isHomeScreen = repo === "root";

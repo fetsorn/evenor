@@ -13,7 +13,6 @@ import {
 } from "./impure.js";
 import { changeSearchParams, makeURL, searchParamsFromURL } from "./pure.js";
 import schemaRoot from "./default_root_schema.json";
-import defaultRepoRecord from "./default_repo_record.json";
 
 export async function saveRecord(repo, base, records, recordOld, recordNew) {
   // if no root here try to create

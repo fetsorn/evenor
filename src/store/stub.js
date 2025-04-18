@@ -14,6 +14,8 @@ export const nonExisting = "c";
 
 export const uuid = "uuid";
 
+export const name = "name";
+
 export const cases = {
   noBase: {
     queryObject: { a: "1" },
@@ -67,6 +69,66 @@ export const cases = {
       { _: "branch", branch: "datum" },
     ],
   },
+  tags: {
+    schemaRecord: { _: "_", branch1: ["branch2"] },
+    metaRecords: [
+      { _: "branch", branch: "branch2", task: "date" },
+      { _: "branch", branch: "branch1" },
+    ],
+    branchRecords: [
+      { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
+      {
+        _: "branch",
+        branch: "branch2",
+        trunks: ["branch1"],
+        leaves: [],
+        task: "date",
+      },
+    ],
+    remote: "remote",
+    url: "url",
+    token: "token",
+    remoteTag: {
+      _: "remote_tag",
+      remote_tag: "remote",
+      remote_url: "url",
+      remote_token: "token",
+    },
+    assetPath: "assetpath",
+    localTag: {
+      _: "local_tag",
+      local_tag: "assetpath",
+    },
+    record: {
+      _: "repo",
+      repo: "uuid",
+      reponame: "name",
+      branch: [
+        { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
+        {
+          _: "branch",
+          branch: "branch2",
+          trunks: ["branch1"],
+          leaves: [],
+          task: "date",
+        },
+      ],
+      remote_tag: [
+        {
+          _: "remote_tag",
+          remote_tag: "remote",
+          remote_url: "url",
+          remote_token: "token",
+        },
+      ],
+      local_tag: [
+        {
+          _: "local_tag",
+          local_tag: "assetpath",
+        },
+      ],
+    },
+  },
 };
 
 export default {
@@ -76,5 +138,6 @@ export default {
   twig,
   nonExisting,
   uuid,
+  name,
   cases,
 };

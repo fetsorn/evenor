@@ -9,11 +9,11 @@ import {
   searchParamsToQuery,
 } from "./pure.js";
 import {
-  readRemotes,
-  readAssetPaths,
-  writeRemotes,
-  writeAssetPaths,
-} from "./bar.js";
+  readRemoteTags,
+  readLocalTags,
+  writeRemoteTags,
+  writeLocalTags,
+} from "./tags.js";
 import schemaRoot from "./default_root_schema.json";
 
 export function newUUID() {
@@ -91,13 +91,16 @@ export async function saveRepoRecord(record) {
 
   const schema = recordsToSchema(schemaRecord, metaRecords);
 
-  // create repo directory with a schema
-  // TODO record.reponame is a list, iterate over items
-  // TODO what if record.reponame is undefined
-  await api.createRepo(repoUUID, record.reponame[0]);
+  // create repo directory
+  const reponame = Array.isArray(record.reponame)
+    ? record.reponame[0]
+    : record.reponame;
+
+  await api.createRepo(repoUUID, reponame);
 
   await api.createLFS(repoUUID);
 
+  // write schema to repo
   await api.updateRecord(repoUUID, schemaRecord);
 
   for (const metaRecord of metaRecords) {
@@ -105,14 +108,14 @@ export async function saveRepoRecord(record) {
   }
 
   // write remotes to .git/config
-  await writeRemotes(repoUUID, record.remote_tag);
+  await writeRemoteTags(repoUUID, record.remote_tag);
 
   // write locals to .git/config
-  await writeAssetPaths(repoUUID, record.local_tag);
+  await writeLocalTags(repoUUID, record.local_tag);
 
   await api.commit(repoUUID);
 
-  return;
+  return undefined;
 }
 
 // load git state and schema from folder into the record
@@ -129,12 +132,13 @@ export async function loadRepoRecord(record) {
 
   const branchPartial = { branch: branchRecords };
 
-  const tagsRemote = await readRemotes(repoUUID);
+  const tagsRemote = await readRemoteTags(repoUUID);
+
   // get remote
   const tagsRemotePartial =
-    tagsRemote.length > 0 ? { remote_tag: remoteTags } : {};
+    tagsRemote.length > 0 ? { remote_tag: tagsRemote } : {};
 
-  const tagsLocal = await readAssetPaths(repoUUID);
+  const tagsLocal = await readLocalTags(repoUUID);
 
   // get locals
   const tagsLocalPartial = tagsLocal.length > 0 ? { local_tag: tagsLocal } : {};

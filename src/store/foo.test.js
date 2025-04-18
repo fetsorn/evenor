@@ -8,14 +8,16 @@ import {
   deleteRecord,
   readSchema,
   createRoot,
+  saveRepoRecord,
+  loadRepoRecord,
 } from "./foo.js";
 import {
-  extractSchemaRecords,
-  enrichBranchRecords,
-  recordsToSchema,
-  schemaToBranchRecords,
-  searchParamsToQuery,
-} from "./pure.js";
+  readRemoteTags,
+  readLocalTags,
+  writeRemoteTags,
+  writeLocalTags,
+} from "./tags.js";
+import { schemaToBranchRecords } from "./pure.js";
 import schemaRoot from "./default_root_schema.json";
 import stub from "./stub.js";
 
@@ -28,6 +30,7 @@ vi.mock("../api/index.js", async (importOriginal) => {
       createRepo: vi.fn(),
       deleteRecord: vi.fn(),
       updateRecord: vi.fn(),
+      createLFS: vi.fn(),
       select: vi.fn(),
       commit: vi.fn(),
     },
@@ -39,10 +42,19 @@ vi.mock("./pure.js", async (importOriginal) => {
 
   return {
     ...mod,
-    extractSchemaRecords: vi.fn(),
-    enrichBranchRecords: vi.fn(),
-    recordsToSchema: vi.fn(),
     schemaToBranchRecords: vi.fn(),
+  };
+});
+
+vi.mock("./tags.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    readRemoteTags: vi.fn(),
+    readLocalTags: vi.fn(),
+    writeRemoteTags: vi.fn(),
+    writeLocalTags: vi.fn(),
   };
 });
 
@@ -132,5 +144,54 @@ describe("createRoot", () => {
     }
 
     expect(api.commit).toHaveBeenCalledWith("root");
+  });
+});
+
+describe("saveRepoRecord", () => {
+  test("", async () => {
+    const testCase = stub.cases.tags;
+
+    api.createRepo.mockReset();
+
+    await saveRepoRecord(testCase.record);
+
+    expect(api.createRepo).toHaveBeenCalledWith(stub.uuid, stub.name);
+
+    expect(api.createLFS).toHaveBeenCalledWith(stub.uuid);
+
+    expect(api.updateRecord).toHaveBeenCalledWith(
+      stub.uuid,
+      testCase.schemaRecord,
+    );
+
+    for (const metaRecord of testCase.metaRecords) {
+      expect(api.updateRecord).toHaveBeenCalledWith(stub.uuid, metaRecord);
+    }
+
+    expect(writeRemoteTags).toHaveBeenCalledWith(stub.uuid, [
+      testCase.remoteTag,
+    ]);
+
+    expect(writeLocalTags).toHaveBeenCalledWith(stub.uuid, [testCase.localTag]);
+
+    expect(api.commit).toHaveBeenCalledWith(stub.uuid);
+  });
+});
+
+describe("loadRepoRecord", () => {
+  test("", async () => {
+    const testCase = stub.cases.tags;
+
+    api.select
+      .mockImplementationOnce(() => [testCase.schemaRecord])
+      .mockImplementationOnce(() => testCase.branchRecords);
+
+    readRemoteTags.mockImplementation(() => [testCase.remoteTag]);
+
+    readLocalTags.mockImplementation(() => [testCase.localTag]);
+
+    const record = await loadRepoRecord(testCase.record);
+
+    expect(record).toEqual(testCase.record);
   });
 });

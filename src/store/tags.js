@@ -1,6 +1,6 @@
 import api from "../api/index.js";
 
-export async function readRemotes(uuid) {
+export async function readRemoteTags(uuid) {
   const remotes = await api.listRemotes(uuid);
 
   const remoteTags = await Promise.all(
@@ -11,7 +11,7 @@ export async function readRemotes(uuid) {
 
       return {
         _: "remote_tag",
-        remote_name: remoteName,
+        remote_tag: remoteName,
         remote_url: remoteUrl,
         ...partialToken,
       };
@@ -21,23 +21,35 @@ export async function readRemotes(uuid) {
   return remoteTags;
 }
 
-export async function readAssetPaths(uuid) {
+export async function readLocalTags(uuid) {
   const locals = await api.listAssetPaths(uuid);
 
-  return locals;
+  const localTags = locals.map((local) => ({
+    _: "local_tag",
+    local_tag: local,
+  }));
+
+  return localTags;
 }
 
-export async function writeRemotes(uuid, tags) {
+export async function writeRemoteTags(uuid, tags) {
   const tagsList = Array.isArray(tags) ? tags : [tags];
 
   for (const tag of tagsList) {
+    const name = Array.isArray(tag.remote_tag)
+      ? tag.remote_tag[0]
+      : tag.remote_tag;
+
+    const url = Array.isArray(tag.remote_url)
+      ? tag.remote_url[0]
+      : tag.remote_url;
+
+    const token = Array.isArray(tag.remote_token)
+      ? tag.remote_token[0]
+      : tag.remote_token;
+
     try {
-      await api.addRemote(
-        uuid,
-        tag.remote_tag,
-        tag.remote_url[0],
-        tag.remote_token,
-      );
+      await api.addRemote(uuid, name, url, token);
     } catch (e) {
       console.log(e);
       // do nothing
@@ -45,12 +57,14 @@ export async function writeRemotes(uuid, tags) {
   }
 }
 
-export async function writeAssetPaths(uuid, tags) {
+export async function writeLocalTags(uuid, tags) {
   const tagList = Array.isArray(tags) ? tags : [tags];
 
   for (const tag of tagList) {
+    const assetPath = typeof tag === "object" ? tag.local_tag : tag;
+
     try {
-      api.addAssetPath(uuid, tag);
+      api.addAssetPath(uuid, assetPath);
     } catch {
       // do nothing
     }

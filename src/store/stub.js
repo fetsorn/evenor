@@ -14,7 +14,7 @@ export const nonExisting = "c";
 
 export const uuid = "uuid";
 
-export const name = "name";
+export const reponame = "reponame";
 
 export const cases = {
   noBase: {
@@ -70,6 +70,10 @@ export const cases = {
     ],
   },
   tags: {
+    schema: {
+      branch1: { trunks: [], leaves: ["branch2"] },
+      branch2: { trunks: ["branch1"], leaves: [], task: "date" },
+    },
     schemaRecord: { _: "_", branch1: ["branch2"] },
     metaRecords: [
       { _: "branch", branch: "branch2", task: "date" },
@@ -86,12 +90,12 @@ export const cases = {
       },
     ],
     remote: "remote",
-    url: "url",
+    url: "https://example.com/reponame",
     token: "token",
     remoteTag: {
       _: "remote_tag",
       remote_tag: "remote",
-      remote_url: "url",
+      remote_url: "https://example.com/reponame",
       remote_token: "token",
     },
     assetPath: "assetpath",
@@ -102,7 +106,7 @@ export const cases = {
     record: {
       _: "repo",
       repo: "uuid",
-      reponame: "name",
+      reponame: "reponame",
       branch: [
         { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
         {
@@ -117,7 +121,7 @@ export const cases = {
         {
           _: "remote_tag",
           remote_tag: "remote",
-          remote_url: "url",
+          remote_url: "https://example.com/reponame",
           remote_token: "token",
         },
       ],
@@ -138,6 +142,6 @@ export default {
   twig,
   nonExisting,
   uuid,
-  name,
+  reponame,
   cases,
 };

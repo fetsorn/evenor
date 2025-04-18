@@ -17,7 +17,7 @@ import {
   deleteRecord,
   saveRepoRecord,
   loadRepoRecord,
-} from "./foo.js";
+} from "./record.js";
 import {
   extractSchemaRecords,
   enrichBranchRecords,
@@ -56,7 +56,7 @@ vi.mock("./pure.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./foo.js", async (importOriginal) => {
+vi.mock("./record.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {

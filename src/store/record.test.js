@@ -10,7 +10,7 @@ import {
   createRoot,
   saveRepoRecord,
   loadRepoRecord,
-} from "./foo.js";
+} from "./record.js";
 import {
   readRemoteTags,
   readLocalTags,
@@ -155,7 +155,7 @@ describe("saveRepoRecord", () => {
 
     await saveRepoRecord(testCase.record);
 
-    expect(api.createRepo).toHaveBeenCalledWith(stub.uuid, stub.name);
+    expect(api.createRepo).toHaveBeenCalledWith(stub.uuid, stub.reponame);
 
     expect(api.createLFS).toHaveBeenCalledWith(stub.uuid);
 

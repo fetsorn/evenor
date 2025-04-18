@@ -3,14 +3,14 @@ import api from "../api/index.js";
 import {
   updateRecord,
   createRecord,
-  readSchema,
   cloneAndOpen,
   findAndOpen,
   repoFromURL,
-  createRoot,
   selectStream,
 } from "./impure.js";
 import {
+  readSchema,
+  createRoot,
   newUUID,
   updateRepo,
   updateEntry,
@@ -62,6 +62,8 @@ vi.mock("./foo.js", async (importOriginal) => {
   return {
     ...mod,
     newUUID: vi.fn(),
+    readSchema: vi.fn(),
+    createRoot: vi.fn(),
     updateRepo: vi.fn(),
     updateEntry: vi.fn(),
     deleteRecord: vi.fn(),
@@ -113,46 +115,6 @@ describe("createRecord", () => {
     const record = await createRecord(stub.uuid, stub.trunk);
 
     expect(record).toEqual({ _: stub.trunk, [stub.trunk]: stub.uuid });
-  });
-});
-
-describe("readSchema", () => {
-  test("root", async () => {
-    const schema = await readSchema("root");
-
-    expect(schema).toEqual(schemaRoot);
-  });
-
-  test("uuid", async () => {
-    const testCase = stub.cases.trunk;
-
-    api.select
-      .mockImplementationOnce(() => [testCase.schemaRecord])
-      .mockImplementationOnce(() => testCase.branchRecords);
-
-    const schema = await readSchema(stub.uuid);
-
-    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "_" });
-
-    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
-  });
-});
-
-describe("createRoot", () => {
-  test("", async () => {
-    const testCase = stub.cases.trunk;
-
-    schemaToBranchRecords.mockImplementation(() => testCase.branchRecords);
-
-    await createRoot();
-
-    expect(api.createRepo).toHaveBeenCalledWith("root");
-
-    for (const branchRecord of testCase.branchRecords) {
-      expect(api.updateRecord).toHaveBeenCalledWith("root", branchRecord);
-    }
-
-    expect(api.commit).toHaveBeenCalledWith("root");
   });
 });
 

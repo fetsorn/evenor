@@ -1,4 +1,20 @@
 import api from "../api/index.js";
+import { v4 as uuidv4 } from "uuid";
+import { sha256 } from "js-sha256";
+import {
+  extractSchemaRecords,
+  enrichBranchRecords,
+  recordsToSchema,
+  schemaToBranchRecords,
+  searchParamsToQuery,
+} from "./pure.js";
+import {
+  readRemotes,
+  readAssetPaths,
+  writeRemotes,
+  writeAssetPaths,
+} from "./bar.js";
+import schemaRoot from "./default_root_schema.json";
 
 export function newUUID() {
   return sha256(uuidv4());
@@ -12,6 +28,7 @@ export async function deleteRecord(repo, record) {
 
 export async function updateRepo(recordNew) {
   // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
+  // TODO move this outside and merge updateRepo with updateEntry
   const branchesPartial =
     recordNew.branch !== undefined
       ? {
@@ -34,37 +51,34 @@ export async function updateEntry(repo, recordNew) {
   await api.commit(repo);
 }
 
-export async function writeRemotes(uuid, tags) {
-  if (tags) {
-    const tagsList = Array.isArray(tags) ? tags : [tags];
-
-    for (const tag of tagsList) {
-      try {
-        await api.addRemote(
-          uuid,
-          tag.remote_tag,
-          tag.remote_url[0],
-          tag.remote_token,
-        );
-      } catch (e) {
-        console.log(e);
-        // do nothing
-      }
-    }
+export async function readSchema(uuid) {
+  if (uuid === "root") {
+    return schemaRoot;
   }
+
+  const [schemaRecord] = await api.select(uuid, { _: "_" });
+
+  const branchRecords = await api.select(uuid, { _: "branch" });
+
+  const schema = recordsToSchema(schemaRecord, branchRecords);
+
+  return schema;
 }
 
-export async function writeLocals(uuid, tags) {
-  if (tags) {
-    const tagList = Array.isArray(tags) ? tags : [tags];
+export async function createRoot() {
+  try {
+    // fails if root exists
+    await api.createRepo("root");
 
-    for (const tag of tagList) {
-      try {
-        api.addAssetPath(uuid, tag);
-      } catch {
-        // do nothing
-      }
+    const branchRecords = schemaToBranchRecords(schemaRoot);
+
+    for (const branchRecord of branchRecords) {
+      await api.updateRecord("root", branchRecord);
     }
+
+    await api.commit("root");
+  } catch {
+    // do nothing
   }
 }
 
@@ -94,53 +108,11 @@ export async function saveRepoRecord(record) {
   await writeRemotes(repoUUID, record.remote_tag);
 
   // write locals to .git/config
-  await writeLocals(repoUUID, record.local_tag);
+  await writeAssetPaths(repoUUID, record.local_tag);
 
   await api.commit(repoUUID);
 
   return;
-}
-
-export async function readRemotes(uuid) {
-  try {
-    const remotes = await api.listRemotes(uuid);
-
-    const remoteTags = await Promise.all(
-      remotes.map(async (remoteName) => {
-        const [remoteUrl, remoteToken] = await api.getRemote(uuid, remoteName);
-
-        const partialToken = remoteToken ? { remote_token: remoteToken } : {};
-
-        return {
-          _: "remote_tag",
-          remote_name: remoteName,
-          remote_url: remoteUrl,
-          ...partialToken,
-        };
-      }),
-    );
-
-    return { remote_tag: remoteTags };
-  } catch {
-    return {};
-  }
-}
-
-export async function readLocals(uuid) {
-  try {
-    const locals = await api.listAssetPaths(uuid);
-
-    return locals.reduce(
-      (acc, local) => {
-        const tagsLocalOld = acc.local_tag;
-
-        return { ...acc, remote_tag: [...tagsLocalOld, local] };
-      },
-      { local_tag: [] },
-    );
-  } catch {
-    return {};
-  }
 }
 
 // load git state and schema from folder into the record
@@ -157,11 +129,15 @@ export async function loadRepoRecord(record) {
 
   const branchPartial = { branch: branchRecords };
 
+  const tagsRemote = await readRemotes(repoUUID);
   // get remote
-  const tagsRemotePartial = await readRemotes(repoUUID);
+  const tagsRemotePartial =
+    tagsRemote.length > 0 ? { remote_tag: remoteTags } : {};
+
+  const tagsLocal = await readAssetPaths(repoUUID);
 
   // get locals
-  const tagsLocalPartial = await readLocals(repoUUID);
+  const tagsLocalPartial = tagsLocal.length > 0 ? { local_tag: tagsLocal } : {};
 
   const recordNew = {
     ...record,

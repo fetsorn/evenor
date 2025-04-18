@@ -1,6 +1,23 @@
 import { describe, expect, test, vi } from "vitest";
 import { sha256 } from "js-sha256";
-import { newUUID, updateRepo, updateEntry, deleteRecord } from "./foo.js";
+import api from "../api/index.js";
+import {
+  newUUID,
+  updateRepo,
+  updateEntry,
+  deleteRecord,
+  readSchema,
+  createRoot,
+} from "./foo.js";
+import {
+  extractSchemaRecords,
+  enrichBranchRecords,
+  recordsToSchema,
+  schemaToBranchRecords,
+  searchParamsToQuery,
+} from "./pure.js";
+import schemaRoot from "./default_root_schema.json";
+import stub from "./stub.js";
 
 vi.mock("../api/index.js", async (importOriginal) => {
   const mod = await importOriginal();
@@ -8,11 +25,24 @@ vi.mock("../api/index.js", async (importOriginal) => {
   return {
     ...mod,
     default: {
+      createRepo: vi.fn(),
       deleteRecord: vi.fn(),
       updateRecord: vi.fn(),
       select: vi.fn(),
       commit: vi.fn(),
     },
+  };
+});
+
+vi.mock("./pure.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    extractSchemaRecords: vi.fn(),
+    enrichBranchRecords: vi.fn(),
+    recordsToSchema: vi.fn(),
+    schemaToBranchRecords: vi.fn(),
   };
 });
 
@@ -47,7 +77,17 @@ describe("deleteRecord", () => {
 
 describe("updateRepo", () => {
   test("", async () => {
-    await updateRepo("repo", {});
+    await updateRepo({});
+
+    expect(api.updateRecord).toHaveBeenCalledWith("root", {});
+
+    expect(api.commit).toHaveBeenCalledWith("root");
+  });
+});
+
+describe("updateEntry", () => {
+  test("", async () => {
+    await updateEntry("repo", {});
 
     expect(api.updateRecord).toHaveBeenCalledWith("repo", {});
 
@@ -55,12 +95,42 @@ describe("updateRepo", () => {
   });
 });
 
-describe("updateRepo", () => {
+describe("readSchema", () => {
+  test("root", async () => {
+    const schema = await readSchema("root");
+
+    expect(schema).toEqual(schemaRoot);
+  });
+
+  test("uuid", async () => {
+    const testCase = stub.cases.trunk;
+
+    api.select
+      .mockImplementationOnce(() => [testCase.schemaRecord])
+      .mockImplementationOnce(() => testCase.branchRecords);
+
+    const schema = await readSchema(stub.uuid);
+
+    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "_" });
+
+    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
+  });
+});
+
+describe("createRoot", () => {
   test("", async () => {
-    await updateEntry("repo", {});
+    const testCase = stub.cases.trunk;
 
-    expect(api.updateRecord).toHaveBeenCalledWith("repo", {});
+    schemaToBranchRecords.mockImplementation(() => testCase.branchRecords);
 
-    expect(api.commit).toHaveBeenCalledWith("repo");
+    await createRoot();
+
+    expect(api.createRepo).toHaveBeenCalledWith("root");
+
+    for (const branchRecord of testCase.branchRecords) {
+      expect(api.updateRecord).toHaveBeenCalledWith("root", branchRecord);
+    }
+
+    expect(api.commit).toHaveBeenCalledWith("root");
   });
 });

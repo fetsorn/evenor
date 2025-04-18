@@ -1,5 +1,3 @@
-import { v4 as uuidv4 } from "uuid";
-import { sha256 } from "js-sha256";
 import api from "../api/index.js";
 import {
   extractSchemaRecords,
@@ -11,6 +9,8 @@ import {
 import {
   newUUID,
   updateRepo,
+  readSchema,
+  createRoot,
   updateEntry,
   deleteRecord,
   saveRepoRecord,
@@ -51,37 +51,6 @@ export async function createRecord(repo, base) {
   };
 
   return record;
-}
-
-export async function readSchema(uuid) {
-  if (uuid === "root") {
-    return schemaRoot;
-  }
-
-  const [schemaRecord] = await api.select(uuid, { _: "_" });
-
-  const branchRecords = await api.select(uuid, { _: "branch" });
-
-  const schema = recordsToSchema(schemaRecord, branchRecords);
-
-  return schema;
-}
-
-export async function createRoot() {
-  try {
-    // fails if root exists
-    await api.createRepo("root");
-
-    const branchRecords = schemaToBranchRecords(schemaRoot);
-
-    for (const branchRecord of branchRecords) {
-      await api.updateRecord("root", branchRecord);
-    }
-
-    await api.commit("root");
-  } catch {
-    // do nothing
-  }
 }
 
 export async function selectStream(schema, repo, appendRecord, searchParams) {

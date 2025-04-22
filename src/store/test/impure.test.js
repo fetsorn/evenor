@@ -1,13 +1,11 @@
 import { describe, expect, test, vi } from "vitest";
-import api from "../api/index.js";
+import api from "@/api/index.js";
 import {
   updateRecord,
   createRecord,
-  cloneAndOpen,
-  findAndOpen,
   repoFromURL,
   selectStream,
-} from "./impure.js";
+} from "@/store/impure.js";
 import {
   readSchema,
   createRoot,
@@ -17,18 +15,19 @@ import {
   deleteRecord,
   saveRepoRecord,
   loadRepoRecord,
-} from "./record.js";
+} from "@/store/record.js";
 import {
   extractSchemaRecords,
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
-} from "./pure.js";
+} from "@/store/pure.js";
+import { find, clone } from "@/store/open.js";
+import schemaRoot from "@/store/default_root_schema.json";
+import defaultRepoRecord from "@/store/default_repo_record.json";
 import stub from "./stub.js";
-import schemaRoot from "./default_root_schema.json";
-import defaultRepoRecord from "./default_repo_record.json";
 
-vi.mock("../api/index.js", async (importOriginal) => {
+vi.mock("@/api/index.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
@@ -44,7 +43,7 @@ vi.mock("../api/index.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./pure.js", async (importOriginal) => {
+vi.mock("@/store/pure.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
@@ -56,7 +55,17 @@ vi.mock("./pure.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./record.js", async (importOriginal) => {
+vi.mock("@/store/open.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    find: vi.fn(),
+    clone: vi.fn(),
+  };
+});
+
+vi.mock("@/store/record.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {

@@ -10,8 +10,7 @@ import {
   recordsToSchema,
   changeSearchParams,
   makeURL,
-  searchParamsFromURL,
-} from "./pure.js";
+} from "@/store/pure.js";
 import stub from "./stub.js";
 
 describe("isTwig", () => {
@@ -250,13 +249,5 @@ describe("makeURL", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "uuid", "name"),
     ).toEqual("#/name?_=a&a=1&b=2&.sortBy=b");
-  });
-});
-
-describe("searchParamsFromURL", () => {
-  test("", () => {
-    expect(searchParamsFromURL("_=a&a=1").toString()).toEqual(
-      "_=a&a=1&.sortBy=a",
-    );
   });
 });

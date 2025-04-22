@@ -1,4 +1,4 @@
-import api from "../api/index.js";
+import api from "@/api/index.js";
 
 export async function readRemoteTags(uuid) {
   const remotes = await api.listRemotes(uuid);

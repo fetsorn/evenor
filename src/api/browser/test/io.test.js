@@ -7,8 +7,8 @@ import {
   rimraf,
   ls,
   pickFile,
-} from "./io.js";
-import { fs } from "./lightningfs.js";
+} from "@/api/browser/io.js";
+import { fs } from "@/api/browser/lightningfs.js";
 import stub from "./stub.js";
 
 describe("findDir", () => {

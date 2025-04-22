@@ -1,6 +1,6 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import git from "isomorphic-git";
-import { fs } from "./lightningfs.js";
+import { fs } from "@/api/browser/lightningfs.js";
 import {
   nameDir,
   createRepo,
@@ -11,7 +11,7 @@ import {
   listRemotes,
   addRemote,
   getRemote,
-} from "./git.js";
+} from "@/api/browser/git.js";
 import stub from "./stub.js";
 
 vi.mock("isomorphic-git", async (importOriginal) => {

@@ -5,7 +5,7 @@ import {
   createWriteStream,
   mkdtemp,
   appendFile,
-} from "./lightningfs.js";
+} from "@/api/browser/lightningfs.js";
 import stub from "./stub.js";
 
 describe("createReadStream", () => {

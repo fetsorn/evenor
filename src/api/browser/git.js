@@ -1,8 +1,8 @@
 import http from "isomorphic-git/http/web/index.cjs";
 import git from "isomorphic-git";
-import { addLFS } from "./lfs.js";
-import { fs } from "./lightningfs.js";
-import { findDir, rimraf } from "./io.js";
+import { addLFS } from "@/api/browser/lfs.js";
+import { fs } from "@/api/browser/lightningfs.js";
+import { findDir, rimraf } from "@/api/browser/io.js";
 
 export function nameDir(uuid, name) {
   if (uuid === undefined) throw "uuid is undefined";

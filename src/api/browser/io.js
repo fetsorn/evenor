@@ -1,5 +1,5 @@
 import git from "isomorphic-git";
-import { fs } from "./lightningfs.js";
+import { fs } from "@/api/browser/lightningfs.js";
 
 export async function findDir(uuid) {
   const existingRepo = (await fs.promises.readdir("/")).find((repo) =>

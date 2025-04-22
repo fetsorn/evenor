@@ -1,18 +1,9 @@
 import history from "history/hash";
-import api from "../api/index.js";
-import {
-  updateRecord,
-  createRecord,
-  createRoot,
-  saveRepoRecord,
-  loadRepoRecord,
-  newUUID,
-  readSchema,
-  selectStream,
-  repoFromURL,
-} from "./impure.js";
-import { changeSearchParams, makeURL, searchParamsFromURL } from "./pure.js";
-import schemaRoot from "./default_root_schema.json";
+import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
+import { createRoot } from "@/store/record.js";
+import { changeSearchParams, makeURL } from "@/store/pure.js";
+import { find, clone } from "@/store/open.js";
+import schemaRoot from "@/store/default_root_schema.json";
 
 export async function saveRecord(repo, base, records, recordOld, recordNew) {
   // if no root here try to create
@@ -50,31 +41,34 @@ export async function wipeRecord(repo, base, records, record) {
   return recordsNew;
 }
 
-// TODO merge with repoFromURL and findAndOpen
-export async function changeRepo(uuid, baseNew) {
-  if (uuid === "root") {
-    return {
-      repo: { _: "repo", repo: uuid },
-      schema: schemaRoot,
-      searchParams: new URLSearchParams("_=repo&.sortBy=reponame"),
-    };
-  } else {
-    const [repo] = await api.select("root", { _: "repo", repo: uuid });
+export async function changeRepo(pathname, search) {
+  const uuid = pathname === "/" ? "root" : pathname.replace("/", "");
 
-    const schema = await readSchema(uuid);
+  const searchParams = new URLSearchParams(search);
 
-    // TODO pick default base from a root branch
-    const base = baseNew;
+  const remote = searchParams.get("~");
 
-    // TODO pick default sortBy from task === "date"
-    const sortBy = base;
+  const token = searchParams.get("-") ?? "";
 
-    return {
-      repo,
-      schema,
-      searchParams: new URLSearchParams(`_=${base}&.sortBy=${sortBy}`),
-    };
+  const { repo, schema } = searchParams.has("~")
+    ? await clone(remote, token)
+    : await find(uuid);
+
+  if (!searchParams.has("_")) {
+    // TODO pick default base from a root branch of schema
+    searchParams.set("_", Object.keys(schema)[0]);
   }
+
+  if (!searchParams.has(".sortBy")) {
+    // TODO pick default sortBy from task === "date" of schema
+    searchParams.set(".sortBy", searchParams.get("_"));
+  }
+
+  return {
+    repo,
+    schema,
+    searchParams,
+  };
 }
 
 export async function search(
@@ -108,16 +102,4 @@ export async function search(
   );
 
   return { searchParams: searchParamsNew, abortPreviousStream, startStream };
-}
-
-export async function launch() {
-  const { schema, repo } = await repoFromURL(
-    history.location.search,
-    history.location.pathname,
-  );
-
-  // get searchParams from url
-  const searchParams = searchParamsFromURL(history.location.search);
-
-  return { schema, repo, searchParams };
 }

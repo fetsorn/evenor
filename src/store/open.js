@@ -1,28 +1,33 @@
-import api from "../api/index.js";
-import { enrichBranchRecords, schemaToBranchRecords } from "./pure.js";
+import api from "@/api/index.js";
+import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
 import {
   readSchema,
   createRoot,
   updateRepo,
   saveRepoRecord,
-} from "./record.js";
+} from "@/store/record.js";
 
-export async function findAndOpen(repoRoute) {
+export async function find(reponame) {
+  if (reponame === "root")
+    return {
+      schema: schemaRoot,
+      repo: { _: "repo", repo: "root" },
+    };
+
   // find uuid in root folder
-  try {
-    const [repo] = await api.select("root", { _: "repo", reponame: repoRoute });
+  const [repo] = await api.select("root", { _: "repo", reponame: reponame });
 
-    const { repo: repoUUID } = repo;
+  const { repo: repoUUID } = repo;
 
-    const schema = await readSchema(repoUUID);
+  const schema = await readSchema(repoUUID);
 
-    return { schema, repo };
-  } catch {
-    // proceed to set repo uuid as root
-  }
+  return { schema, repo };
 }
 
-export async function cloneAndOpen(url, token) {
+export async function clone(url, token) {
+  // if no root here try to create
+  await createRoot();
+
   // if uri specifies a remote
   // try to clone remote
   // where repo uuid is a digest of remote
@@ -31,51 +36,43 @@ export async function cloneAndOpen(url, token) {
 
   const repoUUIDRemote = crypto.subtle.digest("SHA-256", encoded);
 
-  try {
-    // if no root here try to create
-    await createRoot();
+  // TODO rimraf the folder if it already exists
+  await api.clone(repoUUIDRemote, url, token);
 
-    // TODO rimraf the folder if it already exists
-    await api.clone(repoUUIDRemote, url, token);
+  // TODO add new repo to root
+  // TODO return a repo record
 
-    // TODO add new repo to root
-    // TODO return a repo record
+  const pathname = new URL(url).pathname;
 
-    const pathname = new URL(url).pathname;
+  // get repo name from remote
+  const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
 
-    // get repo name from remote
-    const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
+  const schemaClone = await readSchema(repoUUIDRemote);
 
-    const schemaClone = await readSchema(repoUUIDRemote);
+  const [schemaRecordClone, ...metaRecordsClone] =
+    schemaToBranchRecords(schemaClone);
 
-    const [schemaRecordClone, ...metaRecordsClone] =
-      schemaToBranchRecords(schemaClone);
+  const branchRecordsClone = enrichBranchRecords(
+    schemaRecordClone,
+    metaRecordsClone,
+  );
 
-    const branchRecordsClone = enrichBranchRecords(
-      schemaRecordClone,
-      metaRecordsClone,
-    );
+  const recordClone = {
+    _: "repo",
+    repo: repoUUIDRemote,
+    reponame: reponameClone,
+    branch: branchRecordsClone,
+    remote_tag: {
+      _: "remote_tag",
+      remote_tag: "origin",
+      remote_token: token,
+      remote_url: url,
+    },
+  };
 
-    const recordClone = {
-      _: "repo",
-      repo: repoUUIDRemote,
-      reponame: reponameClone,
-      branch: branchRecordsClone,
-      remote_tag: {
-        _: "remote_tag",
-        remote_tag: "origin",
-        remote_token: token,
-        remote_url: url,
-      },
-    };
+  await updateRepo(recordClone);
 
-    await updateRepo(recordClone);
+  await saveRepoRecord(recordClone);
 
-    await saveRepoRecord(recordClone);
-
-    return { schema: schemaClone, repo: recordClone };
-  } catch (e) {
-    // proceed to choose root repo uuid
-    console.log(e);
-  }
+  return { schema: schemaClone, repo: recordClone };
 }

@@ -1,14 +1,14 @@
 import { describe, expect, test, vi } from "vitest";
+import api from "@/api/index.js";
 import {
   readRemoteTags,
   readLocalTags,
   writeRemoteTags,
   writeLocalTags,
-} from "./tags.js";
-import api from "../api/index.js";
+} from "@/store/tags.js";
 import stub from "./stub.js";
 
-vi.mock("../api/index.js", async (importOriginal) => {
+vi.mock("@/api/index.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
@@ -27,7 +27,7 @@ describe("readRemoteTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    api.listRemotes.mockImplementation(() => [testCase.name]);
+    api.listRemotes.mockImplementation(() => [testCase.remote]);
 
     api.getRemote.mockImplementation(() => [testCase.url, testCase.token]);
 
@@ -35,9 +35,9 @@ describe("readRemoteTags", () => {
 
     expect(api.listRemotes).toHaveBeenCalledWith(stub.uuid);
 
-    expect(api.getRemote).toHaveBeenCalledWith(stub.uuid, testCase.name);
+    expect(api.getRemote).toHaveBeenCalledWith(stub.uuid, testCase.remote);
 
-    expect(remoteTags).toEqual([testCase.tag]);
+    expect(remoteTags).toEqual([testCase.remoteTag]);
   });
 });
 
@@ -51,7 +51,7 @@ describe("readLocalTags", () => {
 
     expect(api.listAssetPaths).toHaveBeenCalledWith(stub.uuid);
 
-    expect(localTags).toEqual([testCase.tag]);
+    expect(localTags).toEqual([testCase.localTag]);
   });
 });
 
@@ -59,11 +59,11 @@ describe("writeRemoteTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    const locals = await writeRemoteTags(stub.uuid, [testCase.tag]);
+    const locals = await writeRemoteTags(stub.uuid, [testCase.remoteTag]);
 
     expect(api.addRemote).toHaveBeenCalledWith(
       stub.uuid,
-      testCase.name,
+      testCase.remote,
       testCase.url,
       testCase.token,
     );
@@ -74,7 +74,7 @@ describe("writeLocalTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    const locals = await writeLocalTags(stub.uuid, [testCase.tag]);
+    const locals = await writeLocalTags(stub.uuid, [testCase.localTag]);
 
     expect(api.addAssetPath).toHaveBeenCalledWith(
       stub.uuid,

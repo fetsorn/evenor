@@ -3,10 +3,9 @@ import git from "isomorphic-git";
 import lfs from "@fetsorn/isogit-lfs";
 import { saveAs } from "file-saver";
 import { page, userEvent } from "@vitest/browser/context";
-import { fs } from "./lightningfs.js";
-import { createRepo, commit, addRemote } from "./git.js";
-import { fetchFile, writeFile } from "./io.js";
-import stub from "./stub.js";
+import { fs } from "@/api/browser/lightningfs.js";
+import { createRepo, commit, addRemote } from "@/api/browser/git.js";
+import { fetchFile, writeFile } from "@/api/browser/io.js";
 import {
   lfsDir,
   addLFS,
@@ -19,7 +18,8 @@ import {
   downloadUrlFromPointer,
   addAssetPath,
   listAssetPaths,
-} from "./lfs.js";
+} from "@/api/browser/lfs.js";
+import stub from "./stub.js";
 
 vi.mock("isomorphic-git", async (importOriginal) => {
   const mod = await importOriginal();
@@ -62,7 +62,7 @@ vi.mock("@fetsorn/isogit-lfs", async (importOriginal) => {
   };
 });
 
-vi.mock("./io.js", async (importOriginal) => {
+vi.mock("@/api/browser/io.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {

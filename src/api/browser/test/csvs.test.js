@@ -1,10 +1,15 @@
 import { expect, test, describe, vi } from "vitest";
 import csvs from "@fetsorn/csvs-js";
-import { findDir } from "./io.js";
-import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
+import { findDir } from "@/api/browser/io.js";
+import {
+  select,
+  selectStream,
+  updateRecord,
+  deleteRecord,
+} from "@/api/browser/csvs.js";
 import stub from "./stub.js";
 
-vi.mock("./io.js", async (importOriginal) => {
+vi.mock("@/api/browser/io.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   const findDir = vi.fn(async (uuid) => {

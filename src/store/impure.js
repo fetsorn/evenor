@@ -1,11 +1,11 @@
-import api from "../api/index.js";
+import api from "@/api/index.js";
 import {
   extractSchemaRecords,
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
   searchParamsToQuery,
-} from "./pure.js";
+} from "@/store/pure.js";
 import {
   newUUID,
   updateRepo,
@@ -15,10 +15,10 @@ import {
   deleteRecord,
   saveRepoRecord,
   loadRepoRecord,
-} from "./record.js";
-import { cloneAndOpen, findAndOpen } from "./open.js";
-import schemaRoot from "./default_root_schema.json";
-import defaultRepoRecord from "./default_repo_record.json";
+} from "@/store/record.js";
+import { clone, find } from "@/store/open.js";
+import schemaRoot from "@/store/default_root_schema.json";
+import defaultRepoRecord from "@/store/default_repo_record.json";
 
 export async function updateRecord(repo, base, recordNew) {
   const isHomeScreen = repo === "root";
@@ -103,42 +103,4 @@ export async function selectStream(schema, repo, appendRecord, searchParams) {
   }
 
   return { abortPreviousStream, startStream };
-}
-
-export async function repoFromURL(search, pathname) {
-  const searchParams = new URLSearchParams(search);
-
-  const repoRoute = pathname.replace("/", "");
-
-  const root = { schema: schemaRoot, repo: { _: "repo", repo: "root" } };
-
-  if (searchParams.has("~")) {
-    const remote = searchParams.get("~");
-
-    const token = searchParams.get("-") ?? "";
-
-    // clone from remote and open
-    try {
-      return cloneAndOpen(remote, token);
-    } catch (e) {
-      console.log(e);
-      // TODO set url to root
-
-      return root;
-    }
-  }
-
-  if (repoRoute !== "") {
-    // open
-    try {
-      return findAndOpen(repoRoute);
-    } catch (e) {
-      console.log(e);
-      // TODO set url to root
-
-      return root;
-    }
-  }
-
-  return root;
 }

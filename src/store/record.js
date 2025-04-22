@@ -1,20 +1,20 @@
-import api from "../api/index.js";
 import { v4 as uuidv4 } from "uuid";
 import { sha256 } from "js-sha256";
+import api from "@/api/index.js";
 import {
   extractSchemaRecords,
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
   searchParamsToQuery,
-} from "./pure.js";
+} from "@/store/pure.js";
 import {
   readRemoteTags,
   readLocalTags,
   writeRemoteTags,
   writeLocalTags,
-} from "./tags.js";
-import schemaRoot from "./default_root_schema.json";
+} from "@/store/tags.js";
+import schemaRoot from "@/store/default_root_schema.json";
 
 export function newUUID() {
   return sha256(uuidv4());

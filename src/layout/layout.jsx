@@ -1,11 +1,13 @@
 import { onMount } from "solid-js";
-import { StoreContext, store, onLaunch } from "@/store/index.js";
+import { StoreContext, store, onRepoChange } from "@/store/index.js";
 import styles from "./layout.module.css";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
 
 export function App() {
-  onMount(onLaunch);
+  onMount(() =>
+    onRepoChange(history.location.pathname, history.location.search),
+  );
 
   return (
     <StoreContext.Provider value={{ store }}>

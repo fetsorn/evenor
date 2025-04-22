@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import { sha256 } from "js-sha256";
-import api from "../api/index.js";
+import api from "@/api/index.js";
 import {
   newUUID,
   updateRepo,
@@ -10,18 +10,18 @@ import {
   createRoot,
   saveRepoRecord,
   loadRepoRecord,
-} from "./record.js";
+} from "@/store/record.js";
 import {
   readRemoteTags,
   readLocalTags,
   writeRemoteTags,
   writeLocalTags,
-} from "./tags.js";
-import { schemaToBranchRecords } from "./pure.js";
-import schemaRoot from "./default_root_schema.json";
+} from "@/store/tags.js";
+import { schemaToBranchRecords } from "@/store/pure.js";
+import schemaRoot from "@/store/default_root_schema.json";
 import stub from "./stub.js";
 
-vi.mock("../api/index.js", async (importOriginal) => {
+vi.mock("@/api/index.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
@@ -37,7 +37,7 @@ vi.mock("../api/index.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./pure.js", async (importOriginal) => {
+vi.mock("@/store/pure.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
@@ -46,7 +46,7 @@ vi.mock("./pure.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./tags.js", async (importOriginal) => {
+vi.mock("@/store/tags.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {

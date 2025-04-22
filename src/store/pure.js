@@ -383,22 +383,3 @@ export function makeURL(searchParams, sortBy, repoUUID, reponame) {
 
   return url;
 }
-
-export function searchParamsFromURL(search) {
-  const searchParams = new URLSearchParams(search);
-
-  // TODO filter out ~, -
-
-  const base = searchParams.get("_") ?? "repo";
-
-  searchParams.set("_", base);
-
-  const sortByURL = searchParams.get(".sortBy");
-
-  // TODO pick default sortBy from task === "date"
-  const sortBy = sortByURL ?? base;
-
-  searchParams.set(".sortBy", sortBy);
-
-  return searchParams;
-}

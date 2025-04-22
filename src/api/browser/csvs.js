@@ -1,6 +1,6 @@
 import csvs from "@fetsorn/csvs-js";
-import { fs } from "./lightningfs.js";
-import { findDir } from "./io.js";
+import { fs } from "@/api/browser/lightningfs.js";
+import { findDir } from "@/api/browser/io.js";
 
 export async function select(uuid, query) {
   const dir = await findDir(uuid);

@@ -6,9 +6,8 @@ import {
   wipeRecord,
   changeRepo,
   search,
-  launch,
-} from "./action.js";
-import schemaRoot from "./default_root_schema.json";
+} from "@/store/action.js";
+import schemaRoot from "@/store/default_root_schema.json";
 
 export const StoreContext = createContext();
 
@@ -105,27 +104,17 @@ export async function onSearch(field, value) {
   await startStream();
 }
 
-export async function onRepoChange(uuid, base) {
-  const { repo, schema, searchParams } = await changeRepo(uuid, base);
+export async function onRepoChange(pathname, search) {
+  let result;
 
-  setStore("repo", repo);
+  // in case of error fallback to root
+  try {
+    result = await changeRepo(pathname, search);
+  } catch {
+    result = await changeRepo("/", "_=repo");
+  }
 
-  // set to undefined to overwrite
-  setStore("schema", undefined);
-
-  setStore("schema", schema);
-
-  // set to undefined to overwrite
-  setStore("searchParams", undefined);
-
-  setStore("searchParams", searchParams);
-
-  // start a search stream
-  await onSearch("", undefined);
-}
-
-export async function onLaunch() {
-  const { searchParams, schema, repo } = await launch();
+  const { repo, schema, searchParams } = result;
 
   setStore("repo", repo);
 

@@ -52,7 +52,11 @@ export function OverviewItem(props) {
               const branch = item["branch"];
 
               return (
-                <a onClick={() => onRepoChange(props.item.repo, branch)}>
+                <a
+                  onClick={() =>
+                    onRepoChange(`/${props.item.repo}`, `_=${branch}`)
+                  }
+                >
                   {branch}
                   <span> </span>
                 </a>

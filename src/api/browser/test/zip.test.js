@@ -1,8 +1,8 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import { saveAs } from "file-saver";
 import JsZip from "jszip";
-import { fs } from "./lightningfs.js";
-import { addToZip, zip } from "./zip.js";
+import { fs } from "@/api/browser/lightningfs.js";
+import { addToZip, zip } from "@/api/browser/zip.js";
 import stub from "./stub.js";
 
 vi.mock("file-saver", async (importOriginal) => {

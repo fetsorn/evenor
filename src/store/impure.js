@@ -1,23 +1,12 @@
 import api from "@/api/index.js";
-import {
-  extractSchemaRecords,
-  enrichBranchRecords,
-  recordsToSchema,
-  schemaToBranchRecords,
-  searchParamsToQuery,
-} from "@/store/pure.js";
+import { searchParamsToQuery } from "@/store/pure.js";
 import {
   newUUID,
   updateRepo,
-  readSchema,
-  createRoot,
   updateEntry,
-  deleteRecord,
   saveRepoRecord,
   loadRepoRecord,
 } from "@/store/record.js";
-import { clone, find } from "@/store/open.js";
-import schemaRoot from "@/store/default_root_schema.json";
 import defaultRepoRecord from "@/store/default_repo_record.json";
 
 export async function updateRecord(repo, base, recordNew) {

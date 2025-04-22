@@ -59,7 +59,7 @@ describe("writeRemoteTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    const locals = await writeRemoteTags(stub.uuid, [testCase.remoteTag]);
+    await writeRemoteTags(stub.uuid, [testCase.remoteTag]);
 
     expect(api.addRemote).toHaveBeenCalledWith(
       stub.uuid,
@@ -74,7 +74,7 @@ describe("writeLocalTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    const locals = await writeLocalTags(stub.uuid, [testCase.localTag]);
+    await writeLocalTags(stub.uuid, [testCase.localTag]);
 
     expect(api.addAssetPath).toHaveBeenCalledWith(
       stub.uuid,

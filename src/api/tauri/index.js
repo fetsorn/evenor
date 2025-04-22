@@ -114,7 +114,7 @@ export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
     uuid,
     remoteName,
     remoteUrl,
-    remoteToken: "",
+    remoteToken,
   });
 }
 

@@ -1,29 +1,13 @@
 import { describe, expect, test, vi } from "vitest";
 import api from "@/api/index.js";
+import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
 import {
-  updateRecord,
-  createRecord,
-  repoFromURL,
-  selectStream,
-} from "@/store/impure.js";
-import {
-  readSchema,
-  createRoot,
   newUUID,
   updateRepo,
   updateEntry,
-  deleteRecord,
   saveRepoRecord,
   loadRepoRecord,
 } from "@/store/record.js";
-import {
-  extractSchemaRecords,
-  enrichBranchRecords,
-  recordsToSchema,
-  schemaToBranchRecords,
-} from "@/store/pure.js";
-import { find, clone } from "@/store/open.js";
-import schemaRoot from "@/store/default_root_schema.json";
 import defaultRepoRecord from "@/store/default_repo_record.json";
 import stub from "./stub.js";
 
@@ -142,7 +126,7 @@ describe("selectStream", () => {
 
     loadRepoRecord.mockImplementation(() => ({}));
 
-    const { abortPreviousStream, startStream } = await selectStream(
+    const { startStream } = await selectStream(
       stub.schema,
       "root",
       appendRecord,
@@ -171,7 +155,7 @@ describe("selectStream", () => {
 
     loadRepoRecord.mockReset();
 
-    const { abortPreviousStream, startStream } = await selectStream(
+    const { startStream } = await selectStream(
       stub.schema,
       stub.uuid,
       appendRecord,

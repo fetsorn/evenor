@@ -11,7 +11,6 @@ import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
 import { find, clone } from "@/store/open.js";
 import { changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
-import defaultRepoRecord from "@/store/default_repo_record.json";
 import stub from "./stub.js";
 
 vi.mock("@/store/pure.js", async (importOriginal) => {
@@ -142,8 +141,6 @@ describe("wipeRecord", () => {
 describe("changeRepo", () => {
   // TODO pick default base and sortBy
   test("find root", async () => {
-    const testCase = stub.cases.tags;
-
     find.mockImplementation(() => ({ repo: 1, schema: schemaRoot }));
 
     const { repo, schema, searchParams } = await changeRepo("/", "_=repo");
@@ -160,8 +157,6 @@ describe("changeRepo", () => {
   });
 
   test("find repo", async () => {
-    const testCase = stub.cases.tags;
-
     find.mockImplementation(() => ({ repo: 1, schema: stub.schema }));
 
     const { repo, schema, searchParams } = await changeRepo(

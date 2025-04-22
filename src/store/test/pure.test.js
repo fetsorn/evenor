@@ -16,8 +16,6 @@ import stub from "./stub.js";
 
 describe("queryToSearchParams", () => {
   test("throws when no base", () => {
-    const testCase = stub.cases.noBase;
-
     expect(() => queryToSearchParams(stub.queryObject)).toThrowError();
   });
 

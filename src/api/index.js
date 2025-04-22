@@ -1,6 +1,7 @@
 import browser from "./browser/index.js";
 import tauri from "./tauri/index.js";
 
+// eslint-disable-next-line
 const api = __BUILD_MODE__ === "tauri" ? tauri : browser;
 
 // instead of exporting the api object

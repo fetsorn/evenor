@@ -93,7 +93,7 @@ export function searchParamsToQuery(schema, searchParams) {
     baseValue === null ? { _: base } : { _: base, [base]: baseValue };
 
   const entries = Array.from(searchParams.entries()).filter(
-    ([key, value]) => key !== "_",
+    ([key]) => key !== "_",
   );
 
   // sort so that trunks come first
@@ -195,7 +195,7 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
 export function extractSchemaRecords(branchRecords) {
   const records = branchRecords.reduce(
     (withBranch, branchRecord) => {
-      const { trunks, leaves, ...branchRecordOmitted } = branchRecord;
+      const { trunks, ...branchRecordOmitted } = branchRecord;
 
       const schemaRecord = trunks.reduce((withTrunk, trunk) => {
         const leaves = withBranch.schemaRecord[trunk] ?? [];
@@ -375,7 +375,7 @@ export function pickDefaultBase(schema) {
   if (Object.keys(schema) === 0) throw Error("schema empty");
 
   const [root] = Object.entries(schema).find(
-    ([key, { trunks }]) => trunks.length === 0,
+    ([, { trunks }]) => trunks.length === 0,
   );
 
   const base = root ?? Object.keys(schema)[0];

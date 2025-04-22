@@ -126,6 +126,8 @@ describe("readSchema", () => {
     expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "_" });
 
     expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
+
+    expect(schema).toEqual({});
   });
 });
 

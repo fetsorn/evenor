@@ -1,22 +1,12 @@
 import { describe, expect, test, vi } from "vitest";
 import api from "@/api/index.js";
-import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
 import {
   readSchema,
   createRoot,
-  newUUID,
   updateRepo,
-  updateEntry,
-  deleteRecord,
   saveRepoRecord,
-  loadRepoRecord,
 } from "@/store/record.js";
-import {
-  extractSchemaRecords,
-  enrichBranchRecords,
-  recordsToSchema,
-  schemaToBranchRecords,
-} from "@/store/pure.js";
+import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
 import stub from "./stub.js";

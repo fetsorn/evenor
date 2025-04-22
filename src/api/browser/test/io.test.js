@@ -186,15 +186,11 @@ describe("rimraf", () => {
   test("removes a directory", async () => {
     const absoluteDir = `${stub.dirpath}${stub.dirpath}`;
 
-    const relativeDir = stub.dir;
-
     await fs.promises.mkdir(stub.dirpath);
 
     await fs.promises.mkdir(absoluteDir);
 
     const absoluteFile = `${absoluteDir}/${stub.filename}`;
-
-    const relativeFile = `${relativeDir}/${stub.filename}`;
 
     await fs.promises.writeFile(absoluteFile, stub.content);
 
@@ -219,15 +215,11 @@ describe("ls", () => {
   test("find a directory", async () => {
     const absoluteDir = `${stub.dirpath}${stub.dirpath}`;
 
-    const relativeDir = stub.dir;
-
     await fs.promises.mkdir(stub.dirpath);
 
     await fs.promises.mkdir(absoluteDir);
 
     const absoluteFile = `${absoluteDir}/${stub.filename}`;
-
-    const relativeFile = `${relativeDir}/${stub.filename}`;
 
     await fs.promises.writeFile(absoluteFile, stub.content);
 

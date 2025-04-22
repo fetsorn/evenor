@@ -6,7 +6,6 @@ import {
   enrichBranchRecords,
   recordsToSchema,
   schemaToBranchRecords,
-  searchParamsToQuery,
 } from "@/store/pure.js";
 import {
   readRemoteTags,
@@ -33,6 +32,7 @@ export async function updateRepo(recordNew) {
     recordNew.branch !== undefined
       ? {
           branches: recordNew.branch.map(
+            // eslint-disable-next-line
             ({ trunk, ...branchWithoutTrunk }) => branchWithoutTrunk,
           ),
         }
@@ -88,8 +88,6 @@ export async function saveRepoRecord(record) {
 
   // extract schema record with trunks from branch records
   const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
-
-  const schema = recordsToSchema(schemaRecord, metaRecords);
 
   // create repo directory
   const reponame = Array.isArray(record.reponame)

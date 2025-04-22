@@ -1,4 +1,3 @@
-import git from "isomorphic-git";
 import { fs } from "@/api/browser/lightningfs.js";
 
 export async function findDir(uuid) {
@@ -153,7 +152,7 @@ export async function pickFile() {
 
   input.multiple = "multiple";
 
-  return new Promise((res, rej) => {
+  return new Promise((res) => {
     input.onchange = async (e) => {
       res(e.target.files);
     };

@@ -7,7 +7,6 @@ import {
   pickDefaultSortBy,
 } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
-import schemaRoot from "@/store/default_root_schema.json";
 
 export async function saveRecord(repo, base, records, recordOld, recordNew) {
   // if no root here try to create

@@ -1,6 +1,6 @@
-import js from "@eslint/js"
-import react from "eslint-plugin-react"
-import globals from "globals"
+import js from "@eslint/js";
+import solid from "eslint-plugin-solid";
+import globals from "globals";
 import babelParser from "@babel/eslint-parser";
 import eslintConfigPrettier from "eslint-config-prettier";
 
@@ -10,13 +10,13 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        ...globals.node
+        ...globals.node,
       },
-      parser: babelParser,
+      //parser: babelParser,
     },
     plugins: {
-      react,
+      solid,
     },
   },
   eslintConfigPrettier,
-]
+];

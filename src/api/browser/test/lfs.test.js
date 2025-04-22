@@ -2,10 +2,9 @@ import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import git from "isomorphic-git";
 import lfs from "@fetsorn/isogit-lfs";
 import { saveAs } from "file-saver";
-import { page, userEvent } from "@vitest/browser/context";
 import { fs } from "@/api/browser/lightningfs.js";
 import { createRepo, commit, addRemote } from "@/api/browser/git.js";
-import { fetchFile, writeFile } from "@/api/browser/io.js";
+import { writeFile } from "@/api/browser/io.js";
 import {
   lfsDir,
   addLFS,

@@ -130,7 +130,7 @@ export async function fetchAsset(uuid, filename) {
         content = await fetch(assetPath);
 
         return content;
-      } catch (e) {
+      } catch {
         // do nothing
       }
 
@@ -139,7 +139,7 @@ export async function fetchAsset(uuid, filename) {
 
       return content;
     }
-  } catch (e) {
+  } catch {
     // do nothing
   }
 
@@ -173,7 +173,7 @@ export async function fetchAsset(uuid, filename) {
         });
 
         return content;
-      } catch (e) {
+      } catch {
         // do nothing
       }
     }

@@ -59,7 +59,6 @@ export async function commit(uuid) {
         });
 
       if (HEADStatus === workingDirStatus && workingDirStatus === stageStatus) {
-        // eslint-disable-next-line
         continue;
       }
     }

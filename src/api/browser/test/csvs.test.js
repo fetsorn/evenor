@@ -27,7 +27,7 @@ vi.mock("@/api/browser/io.js", async (importOriginal) => {
 vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
   const mod = await importOriginal();
 
-  const selectRecord = vi.fn(async ({ fs, dir, query }) => {
+  const selectRecord = vi.fn(async ({ dir, query }) => {
     expect(dir).toBe(stub.dir);
 
     expect(query).toEqual(stub.query);
@@ -36,7 +36,7 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
   });
 
   const selectRecordStream = vi.fn(
-    ({ fs, dir }) =>
+    ({ dir }) =>
       new TransformStream({
         transform(query, controller) {
           expect(dir).toBe(stub.dir);
@@ -48,13 +48,13 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
       }),
   );
 
-  const updateRecord = vi.fn(({ fs, dir, query }) => {
+  const updateRecord = vi.fn(({ dir, query }) => {
     expect(dir).toBe(stub.dir);
 
     expect(query).toEqual(stub.entry);
   });
 
-  const deleteRecord = vi.fn(({ fs, dir, query }) => {
+  const deleteRecord = vi.fn(({ dir, query }) => {
     expect(dir).toBe(stub.dir);
 
     expect(query).toEqual(stub.entry);

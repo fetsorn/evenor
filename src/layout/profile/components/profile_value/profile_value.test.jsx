@@ -1,5 +1,6 @@
 import { test, expect } from "vitest";
-import { render, fireEvent } from "@solidjs/testing-library";
+import { userEvent } from "@vitest/browser/context";
+import { render } from "@solidjs/testing-library";
 import { createSignal } from "solid-js";
 import { ProfileValue } from "./profile_value.jsx";
 import { ContentEditable } from "@bigmistqke/solid-contenteditable";
@@ -21,13 +22,7 @@ test("contenteditable", async () => {
 
   input.focus();
 
-  // cannot use user.keyboard because jsdom needs innerText
-  // https://github.com/jsdom/jsdom/issues/1245
-  fireEvent.input(input, {
-    target: { innerText: a() },
-    inputType: "insertText",
-    data: "c",
-  });
+  await userEvent.keyboard("c");
 
   expect(input).toHaveTextContent(/^ca$/);
 });
@@ -56,13 +51,7 @@ test("profile value", async () => {
 
   input.focus();
 
-  // cannot use user.keyboard because jsdom needs innerText
-  // https://github.com/jsdom/jsdom/issues/1245
-  fireEvent.input(input, {
-    target: { innerText: a() },
-    inputType: "insertText",
-    data: "c",
-  });
+  await userEvent.keyboard("c");
 
   expect(input).toHaveTextContent(/^ca$/);
 });

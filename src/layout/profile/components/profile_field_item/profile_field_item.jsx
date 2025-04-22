@@ -1,5 +1,5 @@
 import { useContext, createSignal } from "solid-js";
-import { StoreContext, isTwig } from "@/store/index.js";
+import { StoreContext } from "@/store/index.js";
 import { ProfileRecord, ProfileValue } from "../index.js";
 
 export function ProfileFieldItem(props) {
@@ -7,7 +7,7 @@ export function ProfileFieldItem(props) {
 
   const [confirmation, setConfirmation] = createSignal(false);
 
-  const branchIsTwig = isTwig(store.schema, props.branch);
+  const branchIsTwig = store.schema[props.branch].leaves.length === 0;
 
   if (branchIsTwig) {
     return (

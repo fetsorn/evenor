@@ -1,5 +1,5 @@
-import { isTwig, searchParamsToQuery } from "./pure.js";
 import { newUUID } from "./record.js";
+import { searchParamsToQuery } from "./pure.js";
 import {
   StoreContext,
   store,
@@ -18,9 +18,8 @@ export {
   onRecordWipe,
   onRepoChange,
   onSearch,
-  isTwig,
-  searchParamsToQuery,
   newUUID,
+  searchParamsToQuery,
 };
 
 export default {
@@ -31,7 +30,6 @@ export default {
   onRecordWipe,
   onRepoChange,
   onSearch,
-  isTwig,
-  searchParamsToQuery,
   newUUID,
+  searchParamsToQuery,
 };

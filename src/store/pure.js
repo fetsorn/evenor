@@ -1,18 +1,4 @@
-import { findCrown, sow, mow, sortNestingDescending } from "@fetsorn/csvs-js";
-
-/**
- * This function is true when branch has no leaves
- * @name isTwig
- * @function
- * @param {object} schema - Dataset schema.
- * @param {object} record - An expanded record.
- * @returns {object} - A condensed record.
- */
-export function isTwig(schema, branch) {
-  if (!Object.hasOwn(schema, branch)) throw Error("isTwig non-existing branch");
-
-  return schema[branch].leaves.length === 0;
-}
+import { sow, mow, sortNestingDescending } from "@fetsorn/csvs-js";
 
 /**
  * This returns a query string from a csvs query

@@ -13,20 +13,6 @@ import {
 } from "@/store/pure.js";
 import stub from "./stub.js";
 
-describe("isTwig", () => {
-  test("finds trunk", () => {
-    expect(isTwig(stub.schema, stub.trunk)).toBe(false);
-  });
-
-  test("finds twig", () => {
-    expect(isTwig(stub.schema, stub.twig)).toBe(true);
-  });
-
-  test("throws on non-existing branch", () => {
-    expect(() => isTwig(stub.schema, stub.nonExisting)).toThrowError();
-  });
-});
-
 describe("queryToSearchParams", () => {
   test("throws when no base", () => {
     const testCase = stub.cases.noBase;

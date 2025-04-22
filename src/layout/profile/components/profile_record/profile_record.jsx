@@ -1,5 +1,5 @@
 import { useContext } from "solid-js";
-import { StoreContext, isTwig, newUUID } from "@/store/index.js";
+import { StoreContext, newUUID } from "@/store/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
 import api from "@/api/index.js";
 
@@ -115,7 +115,9 @@ export function ProfileRecord(props) {
       ? { remote_url: "", remote_token: "" }
       : {};
 
-    const value = isTwig(store.schema, leaf)
+    const isTwig = store.schema[leaf].leaves.length === 0;
+
+    const value = isTwig
       ? valueDefault
       : { _: leaf, [leaf]: valueDefault, ...remotePartial };
 

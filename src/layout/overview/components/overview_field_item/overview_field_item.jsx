@@ -1,11 +1,11 @@
 import { useContext } from "solid-js";
-import { StoreContext, isTwig } from "@/store/index.js";
+import { StoreContext } from "@/store/index.js";
 import { OverviewRecord, OverviewValue, OverviewRemote } from "../index.js";
 
 export function OverviewFieldItem(props) {
   const { store } = useContext(StoreContext);
 
-  const baseIsTwig = isTwig(store.schema, props.branch);
+  const baseIsTwig = store.schema[props.branch].leaves.length === 0;
 
   const task = store.schema[props.branch].task;
 

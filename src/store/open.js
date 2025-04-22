@@ -6,6 +6,7 @@ import {
   updateRepo,
   saveRepoRecord,
 } from "@/store/record.js";
+import schemaRoot from "@/store/default_root_schema.json";
 
 export async function find(reponame) {
   if (reponame === "root")

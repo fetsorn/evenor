@@ -6,122 +6,284 @@ import {
   changeRepo,
   search,
 } from "@/store/action.js";
+import { createRoot, deleteRecord } from "@/store/record.js";
+import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
+import { find, clone } from "@/store/open.js";
+import { changeSearchParams, makeURL } from "@/store/pure.js";
+import stub from "./stub.js";
 
 vi.mock("@/store/pure.js", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
     ...mod,
-    extractSchemaRecords: vi.fn(),
-    enrichBranchRecords: vi.fn(),
-    recordsToSchema: vi.fn(),
-    schemaToBranchRecords: vi.fn(),
+    changeSearchParams: vi.fn(),
+    makeURL: vi.fn(),
   };
 });
 
+vi.mock("@/store/open.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    find: vi.fn(),
+    clone: vi.fn(),
+  };
+});
+
+vi.mock("@/store/record.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    createRoot: vi.fn(),
+    deleteRecord: vi.fn(),
+  };
+});
+
+vi.mock("@/store/impure.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    updateRecord: vi.fn(),
+    createRecord: vi.fn(),
+    selectStream: vi.fn(),
+  };
+});
+
+describe("saveRecord", () => {
+  test("", async () => {
+    const repo = {};
+
+    const base = "b";
+
+    const recordOld = { _: "b", b: "uuid1", c: "1" };
+
+    const records = [recordOld];
+
+    const recordNew = { _: "b", b: "uuid2", c: "2" };
+
+    const recordsNew = await saveRecord(
+      repo,
+      base,
+      records,
+      recordOld,
+      recordNew,
+    );
+
+    expect(createRoot).toHaveBeenCalled();
+
+    expect(updateRecord).toHaveBeenCalledWith(repo, base, recordNew);
+
+    expect(recordsNew).toEqual([recordNew]);
+  });
+});
+
 describe("editRecord", () => {
-  //test("root", async () => {
-  //  updateEntry.mockReset();
-  //  saveRepoRecord.mockReset();
-  //  await updateRecord("root", "repo", {});
-  //  expect(updateRepo).toHaveBeenCalledWith({});
-  //  expect(saveRepoRecord).toHaveBeenCalledWith({});
-  //});
-  //test("uuid", async () => {
-  //  updateEntry.mockReset();
-  //  saveRepoRecord.mockReset();
-  //  await updateRecord(stub.uuid, stub.trunk, {});
-  //  expect(updateEntry).toHaveBeenCalledWith(stub.uuid, {});
-  //  expect(saveRepoRecord).not.toHaveBeenCalled();
-  //});
+  test("deletes", async () => {
+    const repo = {};
+
+    const base = "b";
+
+    const record = await editRecord(repo, base, undefined);
+
+    expect(record).toBe(undefined);
+  });
+
+  test("creates", async () => {
+    const repo = {};
+
+    const base = "b";
+
+    createRecord.mockImplementation(() => "new");
+
+    const record = await editRecord(repo, base, {});
+
+    expect(createRecord).toHaveBeenCalledWith(repo, base);
+
+    expect(record).toBe("new");
+  });
+
+  test("changes", async () => {
+    const repo = {};
+
+    const base = "b";
+
+    const recordNew = { _: "b", b: "uuid1", c: "2" };
+
+    const record = await editRecord(repo, base, recordNew);
+
+    expect(record).toEqual(recordNew);
+  });
+});
+
+describe("wipeRecord", () => {
+  test("deletes", async () => {
+    const repo = {};
+
+    const base = "b";
+
+    const record = { _: "b", b: "uuid1", c: "1" };
+
+    const records = [record];
+
+    const recordsNew = await wipeRecord(repo, base, records, record);
+
+    expect(deleteRecord).toHaveBeenCalledWith(repo, record);
+
+    expect(recordsNew).toEqual([]);
+  });
 });
 
 describe("changeRepo", () => {
-  // test("", () => {
-  // expect(searchParamsFromURL("_=a&a=1").toString()).toEqual(
-  // "_=a&a=1&.sortBy=a",
-  // );
-  // });
-  //  test("root", async () => {
-  //    const testCase = stub.cases.tags;
-  //
-  //    const result = await repoFromURL("a=b", "/");
-  //
-  //    expect(result).toEqual({
-  //      repo: { _: "repo", repo: "root" },
-  //      schema: schemaRoot,
-  //    });
-  //  });
-  //
-  //  test("clone", async () => {
-  //    const testCase = stub.cases.tags;
-  //
-  //    cloneAndOpen.mockImplementation(() => ({}));
-  //
-  //    findAndOpen.mockImplementation(() => undefined);
-  //
-  //    const result = await repoFromURL(
-  //      `~=${testCase.url}&-=${testCase.token}`,
-  //      "/",
-  //    );
-  //
-  //    expect(cloneAndOpen).toHaveBeenCalledWith(testCase.url, testCase.token);
-  //
-  //    expect(result).toEqual({});
-  //  });
-  //
-  //  test("clone error returns root", async () => {
-  //    const testCase = stub.cases.tags;
-  //
-  //    cloneAndOpen.mockImplementation(() => {
-  //      throw Error("");
-  //    });
-  //
-  //    findAndOpen.mockImplementation(() => ({}));
-  //
-  //    const result = await repoFromURL(
-  //      `~=${testCase.url}&-=${testCase.token}`,
-  //      "/",
-  //    );
-  //
-  //    expect(cloneAndOpen).toHaveBeenCalledWith(testCase.url, testCase.token);
-  //
-  //    expect(result).toEqual({
-  //      repo: { _: "repo", repo: "root" },
-  //      schema: schemaRoot,
-  //    });
-  //  });
-  //
-  //  test("find", async () => {
-  //    const testCase = stub.cases.tags;
-  //
-  //    cloneAndOpen.mockImplementation(() => undefined);
-  //
-  //    findAndOpen.mockImplementation(() => ({}));
-  //
-  //    const result = await repoFromURL("", `/${stub.reponame}`);
-  //
-  //    expect(findAndOpen).toHaveBeenCalledWith(stub.reponame);
-  //
-  //    expect(result).toEqual({});
-  //  });
-  //
-  //  test("find error", async () => {
-  //    const testCase = stub.cases.tags;
-  //
-  //    cloneAndOpen.mockImplementation(() => undefined);
-  //
-  //    findAndOpen.mockImplementation(() => {
-  //      throw Error("");
-  //    });
-  //
-  //    const result = await repoFromURL("", `/${stub.reponame}`);
-  //
-  //    expect(findAndOpen).toHaveBeenCalledWith(stub.reponame);
-  //
-  //    expect(result).toEqual({
-  //      repo: { _: "repo", repo: "root" },
-  //      schema: schemaRoot,
-  //    });
-  //  });
+  // TODO pick default base and sortBy
+  test("find root", async () => {
+    const testCase = stub.cases.tags;
+
+    find.mockImplementation(() => ({ repo: 1, schema: 2 }));
+
+    const { repo, schema, searchParams } = await changeRepo(
+      "/",
+      "_=repo&.sortBy=repo",
+    );
+
+    expect(find).toHaveBeenCalledWith("root");
+
+    expect(repo).toEqual(1);
+
+    expect(schema).toEqual(2);
+
+    expect(searchParams.toString()).toEqual(
+      new URLSearchParams(`_=repo&.sortBy=repo`).toString(),
+    );
+  });
+
+  test("find repo", async () => {
+    const testCase = stub.cases.tags;
+
+    find.mockImplementation(() => ({ repo: 1, schema: 2 }));
+
+    const { repo, schema, searchParams } = await changeRepo(
+      `/${stub.reponame}`,
+      "_=b&.sortBy=b",
+    );
+
+    expect(find).toHaveBeenCalledWith(stub.reponame);
+
+    expect(repo).toEqual(1);
+
+    expect(schema).toEqual(2);
+
+    expect(searchParams.toString()).toEqual(
+      new URLSearchParams(`_=b&.sortBy=b`).toString(),
+    );
+  });
+
+  test("clone", async () => {
+    const testCase = stub.cases.tags;
+
+    clone.mockImplementation(() => ({ repo: 1, schema: 2 }));
+
+    const { repo, schema, searchParams } = await changeRepo(
+      "/",
+      `~=${testCase.url}&-=${testCase.token}&_=b&.sortBy=b`,
+    );
+
+    expect(clone).toHaveBeenCalledWith(testCase.url, testCase.token);
+
+    expect(repo).toEqual(1);
+
+    expect(schema).toEqual(2);
+
+    expect(searchParams.toString()).toEqual(
+      new URLSearchParams(
+        `~=${testCase.url}&-=${testCase.token}&_=b&.sortBy=b`,
+      ).toString(),
+    );
+  });
+});
+
+describe("search", () => {
+  test("calls search", async () => {
+    changeSearchParams.mockImplementation(() => 1);
+
+    makeURL.mockImplementation(() => 2);
+
+    window.history.replaceState = vi.fn();
+
+    selectStream.mockImplementation(() => ({
+      abortPreviousStream: 3,
+      startStream: 4,
+    }));
+
+    const schema = {};
+    const searchParamsOld = new URLSearchParams();
+    const repo = {};
+    const field = "a";
+    const value = "b";
+    const appendRecord = {};
+
+    const { searchParams, abortPreviousStream, startStream } = await search(
+      schema,
+      searchParamsOld,
+      repo,
+      stub.reponame,
+      field,
+      value,
+      appendRecord,
+    );
+
+    expect(changeSearchParams).toHaveBeenCalledWith(
+      searchParamsOld,
+      field,
+      value,
+    );
+
+    expect(window.history.replaceState).toHaveBeenCalledWith(null, null, 2);
+
+    expect(selectStream).toHaveBeenCalledWith(schema, repo, appendRecord, 1);
+
+    expect(searchParams).toBe(1);
+
+    expect(abortPreviousStream).toBe(3);
+
+    expect(startStream).toBe(4);
+  });
+
+  test("ignores evenor specific param", async () => {
+    changeSearchParams.mockImplementation(() => 1);
+
+    makeURL.mockImplementation(() => 2);
+
+    window.history.replaceState = vi.fn();
+
+    const schema = {};
+    const searchParamsOld = new URLSearchParams();
+    const repo = {};
+    const field = ".a";
+    const value = "b";
+    const appendRecord = {};
+
+    selectStream.mockReset();
+
+    const { searchParams, abortPreviousStream, startStream } = await search(
+      schema,
+      searchParamsOld,
+      repo,
+      stub.reponame,
+      field,
+      value,
+      appendRecord,
+    );
+
+    expect(selectStream).not.toHaveBeenCalled();
+
+    expect(searchParams).toBe(1);
+
+    expect(abortPreviousStream).toBeTypeOf("function");
+
+    expect(startStream).toBeTypeOf("function");
+  });
 });

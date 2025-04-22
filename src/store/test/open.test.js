@@ -18,6 +18,7 @@ import {
   schemaToBranchRecords,
 } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
+import schemaRoot from "@/store/default_root_schema.json";
 import stub from "./stub.js";
 
 vi.mock("@/api/index.js", async (importOriginal) => {
@@ -61,6 +62,15 @@ describe("find", () => {
     });
 
     expect(() => find(stub.reponame)).rejects.toThrowError();
+  });
+
+  test("finds the root", async () => {
+    const result = await find("root");
+
+    expect(result).toEqual({
+      schema: schemaRoot,
+      repo: { _: "repo", repo: "root" },
+    });
   });
 
   test("finds a repo", async () => {

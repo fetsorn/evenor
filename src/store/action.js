@@ -1,6 +1,6 @@
 import history from "history/hash";
 import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
-import { createRoot } from "@/store/record.js";
+import { createRoot, deleteRecord } from "@/store/record.js";
 import { changeSearchParams, makeURL } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -85,7 +85,7 @@ export async function search(
 
   const url = makeURL(searchParamsNew, value, repo, reponame);
 
-  window.history.replaceState(null, null, urlNew);
+  window.history.replaceState(null, null, url);
 
   if (field.startsWith("."))
     return {

@@ -10,6 +10,8 @@ import { createRoot, deleteRecord } from "@/store/record.js";
 import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
 import { find, clone } from "@/store/open.js";
 import { changeSearchParams, makeURL } from "@/store/pure.js";
+import schemaRoot from "@/store/default_root_schema.json";
+import defaultRepoRecord from "@/store/default_repo_record.json";
 import stub from "./stub.js";
 
 vi.mock("@/store/pure.js", async (importOriginal) => {
@@ -142,18 +144,15 @@ describe("changeRepo", () => {
   test("find root", async () => {
     const testCase = stub.cases.tags;
 
-    find.mockImplementation(() => ({ repo: 1, schema: 2 }));
+    find.mockImplementation(() => ({ repo: 1, schema: schemaRoot }));
 
-    const { repo, schema, searchParams } = await changeRepo(
-      "/",
-      "_=repo&.sortBy=repo",
-    );
+    const { repo, schema, searchParams } = await changeRepo("/", "_=repo");
 
     expect(find).toHaveBeenCalledWith("root");
 
     expect(repo).toEqual(1);
 
-    expect(schema).toEqual(2);
+    expect(schema).toEqual(schemaRoot);
 
     expect(searchParams.toString()).toEqual(
       new URLSearchParams(`_=repo&.sortBy=repo`).toString(),
@@ -163,18 +162,18 @@ describe("changeRepo", () => {
   test("find repo", async () => {
     const testCase = stub.cases.tags;
 
-    find.mockImplementation(() => ({ repo: 1, schema: 2 }));
+    find.mockImplementation(() => ({ repo: 1, schema: stub.schema }));
 
     const { repo, schema, searchParams } = await changeRepo(
       `/${stub.reponame}`,
-      "_=b&.sortBy=b",
+      "_=b",
     );
 
     expect(find).toHaveBeenCalledWith(stub.reponame);
 
     expect(repo).toEqual(1);
 
-    expect(schema).toEqual(2);
+    expect(schema).toEqual(stub.schema);
 
     expect(searchParams.toString()).toEqual(
       new URLSearchParams(`_=b&.sortBy=b`).toString(),
@@ -184,18 +183,18 @@ describe("changeRepo", () => {
   test("clone", async () => {
     const testCase = stub.cases.tags;
 
-    clone.mockImplementation(() => ({ repo: 1, schema: 2 }));
+    clone.mockImplementation(() => ({ repo: 1, schema: stub.schema }));
 
     const { repo, schema, searchParams } = await changeRepo(
       "/",
-      `~=${testCase.url}&-=${testCase.token}&_=b&.sortBy=b`,
+      `~=${testCase.url}&-=${testCase.token}&_=b`,
     );
 
     expect(clone).toHaveBeenCalledWith(testCase.url, testCase.token);
 
     expect(repo).toEqual(1);
 
-    expect(schema).toEqual(2);
+    expect(schema).toEqual(stub.schema);
 
     expect(searchParams.toString()).toEqual(
       new URLSearchParams(
@@ -218,7 +217,7 @@ describe("search", () => {
       startStream: 4,
     }));
 
-    const schema = {};
+    const schema = stub.schema;
     const searchParamsOld = new URLSearchParams();
     const repo = {};
     const field = "a";
@@ -259,7 +258,7 @@ describe("search", () => {
 
     window.history.replaceState = vi.fn();
 
-    const schema = {};
+    const schema = stub.schema;
     const searchParamsOld = new URLSearchParams();
     const repo = {};
     const field = ".a";

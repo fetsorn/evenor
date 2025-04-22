@@ -1,6 +1,5 @@
 import { describe, expect, test } from "vitest";
 import {
-  isTwig,
   ensureTrunk,
   queryToSearchParams,
   searchParamsToQuery,
@@ -10,6 +9,8 @@ import {
   recordsToSchema,
   changeSearchParams,
   makeURL,
+  pickDefaultBase,
+  pickDefaultSortBy,
 } from "@/store/pure.js";
 import stub from "./stub.js";
 
@@ -235,5 +236,17 @@ describe("makeURL", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "uuid", "name"),
     ).toEqual("#/name?_=a&a=1&b=2&.sortBy=b");
+  });
+});
+
+describe("pickDefaultBase", () => {
+  test("", () => {
+    expect(pickDefaultBase(stub.schema)).toBe("a");
+  });
+});
+
+describe("pickDefaultSortBy", () => {
+  test("", () => {
+    expect(pickDefaultSortBy(stub.schema, "b")).toBe("b");
   });
 });

@@ -1,7 +1,12 @@
 import history from "history/hash";
 import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
-import { changeSearchParams, makeURL } from "@/store/pure.js";
+import {
+  changeSearchParams,
+  makeURL,
+  pickDefaultBase,
+  pickDefaultSortBy,
+} from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
@@ -55,13 +60,14 @@ export async function changeRepo(pathname, search) {
     : await find(uuid);
 
   if (!searchParams.has("_")) {
-    // TODO pick default base from a root branch of schema
-    searchParams.set("_", Object.keys(schema)[0]);
+    searchParams.set("_", pickDefaultBase(schema));
   }
 
   if (!searchParams.has(".sortBy")) {
-    // TODO pick default sortBy from task === "date" of schema
-    searchParams.set(".sortBy", searchParams.get("_"));
+    searchParams.set(
+      ".sortBy",
+      pickDefaultSortBy(schema, searchParams.get("_")),
+    );
   }
 
   return {

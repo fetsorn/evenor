@@ -369,3 +369,27 @@ export function makeURL(searchParams, sortBy, repoUUID, reponame) {
 
   return url;
 }
+
+// pick default base from a root branch of schema
+export function pickDefaultBase(schema) {
+  if (Object.keys(schema) === 0) throw Error("schema empty");
+
+  const [root] = Object.entries(schema).find(
+    ([key, { trunks }]) => trunks.length === 0,
+  );
+
+  const base = root ?? Object.keys(schema)[0];
+
+  return base;
+}
+
+// pick default sortBy from task === "date" of schema
+export function pickDefaultSortBy(schema, base) {
+  if (!Object.hasOwn(schema, base)) throw Error("schema does not have base");
+
+  const date = schema[base].leaves.find((leaf) => schema[leaf].task === "date");
+
+  const sortBy = date ?? base;
+
+  return sortBy;
+}

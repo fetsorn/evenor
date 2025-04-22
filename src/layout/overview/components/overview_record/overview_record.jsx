@@ -19,7 +19,12 @@ export function OverviewRecord(props) {
       <span> </span>
 
       <For
-        each={store.schema[props.record._].leaves.filter(recordHasLeaf)}
+        each={
+          store.schema !== undefined &&
+          props.record !== undefined &&
+          store.schema[props.record._] !== undefined &&
+          store.schema[props.record._].leaves.filter(recordHasLeaf)
+        }
         fallback={<span>record no items</span>}
       >
         {(leaf, index) => {

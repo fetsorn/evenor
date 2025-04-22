@@ -1,4 +1,5 @@
 import { onMount } from "solid-js";
+import history from "history/hash";
 import { StoreContext, store, onRepoChange } from "@/store/index.js";
 import styles from "./layout.module.css";
 import { Overview } from "./overview/overview.jsx";
@@ -11,7 +12,7 @@ export function App() {
 
   return (
     <StoreContext.Provider value={{ store }}>
-      <h1>Hello world!</h1>
+      {/*<h1>Hello world!</h1>*/}
       <div class={styles.main}>
         <Overview />
 

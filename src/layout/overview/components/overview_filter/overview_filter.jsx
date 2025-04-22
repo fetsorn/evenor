@@ -10,21 +10,35 @@ export function OverviewFilter() {
   const canDelete = (field) => field !== ".sortBy" && field !== "_";
 
   // find all fields name
-  const leafFields = () =>
-    store.schema[store.searchParams.get("_")].leaves.concat([
+  const leafFields = () => {
+    if (store.schema === undefined || store.searchParams === undefined)
+      return [];
+
+    return store.schema[store.searchParams.get("_")].leaves.concat([
       store.searchParams.get("_"),
       "__",
     ]);
+  };
 
   // find field name which is added to filter search params
-  const addedFields = () => store.searchParams.keys();
+  const addedFields = () => {
+    if (store.searchParams === undefined) return [];
+
+    return store.searchParams.keys();
+  };
 
   // find name fields which is not added to filter search params
   const notAddedFields = () =>
     leafFields().filter((key) => !addedFields().includes(key));
 
-  const queries = () =>
-    store.searchParams.entries().filter(([key]) => key !== ".sortDirection");
+  const queries = () => {
+    if (store.searchParams === undefined) return [];
+
+    // convert entries iterator to array for Index
+    return Array.from(
+      store.searchParams.entries().filter(([key]) => key !== ".sortDirection"),
+    );
+  };
 
   // TODO base and sortby as spoiler options.
 
@@ -35,7 +49,7 @@ export function OverviewFilter() {
     <span className={styles.filter}>
       <Index each={queries()}>
         {(item, index) => {
-          // item of Index is a signal
+          // call because item of Index is a signal
           const [field, value] = item();
 
           return (
@@ -57,7 +71,10 @@ export function OverviewFilter() {
       </Index>
       <span> </span>
       <Show
-        when={store.searchParams.get(".sortDirection") === "first"}
+        when={
+          store.searchParams !== undefined &&
+          store.searchParams.get(".sortDirection") === "first"
+        }
         fallback={
           <a onClick={() => onSearch(".sortDirection", "first")}>sort last</a>
         }

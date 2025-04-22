@@ -8,21 +8,21 @@ import {
 } from "@/store/record.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
-export async function find(reponame) {
-  if (reponame === "root")
+export async function find(uuid) {
+  if (uuid === "root")
     return {
-      schema: schemaRoot,
       repo: { _: "repo", repo: "root" },
+      schema: schemaRoot,
     };
 
   // find uuid in root folder
-  const [repo] = await api.select("root", { _: "repo", reponame: reponame });
+  const [repo] = await api.select("root", { _: "repo", repo: uuid });
 
   const { repo: repoUUID } = repo;
 
   const schema = await readSchema(repoUUID);
 
-  return { schema, repo };
+  return { repo, schema };
 }
 
 export async function clone(url, token) {

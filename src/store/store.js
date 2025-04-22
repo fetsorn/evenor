@@ -110,7 +110,9 @@ export async function onRepoChange(pathname, search) {
   // in case of error fallback to root
   try {
     result = await changeRepo(pathname, search);
-  } catch {
+  } catch (e) {
+    console.log(e);
+
     result = await changeRepo("/", "_=repo");
   }
 

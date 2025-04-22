@@ -9,9 +9,17 @@ export function Overview() {
 
   // if base is twig, it has no connections
   // we can add new values to csvs only if base has some connections
-  const canAdd = () =>
-    store.schema[store.searchParams.get("_")] &&
-    store.schema[store.searchParams.get("_")].leaves.length > 0;
+
+  const canAdd = () => {
+    // store is set to undefined for a short moment to overwrite data
+    if (store.schema === undefined || store.searchParams === undefined)
+      return false;
+
+    return (
+      store.schema[store.searchParams.get("_")] &&
+      store.schema[store.searchParams.get("_")].leaves.length > 0
+    );
+  };
 
   // find first available string value for sorting
   function findFirstSortBy(branch, value) {
@@ -29,6 +37,8 @@ export function Overview() {
 
   const sorted = () =>
     store.records.toSorted((a, b) => {
+      if (store.searchParams === undefined) return 0;
+
       const sortBy = store.searchParams.get(".sortBy");
 
       const valueA = findFirstSortBy(sortBy, a[sortBy]);

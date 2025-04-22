@@ -71,12 +71,12 @@ export async function onRecordWipe(record) {
   setStore("records", records);
 }
 
-export async function onSearch(field, value) {
-  function appendRecord(record) {
-    setStore("records", store.records.length, record);
-  }
+export function appendRecord(record) {
+  setStore("records", store.records.length, record);
+}
 
-  const { searchParams, abortPreviousStream, startStream } = search(
+export async function onSearch(field, value) {
+  const { searchParams, abortPreviousStream, startStream } = await search(
     store.schema,
     store.searchParams,
     store.repo.repo,

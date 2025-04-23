@@ -8,6 +8,8 @@ import {
   onRecordWipe,
   onRepoChange,
   onSearch,
+  setSpoilerOpen,
+  getSpoilerOpen,
 } from "./store.js";
 
 export {
@@ -20,6 +22,8 @@ export {
   onSearch,
   newUUID,
   searchParamsToQuery,
+  setSpoilerOpen,
+  getSpoilerOpen,
 };
 
 export default {
@@ -32,4 +36,6 @@ export default {
   onSearch,
   newUUID,
   searchParamsToQuery,
+  setSpoilerOpen,
+  getSpoilerOpen,
 };

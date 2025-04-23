@@ -1,38 +1,24 @@
-import { createContext, createEffect } from "solid-js";
-import { createStore } from "solid-js/store";
-
-export const StoreContext = createContext();
-
-export const [store, setStore] = createStore({
-  indexMap: {},
-});
-
-function isOpen(index) {
-  return store.indexMap[index];
-}
-
-function setIsOpen(index, isOpen) {
-  setStore("indexMap", { [index]: isOpen });
-}
+import { createEffect } from "solid-js";
+import { getSpoilerOpen, setSpoilerOpen } from "@/store/index.js";
 
 export function Spoiler(props) {
   createEffect(() => {
-    if (isOpen(props.index) === undefined) {
-      setIsOpen(props.index, props.isOpenDefault);
+    if (getSpoilerOpen(props.index) === undefined) {
+      setSpoilerOpen(props.index, props.isOpenDefault);
     }
   });
 
   function open() {
-    setIsOpen(props.index, true);
+    setSpoilerOpen(props.index, true);
   }
 
   function close() {
-    setIsOpen(props.index, false);
+    setSpoilerOpen(props.index, false);
   }
 
   return (
     <Show
-      when={isOpen(props.index)}
+      when={getSpoilerOpen(props.index)}
       fallback={<a onClick={open}>{props.title}... </a>}
     >
       <span>

@@ -10,8 +10,11 @@ export function ProfileRecord(props) {
     return Object.hasOwn(props.record, leaf);
   }
 
-  const isRemote =
+  const isRemote = () => {
+    if (store.repo === undefined) return false;
+
     store.repo.repo === "root" && props.record._ === "remote_tag";
+  };
 
   async function onClone() {
     try {
@@ -96,7 +99,15 @@ export function ProfileRecord(props) {
     onRecordChange(objectNew);
   }
 
-  const isFile = store.schema[props.record._].task === "file";
+  const isFile = () => {
+    if (
+      store.schema === undefined ||
+      store.schema[props.record._] === undefined
+    )
+      return false;
+
+    store.schema[props.record._].task === "file";
+  };
 
   function addLeafValue(leaf) {
     const isLeafFile = store.schema[leaf].task === "file";
@@ -153,14 +164,18 @@ export function ProfileRecord(props) {
 
       <span> </span>
 
-      <Show when={isRemote} fallback={<></>}>
+      <Show when={isRemote()} fallback={<></>}>
         <a onClick={() => onClone()}>clone</a>
       </Show>
 
       <span> </span>
 
       <Index
-        each={store.schema[props.record._].leaves}
+        each={
+          store.schema !== undefined &&
+          store.schema[props.record._] !== undefined &&
+          store.schema[props.record._].leaves
+        }
         fallback={<span>record no items</span>}
       >
         {(item, index) => {
@@ -195,8 +210,8 @@ export function ProfileRecord(props) {
         }}
       </Index>
 
-      <Show when={isFile} fallback={<></>}>
-        <AssetView record={record} />
+      <Show when={isFile()} fallback={<></>}>
+        {/*<AssetView record={record} />*/}
       </Show>
     </span>
   );

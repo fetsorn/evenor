@@ -18,7 +18,16 @@ export const [store, setStore] = createStore({
   schema: schemaRoot,
   record: undefined,
   records: [],
+  spoilerMap: {},
 });
+
+export function getSpoilerOpen(index) {
+  return store.spoilerMap[index];
+}
+
+export function setSpoilerOpen(index, isOpen) {
+  setStore("spoilerMap", { [index]: isOpen });
+}
 
 export async function onRecordEdit(recordNew) {
   const record = await editRecord(

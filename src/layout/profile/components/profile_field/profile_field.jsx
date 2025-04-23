@@ -1,29 +1,35 @@
 import { createSignal } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
-import { Spoiler } from "@/layout/components/index.js";
+import { Spoiler, Confirmation } from "@/layout/components/index.js";
+
+export function onFieldItemChange(index, item, items, branch, onFieldChange) {
+  // replace the new item at index
+  const itemsNew = Object.assign([], items, { [index]: item });
+
+  onFieldChange(branch, itemsNew);
+}
+
+export function onFieldItemRemove(
+  index,
+  items,
+  branch,
+  onFieldRemove,
+  onFieldChange,
+) {
+  // replace the new item at index
+  const itemsNew = [...items];
+
+  itemsNew.splice(index, 1);
+
+  if (itemsNew.length === 0) {
+    onFieldRemove(branch);
+  } else {
+    onFieldChange(branch, itemsNew);
+  }
+}
 
 export function ProfileField(props) {
   const [confirmationBulk, setConfirmationBulk] = createSignal(false);
-
-  function onFieldItemChange(index, item) {
-    // replace the new item at index
-    const items = Object.assign([], props.items, { [index]: item });
-
-    props.onFieldChange(props.branch, items);
-  }
-
-  function onFieldItemRemove(index) {
-    // replace the new item at index
-    const items = [...props.items];
-
-    items.splice(index, 1);
-
-    if (items.length === 0) {
-      props.onFieldRemove(props.branch);
-    } else {
-      props.onFieldChange(props.branch, items);
-    }
-  }
 
   return (
     <Spoiler index={props.index} title={props.branch}>
@@ -40,27 +46,13 @@ export function ProfileField(props) {
                 baseRecord={props.baseRecord}
                 branch={props.branch}
                 item={item()}
-                onFieldItemChange={(i) => onFieldItemChange(index, i)}
-                onFieldItemRemove={() => onFieldItemRemove(index)}
-              />
-
-              <span> </span>
-
-              <Show
-                when={confirmation()}
-                fallback={
-                  <a onClick={() => setConfirmation(true)}>
-                    Remove this {props.branch}
-                  </a>
+                onFieldItemChange={(i) =>
+                  onFieldItemChange(index, i, props.items, props.branch)
                 }
-              >
-                <span>
-                  really remove?
-                  <a onClick={() => onFieldItemRemove(index)}>Yes</a>
-                  <span> </span>
-                  <a onClick={() => setConfirmation(false)}>No</a>
-                </span>
-              </Show>
+                onFieldItemRemove={() =>
+                  onFieldItemRemove(index, items, branch)
+                }
+              />
             </span>
           );
         }}
@@ -68,21 +60,11 @@ export function ProfileField(props) {
 
       <span> </span>
 
-      <Show
-        when={confirmationBulk()}
-        fallback={
-          <a onClick={() => setConfirmationBulk(true)}>
-            Remove each {props.branch}
-          </a>
-        }
-      >
-        <span>
-          really remove?
-          <a onClick={() => props.onFieldRemove(props.branch)}>Yes</a>
-          <span> </span>
-          <a onClick={() => setConfirmationBulk(false)}>No</a>
-        </span>
-      </Show>
+      <Confirmation
+        action={`Remove each ${props.branch}`}
+        question={"really remove?"}
+        onAction={() => props.onFieldRemove(props.branch)}
+      />
     </Spoiler>
   );
 }

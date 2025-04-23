@@ -8,6 +8,8 @@ import {
   onSearch,
   onRepoChange,
   appendRecord,
+  getSpoilerOpen,
+  setSpoilerOpen,
 } from "@/store/store.js";
 import {
   editRecord,
@@ -161,5 +163,27 @@ describe("store", () => {
         appendRecord,
       );
     });
+  });
+});
+
+describe("getSpoilerOpen", () => {
+  test("undefined at first", async () => {
+    expect(getSpoilerOpen("a")).toBe(undefined);
+  });
+
+  test("gets true", async () => {
+    setStore("spoilerMap", "a", true);
+
+    expect(getSpoilerOpen("a")).toBe(true);
+  });
+});
+
+describe("setSpoilerOpen", () => {
+  test("sets true", async () => {
+    setStore("spoilerMap", "a", false);
+
+    setSpoilerOpen("a", true);
+
+    expect(store.spoilerMap["a"]).toBe(true);
   });
 });

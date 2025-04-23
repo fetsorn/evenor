@@ -65,6 +65,7 @@ export async function readSchema(uuid) {
   return schema;
 }
 
+// TODO rename to differ from solidjs "createRoot"
 export async function createRoot() {
   try {
     // fails if root exists

@@ -1,5 +1,5 @@
 import { useContext } from "solid-js";
-import { StoreContext, onRecordEditPrime } from "@/store/index.js";
+import { StoreContext, onRecordEdit } from "@/store/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
 import api from "@/api/index.js";
 
@@ -28,7 +28,7 @@ export function Foo(props) {
 
         <a
           onClick={() =>
-            onRecordEditPrime([...props.path, items.length], {
+            onRecordEdit([...props.path, items.length], {
               _: props.leaf,
               [props.leaf]: "",
             })
@@ -42,7 +42,7 @@ export function Foo(props) {
     return (
       <a
         onClick={() =>
-          onRecordEditPrime(props.path, {
+          onRecordEdit(props.path, {
             _: props.leaf,
             [props.leaf]: "",
           })

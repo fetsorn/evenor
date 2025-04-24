@@ -1,7 +1,14 @@
-import { test, expect } from "vitest";
-import { render, fireEvent } from "@solidjs/testing-library";
+import { describe, test, expect } from "vitest";
+import { userEvent } from "@vitest/browser/context";
+import { render } from "@solidjs/testing-library";
 import { OverviewValue } from "./overview_value.jsx";
 
-test("overview value", async () => {
-  expect(false).toBe(true);
+describe("OverviewValue", () => {
+  test("", async () => {
+    const value = "a";
+
+    const { getByText } = render(() => <OverviewValue value={value} />);
+
+    expect(() => getByText("a")).not.toThrowError();
+  });
 });

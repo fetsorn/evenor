@@ -1,9 +1,58 @@
-import { onMount } from "solid-js";
+import cn from "classnames";
 import history from "history/hash";
+import { onMount, useContext } from "solid-js";
 import { StoreContext, store, onRepoChange } from "@/store/index.js";
-import styles from "./layout.module.css";
+import { NavigationBack, NavigationAdd } from "./components/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
+import { Filter } from "./filter/filter.jsx";
+import styles from "./layout.module.css";
+
+export function LayoutOverview() {
+  return (
+    <div className={styles.overview}>
+      <div className={styles.buttonbar}>
+        <NavigationBack />
+
+        <span></span>
+
+        <NavigationAdd />
+      </div>
+
+      <Filter />
+
+      <Overview />
+    </div>
+  );
+}
+
+export function LayoutProfile() {
+  const { store } = useContext(StoreContext);
+
+  return (
+    <Show when={store.record !== undefined} fallback={<></>}>
+      <div
+        className={cn(styles.sidebar, {
+          [styles.invisible]: store.record === undefined,
+        })}
+      >
+        <div className={styles.container}>
+          <div id="scrollcontainer" className={styles.sticky}>
+            <div className={styles.buttonbar}>
+              <NavigationRevert />
+
+              <span></span>
+
+              <NavigationSave />
+            </div>
+
+            <Profile />
+          </div>
+        </div>
+      </div>
+    </Show>
+  );
+}
 
 export function App() {
   onMount(() =>
@@ -13,13 +62,12 @@ export function App() {
   return (
     <StoreContext.Provider value={{ store }}>
       {/*<h1>Hello world!</h1>*/}
-      <div class={styles.main}>
-        <Overview />
+      <div className={styles.main}>
+        <LayoutOverview />
 
-        <Show when={store.record !== undefined} fallback={<></>}>
-          <Profile />
-        </Show>
+        <LayoutProfile />
       </div>
+
       <span style={{ display: "none" }}>{__COMMIT_HASH__}</span>
     </StoreContext.Provider>
   );

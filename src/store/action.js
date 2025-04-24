@@ -1,4 +1,4 @@
-import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
+import { updateRecord, selectStream } from "@/store/impure.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
 import {
   changeSearchParams,
@@ -19,21 +19,6 @@ export async function saveRecord(repo, base, records, recordOld, recordNew) {
     .concat([recordNew]);
 
   return recordsNew;
-}
-
-export async function editRecord(repo, base, recordNew) {
-  // undefined -> delete record
-  if (recordNew === undefined) {
-    return undefined;
-  }
-
-  // {} -> create record
-  const isNew = !Object.hasOwn(recordNew, "_");
-
-  // { _: base } -> set record
-  const record = isNew ? await createRecord(repo, base) : recordNew;
-
-  return record;
 }
 
 export async function wipeRecord(repo, base, records, record) {

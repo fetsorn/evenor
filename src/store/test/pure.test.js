@@ -11,6 +11,7 @@ import {
   makeURL,
   pickDefaultBase,
   pickDefaultSortBy,
+  findFirstSortBy,
 } from "@/store/pure.js";
 import stub from "./stub.js";
 
@@ -246,5 +247,11 @@ describe("pickDefaultBase", () => {
 describe("pickDefaultSortBy", () => {
   test("", () => {
     expect(pickDefaultSortBy(stub.schema, "b")).toBe("b");
+  });
+});
+
+describe("findFirstSortBy", () => {
+  test("", () => {
+    expect(findFirstSortBy("a", {})).toBe("b");
   });
 });

@@ -393,3 +393,17 @@ export function pickDefaultSortBy(schema, base) {
 
   return sortBy;
 }
+
+// find first available string value for sorting
+export function findFirstSortBy(branch, value) {
+  // if array, take first item
+  const car = Array.isArray(value) ? value[0] : value;
+
+  // it object, take base field
+  const key = typeof car === "object" ? car[branch] : car;
+
+  // if undefined, return empty string
+  const id = key === undefined ? "" : key;
+
+  return id;
+}

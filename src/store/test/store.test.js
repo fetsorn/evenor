@@ -2,7 +2,11 @@ import { describe, expect, test, afterEach, vi } from "vitest";
 import {
   store,
   setStore,
+  getSortedRecords,
+  getFilterQueries,
+  getFilterOptions,
   onRecordEdit,
+  onRecordCreate,
   onRecordSave,
   onRecordWipe,
   onSearch,
@@ -51,11 +55,19 @@ describe("store", () => {
 
   describe("onRecordEdit", () => {
     test("", async () => {
+      await onRecordEdit("record", 1);
+
+      expect(store.record).toEqual(1);
+    });
+  });
+
+  describe("onRecordCreate", () => {
+    test("", async () => {
       editRecord.mockImplementation(() => 1);
 
-      await onRecordEdit({});
+      await onRecordCreate();
 
-      expect(editRecord).toHaveBeenCalledWith("root", "repo", {});
+      expect(editRecord).toHaveBeenCalledWith("root", "repo");
 
       expect(store.record).toEqual(1);
     });
@@ -164,26 +176,44 @@ describe("store", () => {
       );
     });
   });
-});
 
-describe("getSpoilerOpen", () => {
-  test("undefined at first", async () => {
-    expect(getSpoilerOpen("a")).toBe(undefined);
+  describe("getSpoilerOpen", () => {
+    test("undefined at first", async () => {
+      expect(getSpoilerOpen("a")).toBe(undefined);
+    });
+
+    test("gets true", async () => {
+      setStore("spoilerMap", "a", true);
+
+      expect(getSpoilerOpen("a")).toBe(true);
+    });
   });
 
-  test("gets true", async () => {
-    setStore("spoilerMap", "a", true);
+  describe("setSpoilerOpen", () => {
+    test("sets true", async () => {
+      setStore("spoilerMap", "a", false);
 
-    expect(getSpoilerOpen("a")).toBe(true);
+      setSpoilerOpen("a", true);
+
+      expect(store.spoilerMap["a"]).toBe(true);
+    });
   });
-});
 
-describe("setSpoilerOpen", () => {
-  test("sets true", async () => {
-    setStore("spoilerMap", "a", false);
+  describe("getSortedRecords", () => {
+    test("", async () => {
+      expect(getSortedRecords()).toBe([]);
+    });
+  });
 
-    setSpoilerOpen("a", true);
+  describe("getFilterQueries", () => {
+    test("", async () => {
+      expect(getFilterQueries()).toBe([]);
+    });
+  });
 
-    expect(store.spoilerMap["a"]).toBe(true);
+  describe("getFilterOptions", () => {
+    test("", async () => {
+      expect(getFilterOptions()).toBe([]);
+    });
   });
 });

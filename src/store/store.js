@@ -1,12 +1,8 @@
 import { createContext } from "solid-js";
-import { createStore } from "solid-js/store";
-import {
-  editRecord,
-  saveRecord,
-  wipeRecord,
-  changeRepo,
-  search,
-} from "@/store/action.js";
+import { createStore, produce } from "solid-js/store";
+import { createRecord } from "@/store/impure.js";
+import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
+import { findFirstSortBy } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 export const StoreContext = createContext();
@@ -21,6 +17,56 @@ export const [store, setStore] = createStore({
   spoilerMap: {},
 });
 
+export function getSortedRecords() {
+  return store.records.toSorted((a, b) => {
+    if (store.searchParams === undefined) return 0;
+
+    const sortBy = store.searchParams.get(".sortBy");
+
+    const valueA = findFirstSortBy(sortBy, a[sortBy]);
+
+    const valueB = findFirstSortBy(sortBy, b[sortBy]);
+
+    const sortDirection = store.searchParams.get(".sortDirection");
+
+    switch (sortDirection) {
+      case "first":
+        return valueA.localeCompare(valueB);
+      case "last":
+        return valueB.localeCompare(valueA);
+      default:
+        return valueA.localeCompare(valueB);
+    }
+  });
+}
+
+export function getFilterQueries() {
+  if (store.searchParams === undefined) return [];
+
+  // convert entries iterator to array for Index
+  return Array.from(
+    store.searchParams.entries().filter(([key]) => key !== ".sortDirection"),
+  );
+}
+
+export function getFilterOptions() {
+  if (store.schema === undefined || store.searchParams === undefined) return [];
+
+  // find all fields name
+  const leafFields = store.schema[store.searchParams.get("_")].leaves.concat([
+    store.searchParams.get("_"),
+    "__",
+  ]);
+
+  // find field name which is added to filter search params
+  const addedFields = Array.from(store.searchParams.keys());
+
+  // find name fields which is not added to filter search params
+  const notAddedFields = leafFields.filter((key) => !addedFields.includes(key));
+
+  return notAddedFields;
+}
+
 export function getSpoilerOpen(index) {
   return store.spoilerMap[index];
 }
@@ -29,30 +75,20 @@ export function setSpoilerOpen(index, isOpen) {
   setStore("spoilerMap", { [index]: isOpen });
 }
 
-export async function onRecordEdit(recordNew) {
-  const record = await editRecord(
+export async function onRecordCreate() {
+  const record = await createRecord(
     store.repo.repo,
     store.searchParams.get("_"),
-    recordNew,
   );
 
-  // TODO use store path to overwrite the record
-
-  // set to undefined to delete from store
-  // without this the object would shallow merge
-  // and deleted fields would restore
-  setStore({ record: undefined });
-
-  // overwrite the record
-  setStore({ record });
+  setStore(
+    produce((state) => {
+      state.record = record;
+    }),
+  );
 }
 
-export async function onRecordEditPrime(path, value) {
-  console.log("prime", path, value);
-  //setStore("record", "branch", 0, "description_en", {
-  //  _: "description_en",
-  //  description_en: "",
-  //});
+export async function onRecordEdit(path, value) {
   setStore(...path, value);
 }
 
@@ -65,13 +101,12 @@ export async function onRecordSave(recordOld, recordNew) {
     recordNew,
   );
 
-  // TODO use store path to update the record
-
-  setStore("records", undefined);
-
-  setStore("records", records);
-
-  setStore("record", undefined);
+  setStore(
+    produce((state) => {
+      state.records = records;
+      state.record = undefined;
+    }),
+  );
 }
 
 export async function onRecordWipe(record) {
@@ -82,11 +117,11 @@ export async function onRecordWipe(record) {
     record,
   );
 
-  // TODO use store path to delete the record
-
-  setStore("records", undefined);
-
-  setStore("records", records);
+  setStore(
+    produce((state) => {
+      state.records = records;
+    }),
+  );
 }
 
 export function appendRecord(record) {
@@ -94,32 +129,42 @@ export function appendRecord(record) {
 }
 
 export async function onSearch(field, value) {
-  const { searchParams, abortPreviousStream, startStream } = await search(
-    store.schema,
-    store.searchParams,
-    store.repo.repo,
-    store.repo.reponame,
-    field,
-    value,
-    appendRecord,
-  );
+  try {
+    const { searchParams, abortPreviousStream, startStream } = await search(
+      store.schema,
+      store.searchParams,
+      store.repo.repo,
+      store.repo.reponame,
+      field,
+      value,
+      appendRecord,
+    );
 
-  // set to undefined to overwrite
-  setStore("searchParams", undefined);
+    // stop previous stream
+    await store.abortPreviousStream();
 
-  setStore({ searchParams });
+    setStore(
+      produce((state) => {
+        state.searchParams = searchParams;
+        // solid store tries to call the function, so pass a factory here
+        state.abortPreviousStream = () => abortPreviousStream;
+        // erase existing records
+        state.records = [];
+      }),
+    );
 
-  // stop previous stream
-  await store.abortPreviousStream();
+    // start appending records
+    await startStream();
+  } catch (e) {
+    console.log(e);
 
-  // solid store tries to call the function, so pass a factory here
-  setStore("abortPreviousStream", () => abortPreviousStream);
-
-  // erase existing records
-  setStore("records", []);
-
-  // start appending records
-  await startStream();
+    setStore(
+      produce((state) => {
+        // erase existing records
+        state.records = [];
+      }),
+    );
+  }
 }
 
 export async function onRepoChange(pathname, search) {
@@ -136,17 +181,13 @@ export async function onRepoChange(pathname, search) {
 
   const { repo, schema, searchParams } = result;
 
-  setStore("repo", repo);
-
-  // set to undefined to overwrite
-  setStore("schema", undefined);
-
-  setStore("schema", schema);
-
-  // set to undefined to overwrite
-  setStore("searchParams", undefined);
-
-  setStore("searchParams", searchParams);
+  setStore(
+    produce((state) => {
+      state.repo = repo;
+      state.schema = schema;
+      state.searchParams = searchParams;
+    }),
+  );
 
   // start a search stream
   await onSearch("", undefined);

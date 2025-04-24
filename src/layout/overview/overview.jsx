@@ -1,77 +1,61 @@
-import { useContext } from "solid-js";
-import { StoreContext } from "@/store/index.js";
-import { onRepoChange, onRecordEdit } from "@/store/index.js";
-import { OverviewFilter, OverviewList } from "./components/index.js";
+import { createVirtualizer } from "@tanstack/solid-virtual";
+import { getSortedRecords } from "@/store/index.js";
+import { OverviewItem } from "./components/index.js";
 import styles from "./overview.module.css";
 
-export function Overview() {
-  const { store } = useContext(StoreContext);
+export function Overview(props) {
+  let parentRef;
 
-  // if base is twig, it has no connections
-  // we can add new values to csvs only if base has some connections
+  const records = getSortedRecords();
 
-  const canAdd = () => {
-    // store is set to undefined for a short moment to overwrite data
-    if (store.schema === undefined || store.searchParams === undefined)
-      return false;
+  const virtualizer = createVirtualizer({
+    // TODO: remove get and reflect
+    get count() {
+      return Reflect.get(records ?? [], "length");
+    },
+    getScrollElement: () => parentRef,
+    estimateSize: () => 35,
+    overscan: 5,
+  });
 
-    return (
-      store.schema[store.searchParams.get("_")] &&
-      store.schema[store.searchParams.get("_")].leaves.length > 0
-    );
-  };
-
-  // find first available string value for sorting
-  function findFirstSortBy(branch, value) {
-    // if array, take first item
-    const car = Array.isArray(value) ? value[0] : value;
-
-    // it object, take base field
-    const key = typeof car === "object" ? car[branch] : car;
-
-    // if undefined, return empty string
-    const id = key === undefined ? "" : key;
-
-    return id;
-  }
-
-  const sorted = () =>
-    store.records.toSorted((a, b) => {
-      if (store.searchParams === undefined) return 0;
-
-      const sortBy = store.searchParams.get(".sortBy");
-
-      const valueA = findFirstSortBy(sortBy, a[sortBy]);
-
-      const valueB = findFirstSortBy(sortBy, b[sortBy]);
-
-      const sortDirection = store.searchParams.get(".sortDirection");
-
-      switch (sortDirection) {
-        case "first":
-          return valueA.localeCompare(valueB);
-        case "last":
-          return valueB.localeCompare(valueA);
-        default:
-          return valueA.localeCompare(valueB);
-      }
-    });
+  const virtualItems = virtualizer.getVirtualItems();
 
   return (
-    <div className={styles.overview}>
-      <div className={styles.button_bar}>
-        <Show when={store.repo.repo !== "root"} fallback={<span></span>}>
-          <a onClick={() => onRepoChange("/", "_=repo")}>back</a>
-        </Show>
+    <div ref={parentRef} className={styles.overview}>
+      <div
+        className={styles.foo}
+        style={{
+          height: `${virtualizer.getTotalSize()}px`,
+        }}
+      >
+        <For each={virtualItems} fallback={<span>list no items</span>}>
+          {(virtualRow) => (
+            <div
+              className={styles.bar}
+              style={{
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start}px)`,
+              }}
+            >
+              <div
+                key={virtualRow.key}
+                data-index={virtualRow.index}
+                ref={(node) => {
+                  // https://github.com/TanStack/virtual/issues/930
+                  node.dataset.index = virtualRow.index.toString();
 
-        <Show when={canAdd()} fallback={<></>}>
-          <a onClick={() => onRecordEdit({})}>add</a>
-        </Show>
+                  virtualizer.measureElement(node);
+                }}
+              >
+                <OverviewItem
+                  index={virtualRow.key}
+                  item={records[virtualRow.index]}
+                />
+              </div>
+            </div>
+          )}
+        </For>
       </div>
-
-      <OverviewFilter />
-
-      <OverviewList items={sorted()} />
     </div>
   );
 }

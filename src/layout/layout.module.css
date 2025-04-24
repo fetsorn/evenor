@@ -3,3 +3,59 @@
   justify-content: center;
   font-family: monospace;
 }
+
+.overview {
+  width: 50vw;
+}
+
+.buttonbar {
+  display: flex;
+  justify-content: space-between;
+}
+
+.sidebar {
+  box-sizing: border-box;
+  width: 50vw;
+
+  flex-grow: 0;
+  flex-shrink: 0;
+
+  transition: width 0.3s ease;
+
+  white-space: pre-wrap;
+
+  background-color: white;
+  z-index: 999998;
+}
+
+.sidebar.invisible {
+  width: 0;
+
+  transition: width 0.3s ease;
+}
+
+@media (max-width: 600px) {
+  .sidebar {
+    width: 100vw;
+    z-index: 999998;
+  }
+
+  .sidebar.invisible {
+    display: none;
+  }
+}
+
+.container {
+  height: 100%;
+}
+
+.sticky {
+  position: sticky;
+  top: calc(var(--rem) * 48);
+  padding-left: calc(var(--col) * 2);
+  padding-right: calc(var(--col) * 2);
+  /* width: calc(var(--col) * 16); */
+
+  overflow-y: auto;
+  max-height: 60vh;
+}

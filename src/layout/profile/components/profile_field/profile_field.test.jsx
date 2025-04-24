@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { StoreContext, store, onRecordEditPrime } from "@/store/index.js";
+import { StoreContext, store, onRecordEdit } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import { ProfileField } from "./profile_field.jsx";
 
@@ -10,7 +10,7 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 
   return {
     ...mod,
-    onRecordEditPrime: vi.fn((path, value) => setStore(...path, value)),
+    onRecordEdit: vi.fn((path, value) => setStore(...path, value)),
   };
 });
 
@@ -66,10 +66,7 @@ describe("ProfileField", () => {
 
     await userEvent.click(yes);
 
-    expect(onRecordEditPrime).toHaveBeenCalledWith(
-      ["record", "branch"],
-      undefined,
-    );
+    expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch"], undefined);
 
     expect(store.record).toEqual({
       _: "repo",
@@ -123,7 +120,7 @@ describe("ProfileField", () => {
 
     await userEvent.click(yes);
 
-    expect(onRecordEditPrime).toHaveBeenCalledWith(["record", "branch"], []);
+    expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch"], []);
 
     expect(store.record).toEqual({
       _: "repo",

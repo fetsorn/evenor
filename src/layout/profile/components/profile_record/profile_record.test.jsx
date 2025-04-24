@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { StoreContext, store, onRecordEditPrime } from "@/store/index.js";
+import { StoreContext, store, onRecordEdit } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import { ProfileRecord } from "./profile_record.jsx";
 
@@ -10,7 +10,7 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 
   return {
     ...mod,
-    onRecordEditPrime: vi.fn((path, value) => setStore(...path, value)),
+    onRecordEdit: vi.fn((path, value) => setStore(...path, value)),
   };
 });
 
@@ -24,7 +24,7 @@ describe("ProfileRecord", () => {
 
     setStore("record", baseRecord);
 
-    onRecordEditPrime.mockReset();
+    onRecordEdit.mockReset();
 
     const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -41,7 +41,7 @@ describe("ProfileRecord", () => {
 
     await userEvent.click(add);
 
-    expect(onRecordEditPrime).toHaveBeenCalledWith(["record", "branch"], {
+    expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch"], {
       _: "branch",
       branch: "",
     });
@@ -74,7 +74,7 @@ describe("ProfileRecord", () => {
 
     setStore("record", baseRecord);
 
-    onRecordEditPrime.mockReset();
+    onRecordEdit.mockReset();
 
     const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -86,7 +86,7 @@ describe("ProfileRecord", () => {
 
     await userEvent.click(add);
 
-    expect(onRecordEditPrime).toHaveBeenCalledWith(["record", "branch", 1], {
+    expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch", 1], {
       _: "branch",
       branch: "",
     });
@@ -125,7 +125,7 @@ describe("ProfileRecord", () => {
 
     setStore("record", baseRecord);
 
-    onRecordEditPrime.mockReset();
+    onRecordEdit.mockReset();
 
     const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -141,7 +141,7 @@ describe("ProfileRecord", () => {
 
     await userEvent.click(add);
 
-    expect(onRecordEditPrime).toHaveBeenCalledWith(
+    expect(onRecordEdit).toHaveBeenCalledWith(
       ["record", "branch", 0, "description_en"],
       {
         _: "description_en",

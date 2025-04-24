@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
-import { StoreContext, onRecordEditPrime } from "@/store/index.js";
+import { StoreContext, onRecordEdit } from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 
 export function ProfileField(props) {
@@ -27,7 +27,7 @@ export function ProfileField(props) {
                 action={`Remove this ${props.branch}`}
                 question={"really remove?"}
                 onAction={() =>
-                  onRecordEditPrime(
+                  onRecordEdit(
                     props.path,
                     props.items.filter((el, i) => i !== index),
                   )
@@ -43,7 +43,7 @@ export function ProfileField(props) {
       <Confirmation
         action={`Remove each ${props.branch}`}
         question={"really remove?"}
-        onAction={() => onRecordEditPrime(props.path, undefined)}
+        onAction={() => onRecordEdit(props.path, undefined)}
       />
     </>
   );

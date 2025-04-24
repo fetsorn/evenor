@@ -1,7 +1,39 @@
-import { test, expect } from "vitest";
-import { render, fireEvent } from "@solidjs/testing-library";
+import { describe, test, expect } from "vitest";
+import { userEvent } from "@vitest/browser/context";
+import { render } from "@solidjs/testing-library";
+import { StoreContext, store } from "@/store/index.js";
 import { OverviewFieldItem } from "./overview_field_item.jsx";
 
-test("overview field item", async () => {
-  expect(false).toBe(true);
+describe("OverviewFieldItem", () => {
+  test("value", async () => {
+    const index = "";
+
+    const item = "a";
+
+    const branch = "reponame";
+
+    const { getByText } = render(() => (
+      <StoreContext.Provider value={{ store }}>
+        <OverviewFieldItem index={index} branch={branch} item={item} />
+      </StoreContext.Provider>
+    ));
+
+    expect(() => getByText("a")).not.toThrowError();
+  });
+
+  test("record", async () => {
+    const index = "";
+
+    const branch = "branch";
+
+    const item = { _: "branch", branch: "a" };
+
+    const { getByText } = render(() => (
+      <StoreContext.Provider value={{ store }}>
+        <OverviewFieldItem index={index} branch={branch} item={item} />
+      </StoreContext.Provider>
+    ));
+
+    expect(() => getByText("a")).not.toThrowError();
+  });
 });

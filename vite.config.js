@@ -9,7 +9,9 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const commitHash = execSync("git rev-parse --short HEAD").toString();
+const commitHash = execSync("git rev-parse --short HEAD")
+  .toString()
+  .replace("\n", "");
 const host = env.TAURI_DEV_HOST;
 
 function getBuildMode() {

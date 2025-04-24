@@ -1,8 +1,12 @@
-import cn from "classnames";
 import history from "history/hash";
 import { onMount, useContext } from "solid-js";
 import { StoreContext, store, onRepoChange } from "@/store/index.js";
-import { NavigationBack, NavigationAdd } from "./components/index.js";
+import {
+  NavigationBack,
+  NavigationAdd,
+  NavigationRevert,
+  NavigationSave,
+} from "./components/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
 import { Filter } from "./filter/filter.jsx";
@@ -31,13 +35,9 @@ export function LayoutProfile() {
 
   return (
     <Show when={store.record !== undefined} fallback={<></>}>
-      <div
-        className={cn(styles.sidebar, {
-          [styles.invisible]: store.record === undefined,
-        })}
-      >
+      <div className={styles.sidebar}>
         <div className={styles.container}>
-          <div id="scrollcontainer" className={styles.sticky}>
+          <div className={styles.sticky}>
             <div className={styles.buttonbar}>
               <NavigationRevert />
 

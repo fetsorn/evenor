@@ -1,4 +1,3 @@
-import { newUUID } from "./record.js";
 import { searchParamsToQuery } from "./pure.js";
 import {
   StoreContext,
@@ -11,6 +10,13 @@ import {
   setSpoilerOpen,
   getSpoilerOpen,
 } from "./store.js";
+import {
+  addLeafValue,
+  onFieldRemove,
+  onFieldChange,
+  onFieldItemChange,
+  onFieldItemRemove,
+} from "./foo.js";
 
 export {
   StoreContext,
@@ -20,10 +26,14 @@ export {
   onRecordWipe,
   onRepoChange,
   onSearch,
-  newUUID,
   searchParamsToQuery,
   setSpoilerOpen,
   getSpoilerOpen,
+  addLeafValue,
+  onFieldRemove,
+  onFieldChange,
+  onFieldItemChange,
+  onFieldItemRemove,
 };
 
 export default {
@@ -34,8 +44,12 @@ export default {
   onRecordWipe,
   onRepoChange,
   onSearch,
-  newUUID,
   searchParamsToQuery,
   setSpoilerOpen,
   getSpoilerOpen,
+  addLeafValue,
+  onFieldRemove,
+  onFieldChange,
+  onFieldItemChange,
+  onFieldItemRemove,
 };

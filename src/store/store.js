@@ -47,6 +47,10 @@ export async function onRecordEdit(recordNew) {
   setStore({ record });
 }
 
+export async function onRecordEditPrime(path, value) {
+  setStore("record", path, value);
+}
+
 export async function onRecordSave(recordOld, recordNew) {
   const records = await saveRecord(
     store.repo.repo,

@@ -1,6 +1,6 @@
 import { createSignal } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
-import { onFieldItemChange, onFieldItemRemove } from "@/store/index.js";
+import { StoreContext, onRecordEditPrime } from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 
 export function ProfileField(props) {
@@ -14,29 +14,22 @@ export function ProfileField(props) {
 
           return (
             <span>
-              <span> </span>
-
               <ProfileFieldItem
                 index={`${props.index}-${index}`}
-                baseRecord={props.baseRecord}
                 branch={props.branch}
                 item={item()}
-                onFieldItemChange={(i) =>
-                  onFieldItemChange(
-                    index,
-                    i,
-                    props.items,
-                    props.branch,
-                    props.onFieldChange,
-                  )
-                }
-                onFieldItemRemove={() =>
-                  onFieldItemRemove(
-                    index,
-                    items,
-                    branch,
-                    props.onFieldRemove,
-                    props.onFieldChange,
+                path={[...props.path, index]}
+              />
+
+              <span> </span>
+
+              <Confirmation
+                action={`Remove this ${props.branch}`}
+                question={"really remove?"}
+                onAction={() =>
+                  onRecordEditPrime(
+                    props.path,
+                    props.items.filter((el, i) => i !== index),
                   )
                 }
               />
@@ -50,7 +43,7 @@ export function ProfileField(props) {
       <Confirmation
         action={`Remove each ${props.branch}`}
         question={"really remove?"}
-        onAction={() => props.onFieldRemove(props.branch)}
+        onAction={() => onRecordEditPrime(props.path, undefined)}
       />
     </>
   );

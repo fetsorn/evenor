@@ -1,17 +1,9 @@
 import { useContext } from "solid-js";
-import {
-  StoreContext,
-  onRecordEdit,
-  addLeafValue,
-  onFieldRemove,
-  onFieldChange,
-} from "@/store/index.js";
+import { StoreContext, onRecordEditPrime } from "@/store/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
 import api from "@/api/index.js";
 
 export function Foo(props) {
-  const { store } = useContext(StoreContext);
-
   function recordHasLeaf(leaf) {
     return Object.hasOwn(props.record, leaf);
   }
@@ -27,27 +19,19 @@ export function Foo(props) {
 
         <ProfileField
           index={`${props.index}-${props.leaf}`}
-          baseRecord={props.baseRecord}
           branch={props.leaf}
           items={items}
-          onFieldChange={(field, value) =>
-            onFieldChange(field, value, props.record, props.onRecordChange)
-          }
-          onFieldRemove={(field) =>
-            onFieldRemove(field, props.record, props.onRecordRemove)
-          }
+          path={[...props.path, props.leaf]}
         />
 
         <span> </span>
 
         <a
           onClick={() =>
-            addLeafValue(
-              store.schema,
-              props.leaf,
-              props.record,
-              props.onRecordChange,
-            )
+            onRecordEditPrime([...props.path, items.length], {
+              _: props.leaf,
+              [props.leaf]: "",
+            })
           }
         >
           Add another {props.leaf}{" "}
@@ -58,12 +42,10 @@ export function Foo(props) {
     return (
       <a
         onClick={() =>
-          addLeafValue(
-            store.schema,
-            props.leaf,
-            props.record,
-            props.onRecordChange,
-          )
+          onRecordEditPrime(props.path, {
+            _: props.leaf,
+            [props.leaf]: "",
+          })
         }
       >
         Add {props.leaf}{" "}
@@ -80,14 +62,7 @@ export function ProfileRecord(props) {
       <ProfileValue
         value={props.record[props.record._]}
         branch={props.record._}
-        onValueChange={(value) =>
-          onFieldChange(
-            props.record._,
-            value,
-            props.record,
-            props.onRecordChange,
-          )
-        }
+        path={[...props.path, "_"]}
       />
 
       <span> </span>
@@ -104,9 +79,8 @@ export function ProfileRecord(props) {
           <Foo
             leaf={item()}
             record={props.record}
-            baseRecord={props.baseRecord}
             index={props.index}
-            onRecordChange={props.onRecordChange}
+            path={[...props.path, item()]}
           />
         )}
       </Index>

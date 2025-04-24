@@ -3,6 +3,7 @@ import {
   StoreContext,
   store,
   onRecordEdit,
+  onRecordEditPrime,
   onRecordSave,
   onRecordWipe,
   onRepoChange,
@@ -10,18 +11,12 @@ import {
   setSpoilerOpen,
   getSpoilerOpen,
 } from "./store.js";
-import {
-  addLeafValue,
-  onFieldRemove,
-  onFieldChange,
-  onFieldItemChange,
-  onFieldItemRemove,
-} from "./foo.js";
 
 export {
   StoreContext,
   store,
   onRecordEdit,
+  onRecordEditPrime,
   onRecordSave,
   onRecordWipe,
   onRepoChange,
@@ -29,17 +24,13 @@ export {
   searchParamsToQuery,
   setSpoilerOpen,
   getSpoilerOpen,
-  addLeafValue,
-  onFieldRemove,
-  onFieldChange,
-  onFieldItemChange,
-  onFieldItemRemove,
 };
 
 export default {
   StoreContext,
   store,
   onRecordEdit,
+  onRecordEditPrime,
   onRecordSave,
   onRecordWipe,
   onRepoChange,
@@ -47,9 +38,4 @@ export default {
   searchParamsToQuery,
   setSpoilerOpen,
   getSpoilerOpen,
-  addLeafValue,
-  onFieldRemove,
-  onFieldChange,
-  onFieldItemChange,
-  onFieldItemRemove,
 };

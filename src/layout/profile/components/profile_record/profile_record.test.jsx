@@ -1,79 +1,167 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { StoreContext, store } from "@/store/index.js";
+import { StoreContext, store, onRecordEditPrime } from "@/store/index.js";
+import { setStore } from "@/store/store.js";
 import { ProfileRecord } from "./profile_record.jsx";
 
+vi.mock("@/store/index.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    onRecordEditPrime: vi.fn((path, value) => setStore(...path, value)),
+  };
+});
+
 describe("ProfileRecord", () => {
-  test("base value", async () => {
+  test("adds branch", async () => {
     const index = "index";
 
     const branch = "branch";
 
-    const item = { _: "branch", branch: "a" };
+    const baseRecord = { _: "repo", repo: "uuid" };
 
-    const items = [item];
+    setStore("record", baseRecord);
 
-    const baseRecord = { _: "repo", branch: items };
-
-    const onRecordChange = vi.fn(() => {});
-
-    const onRecordRemove = vi.fn(() => {});
+    onRecordEditPrime.mockReset();
 
     const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <ProfileRecord
-          index={index}
-          baseRecord={baseRecord}
-          record={item}
-          onRecordChange={onRecordChange}
-          onRecordRemove={onRecordRemove}
-        />
+        <ProfileRecord index={index} record={baseRecord} path={["record"]} />
       </StoreContext.Provider>
     ));
 
     const input = getByRole("textbox");
 
     // render an input with value
-    expect(input).toHaveTextContent("a");
+    expect(input).toHaveTextContent("uuid");
 
-    expect(() => getByText("Add description_en")).not.toThrowError();
+    const add = getByText("Add branch");
+
+    await userEvent.click(add);
+
+    expect(onRecordEditPrime).toHaveBeenCalledWith(["record", "branch"], {
+      _: "branch",
+      branch: "",
+    });
+
+    expect(store.record).toEqual({
+      _: "repo",
+      repo: "uuid",
+      branch: {
+        _: "branch",
+        branch: "",
+      },
+    });
   });
 
-  test("leaf value", async () => {
+  test("adds another branch", async () => {
     const index = "index";
 
     const branch = "branch";
 
-    const item = { _: "branch", branch: "a", description_en: "b" };
+    const baseRecord = {
+      _: "repo",
+      repo: "uuid",
+      branch: [
+        {
+          _: "branch",
+          branch: "",
+        },
+      ],
+    };
 
-    const items = [item];
+    setStore("record", baseRecord);
 
-    const baseRecord = { _: "repo", branch: items };
+    onRecordEditPrime.mockReset();
 
-    const onRecordChange = vi.fn(() => {});
+    const { getByRole, getByText } = render(() => (
+      <StoreContext.Provider value={{ store }}>
+        <ProfileRecord index={index} record={baseRecord} path={["record"]} />
+      </StoreContext.Provider>
+    ));
 
-    const onRecordRemove = vi.fn(() => {});
+    const add = getByText("Add another branch");
 
-    const { getAllByRole, getByText } = render(() => (
+    await userEvent.click(add);
+
+    expect(onRecordEditPrime).toHaveBeenCalledWith(["record", "branch", 1], {
+      _: "branch",
+      branch: "",
+    });
+
+    expect(store.record).toEqual({
+      _: "repo",
+      repo: "uuid",
+      branch: [
+        {
+          _: "branch",
+          branch: "",
+        },
+        {
+          _: "branch",
+          branch: "",
+        },
+      ],
+    });
+  });
+
+  test("adds description", async () => {
+    const index = "index";
+
+    const branch = "branch";
+
+    const item = {
+      _: "branch",
+      branch: "",
+    };
+
+    const baseRecord = {
+      _: "repo",
+      repo: "uuid",
+      branch: [item],
+    };
+
+    setStore("record", baseRecord);
+
+    onRecordEditPrime.mockReset();
+
+    const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
         <ProfileRecord
           index={index}
-          baseRecord={baseRecord}
           record={item}
-          onRecordChange={onRecordChange}
-          onRecordRemove={onRecordRemove}
+          path={["record", "branch", 0]}
         />
       </StoreContext.Provider>
     ));
 
-    const inputs = getAllByRole("textbox");
+    const add = getByText("Add description_en");
 
-    // render an input with value
-    expect(inputs[0]).toHaveTextContent("a");
+    await userEvent.click(add);
 
-    expect(inputs[1]).toHaveTextContent("b");
+    expect(onRecordEditPrime).toHaveBeenCalledWith(
+      ["record", "branch", 0, "description_en"],
+      {
+        _: "description_en",
+        description_en: "",
+      },
+    );
 
-    expect(() => getByText("Add another description_en")).not.toThrowError();
+    expect(store.record).toEqual({
+      _: "repo",
+      repo: "uuid",
+      branch: [
+        {
+          _: "branch",
+          branch: "",
+          description_en: {
+            _: "description_en",
+            description_en: "",
+          },
+        },
+      ],
+    });
   });
 });

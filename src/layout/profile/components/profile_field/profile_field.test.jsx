@@ -1,11 +1,21 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { StoreContext, store } from "@/store/index.js";
+import { StoreContext, store, onRecordEditPrime } from "@/store/index.js";
+import { setStore } from "@/store/store.js";
 import { ProfileField } from "./profile_field.jsx";
 
+vi.mock("@/store/index.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    onRecordEditPrime: vi.fn((path, value) => setStore(...path, value)),
+  };
+});
+
 describe("ProfileField", () => {
-  test("items", async () => {
+  test("removes each", async () => {
     const index = "index";
 
     const branch = "branch";
@@ -14,11 +24,16 @@ describe("ProfileField", () => {
 
     const items = [item];
 
-    const baseRecord = { _: "repo", branch: items };
+    const baseRecord = {
+      _: "repo",
+      repo: "uuid",
+      branch: {
+        _: "branch",
+        branch: "a",
+      },
+    };
 
-    const onFieldChange = vi.fn(() => {});
-
-    const onFieldRemove = vi.fn(() => {});
+    setStore("record", baseRecord);
 
     const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -26,9 +41,7 @@ describe("ProfileField", () => {
           index={index}
           branch={branch}
           items={items}
-          baseRecord={baseRecord}
-          onFieldChange={onFieldChange}
-          onFieldRemove={onFieldRemove}
+          path={["record", "branch"]}
         />
       </StoreContext.Provider>
     ));
@@ -44,22 +57,47 @@ describe("ProfileField", () => {
 
     // render an input with value
     expect(input).toHaveTextContent("a");
+
+    const remove = getByText("Remove each branch");
+
+    await userEvent.click(remove);
+
+    const yes = getByText("Yes");
+
+    await userEvent.click(yes);
+
+    expect(onRecordEditPrime).toHaveBeenCalledWith(
+      ["record", "branch"],
+      undefined,
+    );
+
+    expect(store.record).toEqual({
+      _: "repo",
+      repo: "uuid",
+    });
   });
 
-  test("no items", async () => {
+  test("removes this", async () => {
     const index = "index";
 
     const branch = "branch";
 
     const item = { _: "branch", branch: "a" };
 
-    const items = [];
+    const items = [item];
 
-    const baseRecord = { _: "repo", branch: items };
+    const baseRecord = {
+      _: "repo",
+      repo: "uuid",
+      branch: [
+        {
+          _: "branch",
+          branch: "a",
+        },
+      ],
+    };
 
-    const onFieldChange = vi.fn(() => {});
-
-    const onFieldRemove = vi.fn(() => {});
+    setStore("record", baseRecord);
 
     const { getByRole, getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -67,20 +105,30 @@ describe("ProfileField", () => {
           index={index}
           branch={branch}
           items={items}
-          baseRecord={baseRecord}
-          onFieldChange={onFieldChange}
-          onFieldRemove={onFieldRemove}
+          path={["record", "branch"]}
         />
       </StoreContext.Provider>
     ));
 
-    // for some reason spoiler state is shared between test cases
-    try {
-      const ellipsis = getByText(`${branch}...`);
+    const input = getByRole("textbox");
 
-      await userEvent.click(ellipsis);
-    } catch {}
+    // render an input with value
+    expect(input).toHaveTextContent("a");
 
-    expect(() => getByText(/field no items/)).not.toThrowError();
+    const remove = getByText("Remove this branch");
+
+    await userEvent.click(remove);
+
+    const yes = getByText("Yes");
+
+    await userEvent.click(yes);
+
+    expect(onRecordEditPrime).toHaveBeenCalledWith(["record", "branch"], []);
+
+    expect(store.record).toEqual({
+      _: "repo",
+      repo: "uuid",
+      branch: [],
+    });
   });
 });

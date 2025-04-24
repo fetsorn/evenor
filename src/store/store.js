@@ -48,7 +48,12 @@ export async function onRecordEdit(recordNew) {
 }
 
 export async function onRecordEditPrime(path, value) {
-  setStore("record", path, value);
+  console.log("prime", path, value);
+  //setStore("record", "branch", 0, "description_en", {
+  //  _: "description_en",
+  //  description_en: "",
+  //});
+  setStore(...path, value);
 }
 
 export async function onRecordSave(recordOld, recordNew) {

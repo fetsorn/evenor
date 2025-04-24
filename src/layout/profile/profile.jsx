@@ -1,12 +1,7 @@
 import cn from "classnames";
 import styles from "./profile.module.css";
 import { useContext, createSignal } from "solid-js";
-import {
-  StoreContext,
-  onRecordEdit,
-  onRecordWipe,
-  onRecordSave,
-} from "@/store/index.js";
+import { StoreContext, onRecordEdit, onRecordSave } from "@/store/index.js";
 import { ProfileRecord } from "./components/index.js";
 import { Spoiler } from "@/layout/components/index.js";
 
@@ -46,7 +41,7 @@ export function Profile() {
               index="_"
               baseRecord={store.record}
               record={store.record}
-              onRecordChange={onRecordEdit}
+              path={["record"]}
             />
           </Spoiler>
         </div>

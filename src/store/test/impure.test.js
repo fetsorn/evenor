@@ -97,7 +97,7 @@ describe("createRecord", () => {
   test("root", async () => {
     const record = await createRecord("root", "repo");
 
-    expect(record).toEqual({
+    expect(record).toStrictEqual({
       _: "repo",
       repo: stub.uuid,
       ...defaultRepoRecord,
@@ -107,7 +107,7 @@ describe("createRecord", () => {
   test("uuid", async () => {
     const record = await createRecord(stub.uuid, stub.trunk);
 
-    expect(record).toEqual({ _: stub.trunk, [stub.trunk]: stub.uuid });
+    expect(record).toStrictEqual({ _: stub.trunk, [stub.trunk]: stub.uuid });
   });
 });
 

@@ -57,6 +57,17 @@ export const cases = {
         task: "date",
       },
     ],
+    schema: {
+      branch1: {
+        leaves: ["branch2"],
+        trunks: [],
+      },
+      branch2: {
+        leaves: [],
+        task: "date",
+        trunks: ["branch1"],
+      },
+    },
   },
   description: {
     schema: {

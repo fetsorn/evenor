@@ -15,13 +15,8 @@ import {
   getSpoilerOpen,
   setSpoilerOpen,
 } from "@/store/store.js";
-import {
-  editRecord,
-  saveRecord,
-  wipeRecord,
-  changeRepo,
-  search,
-} from "@/store/action.js";
+import { createRecord } from "@/store/impure.js";
+import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 vi.mock("@/store/action.js", async (importOriginal) => {
@@ -29,11 +24,19 @@ vi.mock("@/store/action.js", async (importOriginal) => {
 
   return {
     ...mod,
-    editRecord: vi.fn(),
     saveRecord: vi.fn(),
     wipeRecord: vi.fn(),
     changeRepo: vi.fn(),
     search: vi.fn(),
+  };
+});
+
+vi.mock("@/store/impure.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    createRecord: vi.fn(),
   };
 });
 
@@ -55,21 +58,21 @@ describe("store", () => {
 
   describe("onRecordEdit", () => {
     test("", async () => {
-      await onRecordEdit("record", 1);
+      await onRecordEdit(["record"], 1);
 
-      expect(store.record).toEqual(1);
+      expect(store.record).toStrictEqual(1);
     });
   });
 
   describe("onRecordCreate", () => {
     test("", async () => {
-      editRecord.mockImplementation(() => 1);
+      createRecord.mockImplementation(() => 1);
 
       await onRecordCreate();
 
-      expect(editRecord).toHaveBeenCalledWith("root", "repo");
+      expect(createRecord).toHaveBeenCalledWith("root", "repo");
 
-      expect(store.record).toEqual(1);
+      expect(store.record).toStrictEqual(1);
     });
   });
 
@@ -81,7 +84,7 @@ describe("store", () => {
 
       expect(saveRecord).toHaveBeenCalledWith("root", "repo", [], {}, {});
 
-      expect(store.records).toEqual(1);
+      expect(store.records).toStrictEqual(1);
     });
   });
 
@@ -93,7 +96,7 @@ describe("store", () => {
 
       expect(wipeRecord).toHaveBeenCalledWith("root", "repo", [], {});
 
-      expect(store.records).toEqual(1);
+      expect(store.records).toStrictEqual(1);
     });
   });
 
@@ -101,7 +104,7 @@ describe("store", () => {
     test("", async () => {
       appendRecord({});
 
-      expect(store.records).toEqual([{}]);
+      expect(store.records).toStrictEqual([{}]);
     });
   });
 
@@ -133,9 +136,9 @@ describe("store", () => {
         appendRecord,
       );
 
-      expect(store.searchParams).toEqual(1);
+      expect(store.searchParams).toStrictEqual(1);
 
-      expect(store.records).toEqual([]);
+      expect(store.records).toStrictEqual([]);
 
       expect(startStream).toHaveBeenCalled();
     });
@@ -159,11 +162,11 @@ describe("store", () => {
 
       await onRepoChange("/", "_=repo");
 
-      expect(store.repo).toEqual(repo);
+      expect(store.repo).toStrictEqual(repo);
 
-      expect(store.schema).toEqual(2);
+      expect(store.schema).toStrictEqual(2);
 
-      expect(store.searchParams).toEqual(3);
+      expect(store.searchParams).toStrictEqual(3);
 
       expect(search).toHaveBeenCalledWith(
         2,
@@ -200,20 +203,55 @@ describe("store", () => {
   });
 
   describe("getSortedRecords", () => {
-    test("", async () => {
-      expect(getSortedRecords()).toBe([]);
+    test("sorts descending", async () => {
+      const record1 = { _: "repo", repo: "uuid1" };
+
+      const record2 = { _: "repo", repo: "uuid2" };
+
+      setStore("records", [record1, record2]);
+
+      setStore(
+        "searchParams",
+        new URLSearchParams(".sortBy=repo&.sortDirection=first"),
+      );
+
+      expect(getSortedRecords()[0]).toStrictEqual(record1);
+    });
+
+    test("sorts ascending", async () => {
+      const record1 = { _: "repo", repo: "uuid1" };
+
+      const record2 = { _: "repo", repo: "uuid2" };
+
+      setStore("records", [record1, record2]);
+
+      setStore(
+        "searchParams",
+        new URLSearchParams(".sortBy=repo&.sortDirection=last"),
+      );
+
+      expect(getSortedRecords()[0]).toStrictEqual(record2);
     });
   });
 
   describe("getFilterQueries", () => {
     test("", async () => {
-      expect(getFilterQueries()).toBe([]);
+      expect(getFilterQueries()).toStrictEqual([["_", "repo"]]);
     });
   });
 
   describe("getFilterOptions", () => {
     test("", async () => {
-      expect(getFilterOptions()).toBe([]);
+      expect(getFilterOptions()).toStrictEqual([
+        "reponame",
+        "category",
+        "branch",
+        "local_tag",
+        "remote_tag",
+        "sync_tag",
+        "repo",
+        "__",
+      ]);
     });
   });
 });

@@ -51,13 +51,13 @@ describe("find", () => {
       throw Error("error");
     });
 
-    expect(() => find(stub.reponame)).rejects.toThrowError();
+    await expect(() => find(stub.reponame)).rejects.toThrowError();
   });
 
   test("finds the root", async () => {
     const result = await find("root");
 
-    expect(result).toEqual({
+    expect(result).toStrictEqual({
       schema: schemaRoot,
       repo: { _: "repo", repo: "root" },
     });
@@ -70,14 +70,17 @@ describe("find", () => {
 
     readSchema.mockImplementation(() => stub.schema);
 
-    const result = await find(stub.reponame);
+    const result = await find(stub.uuid);
 
     expect(api.select).toHaveBeenCalledWith("root", {
       _: "repo",
-      reponame: stub.reponame,
+      repo: stub.uuid,
     });
 
-    expect(result).toEqual({ schema: stub.schema, repo: testCase.record });
+    expect(result).toStrictEqual({
+      schema: stub.schema,
+      repo: testCase.record,
+    });
   });
 });
 
@@ -89,7 +92,9 @@ describe("clone", () => {
       throw Error("");
     });
 
-    expect(() => clone(testCase.url, testCase.token)).rejects.toThrowError();
+    await expect(() =>
+      clone(testCase.url, testCase.token),
+    ).rejects.toThrowError();
   });
 
   test("clones a repo", async () => {
@@ -149,6 +154,6 @@ describe("clone", () => {
 
     expect(saveRepoRecord).toHaveBeenCalledWith(c);
 
-    expect(result).toEqual({ schema: testCase.schema, repo: c });
+    expect(result).toStrictEqual({ schema: testCase.schema, repo: c });
   });
 });

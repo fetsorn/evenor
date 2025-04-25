@@ -195,7 +195,7 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
 export function extractSchemaRecords(branchRecords) {
   const records = branchRecords.reduce(
     (withBranch, branchRecord) => {
-      const { trunks, ...branchRecordOmitted } = branchRecord;
+      const { trunks, leaves: omit, ...branchRecordOmitted } = branchRecord;
 
       const schemaRecord = trunks.reduce((withTrunk, trunk) => {
         const leaves = withBranch.schemaRecord[trunk] ?? [];

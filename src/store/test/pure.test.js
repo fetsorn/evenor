@@ -23,7 +23,7 @@ describe("queryToSearchParams", () => {
   test("query base value", () => {
     const testCase = stub.cases.baseValue;
 
-    expect(queryToSearchParams(testCase.queryObject).toString()).toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).toStrictEqual(
       testCase.queryString,
     );
   });
@@ -31,7 +31,7 @@ describe("queryToSearchParams", () => {
   test("query leaf value", () => {
     const testCase = stub.cases.leafValue;
 
-    expect(queryToSearchParams(testCase.queryObject).toString()).toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).toStrictEqual(
       testCase.queryString,
     );
   });
@@ -39,7 +39,7 @@ describe("queryToSearchParams", () => {
   test("query nested value", () => {
     const testCase = stub.cases.nestedValue;
 
-    expect(queryToSearchParams(testCase.queryObject).toString()).toEqual(
+    expect(queryToSearchParams(testCase.queryObject).toString()).toStrictEqual(
       testCase.queryString,
     );
   });
@@ -47,9 +47,9 @@ describe("queryToSearchParams", () => {
   test("query twig out of order", () => {
     const testCase = stub.cases.twigOutOfOrder;
 
-    expect(queryToSearchParams(testCase.queryObject).toString()).not.toEqual(
-      testCase.queryString,
-    );
+    expect(
+      queryToSearchParams(testCase.queryObject).toString(),
+    ).not.toStrictEqual(testCase.queryString);
   });
 });
 
@@ -67,7 +67,7 @@ describe("ensureTrunk", () => {
 
     expect(
       ensureTrunk(stub.schema, testCase.queryObject, stub.root, stub.trunk),
-    ).toEqual(testCase.queryObject);
+    ).toStrictEqual(testCase.queryObject);
   });
 
   test("adds trunk", () => {
@@ -75,7 +75,7 @@ describe("ensureTrunk", () => {
 
     expect(
       ensureTrunk(stub.schema, testCase.queryObject, stub.trunk, stub.twig),
-    ).toEqual({ _: "a", a: "1", b: { _: "b" } });
+    ).toStrictEqual({ _: "a", a: "1", b: { _: "b" } });
   });
 });
 
@@ -99,7 +99,7 @@ describe("searchParamsToQuery", () => {
         stub.schema,
         new URLSearchParams(testCase.queryString),
       ),
-    ).toEqual(testCase.queryObject);
+    ).toStrictEqual(testCase.queryObject);
   });
 
   test("query leaf value", () => {
@@ -110,7 +110,7 @@ describe("searchParamsToQuery", () => {
         stub.schema,
         new URLSearchParams(testCase.queryString),
       ),
-    ).toEqual(testCase.queryObject);
+    ).toStrictEqual(testCase.queryObject);
   });
 
   test("query nested value", () => {
@@ -121,7 +121,7 @@ describe("searchParamsToQuery", () => {
         stub.schema,
         new URLSearchParams(testCase.queryString),
       ),
-    ).toEqual(testCase.queryObject);
+    ).toStrictEqual(testCase.queryObject);
   });
 
   test("query twig out of order", () => {
@@ -132,7 +132,7 @@ describe("searchParamsToQuery", () => {
         stub.schema,
         new URLSearchParams(testCase.queryString),
       ),
-    ).toEqual(testCase.queryObject);
+    ).toStrictEqual(testCase.queryObject);
   });
 });
 
@@ -142,7 +142,7 @@ describe("enrichBranchRecords", () => {
 
     expect(
       enrichBranchRecords(testCase.schemaRecord, testCase.metaRecords),
-    ).toEqual(testCase.branchRecords);
+    ).toStrictEqual(testCase.branchRecords);
   });
 });
 
@@ -150,7 +150,7 @@ describe("extractSchemaRecords", () => {
   test("extracts", () => {
     const testCase = stub.cases.trunk;
 
-    expect(extractSchemaRecords(testCase.branchRecords)).toEqual([
+    expect(extractSchemaRecords(testCase.branchRecords)).toStrictEqual([
       testCase.schemaRecord,
       ...testCase.metaRecords,
     ]);
@@ -161,7 +161,7 @@ describe("schemaToBranchRecords", () => {
   test("converts", () => {
     const testCase = stub.cases.description;
 
-    expect(schemaToBranchRecords(testCase.schema)).toEqual([
+    expect(schemaToBranchRecords(testCase.schema)).toStrictEqual([
       testCase.schemaRecord,
       ...testCase.metaRecords,
     ]);
@@ -174,7 +174,7 @@ describe("recordsToSchema", () => {
 
     expect(
       recordsToSchema(testCase.schemaRecord, testCase.metaRecords),
-    ).toEqual(testCase.schema);
+    ).toStrictEqual(testCase.schema);
   });
 });
 
@@ -182,7 +182,7 @@ describe("changeSearchParams", () => {
   test("ignores empty field", () => {
     expect(
       changeSearchParams(new URLSearchParams("_=a&a=1"), "", 2).toString(),
-    ).toEqual("_=a&a=1");
+    ).toStrictEqual("_=a&a=1");
   });
 
   test("erases params", () => {
@@ -192,13 +192,13 @@ describe("changeSearchParams", () => {
         undefined,
         undefined,
       ).toString(),
-    ).toEqual("");
+    ).toStrictEqual("");
   });
 
   test("sets base and sortBy", () => {
     expect(
       changeSearchParams(new URLSearchParams("_=a&a=1"), "_", "b").toString(),
-    ).toEqual("_=b&.sortBy=b");
+    ).toStrictEqual("_=b&.sortBy=b");
   });
 
   test("deletes value", () => {
@@ -208,13 +208,13 @@ describe("changeSearchParams", () => {
         "a",
         undefined,
       ).toString(),
-    ).toEqual("_=a");
+    ).toStrictEqual("_=a");
   });
 
   test("sets value", () => {
     expect(
       changeSearchParams(new URLSearchParams("_=a&a=1"), "b", 2).toString(),
-    ).toEqual("_=a&a=1&b=2");
+    ).toStrictEqual("_=a&a=1&b=2");
   });
 });
 
@@ -222,19 +222,19 @@ describe("makeURL", () => {
   test("sets root", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "root", "name"),
-    ).toEqual("#?_=a&a=1&b=2");
+    ).toStrictEqual("#?_=a&a=1&b=2");
   });
 
   test("sets repo", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "uuid", "name"),
-    ).toEqual("#/name?_=a&a=1&b=2");
+    ).toStrictEqual("#/name?_=a&a=1&b=2");
   });
 
   test("sets sortBy", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "uuid", "name"),
-    ).toEqual("#/name?_=a&a=1&b=2&.sortBy=b");
+    ).toStrictEqual("#/name?_=a&a=1&b=2&.sortBy=b");
   });
 });
 
@@ -252,6 +252,6 @@ describe("pickDefaultSortBy", () => {
 
 describe("findFirstSortBy", () => {
   test("", () => {
-    expect(findFirstSortBy("a", {})).toBe("b");
+    expect(findFirstSortBy("a", { _: "a", a: "b" })).toBe("b");
   });
 });

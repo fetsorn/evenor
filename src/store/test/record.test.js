@@ -111,7 +111,7 @@ describe("readSchema", () => {
   test("root", async () => {
     const schema = await readSchema("root");
 
-    expect(schema).toEqual(schemaRoot);
+    expect(schema).toStrictEqual(schemaRoot);
   });
 
   test("uuid", async () => {
@@ -127,7 +127,7 @@ describe("readSchema", () => {
 
     expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
 
-    expect(schema).toEqual({});
+    expect(schema).toStrictEqual(testCase.schema);
   });
 });
 
@@ -194,6 +194,6 @@ describe("loadRepoRecord", () => {
 
     const record = await loadRepoRecord(testCase.record);
 
-    expect(record).toEqual(testCase.record);
+    expect(record).toStrictEqual(testCase.record);
   });
 });

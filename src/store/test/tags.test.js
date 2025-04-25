@@ -37,7 +37,7 @@ describe("readRemoteTags", () => {
 
     expect(api.getRemote).toHaveBeenCalledWith(stub.uuid, testCase.remote);
 
-    expect(remoteTags).toEqual([testCase.remoteTag]);
+    expect(remoteTags).toStrictEqual([testCase.remoteTag]);
   });
 });
 
@@ -51,7 +51,7 @@ describe("readLocalTags", () => {
 
     expect(api.listAssetPaths).toHaveBeenCalledWith(stub.uuid);
 
-    expect(localTags).toEqual([testCase.localTag]);
+    expect(localTags).toStrictEqual([testCase.localTag]);
   });
 });
 

@@ -2,6 +2,7 @@ import { describe, test, expect } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
+import { setStore } from "@/store/store.js";
 import { Overview } from "./overview.jsx";
 
 describe("Overview", () => {
@@ -26,9 +27,11 @@ describe("Overview", () => {
 
     const items = [item];
 
+    setStore("records", items);
+
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <Overview items={items} />
+        <Overview />
       </StoreContext.Provider>
     ));
 

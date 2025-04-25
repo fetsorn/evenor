@@ -1,9 +1,19 @@
-import { test, expect } from "vitest";
+import { test, expect, vi } from "vitest";
+import { createSignal } from "solid-js";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { createSignal } from "solid-js";
-import { ProfileValue } from "./profile_value.jsx";
 import { ContentEditable } from "@bigmistqke/solid-contenteditable";
+import { onRecordEdit } from "@/store/index.js";
+import { ProfileValue } from "./profile_value.jsx";
+
+vi.mock("@/store/index.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    onRecordEdit: vi.fn(),
+  };
+});
 
 test("contenteditable", async () => {
   const [a, setA] = createSignal("a");
@@ -31,19 +41,8 @@ test("profile value", async () => {
   const [a, setA] = createSignal("a");
 
   const { getByText, getByRole } = render(() => (
-    <ProfileValue
-      value={a()}
-      branch="b"
-      onValueChange={(content) => {
-        console.log(content);
-        setA(content);
-      }}
-    />
+    <ProfileValue value={a()} branch="b" path={["b"]} />
   ));
-
-  //const label = getByText(/^b is$/);
-
-  //expect(label).toHaveTextContent(/^b is a$/);
 
   const input = getByRole("textbox");
 
@@ -54,4 +53,6 @@ test("profile value", async () => {
   await userEvent.keyboard("c");
 
   expect(input).toHaveTextContent(/^ca$/);
+
+  expect(onRecordEdit).toHaveBeenCalledWith(["b"], "ca");
 });

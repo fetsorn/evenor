@@ -12,7 +12,7 @@ export default [
         ...globals.browser,
         ...globals.node,
       },
-      //parser: babelParser,
+      parser: babelParser,
     },
     plugins: {
       solid,

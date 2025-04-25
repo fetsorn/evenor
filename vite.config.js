@@ -69,6 +69,9 @@ export default defineConfig({
     setupFiles: ["./test/setup.js"],
     coverage: {
       provider: "istanbul",
+      coverage: {
+        reporter: ["text", "json", "html"],
+      },
     },
     browser: {
       provider: "webdriverio",

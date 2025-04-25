@@ -9,9 +9,12 @@ export function Confirmation(props) {
       fallback={<a onClick={() => setConfirmation(true)}>{props.action}</a>}
     >
       <span>
-        {props.question}
+        <span>{props.question}</span>
+
         <a onClick={() => props.onAction()}>Yes</a>
+
         <span> </span>
+
         <a onClick={() => setConfirmation(false)}>No</a>
       </span>
     </Show>

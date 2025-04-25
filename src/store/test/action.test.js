@@ -1,13 +1,7 @@
 import { describe, expect, test, vi } from "vitest";
-import {
-  saveRecord,
-  editRecord,
-  wipeRecord,
-  changeRepo,
-  search,
-} from "@/store/action.js";
+import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
-import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
+import { updateRecord, selectStream } from "@/store/impure.js";
 import { find, clone } from "@/store/open.js";
 import { changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -49,7 +43,6 @@ vi.mock("@/store/impure.js", async (importOriginal) => {
   return {
     ...mod,
     updateRecord: vi.fn(),
-    createRecord: vi.fn(),
     selectStream: vi.fn(),
   };
 });
@@ -78,45 +71,7 @@ describe("saveRecord", () => {
 
     expect(updateRecord).toHaveBeenCalledWith(repo, base, recordNew);
 
-    expect(recordsNew).toEqual([recordNew]);
-  });
-});
-
-describe("editRecord", () => {
-  test("deletes", async () => {
-    const repo = {};
-
-    const base = "b";
-
-    const record = await editRecord(repo, base, undefined);
-
-    expect(record).toBe(undefined);
-  });
-
-  test("creates", async () => {
-    const repo = {};
-
-    const base = "b";
-
-    createRecord.mockImplementation(() => "new");
-
-    const record = await editRecord(repo, base, {});
-
-    expect(createRecord).toHaveBeenCalledWith(repo, base);
-
-    expect(record).toBe("new");
-  });
-
-  test("changes", async () => {
-    const repo = {};
-
-    const base = "b";
-
-    const recordNew = { _: "b", b: "uuid1", c: "2" };
-
-    const record = await editRecord(repo, base, recordNew);
-
-    expect(record).toEqual(recordNew);
+    expect(recordsNew).toStrictEqual([recordNew]);
   });
 });
 
@@ -134,7 +89,7 @@ describe("wipeRecord", () => {
 
     expect(deleteRecord).toHaveBeenCalledWith(repo, record);
 
-    expect(recordsNew).toEqual([]);
+    expect(recordsNew).toStrictEqual([]);
   });
 });
 
@@ -147,11 +102,11 @@ describe("changeRepo", () => {
 
     expect(find).toHaveBeenCalledWith("root");
 
-    expect(repo).toEqual(1);
+    expect(repo).toStrictEqual(1);
 
-    expect(schema).toEqual(schemaRoot);
+    expect(schema).toStrictEqual(schemaRoot);
 
-    expect(searchParams.toString()).toEqual(
+    expect(searchParams.toString()).toStrictEqual(
       new URLSearchParams(`_=repo&.sortBy=repo`).toString(),
     );
   });
@@ -166,11 +121,11 @@ describe("changeRepo", () => {
 
     expect(find).toHaveBeenCalledWith(stub.reponame);
 
-    expect(repo).toEqual(1);
+    expect(repo).toStrictEqual(1);
 
-    expect(schema).toEqual(stub.schema);
+    expect(schema).toStrictEqual(stub.schema);
 
-    expect(searchParams.toString()).toEqual(
+    expect(searchParams.toString()).toStrictEqual(
       new URLSearchParams(`_=b&.sortBy=b`).toString(),
     );
   });
@@ -187,11 +142,11 @@ describe("changeRepo", () => {
 
     expect(clone).toHaveBeenCalledWith(testCase.url, testCase.token);
 
-    expect(repo).toEqual(1);
+    expect(repo).toStrictEqual(1);
 
-    expect(schema).toEqual(stub.schema);
+    expect(schema).toStrictEqual(stub.schema);
 
-    expect(searchParams.toString()).toEqual(
+    expect(searchParams.toString()).toStrictEqual(
       new URLSearchParams(
         `~=${testCase.url}&-=${testCase.token}&_=b&.sortBy=b`,
       ).toString(),

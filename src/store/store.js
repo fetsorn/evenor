@@ -1,6 +1,8 @@
 import { createContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord } from "@/store/impure.js";
+import { push, pull } from "@/store/record.js";
+import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
 import { findFirstSortBy } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -15,6 +17,7 @@ export const [store, setStore] = createStore({
   record: undefined,
   records: [],
   spoilerMap: {},
+  loading: false,
 });
 
 export function getSortedRecords() {
@@ -191,4 +194,90 @@ export async function onRepoChange(pathname, search) {
 
   // start a search stream
   await onSearch("", undefined);
+}
+
+export async function onClone(
+  repo,
+  reponame,
+  remoteTag,
+  remoteUrl,
+  remoteToken,
+) {
+  try {
+    const { repo } = await clone(remoteUrl, remoteToken, repo, reponame);
+
+    setStore(
+      produce((state) => {
+        state.record = repo;
+      }),
+    );
+  } catch (e) {
+    console.log("clone failed", e);
+    // do nothing
+  }
+}
+
+export async function onPullRepo(repo, remote) {
+  setStore("loading", true);
+
+  try {
+    await pull(repo, remote);
+  } catch (e) {
+    console.log(e);
+  }
+
+  setStore("loading", false);
+}
+
+export async function onPushRepo(repo, remote) {
+  setStore("loading", true);
+
+  try {
+    await push(repo, remote);
+  } catch (e) {
+    console.log(e);
+  }
+
+  setStore("loading", false);
+}
+
+// lateral jump
+export async function leapfrog(branch, value, cognate) {
+  await onSearch(undefined, undefined);
+
+  await onSearch("_", store.searchParams.get("_"));
+
+  await onSearch("__", cognate);
+
+  await onSearch(branch, value);
+}
+
+// deep jump
+export async function backflip(branch, value, cognate) {
+  await onSearch(undefined, undefined);
+
+  await onSearch("_", cognate);
+
+  await onSearch("__", branch);
+
+  await onSearch(cognate, value);
+}
+
+export async function sidestep(branch, value, cognate) {
+  await onSearch(undefined, undefined);
+
+  await onSearch("_", cognate);
+
+  await onSearch(cognate, value);
+}
+
+// side jump
+export async function warp(branch, value, cognate) {
+  await onSearch(undefined, undefined);
+
+  await onSearch("_", store.schema[cognate].trunks[0]);
+
+  await onSearch("__", cognate);
+
+  await onSearch(store.schema[cognate].trunks[0], value);
 }

@@ -1,89 +1,73 @@
 import { useContext } from "solid-js";
 import { StoreContext, onRecordEdit } from "@/store/index.js";
+import { Spoiler } from "@/layout/components/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
-import api from "@/api/index.js";
-
-export function Foo(props) {
-  function recordHasLeaf(leaf) {
-    return Object.hasOwn(props.record, leaf);
-  }
-
-  if (recordHasLeaf(props.leaf)) {
-    const value = props.record[props.leaf];
-
-    const items = Array.isArray(value) ? value : [value];
-
-    return (
-      <span>
-        <span> </span>
-
-        <ProfileField
-          index={`${props.index}-${props.leaf}`}
-          branch={props.leaf}
-          items={items}
-          path={[...props.path, props.leaf]}
-        />
-
-        <span> </span>
-
-        <a
-          onClick={() =>
-            onRecordEdit([...props.path, items.length], {
-              _: props.leaf,
-              [props.leaf]: "",
-            })
-          }
-        >
-          Add another {props.leaf}{" "}
-        </a>
-      </span>
-    );
-  } else {
-    return (
-      <a
-        onClick={() =>
-          onRecordEdit(props.path, {
-            _: props.leaf,
-            [props.leaf]: "",
-          })
-        }
-      >
-        Add {props.leaf}{" "}
-      </a>
-    );
-  }
-}
 
 export function ProfileRecord(props) {
   const { store } = useContext(StoreContext);
 
+  const options = () => {
+    if (
+      store.schema === undefined ||
+      store.schema[props.record._] === undefined
+    )
+      return [];
+
+    return store.schema[props.record._].leaves.filter(
+      (leaf) => !Object.hasOwn(props.record, leaf),
+    );
+  };
+
   return (
-    <span>
+    <>
       <ProfileValue
         value={props.record[props.record._]}
         branch={props.record._}
         path={[...props.path, "_"]}
       />
 
-      <span> </span>
+      <Spoiler index={`${props.index}-spoilerfield`} title={"with"}>
+        <Index
+          each={
+            store.schema !== undefined &&
+            store.schema[props.record._] !== undefined &&
+            store.schema[props.record._].leaves
+          }
+          fallback={<span>record but branch is twig</span>}
+        >
+          {(leaf, index) => (
+            <ProfileField
+              index={`${props.index}-${leaf()}`}
+              branch={leaf()}
+              items={props.record[leaf()] ?? []}
+              path={[...props.path, leaf()]}
+            />
+          )}
+        </Index>
 
-      <Index
-        each={
-          store.schema !== undefined &&
-          store.schema[props.record._] !== undefined &&
-          store.schema[props.record._].leaves
-        }
-        fallback={<span>record no items</span>}
-      >
-        {(item, index) => (
-          <Foo
-            leaf={item()}
-            record={props.record}
-            index={props.index}
-            path={[...props.path, item()]}
-          />
-        )}
-      </Index>
-    </span>
+        <Spoiler index={`${props.index}-spoileradd`} title={"add"}>
+          <Index each={options()} fallback={<>wtf</>}>
+            {(option, index) => (
+              <a
+                className={"profileAddNew"}
+                onClick={() =>
+                  onRecordEdit(
+                    [...props.path, option()],
+                    [
+                      {
+                        _: option(),
+                        [option()]: "",
+                      },
+                    ],
+                  )
+                }
+              >
+                {option()}{" "}
+              </a>
+            )}
+          </Index>
+        </Spoiler>
+      </Spoiler>
+    </>
   );
 }

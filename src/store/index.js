@@ -1,4 +1,5 @@
 import { searchParamsToQuery } from "./pure.js";
+import { onZip } from "./record.js";
 import {
   StoreContext,
   store,
@@ -13,6 +14,9 @@ import {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  onClone,
+  onPullRepo,
+  onPushRepo,
 } from "./store.js";
 
 export {
@@ -30,6 +34,10 @@ export {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  onZip,
+  onClone,
+  onPullRepo,
+  onPushRepo,
 };
 
 export default {
@@ -47,4 +55,8 @@ export default {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  onZip,
+  onClone,
+  onPullRepo,
+  onPushRepo,
 };

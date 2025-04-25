@@ -93,3 +93,21 @@ export async function selectStream(schema, repo, appendRecord, searchParams) {
 
   return { abortPreviousStream, startStream };
 }
+
+export async function onMergeRepo(schema, repo, reponame, search) {
+  const query = { _: "reponame", reponame };
+
+  const [{ repo: subsetUUID }] = await api.select("root", query);
+
+  const subsetQuery = searchParamsToQuery(schema, new URLSearchParams(search));
+
+  // find entries to sync from subset
+  const entries = await api.select(subsetUUID, subsetQuery);
+
+  // sync entries to superset
+  for (const record of entries) {
+    await api.updateRecord(repo, record);
+  }
+
+  await api.commit(repo);
+}

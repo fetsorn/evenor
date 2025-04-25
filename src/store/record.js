@@ -151,3 +151,21 @@ export async function loadRepoRecord(record) {
 
   return recordNew;
 }
+
+export async function onZip(uuid) {
+  await api.zip(uuid);
+}
+
+export async function pull(repo, remote) {
+  await api.commit(repo);
+
+  await api.pull(repo, remote);
+}
+
+export async function push(repo, remote) {
+  await api.commit(repo);
+
+  await api.uploadBlobsLFS(remote);
+
+  await api.push(repo, remote);
+}

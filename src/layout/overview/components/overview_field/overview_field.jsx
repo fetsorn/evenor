@@ -7,7 +7,6 @@ export function OverviewField(props) {
         return (
           <OverviewFieldItem
             index={`${props.index}-${index}`}
-            baseRecord={props.baseRecord}
             item={item}
             branch={props.branch}
           />

@@ -25,7 +25,7 @@ export async function find(uuid) {
   return { repo, schema };
 }
 
-export async function clone(url, token) {
+export async function clone(url, token, repo, reponame) {
   // if no root here try to create
   await createRoot();
 
@@ -35,7 +35,7 @@ export async function clone(url, token) {
   // and repo name is uri-encoded remote
   const encoded = new TextEncoder().encode(url);
 
-  const repoUUIDRemote = crypto.subtle.digest("SHA-256", encoded);
+  const repoUUIDRemote = repo ?? crypto.subtle.digest("SHA-256", encoded);
 
   // TODO rimraf the folder if it already exists
   await api.clone(repoUUIDRemote, url, token);
@@ -46,7 +46,8 @@ export async function clone(url, token) {
   const pathname = new URL(url).pathname;
 
   // get repo name from remote
-  const reponameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
+  const reponameClone =
+    reponame ?? pathname.substring(pathname.lastIndexOf("/") + 1);
 
   const schemaClone = await readSchema(repoUUIDRemote);
 

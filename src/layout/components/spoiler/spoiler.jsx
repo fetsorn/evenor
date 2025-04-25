@@ -19,15 +19,19 @@ export function Spoiler(props) {
   return (
     <Show
       when={getSpoilerOpen(props.index)}
-      fallback={<a onClick={open}>{props.title}... </a>}
+      fallback={
+        <a className={"spoilerOpen"} onClick={open}>
+          {props.title}...{" "}
+        </a>
+      }
     >
-      <span>
-        <a onClick={close}>{props.title}:</a>
-
-        <span> </span>
+      <>
+        <a className={"spoilerClose"} onClick={close}>
+          {props.title}:{" "}
+        </a>
 
         {props.children}
-      </span>
+      </>
     </Show>
   );
 }

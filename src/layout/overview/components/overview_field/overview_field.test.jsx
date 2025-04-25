@@ -16,12 +16,7 @@ describe("OverviewField", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <OverviewField
-          index={index}
-          branch={branch}
-          baseRecord={baseRecord}
-          items={items}
-        />
+        <OverviewField index={index} branch={branch} items={items} />
       </StoreContext.Provider>
     ));
 
@@ -41,12 +36,7 @@ describe("OverviewField", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <OverviewField
-          index={index}
-          branch={branch}
-          baseRecord={baseRecord}
-          items={items}
-        />
+        <OverviewField index={index} branch={branch} items={items} />
       </StoreContext.Provider>
     ));
 

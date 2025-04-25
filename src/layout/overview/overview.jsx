@@ -6,12 +6,12 @@ import styles from "./overview.module.css";
 export function Overview(props) {
   let parentRef;
 
-  const records = getSortedRecords();
+  const records = () => getSortedRecords();
 
   const virtualizer = createVirtualizer({
     // TODO: remove get and reflect
     get count() {
-      return Reflect.get(records ?? [], "length");
+      return Reflect.get(records() ?? [], "length");
     },
     getScrollElement: () => parentRef,
     estimateSize: () => 35,
@@ -49,7 +49,7 @@ export function Overview(props) {
               >
                 <OverviewItem
                   index={virtualRow.key}
-                  item={records[virtualRow.index]}
+                  item={records()[virtualRow.index]}
                 />
               </div>
             </div>

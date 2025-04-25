@@ -14,7 +14,7 @@ describe("OverviewRecord", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <OverviewRecord record={record} index={index} baseRecord={baseRecord} />
+        <OverviewRecord record={record} index={index} />
       </StoreContext.Provider>
     ));
 
@@ -36,7 +36,7 @@ describe("OverviewRecord", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <OverviewRecord record={record} index={index} baseRecord={baseRecord} />
+        <OverviewRecord record={record} index={index} />
       </StoreContext.Provider>
     ));
 

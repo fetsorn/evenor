@@ -18,7 +18,9 @@ export function NavigationAdd() {
   };
   return (
     <Show when={canAdd()} fallback={<></>}>
-      <a onClick={() => onRecordCreate()}>add</a>
+      <a className="navigationAdd" onClick={() => onRecordCreate()}>
+        add
+      </a>
     </Show>
   );
 }

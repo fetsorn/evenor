@@ -65,8 +65,8 @@ export default defineConfig({
   },
   test: {
     include: ["./src/**/*test*"],
-    exclude: ["./test/specs/*"],
-    setupFiles: ["./test/setup.js"],
+    exclude: ["./src/test/specs/*"],
+    setupFiles: ["./src/test/setup.js"],
     coverage: {
       provider: "istanbul",
       coverage: {

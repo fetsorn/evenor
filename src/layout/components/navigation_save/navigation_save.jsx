@@ -7,7 +7,11 @@ export function NavigationSave() {
   const [recordBackup] = createSignal(store.record);
 
   return (
-    <a title={""} onClick={() => onRecordSave(recordBackup(), store.record)}>
+    <a
+      className="navigationSave"
+      title={""}
+      onClick={() => onRecordSave(recordBackup(), store.record)}
+    >
       save
     </a>
   );

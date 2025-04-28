@@ -9,7 +9,7 @@ export const config = {
   runner: "local",
   hostname: "localhost",
   port: 4444,
-  specs: ["./test/specs/**/*.test.js"],
+  specs: ["./src/test/specs/**/*.test.js"],
   maxInstances: 1,
   capabilities: [
     {

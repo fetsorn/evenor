@@ -1,4 +1,5 @@
-import { $, describe, it, expect } from "@wdio/globals";
+import { $, expect } from "@wdio/globals";
+import { t } from "./integration.test.js";
 
 // calculates the luma from a hex color `#abcdef`
 function luma(hex) {
@@ -31,4 +32,8 @@ describe("Hello Tauri", () => {
     const backgroundColor = await body.getCSSProperty("background-color");
     expect(luma(backgroundColor.parsed.hex)).toBeLessThan(100);
   });
+});
+
+describe("integration", () => {
+  t();
 });

@@ -6,7 +6,9 @@ export function NavigationBack() {
 
   return (
     <Show when={store.repo.repo !== "root"} fallback={<span></span>}>
-      <a onClick={() => onRepoChange("/", "_=repo")}>back</a>
+      <a className="navigationBack" onClick={() => onRepoChange("/", "_=repo")}>
+        back
+      </a>
     </Show>
   );
 }

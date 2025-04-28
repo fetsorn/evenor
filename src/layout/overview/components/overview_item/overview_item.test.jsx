@@ -24,6 +24,8 @@ describe("OverviewItem", () => {
       </StoreContext.Provider>
     ));
 
+    await userEvent.click(getByText("with..."));
+
     expect(() => getByText("a")).not.toThrowError();
   });
 });

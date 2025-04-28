@@ -16,6 +16,7 @@
 .sidebar {
   box-sizing: border-box;
   width: 50vw;
+  height: 100vh;
 
   flex-grow: 0;
   flex-shrink: 0;
@@ -57,5 +58,5 @@
   /* width: calc(var(--col) * 16); */
 
   overflow-y: auto;
-  max-height: 60vh;
+  max-height: 100vh;
 }

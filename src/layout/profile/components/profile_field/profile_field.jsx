@@ -1,4 +1,4 @@
-import { createSignal } from "solid-js";
+import { useContext } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
 import {
   StoreContext,
@@ -12,6 +12,8 @@ import { Spoiler, Confirmation } from "@/layout/components/index.js";
 // can't move this to field item
 // because remove needs to filter props.items
 export function Foo(props) {
+  const { store } = useContext(StoreContext);
+
   const isRemote = () => {
     if (store.repo === undefined) return false;
 
@@ -22,64 +24,16 @@ export function Foo(props) {
     <>
       <br />
 
-      <Spoiler index={`${props.index}-${props.i}-do`} title={"do"}>
-        <Confirmation
-          action={`Remove this ${props.branch}`}
-          question={"really remove?"}
-          onAction={() =>
-            onRecordEdit(
-              props.path,
-              props.items.filter((el, i) => i !== props.i),
-            )
-          }
-        />
-
-        <Show when={props.items.length > 1} fallback={<></>}>
-          <Confirmation
-            action={`Remove each ${props.branch}`}
-            question={"really remove?"}
-            onAction={() => onRecordEdit(props.path, undefined)}
-          />
-        </Show>
-
-        <a
-          className={"profileAdd"}
-          onClick={() =>
-            onRecordEdit([...props.path, props.items.length], {
-              _: props.branch,
-              [props.branch]: "",
-            })
-          }
-        >
-          Add another {props.branch}{" "}
-        </a>
-
-        <Show when={isRemote()}>
-          <a
-            onClick={() =>
-              onClone(
-                store.record.repo,
-                store.record.reponame[0],
-                props.item.remote_tag,
-                props.item.remote_url[0],
-                props.item.remote_token[0],
-              )
-            }
-          >
-            clone
-          </a>
-
-          <a
-            onClick={() =>
-              onPullRepo(store.record.repo, props.item.remote_name)
-            }
-          >
-            pull{" "}
-          </a>
-
-          <a onClick={() => onPushRepo()}>push </a>
-        </Show>
-      </Spoiler>
+      <Confirmation
+        action={`cut...`}
+        question={"really cut?"}
+        onAction={() =>
+          onRecordEdit(
+            props.path,
+            props.items.filter((el, i) => i !== props.i),
+          )
+        }
+      />
 
       <ProfileFieldItem
         index={`${props.index}-${props.i}`}
@@ -87,6 +41,30 @@ export function Foo(props) {
         item={props.item}
         path={[...props.path, props.i]}
       />
+
+      <Show when={isRemote()}>
+        <a
+          onClick={() =>
+            onClone(
+              store.record.repo,
+              store.record.reponame[0],
+              props.item.remote_tag,
+              props.item.remote_url[0],
+              props.item.remote_token[0],
+            )
+          }
+        >
+          clone
+        </a>
+
+        <a
+          onClick={() => onPullRepo(store.record.repo, props.item.remote_name)}
+        >
+          pull{" "}
+        </a>
+
+        <a onClick={() => onPushRepo()}>push </a>
+      </Show>
     </>
   );
 }
@@ -109,6 +87,8 @@ export function ProfileField(props) {
       </Show>
 
       <Show when={items().length > 1}>
+        <br />
+
         <Spoiler index={`${props.index}spoiler`} title={"and"}>
           <Index each={items().slice(1)} fallback={<></>}>
             {(item, index) => (

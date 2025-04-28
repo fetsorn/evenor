@@ -18,6 +18,8 @@ describe("OverviewRecord", () => {
       </StoreContext.Provider>
     ));
 
+    await userEvent.click(getByText("with..."));
+
     expect(() => getByText("record no items")).not.toThrowError();
   });
 
@@ -39,6 +41,8 @@ describe("OverviewRecord", () => {
         <OverviewRecord record={record} index={index} />
       </StoreContext.Provider>
     ));
+
+    await userEvent.click(getByText("with..."));
 
     expect(() => getByText("a")).not.toThrowError();
   });

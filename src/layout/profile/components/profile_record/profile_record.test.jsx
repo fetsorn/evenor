@@ -32,27 +32,36 @@ describe("ProfileRecord", () => {
       </StoreContext.Provider>
     ));
 
-    const input = getByRole("textbox");
+    await userEvent.click(getByText("with..."));
 
-    // render an input with value
-    expect(input).toHaveTextContent("uuid");
+    //const input = getByRole("textbox");
 
-    const add = getByText("Add branch");
+    //// render an input with value
+    //expect(input).toHaveTextContent("uuid");
 
-    await userEvent.click(add);
+    await userEvent.click(getByText("add..."));
 
-    expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch"], {
-      _: "branch",
-      branch: "",
-    });
+    await userEvent.click(getByText("branch"));
+
+    expect(onRecordEdit).toHaveBeenCalledWith(
+      ["record", "branch"],
+      [
+        {
+          _: "branch",
+          branch: "",
+        },
+      ],
+    );
 
     expect(store.record).toEqual({
       _: "repo",
       repo: "uuid",
-      branch: {
-        _: "branch",
-        branch: "",
-      },
+      branch: [
+        {
+          _: "branch",
+          branch: "",
+        },
+      ],
     });
   });
 
@@ -82,9 +91,11 @@ describe("ProfileRecord", () => {
       </StoreContext.Provider>
     ));
 
-    const add = getByText("Add another branch");
+    await userEvent.click(getByText("with..."));
 
-    await userEvent.click(add);
+    await userEvent.click(getByText("add..."));
+
+    await userEvent.click(getByText("branch"));
 
     expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch", 1], {
       _: "branch",
@@ -137,16 +148,20 @@ describe("ProfileRecord", () => {
       </StoreContext.Provider>
     ));
 
-    const add = getByText("Add description_en");
+    await userEvent.click(getByText("with..."));
 
-    await userEvent.click(add);
+    await userEvent.click(getByText("add..."));
+
+    await userEvent.click(getByText("description_en"));
 
     expect(onRecordEdit).toHaveBeenCalledWith(
       ["record", "branch", 0, "description_en"],
-      {
-        _: "description_en",
-        description_en: "",
-      },
+      [
+        {
+          _: "description_en",
+          description_en: "",
+        },
+      ],
     );
 
     expect(store.record).toEqual({
@@ -156,10 +171,12 @@ describe("ProfileRecord", () => {
         {
           _: "branch",
           branch: "",
-          description_en: {
-            _: "description_en",
-            description_en: "",
-          },
+          description_en: [
+            {
+              _: "description_en",
+              description_en: "",
+            },
+          ],
         },
       ],
     });

@@ -1,3 +1,5 @@
+import { $, describe, it, expect } from "@wdio/globals";
+
 // calculates the luma from a hex color `#abcdef`
 function luma(hex) {
   if (hex.startsWith("#")) {

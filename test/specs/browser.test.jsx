@@ -1,5 +1,6 @@
 import { $, expect } from "@wdio/globals";
-import { render } from "solid-js/web";
+//import { render } from "solid-js/web";
+import { render } from "@solidjs/testing-library";
 import {
   make,
   save,

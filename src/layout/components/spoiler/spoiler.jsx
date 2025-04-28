@@ -1,24 +1,29 @@
-import { createEffect } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import { getSpoilerOpen, setSpoilerOpen } from "@/store/index.js";
 
 export function Spoiler(props) {
-  createEffect(() => {
-    if (getSpoilerOpen(props.index) === undefined) {
-      setSpoilerOpen(props.index, props.isOpenDefault);
-    }
-  });
+  const [isOpen, setIsOpen] = createSignal(props.isOpenDefault);
+
+  //createEffect(() => {
+  //  if (getSpoilerOpen(props.index) === undefined) {
+  //    setSpoilerOpen(props.index, props.isOpenDefault);
+  //  }
+  //});
 
   function open() {
-    setSpoilerOpen(props.index, true);
+    setIsOpen(true);
+    //setSpoilerOpen(props.index, true);
   }
 
   function close() {
-    setSpoilerOpen(props.index, false);
+    setIsOpen(false);
+    //setSpoilerOpen(props.index, false);
   }
 
   return (
     <Show
-      when={getSpoilerOpen(props.index)}
+      /* when={getSpoilerOpen(props.index)} */
+      when={isOpen()}
       fallback={
         <a className={"spoilerOpen"} onClick={open}>
           {props.title}...{" "}

@@ -26,11 +26,7 @@ export function ProfileRecord(props) {
 
       <Spoiler index={`${props.index}-spoilerfield`} title={"with"}>
         <Index
-          each={
-            store.schema !== undefined &&
-            store.schema[props.record._] !== undefined &&
-            store.schema[props.record._].leaves
-          }
+          each={leaves()}
           fallback={<span>record but branch is twig</span>}
         >
           {(leaf, index) => (

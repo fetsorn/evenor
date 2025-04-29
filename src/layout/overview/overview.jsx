@@ -22,6 +22,8 @@ export function Overview(props) {
 
   return (
     <div ref={parentRef} className={styles.overview}>
+      <h1>Entries</h1>
+
       <div
         className={styles.foo}
         style={{

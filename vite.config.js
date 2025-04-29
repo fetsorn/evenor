@@ -30,7 +30,7 @@ function getBuildMode() {
 
 export default defineConfig({
   plugins: [solidPlugin()],
-  publicDir: "assets",
+  publicDir: "public",
   build: {
     outDir: "dist",
     target: "safari13",

@@ -15,13 +15,13 @@ import styles from "./layout.module.css";
 export function LayoutOverview() {
   return (
     <div className={styles.overview}>
-      <div className={styles.buttonbar}>
+      <nav className={styles.buttonbar} title="navigationOverview">
         <NavigationBack />
 
         <span></span>
 
         <NavigationNew />
-      </div>
+      </nav>
 
       <Filter />
 
@@ -38,13 +38,13 @@ export function LayoutProfile() {
       <div className={styles.sidebar}>
         <div className={styles.container}>
           <div className={styles.sticky}>
-            <div className={styles.buttonbar}>
+            <nav className={styles.buttonbar} title="navigationProfile">
               <NavigationRevert />
 
               <span></span>
 
               <NavigationSave />
-            </div>
+            </nav>
 
             <Profile />
           </div>
@@ -62,11 +62,11 @@ export function App() {
   return (
     <StoreContext.Provider value={{ store }}>
       {/*<h1>Hello world!</h1>*/}
-      <div className={styles.main}>
+      <main className={styles.main}>
         <LayoutOverview />
 
         <LayoutProfile />
-      </div>
+      </main>
 
       <span style={{ display: "none" }}>{__COMMIT_HASH__}</span>
     </StoreContext.Provider>

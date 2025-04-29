@@ -5,5 +5,12 @@ import { ProfileRecord } from "./components/index.js";
 export function Profile() {
   const { store } = useContext(StoreContext);
 
-  return <ProfileRecord index="_" record={store.record} path={["record"]} />;
+  return (
+    <ProfileRecord
+      index="_"
+      record={store.record}
+      path={["record"]}
+      isOpenDefault={true}
+    />
+  );
 }

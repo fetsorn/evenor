@@ -24,7 +24,11 @@ export function ProfileRecord(props) {
         path={[...props.path, props.record._]}
       />
 
-      <Spoiler index={`${props.index}-spoilerfield`} title={"with"}>
+      <Spoiler
+        index={`${props.index}-spoilerfield`}
+        title={"with"}
+        isOpenDefault={props.isOpenDefault}
+      >
         <Index
           each={leaves()}
           fallback={<span>record but branch is twig</span>}

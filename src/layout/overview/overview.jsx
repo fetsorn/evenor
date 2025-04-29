@@ -29,7 +29,12 @@ export function Overview(props) {
           height: `${virtualizer.getTotalSize()}px`,
         }}
       >
-        <For each={virtualItems} fallback={<span>list no items</span>}>
+        <For
+          each={virtualItems}
+          fallback={
+            <span>press "new" in the top right corner to add entries</span>
+          }
+        >
           {(virtualRow) => (
             <div
               className={styles.bar}

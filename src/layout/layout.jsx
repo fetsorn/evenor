@@ -3,7 +3,7 @@ import { onMount, useContext } from "solid-js";
 import { StoreContext, store, onRepoChange } from "@/store/index.js";
 import {
   NavigationBack,
-  NavigationAdd,
+  NavigationNew,
   NavigationRevert,
   NavigationSave,
 } from "./components/index.js";
@@ -20,7 +20,7 @@ export function LayoutOverview() {
 
         <span></span>
 
-        <NavigationAdd />
+        <NavigationNew />
       </div>
 
       <Filter />

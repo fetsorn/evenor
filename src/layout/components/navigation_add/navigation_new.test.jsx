@@ -3,7 +3,7 @@ import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store, onRecordCreate } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
-import { NavigationAdd } from "./navigation_add.jsx";
+import { NavigationNew } from "./navigation_new.jsx";
 
 vi.mock("@/store/index.js", async (importOriginal) => {
   const mod = await importOriginal();
@@ -14,17 +14,17 @@ vi.mock("@/store/index.js", async (importOriginal) => {
   };
 });
 
-describe("NavigationAdd", () => {
+describe("NavigationNew", () => {
   test("", async () => {
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <NavigationAdd />
+        <NavigationNew />
       </StoreContext.Provider>
     ));
 
-    const add = getByText("add");
+    const new = getByText("new");
 
-    await userEvent.click(add);
+    await userEvent.click(new);
 
     expect(onRecordCreate).toHaveBeenCalledWith();
   });

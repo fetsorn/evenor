@@ -9,9 +9,8 @@ export function Overview(props) {
   const records = () => getSortedRecords();
 
   const virtualizer = createVirtualizer({
-    // TODO: remove get and reflect
     get count() {
-      return Reflect.get(records() ?? [], "length");
+      return records().length;
     },
     getScrollElement: () => parentRef,
     estimateSize: () => 35,

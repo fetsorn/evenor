@@ -27,26 +27,3 @@ button {
 button:focus {
   outline: solid;
 }
-
-/* input[type="text"] { */
-/*   -webkit-appearance: none; */
-/*   -moz-appearance: none; */
-/*   appearance: none; */
-/* } */
-
-/* input, */
-/* textarea { */
-/*   -webkit-box-sizing: content-box; */
-/*   -moz-box-sizing: content-box; */
-/*   box-sizing: content-box; */
-/* } */
-
-input {
-  background: none;
-  border: none;
-}
-
-input:focus {
-  background: white;
-  border: 1px solid grey;
-}

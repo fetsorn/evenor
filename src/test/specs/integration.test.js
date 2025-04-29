@@ -14,34 +14,24 @@ import {
 export function t() {
   it("should create a repo", async () => {
     // check that no records in the overview
-    const navigationAdd = await $("a.navigationAdd");
+    await $("aria/new").click();
 
-    await navigationAdd.click();
+    // open spoiler in profile
+    await $("aria/with").click();
 
-    const w = await $("a.spoilerOpen");
+    // input reponame in profile
+    await $("aria/reponame -").setValue("foobar");
 
-    await w.click();
+    // save profile
+    await $("aria/save").click();
 
-    const add = await $("a.spoilerOpen");
+    // wait for record to save
+    await new Promise((resolve) => setTimeout(resolve, 500));
 
-    await add.click();
-
-    const reponame = await $("a.spoilerOpen");
-
-    await reponame.click();
-
-    const input = await $("");
-
-    await input.focus();
-
-    await browser.keys("foo");
-
-    const save = await $("a.navigationSave");
-
-    await save.click();
+    const element = await $("aria/foobar");
 
     // check that one record in the overview
-    expect(false).toBe(false);
+    await expect(element).toHaveText("foobar");
   });
 
   //it("should edit a repo", async () => {

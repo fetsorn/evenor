@@ -156,11 +156,11 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
         const leavesPartial = trunk === branch ? leaves : [];
 
         return {
-          trunks: [...withTrunk.trunks, ...trunkPartial],
-          leaves: [...withTrunk.leaves, ...leavesPartial],
+          trunk: [...withTrunk.trunk, ...trunkPartial],
+          leaf: [...withTrunk.leaf, ...leavesPartial],
         };
       },
-      { trunks: [], leaves: [] },
+      { trunk: [], leaf: [] },
     );
 
     const branchPartial = { _: "branch", branch };
@@ -169,7 +169,7 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
       metaRecords.find((record) => record.branch === branch) ?? {};
 
     // if branch has no trunks, it's a root
-    if (relationsPartial.trunks.length === 0) {
+    if (relationsPartial.trunk.length === 0) {
       const rootRecord = {
         ...branchPartial,
         ...metaPartial,
@@ -195,7 +195,9 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
 export function extractSchemaRecords(branchRecords) {
   const records = branchRecords.reduce(
     (withBranch, branchRecord) => {
-      const { trunks, leaves: omit, ...branchRecordOmitted } = branchRecord;
+      const { trunk, leaves: omit, ...branchRecordOmitted } = branchRecord;
+
+      const trunks = Array.isArray(trunk) ? trunk : [trunk];
 
       const schemaRecord = trunks.reduce((withTrunk, trunk) => {
         const leaves = withBranch.schemaRecord[trunk] ?? [];

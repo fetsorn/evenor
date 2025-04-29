@@ -11,9 +11,9 @@ export const config = {
   capabilities: [
     {
       browserName: "firefox",
-      "moz:firefoxOptions": {
-        args: ["-headless"],
-      },
+      //"moz:firefoxOptions": {
+      //  args: ["-headless"],
+      //},
     },
   ],
   framework: "mocha",
@@ -21,8 +21,8 @@ export const config = {
     ui: "bdd",
     timeout: 60000,
   },
+  logLevel: "error",
   //maxInstances: 10,
-  //logLevel: "info",
   //bail: 0,
   //baseUrl: "",
   //waitforTimeout: 10000,

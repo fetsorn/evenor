@@ -33,6 +33,8 @@ export async function readLocalTags(uuid) {
 }
 
 export async function writeRemoteTags(uuid, tags) {
+  if (tags === undefined) return;
+
   const tagsList = Array.isArray(tags) ? tags : [tags];
 
   for (const tag of tagsList) {
@@ -58,6 +60,8 @@ export async function writeRemoteTags(uuid, tags) {
 }
 
 export async function writeLocalTags(uuid, tags) {
+  if (tags === undefined) return;
+
   const tagList = Array.isArray(tags) ? tags : [tags];
 
   for (const tag of tagList) {

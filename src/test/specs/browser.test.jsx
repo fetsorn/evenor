@@ -1,4 +1,5 @@
 import { render } from "@solidjs/testing-library";
+import "../setup.js";
 import App from "../../layout/layout.jsx";
 import { t } from "./integration.test.js";
 
@@ -10,6 +11,6 @@ describe("integration", () => {
   t();
 
   afterEach(async () => {
-    //await browser.debug();
+    await browser.debug();
   });
 });

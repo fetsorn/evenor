@@ -75,7 +75,7 @@ export function ProfileField(props) {
 
   return (
     <>
-      <Show when={items()[0]}>
+      <Show when={items()[0] !== undefined}>
         <Foo
           index={`${props.index}`}
           branch={props.branch}

@@ -21,7 +21,7 @@ export function ProfileRecord(props) {
       <ProfileValue
         value={props.record[props.record._]}
         branch={props.record._}
-        path={[...props.path, "_"]}
+        path={[...props.path, props.record._]}
       />
 
       <Spoiler index={`${props.index}-spoilerfield`} title={"with"}>

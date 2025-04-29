@@ -7,7 +7,7 @@ export function OverviewField(props) {
 
   return (
     <>
-      <Show when={items()[0]}>
+      <Show when={items()[0] !== undefined}>
         <OverviewFieldItem
           index={`${props.index}-0`}
           item={items()[0]}

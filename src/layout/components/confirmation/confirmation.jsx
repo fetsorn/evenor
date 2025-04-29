@@ -7,24 +7,27 @@ export function Confirmation(props) {
     <Show
       when={confirmation()}
       fallback={
-        <a
+        <button
           className={"confirmationAction"}
           onClick={() => setConfirmation(true)}
         >
           {props.action}{" "}
-        </a>
+        </button>
       }
     >
       <>
         <span className={"confirmationQuestion"}>{props.question} </span>
 
-        <a className={"confirmationYes"} onClick={() => props.onAction()}>
+        <button className={"confirmationYes"} onClick={() => props.onAction()}>
           Yes{" "}
-        </a>
+        </button>
 
-        <a className={"confirmationNo"} onClick={() => setConfirmation(false)}>
+        <button
+          className={"confirmationNo"}
+          onClick={() => setConfirmation(false)}
+        >
           No{" "}
-        </a>
+        </button>
       </>
     </Show>
   );

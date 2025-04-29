@@ -43,7 +43,7 @@ export function Foo(props) {
       />
 
       <Show when={isRemote()}>
-        <a
+        <button
           onClick={() =>
             onClone(
               store.record.repo,
@@ -55,15 +55,15 @@ export function Foo(props) {
           }
         >
           clone
-        </a>
+        </button>
 
-        <a
+        <button
           onClick={() => onPullRepo(store.record.repo, props.item.remote_name)}
         >
           pull{" "}
-        </a>
+        </button>
 
-        <a onClick={() => onPushRepo()}>push </a>
+        <button onClick={() => onPushRepo()}>push </button>
       </Show>
     </>
   );

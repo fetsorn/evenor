@@ -2,12 +2,12 @@ import { onRecordEdit } from "@/store/index.js";
 
 export function NavigationRevert() {
   return (
-    <a
+    <button
       className="navigationRevert"
       title={""}
       onClick={() => onRecordEdit(["record"], undefined)}
     >
       revert
-    </a>
+    </button>
   );
 }

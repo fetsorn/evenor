@@ -49,7 +49,6 @@
     "vitest": "^3.0.9"
   },
   "dependencies": {
-    "@bigmistqke/solid-contenteditable": "^0.0.10",
     "@fetsorn/csvs-js": "0.21.2",
     "@fetsorn/isogit-lfs": "^0.5.3",
     "@isomorphic-git/lightning-fs": "4.6.0",

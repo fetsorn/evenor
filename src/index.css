@@ -11,3 +11,41 @@ code {
   font-family:
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
+
+/* https://stackoverflow.com/a/45890842 */
+button {
+  background: none;
+  color: inherit;
+  border: none;
+  padding: 2;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+}
+
+button:focus {
+  outline: solid;
+}
+
+/* input[type="text"] { */
+/*   -webkit-appearance: none; */
+/*   -moz-appearance: none; */
+/*   appearance: none; */
+/* } */
+
+/* input, */
+/* textarea { */
+/*   -webkit-box-sizing: content-box; */
+/*   -moz-box-sizing: content-box; */
+/*   box-sizing: content-box; */
+/* } */
+
+input {
+  background: none;
+  border: none;
+}
+
+input:focus {
+  background: white;
+  border: 1px solid grey;
+}

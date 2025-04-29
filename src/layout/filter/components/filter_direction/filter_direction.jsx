@@ -15,10 +15,14 @@ export function FilterDirection() {
     <Show
       when={isLast()}
       fallback={
-        <a onClick={() => onSearch(".sortDirection", "last")}>sort first</a>
+        <button onClick={() => onSearch(".sortDirection", "last")}>
+          sort first
+        </button>
       }
     >
-      <a onClick={() => onSearch(".sortDirection", "first")}>sort last</a>
+      <button onClick={() => onSearch(".sortDirection", "first")}>
+        sort last
+      </button>
     </Show>
   );
 }

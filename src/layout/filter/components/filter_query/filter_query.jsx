@@ -1,5 +1,4 @@
 import { onSearch } from "@/store/index.js";
-import { ContentEditable } from "@bigmistqke/solid-contenteditable";
 
 export function FilterQuery(props) {
   // TODO base and sortby as spoiler options.
@@ -8,19 +7,18 @@ export function FilterQuery(props) {
 
   return (
     <span>
-      <span>{props.field}: </span>
+      <label for={`filter-${props.field}`}>{props.field}: </label>
 
-      <ContentEditable
+      <input
+        type="text"
         id={`filter-${props.field}`}
-        textContent={props.value}
-        onTextContent={(content) => onSearch(props.field, content)}
-        style={{ display: "inline-block", "min-width": "4rem" }}
+        name={`filter-${props.field}`}
+        value={props.value}
+        onInput={(e) => onSearch(props.field, e.target.value)}
       />
 
-      <span> </span>
-
       <Show when={canDelete(props.field)} fallback={<></>}>
-        <a onClick={() => onSearch(props.field, undefined)}>X </a>
+        <button onClick={() => onSearch(props.field, undefined)}>X </button>
       </Show>
     </span>
   );

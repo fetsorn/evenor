@@ -36,22 +36,22 @@ export function OverviewValue(props) {
       <Show
         when={isValue()}
         fallback={
-          <a
+          <button
             className={`${props.branch}-branch`}
             onClick={() => setIsValue(true)}
             style={{ borderBottom: "thin solid" }}
           >
             {props.branch}{" "}
-          </a>
+          </button>
         }
       >
-        <a
+        <button
           className={`${props.branch}-value`}
           onClick={() => setIsValue(false)}
           style={{ borderBottom: "thin solid" }}
         >
           {props.value}{" "}
-        </a>
+        </button>
       </Show>
 
       <Show
@@ -66,9 +66,9 @@ export function OverviewValue(props) {
 
             <For each={laterals}>
               {(cognate, index) => (
-                <a key={index()} onClick={() => leapfrog(cognate)}>
+                <button key={index()} onClick={() => leapfrog(cognate)}>
                   {cognate}{" "}
-                </a>
+                </button>
               )}
             </For>
           </Show>
@@ -78,9 +78,9 @@ export function OverviewValue(props) {
 
             <For each={recurses}>
               {(recurse, index) => (
-                <a key={index()} onClick={() => backflip(recurse)}>
+                <button key={index()} onClick={() => backflip(recurse)}>
                   {recurse}{" "}
-                </a>
+                </button>
               )}
             </For>
           </Show>
@@ -90,9 +90,9 @@ export function OverviewValue(props) {
 
             <For each={neighbours}>
               {(neighbour, index) => (
-                <a key={index()} onClick={() => warp(neighbour)}>
+                <button key={index()} onClick={() => warp(neighbour)}>
                   {neighbour}
-                </a>
+                </button>
               )}
             </For>
           </Show>

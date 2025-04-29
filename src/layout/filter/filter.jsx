@@ -1,4 +1,5 @@
 import { getFilterQueries, getFilterOptions } from "@/store/index.js";
+import { Spoiler } from "@/layout/components/index.js";
 import {
   FilterCount,
   FilterDirection,
@@ -9,7 +10,7 @@ import {
 import styles from "./filter.module.css";
 
 export function Filter() {
-  // use Index here to retain focus on contenteditable when editing
+  // use Index here to retain focus on textarea when editing
   // because For considers an item deleted on every input and rerenders
   // and Index only rerenders when an index is deleted or added
   return (
@@ -23,21 +24,15 @@ export function Filter() {
         }}
       </Index>
 
-      <span> </span>
-
       <FilterDirection />
 
-      <span> </span>
-
-      <For each={getFilterOptions()} fallback={<></>}>
-        {(field, index) => <FilterOption field={field} />}
-      </For>
-
-      <span> </span>
+      <Spoiler title={"search"}>
+        <For each={getFilterOptions()} fallback={<></>}>
+          {(field, index) => <FilterOption field={field} />}
+        </For>
+      </Spoiler>
 
       <FilterCount />
-
-      <span> </span>
 
       <FilterScroll />
     </span>

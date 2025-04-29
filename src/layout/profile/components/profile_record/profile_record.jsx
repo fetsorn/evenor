@@ -65,7 +65,7 @@ export function ProfileRecord(props) {
                 );
 
               return (
-                <a
+                <button
                   className={"profileAddNew"}
                   onClick={() =>
                     Object.hasOwn(props.record, leaf())
@@ -74,7 +74,7 @@ export function ProfileRecord(props) {
                   }
                 >
                   {leaf()}{" "}
-                </a>
+                </button>
               );
             }}
           </Index>

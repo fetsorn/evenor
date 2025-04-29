@@ -26,12 +26,12 @@ export function OverviewItem(props) {
 
       <OverviewRecord index={props.index} record={props.item} />
 
-      <a
+      <button
         className={"edit"}
         onClick={() => onRecordEdit(["record"], props.item)}
       >
         edit{" "}
-      </a>
+      </button>
 
       <Confirmation
         action={`delete`}
@@ -40,23 +40,23 @@ export function OverviewItem(props) {
       />
 
       <Show when={canOpenRepo} fallback={<></>}>
-        <a title="zip" onClick={() => onZip(props.item.repo)}>
+        <button title="zip" onClick={() => onZip(props.item.repo)}>
           Zip{" "}
-        </a>
+        </button>
       </Show>
 
       <Show when={canOpenRepo} fallback={<></>}>
         <Spoiler index={props.index + "open"} title={"open"}>
           <For each={props.item["branch"]} fallback={<span>no items</span>}>
             {(item, index) => (
-              <a
+              <button
                 className={"open"}
                 onClick={() =>
                   onRepoChange(`/${props.item.repo}`, `_=${item["branch"]}`)
                 }
               >
                 {item["branch"]}{" "}
-              </a>
+              </button>
             )}
           </For>
         </Spoiler>

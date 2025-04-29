@@ -18,9 +18,9 @@ export function NavigationNew() {
   };
   return (
     <Show when={canAdd()} fallback={<></>}>
-      <a className="navigationNew" onClick={() => onRecordCreate()}>
+      <button className="navigationNew" onClick={() => onRecordCreate()}>
         new
-      </a>
+      </button>
     </Show>
   );
 }

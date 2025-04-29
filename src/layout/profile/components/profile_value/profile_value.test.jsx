@@ -2,7 +2,6 @@ import { test, expect, vi } from "vitest";
 import { createSignal } from "solid-js";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { ContentEditable } from "@bigmistqke/solid-contenteditable";
 import { onRecordEdit } from "@/store/index.js";
 import { ProfileValue } from "./profile_value.jsx";
 
@@ -13,28 +12,6 @@ vi.mock("@/store/index.js", async (importOriginal) => {
     ...mod,
     onRecordEdit: vi.fn(),
   };
-});
-
-test("contenteditable", async () => {
-  const [a, setA] = createSignal("a");
-
-  const { getByRole } = render(() => (
-    <ContentEditable
-      textContent={a()}
-      onTextContent={(content) => setA(content)}
-      style={{ display: "inline-block", "min-width": "4rem" }}
-    />
-  ));
-
-  const input = getByRole("textbox");
-
-  expect(input).toHaveTextContent("a");
-
-  input.focus();
-
-  await userEvent.keyboard("c");
-
-  expect(input).toHaveTextContent(/^ca$/);
 });
 
 test("profile value", async () => {

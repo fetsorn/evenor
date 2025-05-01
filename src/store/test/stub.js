@@ -119,12 +119,12 @@ export const cases = {
       repo: "uuid",
       reponame: "reponame",
       branch: [
-        { _: "branch", branch: "branch1", trunks: [], leaves: ["branch2"] },
+        { _: "branch", branch: "branch1", trunk: [], leaf: ["branch2"] },
         {
           _: "branch",
           branch: "branch2",
-          trunks: ["branch1"],
-          leaves: [],
+          trunk: ["branch1"],
+          leaf: [],
           task: "date",
         },
       ],

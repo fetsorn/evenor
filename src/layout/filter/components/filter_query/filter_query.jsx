@@ -14,7 +14,21 @@ export function FilterQuery(props) {
         id={`filter-${props.field}`}
         name={`filter-${props.field}`}
         value={props.value}
-        onInput={(e) => onSearch(props.field, e.target.value)}
+        onInput={async (event) => {
+          const { selectionStart, selectionEnd, selectionDirection } =
+            event.currentTarget;
+
+          await onSearch(props.field, event.target.value);
+
+          event.currentTarget.value = props.value;
+
+          // https://github.com/solidjs/solid/discussions/416#discussioncomment-6833805
+          //event.currentTarget.setSelectionRange(
+          //  selectionStart,
+          //  selectionEnd,
+          //  selectionDirection || "none",
+          //);
+        }}
       />
 
       <Show when={canDelete(props.field)} fallback={<></>}>

@@ -2,7 +2,8 @@ import { test, expect, vi } from "vitest";
 import { createSignal } from "solid-js";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { onRecordEdit } from "@/store/index.js";
+import { store, onRecordEdit } from "@/store/index.js";
+import { setStore } from "@/store/store.js";
 import { ProfileValue } from "./profile_value.jsx";
 
 vi.mock("@/store/index.js", async (importOriginal) => {
@@ -10,26 +11,30 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 
   return {
     ...mod,
-    onRecordEdit: vi.fn(),
+    onRecordEdit: vi.fn((path, value) => setStore(...path, value)),
   };
 });
 
 test("profile value", async () => {
-  const [a, setA] = createSignal("a");
+  const record = { _: "repo", repo: "uuid" };
+
+  setStore("record", record);
+
+  const path = ["record", "repo"];
 
   const { getByText, getByRole } = render(() => (
-    <ProfileValue value={a()} branch="b" path={["b"]} />
+    <ProfileValue value={store.record.repo} branch="repo" path={path} />
   ));
 
   const input = getByRole("textbox");
 
-  expect(input).toHaveTextContent("a");
+  expect(input).toHaveTextContent("uuid");
 
   input.focus();
 
-  await userEvent.keyboard("c");
+  await userEvent.keyboard("a");
 
-  expect(input).toHaveTextContent(/^ca$/);
+  expect(onRecordEdit).toHaveBeenCalledWith(path, "auuid");
 
-  expect(onRecordEdit).toHaveBeenCalledWith(["b"], "ca");
+  expect(store.record.repo).toBe("auuid");
 });

@@ -27,6 +27,7 @@ describe("Profile", () => {
 
     expect(ProfileRecord).toHaveBeenCalledWith({
       index: "_",
+      isOpenDefault: true,
       record: {
         _: "repo",
         repo: "uuid",

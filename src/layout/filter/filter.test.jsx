@@ -27,7 +27,7 @@ vi.mock("@/layout/filter/components/index.js", async (importOriginal) => {
 
 describe("Filter", () => {
   test("", async () => {
-    render(() => (
+    const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
         <Filter />
       </StoreContext.Provider>
@@ -36,6 +36,8 @@ describe("Filter", () => {
     expect(FilterCount).toHaveBeenCalledWith({});
 
     expect(FilterDirection).toHaveBeenCalledWith({});
+
+    await userEvent.click(getByText(/search/));
 
     expect(FilterOption).toHaveBeenNthCalledWith(1, { field: "reponame" });
 

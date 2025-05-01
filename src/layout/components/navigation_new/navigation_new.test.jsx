@@ -22,9 +22,9 @@ describe("NavigationNew", () => {
       </StoreContext.Provider>
     ));
 
-    const new = getByText("new");
+    const navigationNew = getByText("new");
 
-    await userEvent.click(new);
+    await userEvent.click(navigationNew);
 
     expect(onRecordCreate).toHaveBeenCalledWith();
   });

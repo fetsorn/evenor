@@ -5,7 +5,7 @@ import { StoreContext, store, onRepoChange } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import {
   NavigationBack,
-  NavigationAdd,
+  NavigationNew,
   NavigationRevert,
   NavigationSave,
 } from "./components/index.js";
@@ -25,7 +25,7 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 
 vi.mock("./components/index.js", () => ({
   NavigationBack: vi.fn(),
-  NavigationAdd: vi.fn(),
+  NavigationNew: vi.fn(),
   NavigationRevert: vi.fn(),
   NavigationSave: vi.fn(),
 }));
@@ -48,7 +48,7 @@ describe("LayoutOverview", () => {
 
     expect(NavigationBack).toHaveBeenCalledWith({});
 
-    expect(NavigationAdd).toHaveBeenCalledWith({});
+    expect(NavigationNew).toHaveBeenCalledWith({});
 
     expect(Filter).toHaveBeenCalledWith({});
 

@@ -15,14 +15,15 @@ describe("Overview", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("list no items")).not.toThrowError();
+    expect(() =>
+      getByText('press "new" in the top right corner to add entries'),
+    ).not.toThrowError();
   });
 
   test("item", async () => {
     const item = {
       _: "repo",
       repo: "uuid",
-      branch: [{ _: "branch", branch: "a" }],
     };
 
     const items = [item];
@@ -35,8 +36,6 @@ describe("Overview", () => {
       </StoreContext.Provider>
     ));
 
-    await userEvent.click(getByText("with..."));
-
-    expect(() => getByText("a")).not.toThrowError();
+    expect(() => getByText("uuid")).not.toThrowError();
   });
 });

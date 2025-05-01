@@ -34,13 +34,28 @@ export function ProfileValue(props) {
 
       <textarea
         id={`profile-${props.branch}`}
-        value={props.value}
-        onInput={(e) => onRecordEdit(props.path, e.target.value)}
+        onInput={async (event) => {
+          const { selectionStart, selectionEnd, selectionDirection } =
+            event.currentTarget;
+
+          await onRecordEdit(props.path, event.target.value);
+
+          event.currentTarget.value = props.value;
+
+          // https://github.com/solidjs/solid/discussions/416#discussioncomment-6833805
+          //event.currentTarget.setSelectionRange(
+          //  selectionStart,
+          //  selectionEnd,
+          //  selectionDirection || "none",
+          //);
+        }}
         style={{
           height: `${calcHeight(props.value)}px`,
           width: `${calcWidth(props.value)}rem`,
         }}
-      />
+      >
+        {props.value}
+      </textarea>
     </>
   );
 }

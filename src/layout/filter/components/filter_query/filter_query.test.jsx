@@ -19,14 +19,14 @@ describe("FilterQuery", () => {
 
     const input = getByRole("textbox");
 
-    expect(input).toHaveTextContent("value");
+    expect(input).toHaveValue("value");
 
     input.focus();
 
     await userEvent.keyboard("1");
 
     expect(store.searchParams.toString()).toEqual(
-      new URLSearchParams("field=1value&.sortBy=1value").toString(),
+      new URLSearchParams("field=value1&.sortBy=value1").toString(),
     );
   });
 

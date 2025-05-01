@@ -65,10 +65,11 @@ export default defineConfig({
   },
   test: {
     include: ["./src/**/*test*"],
-    exclude: ["./src/test/specs/*"],
+    exclude: ["./src/test/specs/*", "./src-tauri"],
     setupFiles: ["./src/test/setup.js"],
     coverage: {
       provider: "istanbul",
+      exclude: ["./src-tauri"],
       coverage: {
         reporter: ["text", "json", "html"],
       },

@@ -13,7 +13,6 @@ describe("OverviewItem", () => {
     const baseRecord = {
       _: "repo",
       repo: "uuid",
-      branch: [{ _: "branch", branch: value }],
     };
 
     const record = baseRecord;
@@ -24,8 +23,6 @@ describe("OverviewItem", () => {
       </StoreContext.Provider>
     ));
 
-    await userEvent.click(getByText("with..."));
-
-    expect(() => getByText("a")).not.toThrowError();
+    expect(() => getByText("uuid")).not.toThrowError();
   });
 });

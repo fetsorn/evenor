@@ -129,15 +129,15 @@ describe("clone", () => {
         {
           _: "branch",
           branch: "branch1",
-          leaves: ["branch2"],
-          trunks: [],
+          leaf: ["branch2"],
+          trunk: [],
         },
         {
           _: "branch",
           branch: "branch2",
-          leaves: [],
+          leaf: [],
           task: "date",
-          trunks: ["branch1"],
+          trunk: ["branch1"],
         },
       ],
       remote_tag: {

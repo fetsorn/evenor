@@ -24,7 +24,11 @@ export function OverviewItem(props) {
         <span className={"reponame"}>{props.item.reponame} </span>
       </Show>
 
-      <OverviewRecord index={props.index} record={props.item} />
+      <OverviewRecord
+        index={props.index}
+        record={props.item}
+        isOpenDefault={true}
+      />
 
       <button
         className={"edit"}

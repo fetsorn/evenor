@@ -17,7 +17,11 @@ export function OverviewRecord(props) {
         value={props.record[props.record._]}
       />
 
-      <Spoiler index={props.index} title={"with"}>
+      <Spoiler
+        index={props.index}
+        title={"with"}
+        isOpenDefault={props.isOpenDefault}
+      >
         <For
           each={
             store.schema !== undefined &&

@@ -16,6 +16,12 @@ export function ProfileRecord(props) {
     return store.schema[props.record._].leaves;
   };
 
+  const isRemote = () => {
+    if (store.repo === undefined) return false;
+
+    return store.repo.repo === "root" && props.record._ === "remote_tag";
+  };
+
   return (
     <>
       <ProfileValue
@@ -24,27 +30,35 @@ export function ProfileRecord(props) {
         path={[...props.path, props.record._]}
       />
 
+      <Show when={isRemote()}>
+        <button
+          onClick={() =>
+            onClone(
+              store.record.repo,
+              store.record.reponame[0],
+              props.item.remote_tag,
+              props.item.remote_url[0],
+              props.item.remote_token[0],
+            )
+          }
+        >
+          clone
+        </button>
+
+        <button
+          onClick={() => onPullRepo(store.record.repo, props.item.remote_name)}
+        >
+          pull{" "}
+        </button>
+
+        <button onClick={() => onPushRepo()}>push </button>
+      </Show>
+
       <Spoiler
         index={`${props.index}-spoilerfield`}
         title={"with"}
         isOpenDefault={props.isOpenDefault}
       >
-        <Index
-          each={leaves()}
-          fallback={<span>record but branch is twig</span>}
-        >
-          {(leaf, index) => (
-            <ProfileField
-              index={`${props.index}-${leaf()}`}
-              branch={leaf()}
-              items={props.record[leaf()] ?? []}
-              path={[...props.path, leaf()]}
-            />
-          )}
-        </Index>
-
-        <br />
-
         <Spoiler index={`${props.index}-spoileradd`} title={"add"}>
           <Index each={leaves()} fallback={<>...</>}>
             {(leaf, index) => {
@@ -83,6 +97,20 @@ export function ProfileRecord(props) {
             }}
           </Index>
         </Spoiler>
+
+        <Index
+          each={leaves()}
+          fallback={<span>record but branch is twig</span>}
+        >
+          {(leaf, index) => (
+            <ProfileField
+              index={`${props.index}-${leaf()}`}
+              branch={leaf()}
+              items={props.record[leaf()] ?? []}
+              path={[...props.path, leaf()]}
+            />
+          )}
+        </Index>
       </Spoiler>
     </>
   );

@@ -14,12 +14,6 @@ import { Spoiler, Confirmation } from "@/layout/components/index.js";
 export function Foo(props) {
   const { store } = useContext(StoreContext);
 
-  const isRemote = () => {
-    if (store.repo === undefined) return false;
-
-    store.repo.repo === "root" && props.item._ === "remote_tag";
-  };
-
   return (
     <>
       <br />
@@ -41,30 +35,6 @@ export function Foo(props) {
         item={props.item}
         path={[...props.path, props.i]}
       />
-
-      <Show when={isRemote()}>
-        <button
-          onClick={() =>
-            onClone(
-              store.record.repo,
-              store.record.reponame[0],
-              props.item.remote_tag,
-              props.item.remote_url[0],
-              props.item.remote_token[0],
-            )
-          }
-        >
-          clone
-        </button>
-
-        <button
-          onClick={() => onPullRepo(store.record.repo, props.item.remote_name)}
-        >
-          pull{" "}
-        </button>
-
-        <button onClick={() => onPushRepo()}>push </button>
-      </Show>
     </>
   );
 }

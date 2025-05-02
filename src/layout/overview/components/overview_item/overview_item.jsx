@@ -32,7 +32,9 @@ export function OverviewItem(props) {
 
       <button
         className={"edit"}
-        onClick={() => onRecordEdit(["record"], props.item)}
+        onClick={() =>
+          onRecordEdit(["record"], JSON.parse(JSON.stringify(props.item)))
+        }
       >
         edit{" "}
       </button>

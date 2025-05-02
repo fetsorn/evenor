@@ -30,7 +30,7 @@ export async function wipeRecord(repo, base, records, record) {
 }
 
 export async function changeRepo(pathname, search) {
-  const reponame = pathname === "/" ? "root" : pathname.replace("/", "");
+  const uuid = pathname === "/" ? "root" : pathname.replace("/", "");
 
   const searchParams = new URLSearchParams(search);
 
@@ -40,7 +40,7 @@ export async function changeRepo(pathname, search) {
 
   const { repo, schema } = searchParams.has("~")
     ? await clone(remote, token)
-    : await find(reponame);
+    : await find(uuid, undefined);
 
   if (!searchParams.has("_")) {
     searchParams.set("_", pickDefaultBase(schema));

@@ -182,6 +182,8 @@ export async function onRepoChange(pathname, search) {
     result = await changeRepo("/", "_=repo");
   }
 
+  // TODO somewhere here in case of error doesn't change url to root
+
   const { repo, schema, searchParams } = result;
 
   setStore(

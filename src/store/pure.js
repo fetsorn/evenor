@@ -358,12 +358,12 @@ export function changeSearchParams(searchParams, field, value) {
   return searchParams;
 }
 
-export function makeURL(searchParams, sortBy, repoUUID, reponame) {
+export function makeURL(searchParams, sortBy, repoUUID) {
   if (sortBy) {
     searchParams.set(".sortBy", sortBy);
   }
 
-  const pathname = repoUUID === "root" ? "#" : `#/${reponame}`;
+  const pathname = repoUUID === "root" ? "#" : `#/${repoUUID}`;
 
   const queryString = searchParams.toString();
 

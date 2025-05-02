@@ -51,11 +51,11 @@ describe("find", () => {
       throw Error("error");
     });
 
-    await expect(() => find(stub.reponame)).rejects.toThrowError();
+    await expect(() => find(undefined, stub.reponame)).rejects.toThrowError();
   });
 
   test("finds the root", async () => {
-    const result = await find("root");
+    const result = await find("root", undefined);
 
     expect(result).toStrictEqual({
       schema: schemaRoot,
@@ -70,7 +70,7 @@ describe("find", () => {
 
     readSchema.mockImplementation(() => stub.schema);
 
-    const result = await find(stub.uuid);
+    const result = await find(stub.uuid, undefined);
 
     expect(api.select).toHaveBeenCalledWith("root", {
       _: "repo",

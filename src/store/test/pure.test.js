@@ -228,13 +228,13 @@ describe("makeURL", () => {
   test("sets repo", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "uuid", "name"),
-    ).toStrictEqual("#/name?_=a&a=1&b=2");
+    ).toStrictEqual("#/uuid?_=a&a=1&b=2");
   });
 
   test("sets sortBy", () => {
     expect(
       makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "uuid", "name"),
-    ).toStrictEqual("#/name?_=a&a=1&b=2&.sortBy=b");
+    ).toStrictEqual("#/uuid?_=a&a=1&b=2&.sortBy=b");
   });
 });
 

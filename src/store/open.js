@@ -8,15 +8,25 @@ import {
 } from "@/store/record.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
-export async function find(uuid) {
+export async function find(uuid, reponame) {
   if (uuid === "root")
     return {
       repo: { _: "repo", repo: "root" },
       schema: schemaRoot,
     };
 
+  const uuidPartial = uuid !== undefined ? { repo: uuid } : {};
+
+  const namePartial = reponame !== undefined ? { reponame } : {};
+
+  const query = {
+    _: "repo",
+    ...uuidPartial,
+    ...namePartial,
+  };
+
   // find uuid in root folder
-  const [repo] = await api.select("root", { _: "repo", repo: uuid });
+  const [repo] = await api.select("root", query);
 
   const { repo: repoUUID } = repo;
 

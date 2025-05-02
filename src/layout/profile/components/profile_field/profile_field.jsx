@@ -1,4 +1,4 @@
-import { useContext } from "solid-js";
+import { useContext, createEffect } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
 import {
   StoreContext,
@@ -40,8 +40,14 @@ export function Foo(props) {
 }
 
 export function ProfileField(props) {
+  // if props.items is not a list, treat is as list
   const items = () =>
     Array.isArray(props.items) ? props.items : [props.items];
+
+  // and make sure props.items becomes a list in the store
+  createEffect(() => {
+    if (!Array.isArray(props.items)) onRecordEdit(props.path, [props.items]);
+  });
 
   return (
     <>

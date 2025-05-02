@@ -38,9 +38,15 @@ export function ProfileValue(props) {
           const { selectionStart, selectionEnd, selectionDirection } =
             event.currentTarget;
 
-          await onRecordEdit(props.path, event.target.value);
+          /* TODO remove this escape after csvs if fixed */
+          const escaped = event.target.value.replace("\n", "\\n");
 
-          event.currentTarget.value = props.value;
+          await onRecordEdit(props.path, escaped);
+
+          /* TODO remove this unescape after csvs if fixed */
+          const raw = props.value.replace("\\n", "\n");
+
+          event.currentTarget.value = raw;
 
           // https://github.com/solidjs/solid/discussions/416#discussioncomment-6833805
           //event.currentTarget.setSelectionRange(
@@ -54,7 +60,8 @@ export function ProfileValue(props) {
           width: `${calcWidth(props.value)}rem`,
         }}
       >
-        {props.value}
+        {props.value.replace("\\n", "\n")}
+        {/* TODO remove this unescape after csvs if fixed */}
       </textarea>
     </>
   );

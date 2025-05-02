@@ -50,7 +50,8 @@ export function OverviewValue(props) {
           onClick={() => setIsValue(false)}
           style={{ borderBottom: "thin solid" }}
         >
-          {props.value}{" "}
+          {props.value.replace("\\n", "\n")}{" "}
+          {/* TODO remove this unescape after csvs if fixed */}
         </button>
       </Show>
 

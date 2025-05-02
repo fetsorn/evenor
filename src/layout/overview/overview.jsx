@@ -1,23 +1,23 @@
 import { createVirtualizer } from "@tanstack/solid-virtual";
+import { useContext } from "solid-js";
+import { StoreContext } from "@/store/index.js";
 import { getSortedRecords } from "@/store/index.js";
 import { OverviewItem } from "./components/index.js";
 import styles from "./overview.module.css";
 
 export function Overview(props) {
+  const { store } = useContext(StoreContext);
   let parentRef;
 
-  const records = () => getSortedRecords();
-
-  const virtualizer = createVirtualizer({
-    get count() {
-      return records().length;
-    },
-    getScrollElement: () => parentRef,
-    estimateSize: () => 35,
-    overscan: 5,
-  });
-
-  const virtualItems = virtualizer.getVirtualItems();
+  const virtualizer = () =>
+    createVirtualizer({
+      get count() {
+        return store.records.length;
+      },
+      getScrollElement: () => parentRef,
+      estimateSize: () => 35,
+      overscan: 5,
+    });
 
   return (
     <div ref={parentRef} className={styles.overview}>
@@ -26,11 +26,11 @@ export function Overview(props) {
       <div
         className={styles.foo}
         style={{
-          height: `${virtualizer.getTotalSize()}px`,
+          height: `${virtualizer().getTotalSize()}px`,
         }}
       >
         <For
-          each={virtualItems}
+          each={virtualizer().getVirtualItems()}
           fallback={
             <span>press "new" in the top right corner to add entries</span>
           }
@@ -50,12 +50,12 @@ export function Overview(props) {
                   // https://github.com/TanStack/virtual/issues/930
                   node.dataset.index = virtualRow.index.toString();
 
-                  virtualizer.measureElement(node);
+                  virtualizer().measureElement(node);
                 }}
               >
                 <OverviewItem
                   index={virtualRow.key}
-                  item={records()[virtualRow.index]}
+                  item={getSortedRecords()[virtualRow.index]}
                 />
               </div>
             </div>

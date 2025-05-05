@@ -3,7 +3,6 @@ import { ProfileFieldItem } from "../index.js";
 import {
   StoreContext,
   onRecordEdit,
-  onClone,
   onPullRepo,
   onPushRepo,
 } from "@/store/index.js";

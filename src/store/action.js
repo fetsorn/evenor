@@ -8,11 +8,17 @@ import {
 } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 
-export async function saveRecord(repo, base, records, recordOld, recordNew) {
+export async function saveRecord(
+  repouuid,
+  base,
+  records,
+  recordOld,
+  recordNew,
+) {
   // if no root here try to create
   await createRoot();
 
-  await updateRecord(repo, base, recordNew);
+  await updateRecord(repouuid, base, recordNew);
 
   const recordsNew = records
     .filter((r) => r[base] !== recordOld[base])

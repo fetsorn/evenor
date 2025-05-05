@@ -53,24 +53,37 @@ export async function clone() {
   // input reponame in profile
   await $("aria/reponame -").setValue("foobar");
 
-  //await $("aria/add").click();
+  // add
+  await $("aria/repo -").nextElement().nextElement().click();
 
   //// click button "add remote"
-  //await $("aria/remote_tag").click();
+  await $("aria/remote_tag").click();
 
-  //await $("aria/remote_tag -").setValue("origin");
+  await $("aria/remote_tag -").setValue("origin");
 
-  // open remote tag
-  //await $("aria/remote_tag").parentElement().$("aria/with").click();
+  // with
+  await $("aria/remote_tag -")
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .click();
 
-  //await $("aria/remote_tag").parentElement().$("aria/add").click();
+  // add
+  await $("aria/remote_tag -")
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .click();
 
-  //await $("aria/remote_url").click();
+  await $("aria/remote_url").click();
 
   //// git-http-mock-server
-  //await $("aria/remote_url -").setValue("http://localhost:8174");
+  await $("aria/remote_url -").setValue("http://localhost:8174");
 
-  //await $("aria/clone").click();
+  // await $("aria/clone").click();
 
   //// wait for clone
   //await new Promise((resolve) => setTimeout(resolve, 500));

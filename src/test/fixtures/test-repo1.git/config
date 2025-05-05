@@ -1,0 +1,6 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = true
+[remote "origin"]
+	url = /home/fetsorn/mm/codes/evenor/src/test/fixtures/./test-repo1

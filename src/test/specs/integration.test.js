@@ -90,9 +90,13 @@ export function t() {
 
     await clone();
 
-    //await save();
+    await save();
 
-    // check that one record in the overview
+    await open();
+
+    const element = await $("aria/found");
+
+    await expect(element).toHaveText("found 7");
   });
 
   //it("should pull a repo", async () => {

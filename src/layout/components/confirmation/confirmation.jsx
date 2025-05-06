@@ -18,7 +18,14 @@ export function Confirmation(props) {
       <>
         <span className={"confirmationQuestion"}>{props.question} </span>
 
-        <button className={"confirmationYes"} onClick={() => props.onAction()}>
+        <button
+          className={"confirmationYes"}
+          onClick={async () => {
+            await props.onAction();
+
+            setConfirmation(false);
+          }}
+        >
           Yes{" "}
         </button>
 

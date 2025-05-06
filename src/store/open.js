@@ -47,11 +47,7 @@ export async function clone(url, token, repouuid, reponame) {
 
   const repoUUIDRemote = repouuid ?? crypto.subtle.digest("SHA-256", encoded);
 
-  // TODO rimraf the folder if it already exists
   await api.clone(repoUUIDRemote, url, token);
-
-  // TODO add new repo to root
-  // TODO return a repo record
 
   const pathname = new URL(url).pathname;
 

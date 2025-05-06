@@ -199,14 +199,14 @@ export async function onRepoChange(pathname, search) {
 }
 
 export async function onClone(
-  repo,
+  repouuid,
   reponame,
   remoteTag,
   remoteUrl,
   remoteToken,
 ) {
   try {
-    const { repo } = await clone(remoteUrl, remoteToken, repo, reponame);
+    const { repo } = await clone(remoteUrl, remoteToken, repouuid, reponame);
 
     setStore(
       produce((state) => {

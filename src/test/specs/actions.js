@@ -85,6 +85,8 @@ export async function clone() {
 
   await $("aria/clone").click();
 
+  await $("aria/Yes").click();
+
   // wait for clone
   await new Promise((resolve) => setTimeout(resolve, 10000));
 }

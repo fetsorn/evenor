@@ -111,19 +111,16 @@ export async function commit(uuid) {
 }
 
 export async function clone(uuid, remoteUrl, remoteToken, name) {
+  const dir = nameDir(uuid, name);
+
   try {
     await findDir(uuid);
 
-    throw Error("1");
-  } catch (e) {
-    if (e.message === "1") {
-      throw Error(`could not clone, directory for ${uuid} exists`);
-    }
-
+    // remove existing directory
+    await rimraf(dir);
+  } catch {
     // do nothing
   }
-
-  const dir = nameDir(uuid, name);
 
   const options = {
     fs,

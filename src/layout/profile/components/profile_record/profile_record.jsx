@@ -1,6 +1,6 @@
 import { useContext } from "solid-js";
 import { StoreContext, onRecordEdit, onClone } from "@/store/index.js";
-import { Spoiler } from "@/layout/components/index.js";
+import { Spoiler, Confirmation } from "@/layout/components/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
 
 export function ProfileRecord(props) {
@@ -31,26 +31,26 @@ export function ProfileRecord(props) {
       />
 
       <Show when={isRemote()}>
-        <button
-          onClick={() =>
+        <Confirmation
+          action={`clone...`}
+          question={"really overwrite?"}
+          onAction={() =>
             onClone(
               store.record.repo,
               store.record.reponame[0],
               props.record.remote_tag,
-              props.record.remote_url[0],
+              Array.isArray(props.record.remote_url)
+                ? props.record.remote_url[0]
+                : props.record.remote_url,
               props.record.remote_token === undefined
                 ? undefined
                 : props.record.remote_token[0],
             )
           }
-        >
-          clone
-        </button>
+        />
 
         <button
-          onClick={() =>
-            onPullRepo(store.record.repo, props.record.remote_name)
-          }
+          onClick={() => onPullRepo(store.record.repo, props.record.remote_tag)}
         >
           pull{" "}
         </button>

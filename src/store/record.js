@@ -156,16 +156,20 @@ export async function onZip(uuid) {
   await api.zip(uuid);
 }
 
-export async function pull(repo, remote) {
-  await api.commit(repo);
+export async function pull(repouuid, remoteName, remoteUrl, remoteToken) {
+  await api.commit(repouuid);
 
-  await api.pull(repo, remote);
+  await api.pull(repouuid, remoteName, remoteUrl, remoteToken);
 }
 
-export async function push(repo, remote) {
-  await api.commit(repo);
+export async function push(repouuid, remoteName, remoteUrl, remoteToken) {
+  await api.commit(repouuid);
 
-  await api.uploadBlobsLFS(remote);
+  try {
+    await api.uploadBlobsLFS(repouuid, remoteUrl, remoteToken);
+  } catch {
+    // do nothing
+  }
 
-  await api.push(repo, remote);
+  await api.push(repouuid, remoteName, remoteUrl, remoteToken);
 }

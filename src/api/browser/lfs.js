@@ -183,9 +183,7 @@ export async function fetchAsset(uuid, filename) {
 }
 
 // called without "files" on push
-export async function uploadBlobsLFS(uuid, remote, files) {
-  const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
-
+export async function uploadBlobsLFS(uuid, remoteUrl, remoteToken, files) {
   const dir = await findDir(uuid);
 
   let assets;

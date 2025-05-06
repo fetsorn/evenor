@@ -50,6 +50,8 @@ export async function close() {
 }
 
 export async function clone() {
+  await make();
+
   // input reponame in profile
   await $("aria/reponame -").setValue("foobar");
 
@@ -89,25 +91,50 @@ export async function clone() {
 
   // wait for clone
   await new Promise((resolve) => setTimeout(resolve, 5000));
+
+  await save();
 }
 
 export async function updateFixture() {}
 
 export async function pull() {
+  // edit
   await edit();
+
+  // with
+  await $("aria/remote_tag -")
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .click();
+
+  await $("aria/remote_url -").setValue("http://localhost:8174/test-repo2.git");
 
   await $("aria/pull").click();
 
+  await new Promise((resolve) => setTimeout(resolve, 5000));
+
   await save();
-  // find button "pull"
-  // click button "pull"
 }
 
 export async function push() {
-  // click push
+  // edit
   await edit();
 
+  // with
+  await $("aria/remote_tag -")
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .nextElement()
+    .click();
+
+  await $("aria/remote_url -").setValue("http://localhost:8174/test-repo1.git");
+
   await $("aria/push").click();
+
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   await save();
 }

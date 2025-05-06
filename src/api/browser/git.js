@@ -217,12 +217,8 @@ export async function getRemote(uuid, remoteName) {
   return [remoteUrl, remoteToken];
 }
 
-// mast pass remote name for fastForward
-export async function pull(uuid, remote) {
-  const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
-
-  if (remoteUrl === undefined) throw Error("can't pull, remote undefined");
-
+// must pass remote name for fastForward
+export async function pull(uuid, remoteName, remoteUrl, remoteToken) {
   const dir = await findDir(uuid);
 
   const tokenPartial = remoteToken
@@ -240,17 +236,13 @@ export async function pull(uuid, remote) {
     http,
     dir,
     url: remoteUrl,
-    remote,
+    remote: remoteName,
     ...tokenPartial,
   });
 }
 
 // must pass remote name here for push
-export async function push(uuid, remote) {
-  const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
-
-  if (remoteUrl === undefined) throw Error("can't push, remote undefined");
-
+export async function push(uuid, remoteName, remoteUrl, remoteToken) {
   const dir = await findDir(uuid);
 
   const tokenPartial = remoteToken
@@ -267,7 +259,7 @@ export async function push(uuid, remote) {
     force: true,
     dir,
     url: remoteUrl,
-    remote,
+    remote: remoteName,
     ...tokenPartial,
   });
 }

@@ -84,59 +84,53 @@ export function t() {
   //  await expect(element).toBeDisplayed();
   //});
 
-  it("should clone a repo", async () => {
-    // check that no records in the overview
-    await make();
-
-    await clone();
-
-    await save();
-
-    await open();
-
-    const element = await $("aria/found");
-
-    await expect(element).toHaveText("found 7");
-  });
-
-  //it("should pull a repo", async () => {
-  //  await make();
+  //it("should clone a repo", async () => {
+  //  // check that no records in the overview
 
   //  await clone();
 
-  //  await save();
+  //  await open();
 
-  //  await updateFixture();
+  //  const element = await $("aria/found");
+
+  //  await expect(element).toHaveText("found 7");
+  //});
+
+  //it("should pull a repo", async () => {
+  //  await clone();
 
   //  await pull();
 
   //  // check that record changed in the overview
-  //});
-
-  //it("should push a repo", async () => {
-  //  await make();
-
-  //  await clone();
-
-  //  await save();
-
   //  await open();
 
-  //  await make();
+  //  const element = await $("aria/found");
 
-  //  await $("aria/add").click();
-
-  //  await $("aria/datum").click();
-
-  //  // input reponame in profile
-  //  await $("aria/datum -").setValue("baz");
-
-  //  await save();
-
-  //  await close();
-
-  //  await push();
-
-  //  // check that remote repo changed
+  //  await expect(element).toHaveText("found 6");
   //});
+
+  it("should push a repo", async () => {
+    await clone();
+
+    await pull();
+
+    await push();
+
+    await make();
+
+    await $("aria/add").click();
+
+    await $("aria/datum").click();
+
+    // input reponame in profile
+    await $("aria/datum -").setValue("baz");
+
+    await save();
+
+    await close();
+
+    await push();
+
+    // check that remote repo changed
+  });
 }

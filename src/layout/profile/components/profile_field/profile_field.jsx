@@ -1,11 +1,6 @@
 import { useContext, createEffect } from "solid-js";
 import { ProfileFieldItem } from "../index.js";
-import {
-  StoreContext,
-  onRecordEdit,
-  onPullRepo,
-  onPushRepo,
-} from "@/store/index.js";
+import { StoreContext, onRecordEdit } from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 
 // can't move this to field item

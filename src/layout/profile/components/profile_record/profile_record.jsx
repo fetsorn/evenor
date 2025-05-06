@@ -1,5 +1,11 @@
 import { useContext } from "solid-js";
-import { StoreContext, onRecordEdit, onClone } from "@/store/index.js";
+import {
+  StoreContext,
+  onRecordEdit,
+  onClone,
+  onPullRepo,
+  onPushRepo,
+} from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
 
@@ -49,12 +55,38 @@ export function ProfileRecord(props) {
         />
 
         <button
-          onClick={() => onPullRepo(store.record.repo, props.record.remote_tag)}
+          onClick={() =>
+            onPullRepo(
+              store.record.repo,
+              props.record.remote_tag,
+              Array.isArray(props.record.remote_url)
+                ? props.record.remote_url[0]
+                : props.record.remote_url,
+              props.record.remote_token === undefined
+                ? undefined
+                : props.record.remote_token[0],
+            )
+          }
         >
           pull{" "}
         </button>
 
-        <button onClick={() => onPushRepo()}>push </button>
+        <button
+          onClick={() =>
+            onPushRepo(
+              store.record.repo,
+              props.record.remote_tag,
+              Array.isArray(props.record.remote_url)
+                ? props.record.remote_url[0]
+                : props.record.remote_url,
+              props.record.remote_token === undefined
+                ? undefined
+                : props.record.remote_token[0],
+            )
+          }
+        >
+          push{" "}
+        </button>
       </Show>
 
       <Spoiler

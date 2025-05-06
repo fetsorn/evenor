@@ -2,9 +2,7 @@ import { $, expect, browser } from "@wdio/globals";
 import {
   make,
   save,
-  edit,
   newRepo,
-  updateFixture,
   wipe,
   open,
   close,
@@ -14,100 +12,100 @@ import {
 } from "./actions.js";
 
 export function t() {
-  //it("should create a repo", async () => {
-  //  await make();
+  it("should create a repo", async () => {
+    await make();
 
-  //  // input reponame in profile
-  //  await $("aria/reponame -").setValue("foobar");
+    // input reponame in profile
+    await $("aria/reponame -").setValue("foobar");
 
-  //  await save();
+    await save();
 
-  //  const element = await $("aria/foobar");
+    const element = await $("aria/foobar");
 
-  //  // check that one record in the overview
-  //  await expect(element).toBeDisplayed();
-  //});
+    // check that one record in the overview
+    await expect(element).toBeDisplayed();
+  });
 
-  //it("should delete a repo", async () => {
-  //  newRepo();
+  it("should delete a repo", async () => {
+    newRepo();
 
-  //  await wipe();
+    await wipe();
 
-  //  const element = await $("aria/found");
+    const element = await $("aria/found");
 
-  //  await expect(element).toHaveText("found 0");
-  //});
+    await expect(element).toHaveText("found 0");
+  });
 
-  //it("should open a repo", async () => {
-  //  await expect(browser).toHaveUrl(
-  //    expect.stringContaining("#?_=repo&.sortBy=repo"),
-  //  );
+  it("should open a repo", async () => {
+    await expect(browser).toHaveUrl(
+      expect.stringContaining("#?_=repo&.sortBy=repo"),
+    );
 
-  //  await newRepo();
+    await newRepo();
 
-  //  // check that one record in the overview
-  //  await open();
+    // check that one record in the overview
+    await open();
 
-  //  // check that url changed
-  //  await expect(browser).toHaveUrl(
-  //    expect.stringContaining("#/foobar?_=event&.sortBy=actdate"),
-  //  );
+    // check that url changed
+    await expect(browser).toHaveUrl(
+      expect.stringContaining("#/foobar?_=event&.sortBy=actdate"),
+    );
 
-  //  await close();
+    await close();
 
-  //  await expect(browser).toHaveUrl(
-  //    expect.stringContaining("#?_=repo&.sortBy=repo"),
-  //  );
-  //});
+    await expect(browser).toHaveUrl(
+      expect.stringContaining("#?_=repo&.sortBy=repo"),
+    );
+  });
 
-  //it("should create an event", async () => {
-  //  await newRepo();
+  it("should create an event", async () => {
+    await newRepo();
 
-  //  await open();
+    await open();
 
-  //  // check that no records in the overview
-  //  await make();
+    // check that no records in the overview
+    await make();
 
-  //  await $("aria/add").click();
+    await $("aria/add").click();
 
-  //  await $("aria/datum").click();
+    await $("aria/datum").click();
 
-  //  // input reponame in profile
-  //  await $("aria/datum -").setValue("baz");
+    // input reponame in profile
+    await $("aria/datum -").setValue("baz");
 
-  //  await save();
+    await save();
 
-  //  // check that one record in the overview
-  //  const element = await $("aria/baz");
+    // check that one record in the overview
+    const element = await $("aria/baz");
 
-  //  // check that one record in the overview
-  //  await expect(element).toBeDisplayed();
-  //});
+    // check that one record in the overview
+    await expect(element).toBeDisplayed();
+  });
 
-  //it("should clone a repo", async () => {
-  //  // check that no records in the overview
+  it("should clone a repo", async () => {
+    // check that no records in the overview
 
-  //  await clone();
+    await clone();
 
-  //  await open();
+    await open();
 
-  //  const element = await $("aria/found");
+    const element = await $("aria/found");
 
-  //  await expect(element).toHaveText("found 7");
-  //});
+    await expect(element).toHaveText("found 7");
+  });
 
-  //it("should pull a repo", async () => {
-  //  await clone();
+  it("should pull a repo", async () => {
+    await clone();
 
-  //  await pull();
+    await pull();
 
-  //  // check that record changed in the overview
-  //  await open();
+    // check that record changed in the overview
+    await open();
 
-  //  const element = await $("aria/found");
+    const element = await $("aria/found");
 
-  //  await expect(element).toHaveText("found 6");
-  //});
+    await expect(element).toHaveText("found 6");
+  });
 
   it("should push a repo", async () => {
     await clone();

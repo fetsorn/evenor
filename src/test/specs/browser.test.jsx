@@ -10,7 +10,7 @@ describe("integration", () => {
 
   t();
 
-  afterEach(async () => {
-    await browser.debug();
-  });
+  //afterEach(async () => {
+  //  await browser.debug();
+  //});
 });

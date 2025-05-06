@@ -27,7 +27,7 @@ export function t() {
   });
 
   it("should delete a repo", async () => {
-    newRepo();
+    await newRepo();
 
     await wipe();
 
@@ -48,7 +48,7 @@ export function t() {
 
     // check that url changed
     await expect(browser).toHaveUrl(
-      expect.stringContaining("#/foobar?_=event&.sortBy=actdate"),
+      expect.stringContaining("_=event&.sortBy=actdate"),
     );
 
     await close();

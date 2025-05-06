@@ -40,8 +40,10 @@ export async function open() {
   // find button "open event"
   await $("aria/open").click();
 
+  await new Promise((resolve) => setTimeout(resolve, 500));
+
   // click button "open event"
-  await $("aria/event").click();
+  await $("aria/open").nextElement().click();
 }
 
 export async function close() {

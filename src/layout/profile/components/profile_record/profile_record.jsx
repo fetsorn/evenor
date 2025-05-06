@@ -38,7 +38,6 @@ export function ProfileRecord(props) {
             onClone(
               store.record.repo,
               store.record.reponame[0],
-              props.record.remote_tag,
               Array.isArray(props.record.remote_url)
                 ? props.record.remote_url[0]
                 : props.record.remote_url,

@@ -83,7 +83,7 @@ export async function createRoot() {
   }
 }
 
-// clone or populate repo, write git state
+// write schema and git state
 export async function saveRepoRecord(record) {
   const repoUUID = record.repo;
 

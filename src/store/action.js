@@ -45,7 +45,7 @@ export async function changeRepo(pathname, search) {
   const token = searchParams.get("-") ?? "";
 
   const { repo, schema } = searchParams.has("~")
-    ? await clone(remote, token)
+    ? await clone(undefined, undefined, remote, token)
     : await find(uuid, undefined);
 
   if (!searchParams.has("_")) {

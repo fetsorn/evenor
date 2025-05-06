@@ -35,7 +35,7 @@ export async function find(uuid, reponame) {
   return { repo, schema };
 }
 
-export async function clone(url, token, repouuid, reponame) {
+export async function clone(repouuid, reponame, url, token) {
   // if no root here try to create
   await createRoot();
 
@@ -47,7 +47,7 @@ export async function clone(url, token, repouuid, reponame) {
 
   const repoUUIDRemote = repouuid ?? crypto.subtle.digest("SHA-256", encoded);
 
-  await api.clone(repoUUIDRemote, url, token);
+  await api.clone(repoUUIDRemote, reponame, url, token);
 
   const pathname = new URL(url).pathname;
 
@@ -77,10 +77,6 @@ export async function clone(url, token, repouuid, reponame) {
       remote_url: url,
     },
   };
-
-  await updateRepo(recordClone);
-
-  await saveRepoRecord(recordClone);
 
   return { schema: schemaClone, repo: recordClone };
 }

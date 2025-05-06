@@ -20,7 +20,9 @@ export async function createRepo(uuid, name) {
     try {
       const existingRepo = await findDir(uuid);
 
-      await fs.promises.rename(`/${existingRepo}`, dir);
+      if (existingRepo !== dir) {
+        await fs.promises.rename(`/${existingRepo}`, dir);
+      }
     } catch {
       await fs.promises.mkdir(dir);
     }
@@ -110,7 +112,7 @@ export async function commit(uuid) {
   }
 }
 
-export async function clone(uuid, remoteUrl, remoteToken, name) {
+export async function clone(uuid, name, remoteUrl, remoteToken) {
   const dir = nameDir(uuid, name);
 
   try {
@@ -142,6 +144,7 @@ export async function clone(uuid, remoteUrl, remoteToken, name) {
     // if clone failed, remove directory
     await rimraf(dir);
 
+    console.log(e);
     throw e;
   }
 

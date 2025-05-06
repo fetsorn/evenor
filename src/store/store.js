@@ -198,15 +198,9 @@ export async function onRepoChange(pathname, search) {
   await onSearch("", undefined);
 }
 
-export async function onClone(
-  repouuid,
-  reponame,
-  remoteTag,
-  remoteUrl,
-  remoteToken,
-) {
+export async function onClone(repouuid, reponame, remoteUrl, remoteToken) {
   try {
-    const { repo } = await clone(remoteUrl, remoteToken, repouuid, reponame);
+    const { repo } = await clone(repouuid, reponame, remoteUrl, remoteToken);
 
     setStore(
       produce((state) => {

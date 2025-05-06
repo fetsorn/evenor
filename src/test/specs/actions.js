@@ -83,12 +83,12 @@ export async function clone() {
   // git-http-mock-server
   await $("aria/remote_url -").setValue("http://localhost:8174/test-repo1.git");
 
-  await $("aria/clone").click();
+  await $("aria/clone...").click();
 
   await $("aria/Yes").click();
 
   // wait for clone
-  await new Promise((resolve) => setTimeout(resolve, 10000));
+  await new Promise((resolve) => setTimeout(resolve, 5000));
 }
 
 export async function updateFixture() {}

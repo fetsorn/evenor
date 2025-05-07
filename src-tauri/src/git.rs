@@ -1,67 +1,74 @@
 use std::path::Path;
+use regex::Regex;
 use tauri::{AppHandle, Manager};
+use std::fs::{create_dir, read_dir, rename};
 use crate::error::{Error, Result};
 use git2::{Cred, RemoteCallbacks, Repository};
 use crate::io::find_dataset;
 
 #[tauri::command]
-pub async fn create_repo() {
+pub async fn create_repo(app: AppHandle, uuid: &str, name: Option<&str>) -> Result<()> {
+    let store_dir = app.path().app_data_dir()?.join("store");
 
+    if !store_dir.exists() {
+        create_dir(&store_dir)?;
+    }
+
+    let dataset_filename = match name {
+        None => uuid,
+        Some(s) => &format!("{}-{}", uuid, s),
+    };
+
+    let dataset_dir = store_dir.join(dataset_filename);
+
+    if uuid == "root" {
+        create_dir(dataset_dir)?;
+
+        return Ok(())
+    }
+
+    let existing_dataset = read_dir(store_dir)?.find(|entry| {
+        let entry = entry.as_ref().unwrap();
+
+        let file_name = entry.file_name();
+
+        let entry_path: &str = file_name.to_str().unwrap();
+
+        Regex::new(&format!("^{}", uuid))
+            .unwrap()
+            .is_match(entry_path)
+    });
+
+    match existing_dataset {
+        None => {
+            create_dir(&dataset_dir)?;
+
+            match Repository::init(&dataset_dir) {
+                Ok(repo) => repo,
+                Err(e) => panic!("failed to init: {}", e),
+            };
+
+            let gitignore_path = dataset_dir.join(".gitignore");
+
+            std::fs::write(&gitignore_path, ".DS_Store")?;
+
+            let csvscsv_path = dataset_dir.join(".csvs.csv");
+
+            std::fs::write(&csvscsv_path, "csvs,0.0.2")?;
+
+            commit(app, uuid)?;
+        }
+        Some(s) => {
+            let foo = s?;
+
+            if foo.path() != dataset_dir {
+                rename(foo.path(), &dataset_dir)?;
+            }
+        }
+    }
+
+    Ok(())
 }
-
-//#[tauri::command]
-//pub fn ensure(app: AppHandle, uuid: &str, name: Option<&str>) -> Result<()> {
-//    let store_dir = app.path().app_data_dir()?.join("store");
-//
-//    if (!store_dir.exists()) {
-//        create_dir(&store_dir);
-//    }
-//
-//    let dataset_filename = match name {
-//        None => uuid,
-//        Some(s) => &format!("{}-{}", uuid, s),
-//    };
-//
-//    let dataset_dir = store_dir.join(dataset_filename);
-//
-//    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-//        let entry = entry.as_ref().unwrap();
-//
-//        let file_name = entry.file_name();
-//
-//        let entry_path: &str = file_name.to_str().unwrap();
-//
-//        Regex::new(&format!("^{}", uuid))
-//            .unwrap()
-//            .is_match(entry_path)
-//    });
-//
-//    match existing_dataset {
-//        None => {
-//            create_dir(&dataset_dir);
-//
-//            match Repository::init(&dataset_dir) {
-//                Ok(repo) => repo,
-//                Err(e) => panic!("failed to init: {}", e),
-//            };
-//
-//            let gitignore_path = dataset_dir.join(".gitignore");
-//
-//            std::fs::write(&gitignore_path, ".DS_Store");
-//
-//            let csvscsv_path = dataset_dir.join(".csvs.csv");
-//
-//            std::fs::write(&csvscsv_path, "csvs,0.0.2");
-//
-//            commit(app, uuid);
-//        }
-//        Some(s) => {
-//            rename(s?.path(), &dataset_dir);
-//        }
-//    }
-//
-//    Ok(())
-//}
 
 #[tauri::command]
 pub async fn clone(
@@ -104,7 +111,7 @@ pub async fn clone(
     builder.fetch_options(fo);
 
     // Clone the project.
-    builder.clone(remote_url, &dataset_dir_path);
+    builder.clone(remote_url, &dataset_dir_path)?;
 
     // set config.remote.origin.url
 
@@ -134,7 +141,7 @@ pub async fn pull(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
 
     repo.pull(&settings, &status, remote, true, move |progress| {
         // do nothing
-    });
+    })?;
 
     Ok(())
 }
@@ -150,7 +157,7 @@ pub async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
 
     let mut remote = repo.find_remote(remote)?;
 
-    remote.push::<String>(&[], None);
+    remote.push::<String>(&[], None)?;
 
     Ok(())
 }
@@ -189,7 +196,7 @@ pub async fn add_remote(
         Err(e) => panic!("failed to open: {}", e),
     };
 
-    repo.remote(remote_name, remote_url);
+    repo.remote(remote_name, remote_url)?;
 
     Ok(())
 }
@@ -269,7 +276,7 @@ pub fn commit(app: AppHandle, uuid: &str) -> Result<()> {
                 &message,     // commit message
                 &tree,        // tree
                 &[&c],
-            ); // parents
+            )?; // parents
         }
         Err(_) => {
             repo.commit(
@@ -279,7 +286,7 @@ pub fn commit(app: AppHandle, uuid: &str) -> Result<()> {
                 &message,     // commit message
                 &tree,        // tree
                 &[],
-            ); // parents
+            )?; // parents
         }
     }
 

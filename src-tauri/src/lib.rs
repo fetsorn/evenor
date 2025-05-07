@@ -1,4 +1,4 @@
-mod bin;
+#![allow(warnings)]
 mod csvs;
 mod error;
 mod git;

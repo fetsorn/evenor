@@ -5,6 +5,7 @@ mod git;
 mod io;
 mod lfs;
 mod repository;
+mod test;
 mod zip;
 use crate::csvs::{delete_record, select, select_stream, update_record};
 pub use crate::error::{Error, Result};

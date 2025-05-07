@@ -68,11 +68,11 @@ export async function deleteRecord(uuid, record) {
 }
 
 export async function createRepo(uuid, name) {
-  return invoke("createRepo", { uuid, name });
+  return invoke("create_repo", { uuid, name });
 }
 
 export async function createLFS(uuid, name) {
-  return invoke("createLFS", { uuid, name });
+  return invoke("create_lfs", { uuid, name });
 }
 
 export async function commit(uuid) {

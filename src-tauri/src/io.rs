@@ -3,7 +3,11 @@ use regex::Regex;
 use std::fs::read_dir;
 use tauri::{AppHandle, Manager};
 
-pub fn find_dataset(app: &AppHandle, uuid: &str) -> Result<std::path::PathBuf> {
+// find ^uuid in .local/share
+pub fn find_dataset<R: tauri::Runtime>(
+    app: &AppHandle<R>,
+    uuid: &str,
+) -> Result<std::path::PathBuf> {
     let store_dir = app.path().app_data_dir()?.join("store");
 
     let existing_dataset = read_dir(store_dir)?.find(|entry| {

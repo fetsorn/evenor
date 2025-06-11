@@ -5,33 +5,33 @@ use crate::error::{Error, Result};
 pub async fn create_lfs() {}
 
 #[tauri::command]
-pub async fn fetch_asset(app: AppHandle, uuid: &str, filename: &str) -> Result<()> {
+pub async fn fetch_asset<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, filename: &str) -> Result<()> {
     Ok(())
 }
 
 #[tauri::command]
-pub async fn put_asset(app: AppHandle, uuid: &str, filename: &str, buffer: &str) -> Result<()> {
+pub async fn put_asset<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, filename: &str, buffer: &str) -> Result<()> {
     Ok(())
 }
 
 #[tauri::command]
-pub async fn upload_file(app: AppHandle, uuid: &str) -> Result<()> {
+pub async fn upload_file<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
     Ok(())
 }
 
 #[tauri::command]
-pub async fn upload_blobs_lfs(app: AppHandle, uuid: &str, remote: &str, files: &str) -> Result<()> {
+pub async fn upload_blobs_lfs<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str, files: &str) -> Result<()> {
     Ok(())
 }
 
 #[tauri::command]
-pub async fn download_asset(app: AppHandle, uuid: &str, content: &str, filename: &str) -> Result<()> {
+pub async fn download_asset<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, content: &str, filename: &str) -> Result<()> {
     Ok(())
 }
 
 #[tauri::command]
-pub async fn download_url_from_pointer(
-    app: AppHandle,
+pub async fn download_url_from_pointer<R: tauri::Runtime>(
+    app: AppHandle<R>,
     uuid: &str,
     url: &str,
     token: &str,
@@ -41,11 +41,11 @@ pub async fn download_url_from_pointer(
 }
 
 #[tauri::command]
-pub async fn add_asset_path(app: AppHandle, uuid: &str, asset_path: &str) -> Result<()> {
+pub async fn add_asset_path<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, asset_path: &str) -> Result<()> {
     Ok(())
 }
 
 #[tauri::command]
-pub async fn list_asset_paths(app: AppHandle, uuid: &str) -> Result<()> {
+pub async fn list_asset_paths<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
     Ok(())
 }

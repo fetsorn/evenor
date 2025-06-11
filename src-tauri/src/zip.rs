@@ -8,7 +8,7 @@ use tauri_plugin_dialog::DialogExt;
 use walkdir::WalkDir;
 
 #[tauri::command]
-pub async fn zip(app: AppHandle, uuid: &str) -> Result<()> {
+pub async fn zip<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let file_path = app

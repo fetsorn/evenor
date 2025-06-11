@@ -15,7 +15,7 @@ crate-type = ["lib", "cdylib", "staticlib"]
 tauri-build = { version = "2", features = [] }
 
 [dependencies]
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["test"] }
 tauri-plugin-opener = "2"
 time = "0.3.36" # to fix a rust version error in dependency tree https://github.com/time-rs/time/issues/693
 serde = { version = "1", features = ["derive"] }

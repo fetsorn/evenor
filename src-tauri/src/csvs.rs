@@ -15,11 +15,12 @@ use csvs::{
 use crate::io::find_dataset;
 
 #[tauri::command]
-pub async fn select(app: AppHandle, uuid: &str, query: Value) -> Result<Vec<Value>> {
+pub async fn select<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, query: Value) -> Result<Vec<Value>> {
     let query: Entry = query.try_into().unwrap();
 
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
+    // needed to clone for the stream scope
     let query_for_stream = query.clone();
 
     let readable_stream = try_stream! {
@@ -53,8 +54,8 @@ pub enum SelectEvent {
 }
 
 #[tauri::command]
-pub async fn select_stream(
-    app: AppHandle,
+pub async fn select_stream<R: tauri::Runtime>(
+    app: AppHandle<R>,
     uuid: &str,
     query: Value,
     on_event: Channel<SelectEvent>,
@@ -100,7 +101,7 @@ pub async fn select_stream(
 }
 
 #[tauri::command]
-pub async fn update_record(app: AppHandle, uuid: &str, record: Value) -> Result<()> {
+pub async fn update_record<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, record: Value) -> Result<()> {
     let record: Entry = record.try_into().unwrap();
 
     let dataset_dir_path = find_dataset(&app, uuid)?;
@@ -111,7 +112,7 @@ pub async fn update_record(app: AppHandle, uuid: &str, record: Value) -> Result<
 }
 
 #[tauri::command]
-pub async fn delete_record(app: AppHandle, uuid: &str, record: Value) -> Result<()> {
+pub async fn delete_record<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, record: Value) -> Result<()> {
     let record: Entry = record.try_into().unwrap();
 
     let dataset_dir_path = find_dataset(&app, uuid)?;

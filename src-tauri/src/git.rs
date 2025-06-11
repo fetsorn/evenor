@@ -7,7 +7,7 @@ use git2::{Cred, RemoteCallbacks, Repository};
 use crate::io::find_dataset;
 
 #[tauri::command]
-pub async fn create_repo(app: AppHandle, uuid: &str, name: Option<&str>) -> Result<()> {
+pub async fn create_repo<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<()> {
     let store_dir = app.path().app_data_dir()?.join("store");
 
     if !store_dir.exists() {
@@ -71,8 +71,8 @@ pub async fn create_repo(app: AppHandle, uuid: &str, name: Option<&str>) -> Resu
 }
 
 #[tauri::command]
-pub async fn clone(
-    app: AppHandle,
+pub async fn clone<R: tauri::Runtime>(
+    app: AppHandle<R>,
     uuid: &str,
     remote_url: &str,
     remote_token: &str,
@@ -121,7 +121,7 @@ pub async fn clone(
 }
 
 #[tauri::command]
-pub async fn pull(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
+pub async fn pull<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let repo = crate::repository::Repository::open(&dataset_dir_path)?;
@@ -147,7 +147,7 @@ pub async fn pull(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
 }
 
 #[tauri::command]
-pub async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
+pub async fn push<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -163,7 +163,7 @@ pub async fn push(app: AppHandle, uuid: &str, remote: &str) -> Result<()> {
 }
 
 #[tauri::command]
-pub async fn list_remotes(app: AppHandle, uuid: &str) -> Result<Vec<String>> {
+pub async fn list_remotes<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -182,8 +182,8 @@ pub async fn list_remotes(app: AppHandle, uuid: &str) -> Result<Vec<String>> {
 }
 
 #[tauri::command]
-pub async fn add_remote(
-    app: AppHandle,
+pub async fn add_remote<R: tauri::Runtime>(
+    app: AppHandle<R>,
     uuid: &str,
     remote_name: &str,
     remote_url: &str,
@@ -202,7 +202,7 @@ pub async fn add_remote(
 }
 
 #[tauri::command]
-pub async fn get_remote(app: AppHandle, uuid: &str, remote: &str) -> Result<(String, String)> {
+pub async fn get_remote<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<(String, String)> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -228,7 +228,7 @@ pub fn find_last_commit(repo: &Repository) -> Result<git2::Commit> {
 }
 
 #[tauri::command]
-pub fn commit(app: AppHandle, uuid: &str) -> Result<()> {
+pub fn commit<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let repo = match Repository::open(dataset_dir_path) {

@@ -1354,6 +1354,7 @@ dependencies = [
 name = "evenor"
 version = "2.5.0"
 dependencies = [
+ "assert-json-diff",
  "async-stream",
  "backtrace",
  "bstr",

@@ -25,14 +25,14 @@ export async function createRepo(uuid, name) {
       }
     } catch {
       await fs.promises.mkdir(dir);
+
+      await git.init({ fs, dir, defaultBranch: "main" });
+
+      await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
+
+      await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
     }
   }
-
-  await git.init({ fs, dir, defaultBranch: "main" });
-
-  await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
-
-  await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
 }
 
 export async function commit(uuid) {

@@ -1,4 +1,5 @@
 use std::path::Path;
+use mockall::automock;
 use regex::Regex;
 use tauri::{AppHandle, Manager};
 use std::fs::{create_dir, read_dir, rename};
@@ -6,9 +7,23 @@ use crate::error::{Error, Result};
 use git2::{Cred, RemoteCallbacks, Repository};
 use crate::io::find_dataset;
 
-#[tauri::command]
-pub async fn create_repo<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<()> {
-    let store_dir = app.path().app_data_dir()?.join("store");
+#[automock]
+pub trait AppDataDir {
+    fn app_data_dir(&self) -> Result<std::path::PathBuf>;
+}
+
+impl<R: tauri::Runtime> AppDataDir for AppHandle<R> {
+    fn app_data_dir(&self) -> Result<std::path::PathBuf> {
+        Ok(self.path().app_data_dir()?.join("store"))
+    }
+}
+
+fn get_store_dir<R: AppDataDir>(app: &R) -> Result<std::path::PathBuf> {
+    app.app_data_dir()
+}
+
+fn name_dir<R: tauri::Runtime>(app: &AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<std::path::PathBuf> {
+    let store_dir = get_store_dir(app)?;
 
     if !store_dir.exists() {
         create_dir(&store_dir)?;
@@ -21,25 +36,55 @@ pub async fn create_repo<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, name:
 
     let dataset_dir = store_dir.join(dataset_filename);
 
-    if uuid == "root" {
-        create_dir(dataset_dir)?;
+    Ok(dataset_dir)
+}
 
-        return Ok(())
-    }
+fn find_dir<R: tauri::Runtime>(app: &AppHandle<R>, uuid: &str) -> Result<Option<std::fs::DirEntry>> {
+    let store_dir = app.path().app_data_dir()?.join("store");
 
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
+    let existing_entry = read_dir(store_dir)?.find(|entry| {
+        let entry = match entry.as_ref() {
+            Err(_) => return false,
+            Ok(e) => e
+        };
 
         let file_name = entry.file_name();
 
-        let entry_path: &str = file_name.to_str().unwrap();
+        let entry_path: &str = match file_name.to_str() {
+            None => return false,
+            Some(p) => p
+        };
 
         Regex::new(&format!("^{}", uuid))
             .unwrap()
             .is_match(entry_path)
     });
 
+    let existing_dataset = existing_entry.map(|foo| foo.unwrap());
+
+    Ok(existing_dataset)
+}
+
+#[tauri::command]
+pub async fn create_repo<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<()> {
+    let dataset_dir = name_dir(&app, uuid, name)?;
+
+    if uuid == "root" {
+        create_dir(dataset_dir)?;
+
+        return Ok(())
+    }
+
+    let existing_dataset = find_dir(&app, uuid)?;
+
     match existing_dataset {
+        Some(s) => {
+            let foo = s;
+
+            if foo.path() != dataset_dir {
+                rename(foo.path(), &dataset_dir)?;
+            }
+        }
         None => {
             create_dir(&dataset_dir)?;
 
@@ -55,15 +100,6 @@ pub async fn create_repo<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, name:
             let csvscsv_path = dataset_dir.join(".csvs.csv");
 
             std::fs::write(&csvscsv_path, "csvs,0.0.2")?;
-
-            commit(app, uuid)?;
-        }
-        Some(s) => {
-            let foo = s?;
-
-            if foo.path() != dataset_dir {
-                rename(foo.path(), &dataset_dir)?;
-            }
         }
     }
 

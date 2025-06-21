@@ -1,11 +1,12 @@
 use std::path::Path;
-use mockall::automock;
 use regex::Regex;
 use tauri::{AppHandle, Manager};
 use std::fs::{create_dir, read_dir, rename};
 use crate::error::{Error, Result};
 use git2::{Cred, RemoteCallbacks, Repository};
 use crate::io::find_dataset;
+use mockall::*;
+use mockall::predicate::*;
 
 #[automock]
 pub trait AppDataDir {

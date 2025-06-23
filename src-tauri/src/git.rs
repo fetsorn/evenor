@@ -4,18 +4,16 @@ use git2::{Cred, RemoteCallbacks, Repository};
 use regex::Regex;
 use std::fs::{create_dir, read_dir, rename};
 use std::path::Path;
-use tauri::{AppHandle, Manager};
-use temp_dir::TempDir;
-
-#[cfg(test)]
-pub static temp_d: std::sync::LazyLock<temp_dir::TempDir> =
-    std::sync::LazyLock::new(|| temp_dir::TempDir::new().unwrap());
+use tauri::{AppHandle, Manager, State};
 
 #[cfg(test)]
 fn get_app_data_dir<'a, R: tauri::Runtime>(app: &'a AppHandle<R>) -> Result<std::path::PathBuf> {
-    let temp_path: std::path::PathBuf = temp_d.path().to_path_buf();
+    let temp_path: State<std::path::PathBuf> = app.state();
 
-    Ok(temp_path)
+    // reference to get inner out of state, then clone
+    let app_data_dir: std::path::PathBuf = temp_path.inner().clone();
+
+    Ok(app_data_dir)
 }
 
 #[cfg(not(test))]

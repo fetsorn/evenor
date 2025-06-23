@@ -1,4 +1,4 @@
-use crate::{create_app};
+use crate::create_app;
 use crate::error::{Error, Result};
 use crate::io::find_dataset;
 use tauri::test::{mock_builder, mock_context, noop_assets};
@@ -14,7 +14,10 @@ async fn find_dataset_test() -> Result<()> {
 
     let dir = format!("{uuid}-{name}");
 
-    let dirpath = format!("{}/.local/share/com.evenor/store/{dir}", std::env::home_dir().unwrap().to_str().unwrap());
+    let dirpath = format!(
+        "{}/.local/share/com.evenor/store/{dir}",
+        std::env::home_dir().unwrap().to_str().unwrap()
+    );
 
     std::fs::create_dir(&dirpath);
 

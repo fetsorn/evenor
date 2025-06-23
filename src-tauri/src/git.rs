@@ -1,29 +1,41 @@
-use std::path::Path;
-use regex::Regex;
-use tauri::{AppHandle, Manager};
-use std::fs::{create_dir, read_dir, rename};
 use crate::error::{Error, Result};
-use git2::{Cred, RemoteCallbacks, Repository};
 use crate::io::find_dataset;
-use mockall::*;
-use mockall::predicate::*;
+use git2::{Cred, RemoteCallbacks, Repository};
+use regex::Regex;
+use std::fs::{create_dir, read_dir, rename};
+use std::path::Path;
+use tauri::{AppHandle, Manager};
+use temp_dir::TempDir;
 
-#[automock]
-pub trait AppDataDir {
-    fn app_data_dir(&self) -> Result<std::path::PathBuf>;
+#[cfg(test)]
+pub static temp_d: std::sync::LazyLock<temp_dir::TempDir> =
+    std::sync::LazyLock::new(|| temp_dir::TempDir::new().unwrap());
+
+#[cfg(test)]
+fn get_app_data_dir<'a, R: tauri::Runtime>(app: &'a AppHandle<R>) -> Result<std::path::PathBuf> {
+    let temp_path: std::path::PathBuf = temp_d.path().to_path_buf();
+
+    Ok(temp_path)
 }
 
-impl<R: tauri::Runtime> AppDataDir for AppHandle<R> {
-    fn app_data_dir(&self) -> Result<std::path::PathBuf> {
-        Ok(self.path().app_data_dir()?.join("store"))
-    }
+#[cfg(not(test))]
+fn get_app_data_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
+    Ok(app.path().app_data_dir()?)
 }
 
-fn get_store_dir<R: AppDataDir>(app: &R) -> Result<std::path::PathBuf> {
-    app.app_data_dir()
+fn get_store_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
+    let app_data_dir = get_app_data_dir(app)?;
+
+    let store_dir = app_data_dir.join("store");
+
+    Ok(store_dir)
 }
 
-fn name_dir<R: tauri::Runtime>(app: &AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<std::path::PathBuf> {
+fn name_dir<R: tauri::Runtime>(
+    app: &AppHandle<R>,
+    uuid: &str,
+    name: Option<&str>,
+) -> Result<std::path::PathBuf> {
     let store_dir = get_store_dir(app)?;
 
     if !store_dir.exists() {
@@ -40,20 +52,23 @@ fn name_dir<R: tauri::Runtime>(app: &AppHandle<R>, uuid: &str, name: Option<&str
     Ok(dataset_dir)
 }
 
-fn find_dir<R: tauri::Runtime>(app: &AppHandle<R>, uuid: &str) -> Result<Option<std::fs::DirEntry>> {
-    let store_dir = app.path().app_data_dir()?.join("store");
+fn find_dir<R: tauri::Runtime>(
+    app: &AppHandle<R>,
+    uuid: &str,
+) -> Result<Option<std::fs::DirEntry>> {
+    let store_dir = get_store_dir(app)?;
 
     let existing_entry = read_dir(store_dir)?.find(|entry| {
         let entry = match entry.as_ref() {
             Err(_) => return false,
-            Ok(e) => e
+            Ok(e) => e,
         };
 
         let file_name = entry.file_name();
 
         let entry_path: &str = match file_name.to_str() {
             None => return false,
-            Some(p) => p
+            Some(p) => p,
         };
 
         Regex::new(&format!("^{}", uuid))
@@ -67,13 +82,17 @@ fn find_dir<R: tauri::Runtime>(app: &AppHandle<R>, uuid: &str) -> Result<Option<
 }
 
 #[tauri::command]
-pub async fn create_repo<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<()> {
+pub async fn create_repo<R: tauri::Runtime>(
+    app: AppHandle<R>,
+    uuid: &str,
+    name: Option<&str>,
+) -> Result<()> {
     let dataset_dir = name_dir(&app, uuid, name)?;
 
     if uuid == "root" {
         create_dir(dataset_dir)?;
 
-        return Ok(())
+        return Ok(());
     }
 
     let existing_dataset = find_dir(&app, uuid)?;
@@ -239,7 +258,11 @@ pub async fn add_remote<R: tauri::Runtime>(
 }
 
 #[tauri::command]
-pub async fn get_remote<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<(String, String)> {
+pub async fn get_remote<R: tauri::Runtime>(
+    app: AppHandle<R>,
+    uuid: &str,
+    remote: &str,
+) -> Result<(String, String)> {
     let dataset_dir_path = find_dataset(&app, uuid)?;
 
     let repo = match Repository::open(dataset_dir_path) {

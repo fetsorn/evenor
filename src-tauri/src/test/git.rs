@@ -2,25 +2,10 @@ use crate::create_app;
 use crate::error::{Error, Result};
 use crate::git::create_repo;
 use crate::git::*;
-use mockall::predicate::*;
-use mockall::*;
 use tauri::test::{mock_builder, mock_context, noop_assets};
-use temp_dir::TempDir;
 
 #[tokio::test]
 async fn create_repo_test_root() -> Result<()> {
-    let mut mock = MockAppDataDir::new();
-
-    mock.expect_app_data_dir().returning(|| {
-        // must be inside the closure for lifetime reasons
-        // must assign a variable to create the directory
-        let temp_d = TempDir::new()?;
-
-        let temp_path: std::path::PathBuf = temp_d.path().to_path_buf();
-
-        Ok(temp_path)
-    });
-
     let app = create_app(mock_builder());
 
     let uuid = "root";
@@ -30,8 +15,17 @@ async fn create_repo_test_root() -> Result<()> {
     create_repo(app.handle().clone(), &uuid, None).await?;
 
     // check that repo is created
+    std::fs::read_dir(temp_d.path())?.for_each(|entry| {
+        let entry = entry.unwrap();
 
-    assert!(true);
+        assert!(entry.file_name() == "store");
+
+        std::fs::read_dir(entry.path()).unwrap().for_each(|entry| {
+            let entry = entry.unwrap();
+
+            assert!(entry.file_name() == "root");
+        });
+    });
 
     Ok(())
 }

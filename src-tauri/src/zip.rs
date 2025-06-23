@@ -1,11 +1,11 @@
-use std::path::Path;
-use std::io::{Read, Write};
-use zip::write::SimpleFileOptions;
 use crate::error::Result;
-use tauri::AppHandle;
 use crate::io::find_dataset;
+use std::io::{Read, Write};
+use std::path::Path;
+use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 use walkdir::WalkDir;
+use zip::write::SimpleFileOptions;
 
 #[tauri::command]
 pub async fn zip<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {

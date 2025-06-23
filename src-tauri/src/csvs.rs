@@ -1,21 +1,21 @@
-use tauri::{AppHandle, ipc::Channel};
+use crate::error::{Error, Result};
+use crate::io::find_dataset;
+use async_stream::try_stream;
+use csvs::{
+    delete, select::select_record_stream, types::entry::Entry, types::into_value::IntoValue, update,
+};
+use futures_util::pin_mut;
+use futures_util::stream::StreamExt;
 use serde::Serialize;
 use serde_json::Value;
-use futures_util::stream::StreamExt;
-use crate::error::{Error, Result};
-use async_stream::try_stream;
-use futures_util::pin_mut;
-use csvs::{
-    delete,
-    select::select_record_stream,
-    types::entry::Entry,
-    types::into_value::IntoValue,
-    update,
-};
-use crate::io::find_dataset;
+use tauri::{ipc::Channel, AppHandle};
 
 #[tauri::command]
-pub async fn select<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, query: Value) -> Result<Vec<Value>> {
+pub async fn select<R: tauri::Runtime>(
+    app: AppHandle<R>,
+    uuid: &str,
+    query: Value,
+) -> Result<Vec<Value>> {
     let query: Entry = query.try_into().unwrap();
 
     let dataset_dir_path = find_dataset(&app, uuid)?;
@@ -101,7 +101,11 @@ pub async fn select_stream<R: tauri::Runtime>(
 }
 
 #[tauri::command]
-pub async fn update_record<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, record: Value) -> Result<()> {
+pub async fn update_record<R: tauri::Runtime>(
+    app: AppHandle<R>,
+    uuid: &str,
+    record: Value,
+) -> Result<()> {
     let record: Entry = record.try_into().unwrap();
 
     let dataset_dir_path = find_dataset(&app, uuid)?;
@@ -112,7 +116,11 @@ pub async fn update_record<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, rec
 }
 
 #[tauri::command]
-pub async fn delete_record<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, record: Value) -> Result<()> {
+pub async fn delete_record<R: tauri::Runtime>(
+    app: AppHandle<R>,
+    uuid: &str,
+    record: Value,
+) -> Result<()> {
     let record: Entry = record.try_into().unwrap();
 
     let dataset_dir_path = find_dataset(&app, uuid)?;

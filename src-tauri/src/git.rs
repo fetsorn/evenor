@@ -1,83 +1,10 @@
 use crate::error::{Error, Result};
-use crate::io::find_dataset;
+use crate::io::{name_dir, find_dataset};
 use git2::{Cred, RemoteCallbacks, Repository};
 use regex::Regex;
 use std::fs::{create_dir, read_dir, rename};
 use std::path::Path;
 use tauri::{AppHandle, Manager, State};
-
-#[cfg(test)]
-fn get_app_data_dir<'a, R: tauri::Runtime>(app: &'a AppHandle<R>) -> Result<std::path::PathBuf> {
-    let temp_path: State<std::path::PathBuf> = app.state();
-
-    // reference to get inner out of state, then clone
-    let app_data_dir: std::path::PathBuf = temp_path.inner().clone();
-
-    Ok(app_data_dir)
-}
-
-#[cfg(not(test))]
-fn get_app_data_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
-    Ok(app.path().app_data_dir()?)
-}
-
-fn get_store_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
-    let app_data_dir = get_app_data_dir(app)?;
-
-    let store_dir = app_data_dir.join("store");
-
-    Ok(store_dir)
-}
-
-fn name_dir<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-    uuid: &str,
-    name: Option<&str>,
-) -> Result<std::path::PathBuf> {
-    let store_dir = get_store_dir(app)?;
-
-    if !store_dir.exists() {
-        create_dir(&store_dir)?;
-    }
-
-    let dataset_filename = match name {
-        None => uuid,
-        Some(s) => &format!("{}-{}", uuid, s),
-    };
-
-    let dataset_dir = store_dir.join(dataset_filename);
-
-    Ok(dataset_dir)
-}
-
-fn find_dir<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-    uuid: &str,
-) -> Result<Option<std::fs::DirEntry>> {
-    let store_dir = get_store_dir(app)?;
-
-    let existing_entry = read_dir(store_dir)?.find(|entry| {
-        let entry = match entry.as_ref() {
-            Err(_) => return false,
-            Ok(e) => e,
-        };
-
-        let file_name = entry.file_name();
-
-        let entry_path: &str = match file_name.to_str() {
-            None => return false,
-            Some(p) => p,
-        };
-
-        Regex::new(&format!("^{}", uuid))
-            .unwrap()
-            .is_match(entry_path)
-    });
-
-    let existing_dataset = existing_entry.map(|foo| foo.unwrap());
-
-    Ok(existing_dataset)
-}
 
 #[tauri::command]
 pub async fn create_repo<R: tauri::Runtime>(
@@ -93,14 +20,14 @@ pub async fn create_repo<R: tauri::Runtime>(
         return Ok(());
     }
 
-    let existing_dataset = find_dir(&app, uuid)?;
+    let existing_dataset = find_dataset(&app, uuid)?;
 
     match existing_dataset {
         Some(s) => {
             let foo = s;
 
-            if foo.path() != dataset_dir {
-                rename(foo.path(), &dataset_dir)?;
+            if foo != dataset_dir {
+                rename(foo, &dataset_dir)?;
             }
         }
         None => {
@@ -176,7 +103,7 @@ pub async fn clone<R: tauri::Runtime>(
 
 #[tauri::command]
 pub async fn pull<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = crate::repository::Repository::open(&dataset_dir_path)?;
 
@@ -202,7 +129,7 @@ pub async fn pull<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str
 
 #[tauri::command]
 pub async fn push<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,
@@ -218,7 +145,7 @@ pub async fn push<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str
 
 #[tauri::command]
 pub async fn list_remotes<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,
@@ -243,7 +170,7 @@ pub async fn add_remote<R: tauri::Runtime>(
     remote_url: &str,
     remote_token: &str,
 ) -> Result<()> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,
@@ -261,7 +188,7 @@ pub async fn get_remote<R: tauri::Runtime>(
     uuid: &str,
     remote: &str,
 ) -> Result<(String, String)> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,
@@ -287,7 +214,7 @@ pub fn find_last_commit(repo: &Repository) -> Result<git2::Commit> {
 
 #[tauri::command]
 pub fn commit<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,

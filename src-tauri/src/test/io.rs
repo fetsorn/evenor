@@ -21,7 +21,7 @@ async fn find_dataset_test() -> Result<()> {
 
     std::fs::create_dir(&dirpath);
 
-    let dataset = find_dataset(&app.handle(), uuid)?;
+    let dataset = find_dataset(&app.handle(), uuid)?.unwrap();
 
     assert_eq!(dataset.to_str().unwrap(), dirpath);
 

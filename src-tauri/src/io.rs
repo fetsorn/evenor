@@ -1,29 +1,95 @@
 use crate::error::{Error, Result};
 use regex::Regex;
 use std::fs::read_dir;
-use tauri::{AppHandle, Manager};
+use std::fs::{create_dir, rename};
+use tauri::{AppHandle, Manager, State};
 
-// find ^uuid in .local/share
+#[cfg(test)]
+fn get_app_data_dir<'a, R: tauri::Runtime>(app: &'a AppHandle<R>) -> Result<std::path::PathBuf> {
+    // /tmp/t####-0 on linux
+    let temp_path: State<std::path::PathBuf> = app.state();
+
+    // reference to get inner out of state, then clone
+    let app_data_dir: std::path::PathBuf = temp_path.inner().clone();
+
+    Ok(app_data_dir)
+}
+
+#[cfg(not(test))]
+fn get_app_data_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
+    // .local/share on linux
+    Ok(app.path().app_data_dir()?)
+}
+
+// ensure app_data_dir/store exists
+pub fn get_store_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
+    let app_data_dir = get_app_data_dir(app)?;
+
+    let store_dir = app_data_dir.join("store");
+
+    if !store_dir.exists() {
+        create_dir(&store_dir)?;
+    }
+
+    Ok(store_dir)
+}
+
+pub fn name_dir<R: tauri::Runtime>(
+    app: &AppHandle<R>,
+    uuid: &str,
+    name: Option<&str>,
+) -> Result<std::path::PathBuf> {
+    let store_dir = get_store_dir(app)?;
+
+    let dataset_filename = match name {
+        None => uuid,
+        Some(s) => &format!("{}-{}", uuid, s),
+    };
+
+    let dataset_dir = store_dir.join(dataset_filename);
+
+    Ok(dataset_dir)
+}
+
+// find ^uuid in app_data_dir
 pub fn find_dataset<R: tauri::Runtime>(
     app: &AppHandle<R>,
     uuid: &str,
-) -> Result<std::path::PathBuf> {
-    let store_dir = app.path().app_data_dir()?.join("store");
+) -> Result<Option<std::path::PathBuf>> {
+    let store_dir = get_store_dir(app)?;
 
-    let existing_dataset = read_dir(store_dir)?.find(|entry| {
-        let entry = entry.as_ref().unwrap();
+    let existing_entry = read_dir(store_dir)?
+        .map(|res| res.map(|e| e.path()))
+        .find(|entry| {
+            let entry = match entry {
+                Err(_) => return false,
+                Ok(e) => e,
+            };
 
-        let file_name = entry.file_name();
+            let file_name = entry.file_name();
 
-        let entry_path: &str = file_name.to_str().unwrap();
+            let entry_path = match file_name {
+                None => return false,
+                Some(p) => p,
+            };
 
-        Regex::new(&format!("^{}", uuid))
-            .unwrap()
-            .is_match(entry_path)
-    });
+            let s = entry_path.to_str();
 
-    match existing_dataset {
-        None => Err(tauri::Error::UnknownPath.into()),
-        Some(dataset_dir) => Ok(dataset_dir?.path()),
-    }
+            let s = match s {
+                None => return false,
+                Some(s) => s,
+            };
+
+            Regex::new(&format!("^{}", uuid)).unwrap().is_match(s)
+        });
+
+    let existing_dataset: Option<std::path::PathBuf> = match existing_entry {
+        None => None,
+        Some(res) => match res {
+            Err(e) => None,
+            Ok(p) => Some(p),
+        },
+    };
+
+    Ok(existing_dataset)
 }

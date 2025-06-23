@@ -18,7 +18,7 @@ pub async fn select<R: tauri::Runtime>(
 ) -> Result<Vec<Value>> {
     let query: Entry = query.try_into().unwrap();
 
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     // needed to clone for the stream scope
     let query_for_stream = query.clone();
@@ -62,7 +62,7 @@ pub async fn select_stream<R: tauri::Runtime>(
 ) -> Result<()> {
     let query: Entry = query.try_into().unwrap();
 
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let query_for_stream = query.clone();
 
@@ -108,7 +108,7 @@ pub async fn update_record<R: tauri::Runtime>(
 ) -> Result<()> {
     let record: Entry = record.try_into().unwrap();
 
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     update::update_record(dataset_dir_path, vec![record]).await;
 
@@ -123,7 +123,7 @@ pub async fn delete_record<R: tauri::Runtime>(
 ) -> Result<()> {
     let record: Entry = record.try_into().unwrap();
 
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     delete::delete_record(dataset_dir_path, vec![record]).await;
 

@@ -9,7 +9,7 @@ use zip::write::SimpleFileOptions;
 
 #[tauri::command]
 pub async fn zip<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
-    let dataset_dir_path = find_dataset(&app, uuid)?;
+    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let file_path = app
         .dialog()

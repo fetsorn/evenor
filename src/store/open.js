@@ -1,11 +1,6 @@
 import api from "@/api/index.js";
 import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
-import {
-  readSchema,
-  createRoot,
-  updateRepo,
-  saveRepoRecord,
-} from "@/store/record.js";
+import { readSchema, createRoot } from "@/store/record.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 export async function find(uuid, reponame) {

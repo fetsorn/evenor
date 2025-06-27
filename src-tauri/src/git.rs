@@ -4,14 +4,14 @@ use git2::{Cred, RemoteCallbacks, Repository};
 use regex::Regex;
 use std::fs::{create_dir, read_dir, rename};
 use std::path::Path;
-use tauri::{AppHandle, Manager, State};
+use tauri::{Runtime, AppHandle, State, Manager};
 
 #[tauri::command]
-pub async fn create_repo<R: tauri::Runtime>(
+pub async fn create_repo<R>(
     app: AppHandle<R>,
     uuid: &str,
     name: Option<&str>,
-) -> Result<()> {
+) -> Result<()> where R: Runtime, {
     let dataset_dir = name_dir(&app, uuid, name)?;
 
     if uuid == "root" {
@@ -52,13 +52,13 @@ pub async fn create_repo<R: tauri::Runtime>(
 }
 
 #[tauri::command]
-pub async fn clone<R: tauri::Runtime>(
+pub async fn clone<R>(
     app: AppHandle<R>,
     uuid: &str,
     remote_url: &str,
     remote_token: &str,
     name: Option<String>,
-) -> Result<()> {
+) -> Result<()> where R: Runtime {
     match find_dataset(&app, uuid) {
         Err(_) => (),
         Ok(_) => return Err(tauri::Error::UnknownPath.into()),
@@ -102,7 +102,7 @@ pub async fn clone<R: tauri::Runtime>(
 }
 
 #[tauri::command]
-pub async fn pull<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> {
+pub async fn pull<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> where R: Runtime, {
     let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = crate::repository::Repository::open(&dataset_dir_path)?;
@@ -128,7 +128,7 @@ pub async fn pull<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str
 }
 
 #[tauri::command]
-pub async fn push<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> {
+pub async fn push<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> where R: Runtime {
     let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -144,7 +144,7 @@ pub async fn push<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str, remote: &str
 }
 
 #[tauri::command]
-pub async fn list_remotes<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>> {
+pub async fn list_remotes<R>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>> where R: Runtime {
     let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -163,13 +163,13 @@ pub async fn list_remotes<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> R
 }
 
 #[tauri::command]
-pub async fn add_remote<R: tauri::Runtime>(
+pub async fn add_remote<R>(
     app: AppHandle<R>,
     uuid: &str,
     remote_name: &str,
     remote_url: &str,
     remote_token: &str,
-) -> Result<()> {
+) -> Result<()> where R: Runtime, {
     let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -183,11 +183,11 @@ pub async fn add_remote<R: tauri::Runtime>(
 }
 
 #[tauri::command]
-pub async fn get_remote<R: tauri::Runtime>(
+pub async fn get_remote<R>(
     app: AppHandle<R>,
     uuid: &str,
     remote: &str,
-) -> Result<(String, String)> {
+) -> Result<(String, String)> where R: Runtime, {
     let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {
@@ -213,7 +213,7 @@ pub fn find_last_commit(repo: &Repository) -> Result<git2::Commit> {
 }
 
 #[tauri::command]
-pub fn commit<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
+pub fn commit<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime, {
     let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
 
     let repo = match Repository::open(dataset_dir_path) {

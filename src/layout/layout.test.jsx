@@ -85,7 +85,7 @@ describe("App", () => {
     ).not.toThrowError();
   });
 
-  test("git commit", async () => {
+  test("change repo", async () => {
     render(() => <App />);
 
     expect(onRepoChange).toHaveBeenCalledWith("/", "");

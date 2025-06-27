@@ -1,4 +1,3 @@
-import { searchParamsToQuery } from "./pure.js";
 import { onZip } from "./record.js";
 import {
   StoreContext,
@@ -28,7 +27,6 @@ export {
   onRecordCreate,
   onRepoChange,
   onSearch,
-  searchParamsToQuery,
   setSpoilerOpen,
   getSpoilerOpen,
   getFilterQueries,
@@ -49,7 +47,6 @@ export default {
   onRecordCreate,
   onRepoChange,
   onSearch,
-  searchParamsToQuery,
   setSpoilerOpen,
   getSpoilerOpen,
   getFilterQueries,

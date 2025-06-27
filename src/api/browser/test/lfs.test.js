@@ -212,7 +212,7 @@ describe("addAssetPath", () => {
   });
 });
 
-describe("addAssetPath", () => {
+describe("listAssetPath", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });

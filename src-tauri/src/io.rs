@@ -2,27 +2,41 @@ use crate::error::{Error, Result};
 use regex::Regex;
 use std::fs::read_dir;
 use std::fs::{create_dir, rename};
-use tauri::{AppHandle, Manager, State};
+use std::path::PathBuf;
+use tauri::{Manager, Runtime, State};
 
 #[cfg(test)]
-fn get_app_data_dir<'a, R: tauri::Runtime>(app: &'a AppHandle<R>) -> Result<std::path::PathBuf> {
+fn get_app_data_dir<'a, R, T>(app: &'a T) -> Result<PathBuf>
+where
+    R: Runtime,
+    T: Manager<R>,
+{
+    // state is initialized in the test case
     // /tmp/t####-0 on linux
-    let temp_path: State<std::path::PathBuf> = app.state();
+    let temp_path: State<PathBuf> = app.state();
 
-    // reference to get inner out of state, then clone
-    let app_data_dir: std::path::PathBuf = temp_path.inner().clone();
+    // reference to get inner out of state, then clone to move out of scope
+    let app_data_dir: PathBuf = temp_path.inner().clone();
 
     Ok(app_data_dir)
 }
 
 #[cfg(not(test))]
-fn get_app_data_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
+fn get_app_data_dir<R, T>(app: &T) -> Result<PathBuf>
+where
+    R: Runtime,
+    T: Manager<R>,
+{
     // .local/share on linux
     Ok(app.path().app_data_dir()?)
 }
 
 // ensure app_data_dir/store exists
-pub fn get_store_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path::PathBuf> {
+pub fn get_store_dir<R, T>(app: &T) -> Result<PathBuf>
+where
+    R: Runtime,
+    T: Manager<R>,
+{
     let app_data_dir = get_app_data_dir(app)?;
 
     let store_dir = app_data_dir.join("store");
@@ -34,11 +48,12 @@ pub fn get_store_dir<R: tauri::Runtime>(app: &AppHandle<R>) -> Result<std::path:
     Ok(store_dir)
 }
 
-pub fn name_dir<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-    uuid: &str,
-    name: Option<&str>,
-) -> Result<std::path::PathBuf> {
+// make a path for store/uuid-name
+pub fn name_dir<R, T>(app: &T, uuid: &str, name: Option<&str>) -> Result<PathBuf>
+where
+    R: Runtime,
+    T: Manager<R>,
+{
     let store_dir = get_store_dir(app)?;
 
     let dataset_filename = match name {
@@ -52,10 +67,11 @@ pub fn name_dir<R: tauri::Runtime>(
 }
 
 // find ^uuid in app_data_dir
-pub fn find_dataset<R: tauri::Runtime>(
-    app: &AppHandle<R>,
-    uuid: &str,
-) -> Result<Option<std::path::PathBuf>> {
+pub fn find_dataset<R, T>(app: &T, uuid: &str) -> Result<Option<PathBuf>>
+where
+    R: Runtime,
+    T: Manager<R>,
+{
     let store_dir = get_store_dir(app)?;
 
     let existing_entry = read_dir(store_dir)?
@@ -83,7 +99,7 @@ pub fn find_dataset<R: tauri::Runtime>(
             Regex::new(&format!("^{}", uuid)).unwrap().is_match(s)
         });
 
-    let existing_dataset: Option<std::path::PathBuf> = match existing_entry {
+    let existing_dataset: Option<PathBuf> = match existing_entry {
         None => None,
         Some(res) => match res {
             Err(e) => None,

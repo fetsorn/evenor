@@ -1,23 +1,15 @@
-use crate::error::Result;
+use crate::error::{Result, Error};
 use crate::io::find_dataset;
 use std::io::{Read, Write};
-use std::path::Path;
-use tauri::AppHandle;
+use std::fs::File;
+use std::path::{Path, PathBuf};
+use tauri::{Runtime, Manager, AppHandle};
 use tauri_plugin_dialog::DialogExt;
 use walkdir::WalkDir;
 use zip::write::SimpleFileOptions;
 
-#[tauri::command]
-pub async fn zip<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()> {
-    let dataset_dir_path = find_dataset(&app, uuid)?.unwrap();
-
-    let file_path = app
-        .dialog()
-        .file()
-        .add_filter("My Filter", &["zip"])
-        .blocking_save_file();
-
-    let writer = std::fs::File::create(file_path.unwrap().as_path().unwrap()).unwrap();
+pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
+    let writer = File::create(file_path).unwrap();
 
     let walkdir = WalkDir::new(&dataset_dir_path);
 
@@ -44,7 +36,7 @@ pub async fn zip<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()>
         if path.is_file() {
             println!("adding file {path:?} as {name:?} ...");
             zip.start_file(path_as_string, options)?;
-            let mut f = std::fs::File::open(path)?;
+            let mut f = File::open(path)?;
 
             f.read_to_end(&mut buffer)?;
             zip.write_all(&buffer)?;
@@ -58,6 +50,29 @@ pub async fn zip<R: tauri::Runtime>(app: AppHandle<R>, uuid: &str) -> Result<()>
     }
 
     zip.finish()?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn zip<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+where
+    R: Runtime,
+{
+    let dataset_dir_path = find_dataset(&app, uuid)?.expect("no directory");
+
+    let file_path = app
+        .dialog()
+        .file()
+        .add_filter("My Filter", &["zip"])
+        .blocking_save_file();
+
+    let file_path = file_path.unwrap();
+
+    let file_path = file_path.as_path()
+        .unwrap();
+
+    add_to_zip(dataset_dir_path, &file_path)?;
 
     Ok(())
 }

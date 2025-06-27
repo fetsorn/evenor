@@ -1,20 +1,19 @@
 use crate::create_app;
 use crate::error::{Error, Result};
 use crate::git::create_repo;
-use crate::git::*;
 use tauri::test::{mock_builder, mock_context, noop_assets};
 use tauri::{Manager, State};
 
 #[tokio::test]
 async fn create_repo_root() -> Result<()> {
-    let app = create_app(mock_builder());
-
     // create a temporary directory, will be deleted by destructor
     // must assign to keep in scope;
     let temp_dir = temp_dir::TempDir::new();
 
     // reference temp_dir to not move it out of scope
     let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();
+
+    let app = create_app(mock_builder());
 
     // save temporary directory path in the tauri state
     app.manage(temp_path.clone());
@@ -48,14 +47,14 @@ async fn create_repo_root() -> Result<()> {
 
 #[tokio::test]
 async fn create_repo_name() -> Result<()> {
-    let app = create_app(mock_builder());
-
     // create a temporary directory, will be deleted by destructor
     // must assign to keep in scope;
     let temp_dir = temp_dir::TempDir::new();
 
     // reference temp_dir to not move it out of scope
     let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();
+
+    let app = create_app(mock_builder());
 
     // save temporary directory path in the tauri state
     app.manage(temp_path.clone());

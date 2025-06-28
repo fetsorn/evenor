@@ -1,8 +1,8 @@
 use crate::error::{Error, Result};
-use crate::io::{name_dir, find_dataset};
+use crate::io::{name_dir, find_dataset, get_store_dir};
 use git2::{Cred, RemoteCallbacks, Repository};
 use regex::Regex;
-use std::fs::{create_dir, read_dir, rename};
+use std::fs::{create_dir, read_dir, rename, remove_dir_all};
 use std::path::Path;
 use tauri::{Runtime, AppHandle, State, Manager};
 
@@ -55,16 +55,19 @@ pub async fn create_repo<R>(
 pub async fn clone<R>(
     app: AppHandle<R>,
     uuid: &str,
+    name: Option<String>,
     remote_url: &str,
     remote_token: &str,
-    name: Option<String>,
 ) -> Result<()> where R: Runtime {
     match find_dataset(&app, uuid) {
         Err(_) => (),
-        Ok(_) => return Err(tauri::Error::UnknownPath.into()),
+        Ok(p) => match p {
+            None => (),
+            Some(d) => remove_dir_all(d)?
+        },
     };
 
-    let store_dir = app.path().app_data_dir()?.join("store");
+    let store_dir = get_store_dir(&app)?;
 
     let dir_name = match name {
         Some(name) => &format!("{}-{}", uuid, name),

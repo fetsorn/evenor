@@ -76,7 +76,7 @@ pub enum PullOutcome {
 }
 
 impl Repository {
-    pub fn open(path: &Path) -> crate::Result<Self> {
+    pub fn open(path: &Path) -> crate::api::Result<Self> {
         let repo = git2::Repository::open(path)?;
         log::debug!("opened repo at `{}`", path.display());
         Ok(Repository { repo })
@@ -87,7 +87,7 @@ impl Repository {
         repo: &str,
         settings: &Settings,
         mut progress_callback: F,
-    ) -> crate::Result<Self>
+    ) -> crate::api::Result<Self>
     where
         F: FnMut(git2::Progress),
     {
@@ -119,7 +119,7 @@ impl Repository {
         Ok(Repository { repo })
     }
 
-    pub fn try_open(path: &Path) -> crate::Result<Option<Self>> {
+    pub fn try_open(path: &Path) -> crate::api::Result<Option<Self>> {
         match git2::Repository::open(path) {
             Ok(repo) => {
                 log::debug!("opened repo at `{}`", path.display());
@@ -138,7 +138,7 @@ impl Repository {
     pub fn status(
         &self,
         settings: &Settings,
-    ) -> crate::Result<(RepositoryStatus, Option<git2::Remote>)> {
+    ) -> crate::api::Result<(RepositoryStatus, Option<git2::Remote>)> {
         let head = self.head_status()?;
         let upstream = self.upstream_status(&head)?;
         let working_tree = self.working_tree_status()?;
@@ -268,7 +268,7 @@ impl Repository {
         remote: Option<git2::Remote>,
         switch: bool, // whether to switch to the default branch before pulling
         mut progress_callback: F,
-    ) -> crate::Result<PullOutcome>
+    ) -> crate::api::Result<PullOutcome>
     where
         F: FnMut(git2::Progress),
     {
@@ -312,14 +312,14 @@ impl Repository {
         if !status.head.on_branch(&default_branch) {
             if switch {
                 if status.head.is_detached() {
-                    return Err(crate::Error::from_message(
+                    return Err(crate::api::Error::from_message(
                         "will not switch branch while detached",
                     ));
                 } else {
                     self.switch_branch(&default_branch)?;
                 }
             } else {
-                return Err(crate::Error::from_message("not on default branch"));
+                return Err(crate::api::Error::from_message("not on default branch"));
             }
         }
 
@@ -351,7 +351,7 @@ impl Repository {
             })?;
         let fetch_head = match fetch_head {
             Some(fetch_head) => fetch_head?,
-            None => return Err(crate::Error::from_message("no branch found to merge")),
+            None => return Err(crate::api::Error::from_message("no branch found to merge")),
         };
 
         let (merge_analysis, _) = self.repo.merge_analysis(&[&fetch_head])?;
@@ -365,7 +365,7 @@ impl Repository {
             self.fast_forward(fetch_head)?;
             Ok(PullOutcome::FastForwarded(default_branch))
         } else {
-            Err(crate::Error::from_message("cannot fast-forward"))
+            Err(crate::api::Error::from_message("cannot fast-forward"))
         }
     }
 
@@ -401,7 +401,7 @@ impl Repository {
         Ok(())
     }
 
-    pub fn create_branch(&self, settings: &Settings, name: &str) -> crate::Result<()> {
+    pub fn create_branch(&self, settings: &Settings, name: &str) -> crate::api::Result<()> {
         let commit = match &settings.default_branch {
             Some(default_branch) => self
                 .repo
@@ -413,7 +413,7 @@ impl Repository {
 
         let working_tree_status = self.working_tree_status()?;
         if working_tree_status.is_dirty() {
-            return Err(crate::Error::from_message(
+            return Err(crate::api::Error::from_message(
                 "working tree has uncommitted changes",
             ));
         }
@@ -448,32 +448,37 @@ impl Repository {
         Ok(git2::Branch::wrap(head))
     }
 
-    fn default_remote(&self, settings: &Settings) -> Result<git2::Remote, crate::Error> {
+    fn default_remote(&self, settings: &Settings) -> Result<git2::Remote, crate::api::Error> {
         let remote_list = self.repo.remotes()?;
         let remote_name = match &settings.default_remote {
             Some(default_branch) => default_branch,
             None => match remote_list.len() {
-                0 => return Err(crate::Error::from_message("no remotes")),
+                0 => return Err(crate::api::Error::from_message("no remotes")),
                 1 => match remote_list.get(0) {
                     Some(name) => name,
                     None => {
-                        return Err(crate::Error::from_message(
+                        return Err(crate::api::Error::from_message(
                             "default remote name is invalid utf-8",
                         ))
                     }
                 },
-                _ => return Err(crate::Error::from_message("no default remote")),
+                _ => return Err(crate::api::Error::from_message("no default remote")),
             },
         };
 
         Ok(self.repo.find_remote(remote_name)?)
     }
 
-    fn default_branch_for_remote(&self, remote: &git2::Remote) -> Result<String, crate::Error> {
+    fn default_branch_for_remote(
+        &self,
+        remote: &git2::Remote,
+    ) -> Result<String, crate::api::Error> {
         let name = match remote.default_branch() {
             Ok(name) => name,
             Err(err) if err.code() == git2::ErrorCode::NotFound => {
-                return Err(crate::Error::from_message("remote has no default branch"))
+                return Err(crate::api::Error::from_message(
+                    "remote has no default branch",
+                ))
             }
             Err(err) => return Err(err.into()),
         };
@@ -482,7 +487,7 @@ impl Repository {
                 .strip_prefix(REFS_HEADS_NAMESPACE)
                 .unwrap_or(name)
                 .to_owned()),
-            Err(_) => Err(crate::Error::from_message(
+            Err(_) => Err(crate::api::Error::from_message(
                 "default branch name is invalid utf-8",
             )),
         }
@@ -513,6 +518,75 @@ impl Repository {
                 Ok((Some(default_branch), Some(remote)))
             })
             .unwrap_or((None, None))
+    }
+
+    pub fn commit(&self) -> Result<(), git2::Error> {
+        let mut index = self.repo.index().unwrap();
+
+        let mut message = "".to_owned();
+
+        let cb = &mut |path: &Path, _matched_spec: &[u8]| -> i32 {
+            let status = self.repo.status_file(path).unwrap();
+
+            let ret = if status.contains(git2::Status::WT_MODIFIED)
+                || status.contains(git2::Status::WT_NEW)
+            {
+                message = format!("{}, {}", message, path.display());
+                0
+            } else {
+                1
+            };
+
+            ret
+        };
+
+        let cb = Some(cb as &mut git2::IndexMatchedPath);
+
+        index
+            .add_all(["*"].iter(), git2::IndexAddOption::DEFAULT, cb)
+            .unwrap();
+
+        let oid = index.write_tree().unwrap();
+
+        let signature = git2::Signature::now("name", "name@mail.com").unwrap();
+
+        let tree = self.repo.find_tree(oid).unwrap();
+
+        match self.find_last_commit() {
+            Ok(c) => {
+                self.repo.commit(
+                    Some("HEAD"), //  point HEAD to our new commit
+                    &signature,   // author
+                    &signature,   // committer
+                    &message,     // commit message
+                    &tree,        // tree
+                    &[&c],
+                )?; // parents
+            }
+            Err(_) => {
+                self.repo.commit(
+                    Some("HEAD"), //  point HEAD to our new commit
+                    &signature,   // author
+                    &signature,   // committer
+                    &message,     // commit message
+                    &tree,        // tree
+                    &[],
+                )?; // parents
+            }
+        }
+
+        Ok(())
+    }
+
+    fn find_last_commit(&self) -> Result<git2::Commit, git2::Error> {
+        let obj = self
+            .repo
+            .head()?
+            .resolve()?
+            .peel(git2::ObjectType::Commit)?;
+
+        obj.into_commit()
+            .map_err(|_| git2::Error::from_str("Couldn't find commit").into())
     }
 }
 

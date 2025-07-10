@@ -1,6 +1,9 @@
 use crate::create_app;
-use crate::error::{Error, Result};
-use crate::git::{create_repo, commit, clone};
+use crate::api::{
+    git::{Git, Remote},
+    error::{Error, Result},
+    API,
+};
 use tauri::test::{mock_builder, mock_context, noop_assets};
 use tauri::{Manager, State};
 
@@ -22,7 +25,9 @@ async fn create_repo_root() -> Result<()> {
 
     let name = "etest";
 
-    create_repo(app.handle().clone(), &uuid, None).await?;
+    let api = API::new(app.handle().clone(), &uuid);
+
+    api.create_repo(None).await?;
 
     // check that repo is created
     std::fs::read_dir(&temp_path)?.for_each(|entry| {
@@ -37,8 +42,10 @@ async fn create_repo_root() -> Result<()> {
         });
     });
 
+    let api = API::new(app.handle().clone(), &uuid);
+
     // must error when root already exists
-    let result = create_repo(app.handle().clone(), &uuid, None).await;
+    let result = api.create_repo(None).await;
 
     assert!(result.is_err());
 
@@ -63,7 +70,9 @@ async fn create_repo_name() -> Result<()> {
 
     let name = "etest";
 
-    create_repo(app.handle().clone(), &uuid, Some(name)).await?;
+    let api = API::new(app.handle().clone(), &uuid);
+
+    api.create_repo(Some(name)).await?;
 
     // check that repo is created
     std::fs::read_dir(&temp_path)?.for_each(|entry| {
@@ -81,7 +90,7 @@ async fn create_repo_name() -> Result<()> {
     let name = "etest1";
 
     // must rename when root already exists
-    let result = create_repo(app.handle().clone(), &uuid, Some(name)).await;
+    let result = api.create_repo(Some(name)).await;
 
     std::fs::read_dir(&temp_path)?.for_each(|entry| {
         let entry = entry.unwrap();
@@ -116,9 +125,11 @@ async fn commit_test() -> Result<()> {
 
     let name = "etest";
 
-    create_repo(app.handle().clone(), &uuid, None).await?;
+    let api = API::new(app.handle().clone(), &uuid);
 
-    commit(app.handle().clone(), &uuid)?;
+    api.create_repo(None).await?;
+
+    api.commit()?;
 
     // TODO: check that repo comitted
 
@@ -143,7 +154,11 @@ async fn clone_test() -> Result<()> {
 
     let name = "etest";
 
-    clone(app.handle().clone(), &uuid, Some(name.to_string()), "https://codeberg.org/norcivilianlabs/pages", "").await?;
+    let api = API::new(app.handle().clone(), &uuid);
+
+    let remote = Remote::new(Some("https://codeberg.org/norcivilianlabs/pages"), None, None);
+
+    api.clone(Some(name.to_string()), &remote).await?;
 
     // check that repo cloned
     std::fs::read_dir(&temp_path)?.for_each(|entry| {

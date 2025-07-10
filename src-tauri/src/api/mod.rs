@@ -1,10 +1,10 @@
-mod csvs;
-mod error;
-mod git;
-mod io;
-mod repository;
-// mod test;
-mod zip;
+pub mod csvs;
+pub mod error;
+pub mod git;
+pub mod io;
+pub mod repository;
+pub mod test;
+pub mod zip;
 pub use crate::api::{
     csvs::{SelectEvent, CSVS},
     git::{Git, Remote},

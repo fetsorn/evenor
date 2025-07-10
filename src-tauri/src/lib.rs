@@ -160,7 +160,10 @@ fn commit<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime,{
 }
 
 #[tauri::command]
-async fn create_lfs() {}
+fn create_lfs<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime, {
+
+    Ok(())
+}
 
 #[tauri::command]
 async fn fetch_asset<R>(

@@ -1,6 +1,9 @@
+use crate::api::{
+    csvs::CSVS,
+    error::{Error, Result},
+    API,
+};
 use crate::create_app;
-use crate::csvs::select;
-use crate::error::{Error, Result};
 use assert_json_diff::assert_json_eq;
 use tauri::test::{mock_builder, mock_context, noop_assets};
 use tauri::Manager;

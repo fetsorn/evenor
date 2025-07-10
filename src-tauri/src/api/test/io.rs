@@ -1,6 +1,5 @@
 use crate::create_app;
-use crate::error::{Error, Result};
-use crate::io::find_dataset;
+use crate::api::{API, io::IO, error::{Error, Result}};
 use tauri::test::{mock_builder, mock_context, noop_assets};
 use tauri::Manager;
 
@@ -24,20 +23,19 @@ async fn find_dataset_test() -> Result<()> {
 
     let dir = format!("{uuid}-{name}");
 
-    let dirpath = format!(
-        "{}/store/{dir}",
-       temp_path.display()
-    );
+    let storepath = temp_path.join("store");
 
-    std::fs::create_dir(&dirpath);
+    std::fs::create_dir(&storepath)?;
 
-    std::fs::read_dir(temp_path)?.for_each(|e| println!("{:?}", e.unwrap().path()));
+    let dirpath = storepath.join(dir);
 
-    //let dataset = find_dataset(&app.handle(), uuid)?.unwrap();
+    std::fs::create_dir(&dirpath)?;
 
-    //assert_eq!(dataset.to_str().unwrap(), dirpath);
+    let api = API::new(app.handle().clone(), uuid);
 
-    //std::fs::remove_dir(&dirpath);
+    let dataset = api.find_dataset()?.unwrap();
+
+    assert_eq!(dataset, dirpath);
 
     Ok(())
 }

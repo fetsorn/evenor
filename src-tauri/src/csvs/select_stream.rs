@@ -1,6 +1,4 @@
-use super::CSVS;
-use crate::api::error::{Error, Result};
-use crate::api::{io::IO, API};
+use crate::{Dataset, Result};
 use async_stream::try_stream;
 use csvs::{select::select_record_stream, types::entry::Entry, types::into_value::IntoValue};
 use futures_util::pin_mut;
@@ -21,7 +19,7 @@ pub enum SelectEvent {
 }
 
 pub async fn select_stream<R>(
-    api: &API<R>,
+    api: &Dataset<R>,
     query: Value,
     on_event: Channel<SelectEvent>,
 ) -> Result<()>

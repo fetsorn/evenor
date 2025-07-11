@@ -1,6 +1,6 @@
-use crate::api::{error::Result, io::IO, API};
+use crate::{Dataset, Result};
 
-pub async fn list_remotes<R>(api: &API<R>) -> Result<Vec<String>>
+pub async fn list_remotes<R>(api: &Dataset<R>) -> Result<Vec<String>>
 where
     R: tauri::Runtime,
 {

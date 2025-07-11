@@ -1,15 +1,23 @@
 #![allow(warnings)]
-mod api;
-use crate::api::{Git, Remote, Result, SelectEvent, Zip, API, CSVS};
 use serde_json::Value;
 use tauri::{generate_context, generate_handler, ipc::Channel, App, AppHandle, Builder, Runtime};
+mod csvs;
+mod dataset;
+mod error;
+mod git;
+mod zip;
+pub use csvs::{SelectEvent, CSVS};
+pub use dataset::Dataset;
+pub use error::{Error, Result};
+pub use git::{Git, Remote};
+pub use zip::Zip;
 
 #[tauri::command]
 async fn select<R>(app: AppHandle<R>, uuid: &str, query: Value) -> Result<Vec<Value>>
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let records = api.select(query).await?;
 
@@ -26,7 +34,7 @@ async fn select_stream<R>(
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     api.select_stream(query, on_event).await?;
 
@@ -38,7 +46,7 @@ async fn update_record<R>(app: AppHandle<R>, uuid: &str, record: Value) -> Resul
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     api.update_record(record).await?;
 
@@ -50,7 +58,7 @@ async fn delete_record<R>(app: AppHandle<R>, uuid: &str, record: Value) -> Resul
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     api.delete_record(record).await?;
 
@@ -62,7 +70,7 @@ async fn create_repo<R>(app: AppHandle<R>, uuid: &str, name: Option<&str>) -> Re
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     api.create_repo(name).await?;
 
@@ -80,7 +88,7 @@ async fn clone<R>(
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let remote = Remote::new(Some(remote_url), Some(remote_token), None);
 
@@ -94,7 +102,7 @@ async fn pull<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let remote = Remote::new(None, None, Some(remote));
 
@@ -108,7 +116,7 @@ async fn push<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let remote = Remote::new(None, None, Some(remote));
 
@@ -122,7 +130,7 @@ async fn list_remotes<R>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>>
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let remotes = api.list_remotes().await?;
 
@@ -140,7 +148,7 @@ async fn add_remote<R>(
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let remote = Remote::new(Some(remote_name), Some(remote_url), Some(remote_token));
 
@@ -154,7 +162,7 @@ async fn get_remote<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<(S
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     let remote = Remote::new(None, None, Some(remote));
 
@@ -168,7 +176,7 @@ fn commit<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     api.commit()?;
 
@@ -263,7 +271,7 @@ async fn zip<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let api = API::new(app, uuid);
+    let api = Dataset::new(app, uuid);
 
     api.zip().await?;
 

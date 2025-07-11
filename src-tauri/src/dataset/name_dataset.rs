@@ -1,10 +1,8 @@
-use super::IO;
-use crate::api::error::Result;
-use crate::api::API;
+use crate::{Dataset, Result};
 use std::path::PathBuf;
 
 // make a path for store/uuid-name
-pub fn name_dir<R>(api: &API<R>, name: Option<&str>) -> Result<PathBuf>
+pub fn name_dataset<R>(api: &Dataset<R>, name: Option<&str>) -> Result<PathBuf>
 where
     R: tauri::Runtime,
 {

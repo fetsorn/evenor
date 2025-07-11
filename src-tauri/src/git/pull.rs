@@ -1,7 +1,7 @@
 use super::remote::Remote;
-use crate::api::{error::Result, io::IO, API};
+use crate::{Dataset, Result};
 
-pub async fn pull<R>(api: &API<R>, remote: &Remote) -> Result<()>
+pub async fn pull<R>(api: &Dataset<R>, remote: &Remote) -> Result<()>
 where
     R: tauri::Runtime,
 {

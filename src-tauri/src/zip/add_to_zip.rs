@@ -1,9 +1,9 @@
-pub use crate::api::Result;
-use walkdir::WalkDir;
+pub use crate::Result;
 use std::fs::File;
-use zip::write::SimpleFileOptions;
-use std::path::{Path, PathBuf};
 use std::io::{Read, Write};
+use std::path::{Path, PathBuf};
+use walkdir::WalkDir;
+use zip::write::SimpleFileOptions;
 
 pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
     let writer = File::create(file_path).unwrap();
@@ -53,9 +53,8 @@ pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
 
 mod test {
     use super::add_to_zip;
-    use crate::api::error::Result;
-    use crate::api::{git::Git, io::IO, zip::Zip, API};
     use crate::create_app;
+    use crate::{Dataset, Git, Result, Zip};
     use std::io::prelude::*;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
@@ -78,9 +77,9 @@ mod test {
 
         let name = "ename";
 
-        let api = API::new(app.handle().clone(), &uuid);
+        let api = Dataset::new(app.handle().clone(), &uuid);
 
-        let dataset_dir = api.name_dir(None)?;
+        let dataset_dir = api.name_dataset(None)?;
 
         std::fs::create_dir(&dataset_dir)?;
 

@@ -1,6 +1,6 @@
-use crate::api::{error::Result, io::IO, API};
+use crate::{Dataset, Result};
 
-pub fn commit<R>(api: &API<R>) -> Result<()>
+pub fn commit<R>(api: &Dataset<R>) -> Result<()>
 where
     R: tauri::Runtime,
 {
@@ -15,13 +15,7 @@ where
 }
 
 mod test {
-
-    use crate::api::{
-        error::{Error, Result},
-        git::{Git, Remote},
-        API,
-    };
-    use crate::create_app;
+    use crate::{create_app, Dataset, Git, Remote, Result};
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
 
@@ -43,7 +37,7 @@ mod test {
 
         let name = "etest";
 
-        let api = API::new(app.handle().clone(), &uuid);
+        let api = Dataset::new(app.handle().clone(), &uuid);
 
         api.create_repo(None).await?;
 

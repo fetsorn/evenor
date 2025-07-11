@@ -1,8 +1,7 @@
 use super::remote::Remote;
+use crate::{Dataset, Result};
 
-use crate::api::{error::Result, io::IO, API};
-
-pub async fn add_remote<R>(api: &API<R>, remote: &Remote) -> Result<()>
+pub async fn push<R>(api: &Dataset<R>, remote: &Remote) -> Result<()>
 where
     R: tauri::Runtime,
 {
@@ -13,10 +12,9 @@ where
         Err(e) => panic!("failed to open: {}", e),
     };
 
-    repo.remote(
-        &remote.name.as_ref().unwrap_or(&"".to_string()),
-        &remote.url.as_ref().unwrap_or(&"".to_string()),
-    )?;
+    let mut remote = repo.find_remote(&remote.name.as_ref().unwrap_or(&"".to_string()))?;
+
+    remote.push::<String>(&[], None)?;
 
     Ok(())
 }

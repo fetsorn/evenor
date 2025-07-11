@@ -3,7 +3,7 @@ mod select;
 mod select_stream;
 mod update_record;
 
-use crate::api::{error::Result, API};
+use crate::{Dataset, Result};
 pub use select_stream::SelectEvent;
 use serde_json::Value;
 use tauri::ipc::Channel;
@@ -15,7 +15,7 @@ pub trait CSVS {
     async fn delete_record(&self, record: Value) -> Result<()>;
 }
 
-impl<R> CSVS for API<R>
+impl<R> CSVS for Dataset<R>
 where
     R: tauri::Runtime,
 {

@@ -1,10 +1,8 @@
-use super::CSVS;
-use crate::api::error::{Error, Result};
-use crate::api::{io::IO, API};
+use crate::{Dataset, Result};
 use csvs::{types::entry::Entry, update};
 use serde_json::Value;
 
-pub async fn update_record<R>(api: &API<R>, record: Value) -> Result<()>
+pub async fn update_record<R>(api: &Dataset<R>, record: Value) -> Result<()>
 where
     R: tauri::Runtime,
 {

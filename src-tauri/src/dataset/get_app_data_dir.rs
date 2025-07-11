@@ -1,13 +1,10 @@
-use crate::api::error::Result;
-use crate::api::API;
+use super::Dataset;
+use crate::Result;
 use std::path::PathBuf;
-use tauri::{Manager, State};
+use tauri::{Manager, Runtime, State};
 
 #[cfg(test)]
-pub fn get_app_data_dir<R>(api: &API<R>) -> Result<PathBuf>
-where
-    R: tauri::Runtime,
-{
+pub fn get_app_data_dir<R: Runtime>(api: &Dataset<R>) -> Result<PathBuf> {
     // state is initialized in the test case
     // /tmp/t####-0 on linux
     let temp_path: State<PathBuf> = api.app.state();
@@ -19,10 +16,7 @@ where
 }
 
 #[cfg(not(test))]
-pub fn get_app_data_dir<R>(api: &API<R>) -> Result<PathBuf>
-where
-    R: tauri::Runtime,
-{
+pub fn get_app_data_dir<R: Runtime>(api: &Dataset<R>) -> Result<PathBuf> {
     // .local/share on linux
     Ok(api.app.path().app_data_dir()?)
 }

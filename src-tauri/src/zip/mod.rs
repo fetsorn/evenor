@@ -1,14 +1,13 @@
-mod zip;
 mod add_to_zip;
+mod zip;
 
-use super::error::Result;
-use super::{io::IO, API};
+use super::{Dataset, Result};
 
 pub trait Zip {
     async fn zip(&self) -> Result<()>;
 }
 
-impl<R> Zip for API<R>
+impl<R> Zip for Dataset<R>
 where
     R: tauri::Runtime,
 {
@@ -16,4 +15,3 @@ where
         zip::zip(self).await
     }
 }
-

@@ -9,8 +9,7 @@ mod push;
 mod remote;
 mod repository;
 
-use super::error::Result;
-use super::{io::IO, API};
+use crate::{Dataset, Result};
 pub use remote::Remote;
 
 pub trait Git {
@@ -24,7 +23,7 @@ pub trait Git {
     fn commit(&self) -> Result<()>;
 }
 
-impl<R> Git for API<R>
+impl<R> Git for Dataset<R>
 where
     R: tauri::Runtime,
 {

@@ -1,11 +1,11 @@
-use crate::api::{error::Result, io::IO, API};
+use crate::{Dataset, Result};
 use std::fs::{create_dir, rename};
 
-pub async fn create_repo<R>(api: &API<R>, name: Option<&str>) -> Result<()>
+pub async fn create_repo<R>(api: &Dataset<R>, name: Option<&str>) -> Result<()>
 where
     R: tauri::Runtime,
 {
-    let dataset_dir = api.name_dir(name)?;
+    let dataset_dir = api.name_dataset(name)?;
 
     if api.uuid == "root" {
         create_dir(dataset_dir)?;
@@ -45,12 +45,7 @@ where
 }
 
 mod test {
-    use crate::api::{
-        error::{Error, Result},
-        git::{Git, Remote},
-        API,
-    };
-    use crate::create_app;
+    use crate::{create_app, Dataset, Git, Remote, Result};
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
 
@@ -72,7 +67,7 @@ mod test {
 
         let name = "etest";
 
-        let api = API::new(app.handle().clone(), &uuid);
+        let api = Dataset::new(app.handle().clone(), &uuid);
 
         api.create_repo(None).await?;
 
@@ -89,7 +84,7 @@ mod test {
             });
         });
 
-        let api = API::new(app.handle().clone(), &uuid);
+        let api = Dataset::new(app.handle().clone(), &uuid);
 
         // must error when root already exists
         let result = api.create_repo(None).await;
@@ -117,7 +112,7 @@ mod test {
 
         let name = "etest";
 
-        let api = API::new(app.handle().clone(), &uuid);
+        let api = Dataset::new(app.handle().clone(), &uuid);
 
         api.create_repo(Some(name)).await?;
 

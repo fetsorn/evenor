@@ -1,13 +1,11 @@
-use super::CSVS;
-use crate::api::error::{Error, Result};
-use crate::api::{io::IO, API};
+use crate::{Dataset, Result};
 use async_stream::try_stream;
 use csvs::{select::select_record_stream, types::entry::Entry, types::into_value::IntoValue};
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde_json::Value;
 
-pub async fn select<R>(api: &API<R>, query: Value) -> Result<Vec<Value>>
+pub async fn select<R>(api: &Dataset<R>, query: Value) -> Result<Vec<Value>>
 where
     R: tauri::Runtime,
 {
@@ -38,12 +36,8 @@ where
 }
 
 mod test {
-    use crate::api::{
-        csvs::CSVS,
-        error::{Error, Result},
-        API,
-    };
     use crate::create_app;
+    use crate::{Dataset, Result, CSVS};
     use assert_json_diff::assert_json_eq;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::Manager;

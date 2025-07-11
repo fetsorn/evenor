@@ -1,11 +1,9 @@
-use super::IO;
-use crate::api::error::Result;
-use crate::api::API;
+use crate::{Dataset, Result};
 use std::fs::create_dir;
 use std::path::PathBuf;
 
 // ensure app_data_dir/store exists
-pub fn get_store_dir<R>(api: &API<R>) -> Result<PathBuf>
+pub fn get_store_dir<R>(api: &Dataset<R>) -> Result<PathBuf>
 where
     R: tauri::Runtime,
 {

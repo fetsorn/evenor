@@ -1,12 +1,10 @@
-use super::IO;
-use crate::api::error::Result;
-use crate::api::API;
+use crate::{Dataset, Result};
 use regex::Regex;
 use std::fs::{create_dir, read_dir};
 use std::path::PathBuf;
 
 // find ^uuid in app_data_dir
-pub fn find_dataset<R>(api: &API<R>) -> Result<Option<PathBuf>>
+pub fn find_dataset<R>(api: &Dataset<R>) -> Result<Option<PathBuf>>
 where
     R: tauri::Runtime,
 {
@@ -49,12 +47,8 @@ where
 }
 
 mod test {
-    use crate::api::{
-        error::{Error, Result},
-        io::IO,
-        API,
-    };
     use crate::create_app;
+    use crate::{Dataset, Result};
     use std::fs::create_dir;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::Manager;
@@ -87,7 +81,7 @@ mod test {
 
         create_dir(&dirpath)?;
 
-        let api = API::new(app.handle().clone(), uuid);
+        let api = Dataset::new(app.handle().clone(), uuid);
 
         let dataset = api.find_dataset()?.unwrap();
 

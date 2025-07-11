@@ -1,12 +1,11 @@
 use crate::{Dataset, Result};
+use git2::Repository;
+use tauri::Runtime;
 
-pub async fn list_remotes<R>(api: &Dataset<R>) -> Result<Vec<String>>
-where
-    R: tauri::Runtime,
-{
+pub async fn list_remotes<R: Runtime>(api: &Dataset<R>) -> Result<Vec<String>> {
     let dataset_dir_path = api.find_dataset()?.unwrap();
 
-    let repo = match git2::Repository::open(dataset_dir_path) {
+    let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,
         Err(e) => panic!("failed to open: {}", e),
     };

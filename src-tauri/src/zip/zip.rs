@@ -1,11 +1,9 @@
 use super::add_to_zip::add_to_zip;
 use crate::{Dataset, Result};
+use tauri::Runtime;
 use tauri_plugin_dialog::DialogExt;
 
-pub async fn zip<R>(api: &Dataset<R>) -> Result<()>
-where
-    R: tauri::Runtime,
-{
+pub async fn zip<R: Runtime>(api: &Dataset<R>) -> Result<()> {
     let dataset_dir_path = api.find_dataset()?.expect("no directory");
 
     let file_path = api

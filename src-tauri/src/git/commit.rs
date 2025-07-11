@@ -1,13 +1,11 @@
+use super::repository::Repository;
 use crate::{Dataset, Result};
+use tauri::Runtime;
 
-pub fn commit<R>(api: &Dataset<R>) -> Result<()>
-where
-    R: tauri::Runtime,
-{
+pub fn commit<R: Runtime>(api: &Dataset<R>) -> Result<()> {
     let dataset_dir_path = api.find_dataset()?.unwrap();
 
-    // need a wrapper over git2 here to impement find_last_commit
-    let repo = super::repository::Repository::open(&dataset_dir_path)?;
+    let repo = Repository::open(&dataset_dir_path)?;
 
     repo.commit();
 
@@ -18,12 +16,13 @@ mod test {
     use crate::{create_app, Dataset, Git, Remote, Result};
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
+    use temp_dir::TempDir;
 
     #[tokio::test]
     async fn commit_test() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
-        let temp_dir = temp_dir::TempDir::new();
+        let temp_dir = TempDir::new();
 
         // reference temp_dir to not move it out of scope
         let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();

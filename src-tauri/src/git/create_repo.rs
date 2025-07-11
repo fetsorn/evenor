@@ -1,10 +1,9 @@
 use crate::{Dataset, Result};
-use std::fs::{create_dir, rename};
+use git2::Repository;
+use std::fs::{create_dir, rename, write};
+use tauri::Runtime;
 
-pub async fn create_repo<R>(api: &Dataset<R>, name: Option<&str>) -> Result<()>
-where
-    R: tauri::Runtime,
-{
+pub async fn create_repo<R: Runtime>(api: &Dataset<R>, name: Option<&str>) -> Result<()> {
     let dataset_dir = api.name_dataset(name)?;
 
     if api.uuid == "root" {
@@ -26,18 +25,18 @@ where
         None => {
             create_dir(&dataset_dir)?;
 
-            match git2::Repository::init(&dataset_dir) {
+            match Repository::init(&dataset_dir) {
                 Ok(repo) => repo,
                 Err(e) => panic!("failed to init: {}", e),
             };
 
             let gitignore_path = dataset_dir.join(".gitignore");
 
-            std::fs::write(&gitignore_path, ".DS_Store")?;
+            write(&gitignore_path, ".DS_Store")?;
 
             let csvscsv_path = dataset_dir.join(".csvs.csv");
 
-            std::fs::write(&csvscsv_path, "csvs,0.0.2")?;
+            write(&csvscsv_path, "csvs,0.0.2")?;
         }
     }
 
@@ -46,14 +45,16 @@ where
 
 mod test {
     use crate::{create_app, Dataset, Git, Remote, Result};
+    use std::fs::read_dir;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
+    use temp_dir::TempDir;
 
     #[tokio::test]
     async fn create_repo_root() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
-        let temp_dir = temp_dir::TempDir::new();
+        let temp_dir = TempDir::new();
 
         // reference temp_dir to not move it out of scope
         let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();
@@ -72,12 +73,12 @@ mod test {
         api.create_repo(None).await?;
 
         // check that repo is created
-        std::fs::read_dir(&temp_path)?.for_each(|entry| {
+        read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();
 
             assert!(entry.file_name() == "store");
 
-            std::fs::read_dir(entry.path()).unwrap().for_each(|entry| {
+            read_dir(entry.path()).unwrap().for_each(|entry| {
                 let entry = entry.unwrap();
 
                 assert!(entry.file_name() == "root");
@@ -98,7 +99,7 @@ mod test {
     async fn create_repo_name() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
-        let temp_dir = temp_dir::TempDir::new();
+        let temp_dir = TempDir::new();
 
         // reference temp_dir to not move it out of scope
         let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();
@@ -117,12 +118,12 @@ mod test {
         api.create_repo(Some(name)).await?;
 
         // check that repo is created
-        std::fs::read_dir(&temp_path)?.for_each(|entry| {
+        read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();
 
             assert!(entry.file_name() == "store");
 
-            std::fs::read_dir(entry.path()).unwrap().for_each(|entry| {
+            read_dir(entry.path()).unwrap().for_each(|entry| {
                 let entry = entry.unwrap();
 
                 assert!(entry.file_name() == "euuid-etest");
@@ -134,12 +135,12 @@ mod test {
         // must rename when root already exists
         let result = api.create_repo(Some(name)).await;
 
-        std::fs::read_dir(&temp_path)?.for_each(|entry| {
+        read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();
 
             assert!(entry.file_name() == "store");
 
-            std::fs::read_dir(entry.path()).unwrap().for_each(|entry| {
+            read_dir(entry.path()).unwrap().for_each(|entry| {
                 let entry = entry.unwrap();
 
                 assert!(entry.file_name() == "euuid-etest1");

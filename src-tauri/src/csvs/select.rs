@@ -4,11 +4,9 @@ use csvs::{select::select_record_stream, types::entry::Entry, types::into_value:
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde_json::Value;
+use tauri::Runtime;
 
-pub async fn select<R>(api: &Dataset<R>, query: Value) -> Result<Vec<Value>>
-where
-    R: tauri::Runtime,
-{
+pub async fn select<R: Runtime>(api: &Dataset<R>, query: Value) -> Result<Vec<Value>> {
     let query: Entry = query.try_into().unwrap();
 
     let dataset_dir_path = api.find_dataset()?.unwrap();

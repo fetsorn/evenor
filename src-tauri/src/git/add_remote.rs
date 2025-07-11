@@ -1,13 +1,12 @@
 use super::remote::Remote;
 use crate::{Dataset, Result};
+use git2::Repository;
+use tauri::Runtime;
 
-pub async fn add_remote<R>(api: &Dataset<R>, remote: &Remote) -> Result<()>
-where
-    R: tauri::Runtime,
-{
+pub async fn add_remote<R: Runtime>(api: &Dataset<R>, remote: &Remote) -> Result<()> {
     let dataset_dir_path = api.find_dataset()?.unwrap();
 
-    let repo = match git2::Repository::open(dataset_dir_path) {
+    let repo = match Repository::open(dataset_dir_path) {
         Ok(repo) => repo,
         Err(e) => panic!("failed to open: {}", e),
     };

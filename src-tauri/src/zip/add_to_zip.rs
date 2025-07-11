@@ -1,9 +1,9 @@
-pub use crate::Result;
+use crate::Result;
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
-use zip::write::SimpleFileOptions;
+use zip::{write::SimpleFileOptions, CompressionMethod, ZipWriter};
 
 pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
     let writer = File::create(file_path).unwrap();
@@ -13,9 +13,9 @@ pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
     let it = walkdir.into_iter();
     let it = &mut it.filter_map(|e| e.ok());
 
-    let method = zip::CompressionMethod::Stored;
+    let method = CompressionMethod::Stored;
 
-    let mut zip = zip::ZipWriter::new(writer);
+    let mut zip = ZipWriter::new(writer);
     let options = SimpleFileOptions::default()
         .compression_method(method)
         .unix_permissions(0o755);
@@ -53,17 +53,19 @@ pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
 
 mod test {
     use super::add_to_zip;
-    use crate::create_app;
-    use crate::{Dataset, Git, Result, Zip};
+    use crate::{create_app, Dataset, Git, Result, Zip};
+    use std::fs::{create_dir, write, File};
     use std::io::prelude::*;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
+    use temp_dir::TempDir;
+    use zip::ZipArchive;
 
     #[tokio::test]
     async fn zip_test() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
-        let temp_dir = temp_dir::TempDir::new();
+        let temp_dir = TempDir::new();
 
         // reference temp_dir to not move it out of scope
         let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();
@@ -81,19 +83,19 @@ mod test {
 
         let dataset_dir = api.name_dataset(None)?;
 
-        std::fs::create_dir(&dataset_dir)?;
+        create_dir(&dataset_dir)?;
 
         let check_path = dataset_dir.join("check.txt");
 
-        std::fs::write(check_path, "check")?;
+        write(check_path, "check")?;
 
         let file_path = temp_path.join("a.zip");
 
         add_to_zip(dataset_dir, &file_path)?;
 
-        let mut reader = std::fs::File::open(&file_path)?;
+        let mut reader = File::open(&file_path)?;
 
-        let mut zip = zip::ZipArchive::new(reader)?;
+        let mut zip = ZipArchive::new(reader)?;
 
         for i in 0..zip.len() {
             let mut file = zip.by_index(i)?;

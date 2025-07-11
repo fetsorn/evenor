@@ -2,12 +2,10 @@ use crate::{Dataset, Result};
 use regex::Regex;
 use std::fs::{create_dir, read_dir};
 use std::path::PathBuf;
+use tauri::Runtime;
 
 // find ^uuid in app_data_dir
-pub fn find_dataset<R>(api: &Dataset<R>) -> Result<Option<PathBuf>>
-where
-    R: tauri::Runtime,
-{
+pub fn find_dataset<R: Runtime>(api: &Dataset<R>) -> Result<Option<PathBuf>> {
     let store_dir = api.get_store_dir()?;
 
     let existing_entry = read_dir(store_dir)?
@@ -52,12 +50,13 @@ mod test {
     use std::fs::create_dir;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::Manager;
+    use temp_dir::TempDir;
 
     #[tokio::test]
     async fn find_dataset_test() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
-        let temp_dir = temp_dir::TempDir::new();
+        let temp_dir = TempDir::new();
 
         // reference temp_dir to not move it out of scope
         let temp_path = temp_dir.as_ref().unwrap().path().to_path_buf();

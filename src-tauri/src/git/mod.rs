@@ -11,6 +11,7 @@ mod repository;
 
 use crate::{Dataset, Result};
 pub use remote::Remote;
+use tauri::Runtime;
 
 pub trait Git {
     async fn create_repo(&self, name: Option<&str>) -> Result<()>;
@@ -25,7 +26,7 @@ pub trait Git {
 
 impl<R> Git for Dataset<R>
 where
-    R: tauri::Runtime,
+    R: Runtime,
 {
     async fn create_repo(&self, name: Option<&str>) -> Result<()> {
         create_repo::create_repo(self, name).await

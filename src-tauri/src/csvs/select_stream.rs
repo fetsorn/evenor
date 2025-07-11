@@ -5,7 +5,7 @@ use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde::Serialize;
 use serde_json::Value;
-use tauri::ipc::Channel;
+use tauri::{ipc::Channel, Runtime};
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "event", content = "data")]
@@ -18,14 +18,11 @@ pub enum SelectEvent {
     Finished { query: Value },
 }
 
-pub async fn select_stream<R>(
+pub async fn select_stream<R: Runtime>(
     api: &Dataset<R>,
     query: Value,
     on_event: Channel<SelectEvent>,
-) -> Result<()>
-where
-    R: tauri::Runtime,
-{
+) -> Result<()> {
     let query: Entry = query.try_into().unwrap();
 
     let dataset_dir_path = api.find_dataset()?.unwrap();

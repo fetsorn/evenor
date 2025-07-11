@@ -6,11 +6,11 @@ mod dataset;
 mod error;
 mod git;
 mod zip;
-pub use csvs::{SelectEvent, CSVS};
-pub use dataset::Dataset;
-pub use error::{Error, Result};
-pub use git::{Git, Remote};
-pub use zip::Zip;
+use csvs::{SelectEvent, CSVS};
+use dataset::Dataset;
+use error::{Error, Result};
+use git::{Git, Remote};
+use zip::Zip;
 
 #[tauri::command]
 async fn select<R>(app: AppHandle<R>, uuid: &str, query: Value) -> Result<Vec<Value>>

@@ -6,7 +6,7 @@ mod update_record;
 use crate::{Dataset, Result};
 pub use select_stream::SelectEvent;
 use serde_json::Value;
-use tauri::ipc::Channel;
+use tauri::{ipc::Channel, Runtime};
 
 pub trait CSVS {
     async fn select(&self, query: Value) -> Result<Vec<Value>>;
@@ -15,10 +15,7 @@ pub trait CSVS {
     async fn delete_record(&self, record: Value) -> Result<()>;
 }
 
-impl<R> CSVS for Dataset<R>
-where
-    R: tauri::Runtime,
-{
+impl<R: Runtime> CSVS for Dataset<R> {
     async fn select(&self, query: Value) -> Result<Vec<Value>> {
         select::select(self, query).await
     }

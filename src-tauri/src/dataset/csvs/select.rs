@@ -4,12 +4,10 @@ use csvs::{select::select_record_stream, types::entry::Entry, types::into_value:
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde_json::Value;
-use tauri::Runtime;
+use std::path::PathBuf;
 
-pub async fn select<R: Runtime>(api: &Dataset<R>, query: Value) -> Result<Vec<Value>> {
+pub async fn select(dataset_dir: PathBuf, query: Value) -> Result<Vec<Value>> {
     let query: Entry = query.try_into().unwrap();
-
-    let dataset_dir_path = api.find_dataset()?.unwrap();
 
     // needed to clone for the stream scope
     let query_for_stream = query.clone();
@@ -18,7 +16,7 @@ pub async fn select<R: Runtime>(api: &Dataset<R>, query: Value) -> Result<Vec<Va
         yield query_for_stream;
     };
 
-    let s = select_record_stream(readable_stream, dataset_dir_path);
+    let s = select_record_stream(readable_stream, dataset_dir);
 
     pin_mut!(s); // needed for iteration
 

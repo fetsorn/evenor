@@ -1,9 +1,8 @@
-use crate::{Dataset, Result};
-use git2::Repository;
+use crate::{Dataset, Result, Repository};
 use std::fs::{create_dir, rename, write};
 use tauri::Runtime;
 
-pub async fn create_repo<R: Runtime>(api: &Dataset<R>, name: Option<&str>) -> Result<()> {
+pub async fn make_dataset<R: Runtime>(api: &Dataset<R>, name: Option<&str>) -> Result<()> {
     let dataset_dir = api.name_dataset(name)?;
 
     if api.uuid == "root" {
@@ -25,10 +24,7 @@ pub async fn create_repo<R: Runtime>(api: &Dataset<R>, name: Option<&str>) -> Re
         None => {
             create_dir(&dataset_dir)?;
 
-            match Repository::init(&dataset_dir) {
-                Ok(repo) => repo,
-                Err(e) => panic!("failed to init: {}", e),
-            };
+            Repository::init(&dataset_dir)?;
 
             let gitignore_path = dataset_dir.join(".gitignore");
 
@@ -44,14 +40,14 @@ pub async fn create_repo<R: Runtime>(api: &Dataset<R>, name: Option<&str>) -> Re
 }
 
 mod test {
-    use crate::{create_app, Dataset, Git, Remote, Result};
+    use crate::{create_app, Dataset, Result};
     use std::fs::read_dir;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
     use temp_dir::TempDir;
 
     #[tokio::test]
-    async fn create_repo_root() -> Result<()> {
+    async fn make_dataset_root() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
         let temp_dir = TempDir::new();
@@ -70,7 +66,7 @@ mod test {
 
         let api = Dataset::new(app.handle().clone(), &uuid);
 
-        api.create_repo(None).await?;
+        api.make_dataset(None).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -88,7 +84,7 @@ mod test {
         let api = Dataset::new(app.handle().clone(), &uuid);
 
         // must error when root already exists
-        let result = api.create_repo(None).await;
+        let result = api.make_dataset(None).await;
 
         assert!(result.is_err());
 
@@ -96,7 +92,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn create_repo_name() -> Result<()> {
+    async fn make_dataset_name() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
         let temp_dir = TempDir::new();
@@ -115,7 +111,7 @@ mod test {
 
         let api = Dataset::new(app.handle().clone(), &uuid);
 
-        api.create_repo(Some(name)).await?;
+        api.make_dataset(Some(name)).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -133,7 +129,7 @@ mod test {
         let name = "etest1";
 
         // must rename when root already exists
-        let result = api.create_repo(Some(name)).await;
+        let result = api.make_dataset(Some(name)).await;
 
         read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();

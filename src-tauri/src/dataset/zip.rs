@@ -1,4 +1,7 @@
-use crate::Result;
+use crate::{Dataset, Result};
+use tauri::Runtime;
+use tauri_plugin_dialog::DialogExt;
+
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -53,7 +56,7 @@ pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
 
 mod test {
     use super::add_to_zip;
-    use crate::{create_app, Dataset, Git, Result, Zip};
+    use crate::{create_app, Dataset, Result};
     use std::fs::{create_dir, write, File};
     use std::io::prelude::*;
     use tauri::test::{mock_builder, mock_context, noop_assets};
@@ -111,4 +114,23 @@ mod test {
 
         Ok(())
     }
+}
+
+pub async fn zip<R: Runtime>(api: &Dataset<R>) -> Result<()> {
+    let dataset_dir = api.find_dataset()?.expect("no directory");
+
+    let file_path = api
+        .app
+        .dialog()
+        .file()
+        .add_filter("My Filter", &["zip"])
+        .blocking_save_file();
+
+    let file_path = file_path.unwrap();
+
+    let file_path = file_path.as_path().unwrap();
+
+    add_to_zip(dataset_dir, &file_path)?;
+
+    Ok(())
 }

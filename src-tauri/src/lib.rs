@@ -1,16 +1,13 @@
 #![allow(warnings)]
 use serde_json::Value;
 use tauri::{generate_context, generate_handler, ipc::Channel, App, AppHandle, Builder, Runtime};
-mod csvs;
 mod dataset;
 mod error;
-mod git;
-mod zip;
-use csvs::{SelectEvent, CSVS};
-use dataset::Dataset;
-use error::{Error, Result};
-use git::{Git, Remote};
-use zip::Zip;
+mod repository;
+use repository::{Repository, Settings, Remote};
+use dataset::{Dataset, SelectEvent, CSVS};
+pub use error::{Result, Error};
+use std::fs::remove_dir_all;
 
 #[tauri::command]
 async fn select<R>(app: AppHandle<R>, uuid: &str, query: Value) -> Result<Vec<Value>>
@@ -19,7 +16,9 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    let records = api.select(query).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    let records = Dataset::<R>::select(dataset_dir, query).await?;
 
     Ok(records)
 }
@@ -36,7 +35,9 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    api.select_stream(query, on_event).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    Dataset::<R>::select_stream(dataset_dir, query, on_event).await?;
 
     Ok(())
 }
@@ -48,7 +49,9 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    api.update_record(record).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    Dataset::<R>::update_record(dataset_dir, record).await?;
 
     Ok(())
 }
@@ -60,7 +63,9 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    api.delete_record(record).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    Dataset::<R>::delete_record(dataset_dir, record).await?;
 
     Ok(())
 }
@@ -72,7 +77,7 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    api.create_repo(name).await?;
+    api.make_dataset(name).await?;
 
     Ok(())
 }
@@ -92,7 +97,17 @@ where
 
     let remote = Remote::new(Some(remote_url), Some(remote_token), None);
 
-    api.clone(name, &remote).await?;
+    match api.find_dataset() {
+        Err(_) => (),
+        Ok(p) => match p {
+            None => (),
+            Some(d) => remove_dir_all(d)?,
+        },
+    };
+
+    let dataset_dir = api.name_dataset(name.as_deref())?;
+
+    let repo = Repository::clone(dataset_dir, name, &remote).await?;
 
     Ok(())
 }
@@ -106,7 +121,26 @@ where
 
     let remote = Remote::new(None, None, Some(remote));
 
-    api.pull(&remote).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    let repo = Repository::open(&dataset_dir)?;
+
+    let settings = Settings {
+        default_branch: None,
+        default_remote: None,
+        ssh: None,
+        editor: None,
+        ignore: None,
+        prune: None,
+    };
+
+    let (status, remote) = repo.status(&settings)?;
+
+    // let remote = repo.find_remote(remote)?.fetch(&["main"], None, None);
+
+    repo.pull(&settings, &status, remote, true, move |progress| {
+        // do nothing
+    })?;
 
     Ok(())
 }
@@ -120,7 +154,13 @@ where
 
     let remote = Remote::new(None, None, Some(remote));
 
-    api.push(&remote).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    let repository = Repository::open(&dataset_dir)?;
+
+    let mut remote = repository.find_remote(&remote.name.as_ref().unwrap_or(&"".to_string()))?;
+
+    remote.push::<String>(&[], None)?;
 
     Ok(())
 }
@@ -132,7 +172,11 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    let remotes = api.list_remotes().await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    let repository = Repository::open(&dataset_dir)?;
+
+    let remotes = repository.remotes()?;
 
     Ok(remotes)
 }
@@ -152,7 +196,14 @@ where
 
     let remote = Remote::new(Some(remote_name), Some(remote_url), Some(remote_token));
 
-    api.add_remote(&remote);
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    let repository = Repository::open(&dataset_dir)?;
+
+    repository.remote(
+        &remote.name.as_ref().unwrap_or(&"".to_string()),
+        &remote.url.as_ref().unwrap_or(&"".to_string()),
+    )?;
 
     Ok(())
 }
@@ -166,7 +217,16 @@ where
 
     let remote = Remote::new(None, None, Some(remote));
 
-    let (url, token) = api.get_remote(&remote).await?;
+    let dataset_dir = api.find_dataset()?.unwrap();
+
+    let repository = Repository::open(&dataset_dir)?;
+
+    let remote = repository.find_remote(remote.name.as_ref().unwrap_or(&"origin".to_string()))?;
+
+    let url = remote.url().unwrap().to_string();
+
+    // read config
+    let token = "".to_string();
 
     Ok((url, token))
 }
@@ -178,7 +238,11 @@ where
 {
     let api = Dataset::new(app, uuid);
 
-    api.commit()?;
+    let dataset_dir_path = api.find_dataset()?.unwrap();
+
+    let repo = Repository::open(&dataset_dir_path)?;
+
+    repo.commit();
 
     Ok(())
 }

@@ -1,9 +1,13 @@
 use crate::Result;
+mod csvs;
+mod zip;
+pub use csvs::{SelectEvent, CSVS};
 use std::path::PathBuf;
 use tauri::{AppHandle, Runtime};
 mod find_dataset;
 mod get_app_data_dir;
 mod get_store_dir;
+mod make_dataset;
 mod name_dataset;
 
 pub struct Dataset<R>
@@ -42,5 +46,13 @@ where
     // find ^uuid in app_data_dir
     pub fn find_dataset(&self) -> Result<Option<PathBuf>> {
         find_dataset::find_dataset(self)
+    }
+
+    pub async fn make_dataset(&self, name: Option<&str>) -> Result<()> {
+        make_dataset::make_dataset(self, name).await
+    }
+
+    pub async fn zip(&self) -> Result<()> {
+        zip::zip(self).await
     }
 }

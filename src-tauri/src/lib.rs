@@ -5,11 +5,10 @@ use serde_json::Value;
 use tauri::{generate_context, generate_handler, ipc::Channel, App, AppHandle, Builder, Runtime};
 
 #[tauri::command]
-async fn select<R> (
-    app: AppHandle<R>,
-    uuid: &str,
-    query: Value,
-) -> Result<Vec<Value>> where R: Runtime, {
+async fn select<R>(app: AppHandle<R>, uuid: &str, query: Value) -> Result<Vec<Value>>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let records = api.select(query).await?;
@@ -23,7 +22,10 @@ async fn select_stream<R>(
     uuid: &str,
     query: Value,
     on_event: Channel<SelectEvent>,
-) -> Result<()> where R: Runtime,{
+) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     api.select_stream(query, on_event).await?;
@@ -32,11 +34,10 @@ async fn select_stream<R>(
 }
 
 #[tauri::command]
-async fn update_record<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    record: Value,
-) -> Result<()> where R: Runtime,{
+async fn update_record<R>(app: AppHandle<R>, uuid: &str, record: Value) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     api.update_record(record).await?;
@@ -45,11 +46,10 @@ async fn update_record<R>(
 }
 
 #[tauri::command]
-async fn delete_record<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    record: Value,
-) -> Result<()> where R: Runtime,{
+async fn delete_record<R>(app: AppHandle<R>, uuid: &str, record: Value) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     api.delete_record(record).await?;
@@ -58,11 +58,10 @@ async fn delete_record<R>(
 }
 
 #[tauri::command]
-async fn create_repo<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    name: Option<&str>,
-) -> Result<()> where R: Runtime,{
+async fn create_repo<R>(app: AppHandle<R>, uuid: &str, name: Option<&str>) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     api.create_repo(name).await?;
@@ -77,7 +76,10 @@ async fn clone<R>(
     name: Option<String>,
     remote_url: &str,
     remote_token: &str,
-) -> Result<()> where R: Runtime,{
+) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let remote = Remote::new(Some(remote_url), Some(remote_token), None);
@@ -88,7 +90,10 @@ async fn clone<R>(
 }
 
 #[tauri::command]
-async fn pull<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> where R: Runtime,{
+async fn pull<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let remote = Remote::new(None, None, Some(remote));
@@ -99,7 +104,10 @@ async fn pull<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> wher
 }
 
 #[tauri::command]
-async fn push<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> where R: Runtime,{
+async fn push<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let remote = Remote::new(None, None, Some(remote));
@@ -110,7 +118,10 @@ async fn push<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<()> wher
 }
 
 #[tauri::command]
-async fn list_remotes<R>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>> where R: Runtime, {
+async fn list_remotes<R>(app: AppHandle<R>, uuid: &str) -> Result<Vec<String>>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let remotes = api.list_remotes().await?;
@@ -125,7 +136,10 @@ async fn add_remote<R>(
     remote_name: &str,
     remote_url: &str,
     remote_token: &str,
-) -> Result<()> where R: Runtime, {
+) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let remote = Remote::new(Some(remote_name), Some(remote_url), Some(remote_token));
@@ -136,11 +150,10 @@ async fn add_remote<R>(
 }
 
 #[tauri::command]
-async fn get_remote<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    remote: &str,
-) -> Result<(String, String)> where R: Runtime,{
+async fn get_remote<R>(app: AppHandle<R>, uuid: &str, remote: &str) -> Result<(String, String)>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     let remote = Remote::new(None, None, Some(remote));
@@ -151,7 +164,10 @@ async fn get_remote<R>(
 }
 
 #[tauri::command]
-fn commit<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime,{
+fn commit<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+where
+    R: Runtime,
+{
     let api = API::new(app, uuid);
 
     api.commit()?;
@@ -160,42 +176,42 @@ fn commit<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime,{
 }
 
 #[tauri::command]
-fn create_lfs<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime, {
-
+fn create_lfs<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn fetch_asset<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    filename: &str,
-) -> Result<()> where R: Runtime,{
+async fn fetch_asset<R>(app: AppHandle<R>, uuid: &str, filename: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn put_asset<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    filename: &str,
-    buffer: &str,
-) -> Result<()> where R: Runtime,{
+async fn put_asset<R>(app: AppHandle<R>, uuid: &str, filename: &str, buffer: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn upload_file<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime,{
+async fn upload_file<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn upload_blobs_lfs<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    remote: &str,
-    files: &str,
-) -> Result<()> where R: Runtime,{
+async fn upload_blobs_lfs<R>(app: AppHandle<R>, uuid: &str, remote: &str, files: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
@@ -205,7 +221,10 @@ async fn download_asset<R>(
     uuid: &str,
     content: &str,
     filename: &str,
-) -> Result<()> where R: Runtime,{
+) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
@@ -216,26 +235,33 @@ async fn download_url_from_pointer<R>(
     url: &str,
     token: &str,
     pointer_info: &str,
-) -> Result<()> where R: Runtime,{
+) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn add_asset_path<R>(
-    app: AppHandle<R>,
-    uuid: &str,
-    asset_path: &str,
-) -> Result<()> where R: Runtime,{
+async fn add_asset_path<R>(app: AppHandle<R>, uuid: &str, asset_path: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn list_asset_paths<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime,{
+async fn list_asset_paths<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+where
+    R: Runtime,
+{
     Ok(())
 }
 
 #[tauri::command]
-async fn zip<R>(app: AppHandle<R>, uuid: &str) -> Result<()> where R: Runtime,
+async fn zip<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+where
+    R: Runtime,
 {
     let api = API::new(app, uuid);
 

@@ -5,8 +5,8 @@ use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde::Serialize;
 use serde_json::Value;
-use tauri::{ipc::Channel, Runtime};
 use std::path::PathBuf;
+use tauri::{ipc::Channel, Runtime};
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase", tag = "event", content = "data")]

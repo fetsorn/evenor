@@ -10,12 +10,18 @@ export function nameDir(uuid, name) {
   return `/${uuid}${name !== undefined ? `-${name}` : ""}`;
 }
 
-export async function createRepo(uuid, name) {
+export async function init(uuid, name) {
   const dir = nameDir(uuid, name);
 
   if (uuid === "root") {
     // should fail if root exists
     await fs.promises.mkdir(dir);
+
+    await git.init({ fs, dir, defaultBranch: "main" });
+
+    await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
+
+    await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
   } else {
     try {
       const existingRepo = await findDir(uuid);
@@ -112,7 +118,7 @@ export async function commit(uuid) {
   }
 }
 
-export async function clone(uuid, name, remoteUrl, remoteToken) {
+export async function clone(uuid, name, remote) {
   const dir = nameDir(uuid, name);
 
   try {
@@ -128,13 +134,13 @@ export async function clone(uuid, name, remoteUrl, remoteToken) {
     fs,
     http,
     dir,
-    url: remoteUrl,
+    url: remote.url,
     singleBranch: true,
   };
 
-  if (remoteToken !== undefined) {
+  if (remote.token !== undefined) {
     options.onAuth = () => ({
-      username: remoteToken,
+      username: remote.token,
     });
   }
 
@@ -152,37 +158,26 @@ export async function clone(uuid, name, remoteUrl, remoteToken) {
     fs,
     dir,
     path: "remote.origin.url",
-    value: remoteUrl,
+    value: remote.url,
   });
 
-  if (remoteToken !== undefined) {
+  if (remote.token !== undefined) {
     await git.setConfig({
       fs,
       dir,
       path: "remote.origin.token",
-      value: remoteToken,
+      value: remote.token,
     });
   }
 }
 
-export async function listRemotes(uuid) {
-  const dir = await findDir(uuid);
-
-  const remotes = await git.listRemotes({
-    fs,
-    dir,
-  });
-
-  return remotes.map((r) => r.remote);
-}
-
-export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
+export async function setOrigin(uuid, remoteUrl, remoteToken) {
   const dir = await findDir(uuid);
 
   await git.addRemote({
     fs,
     dir,
-    remote: remoteName,
+    remote: "origin",
     url: remoteUrl,
   });
 
@@ -190,35 +185,32 @@ export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
     await git.setConfig({
       fs,
       dir,
-      path: `remote.${remoteName}.token`,
+      path: `remote.origin.token`,
       value: remoteToken,
     });
   }
 }
 
-export async function getRemote(uuid, remoteName) {
-  if (remoteName === undefined)
-    throw Error("can't get remote, remote undefined");
-
+export async function getOrigin(uuid) {
   const dir = await findDir(uuid);
 
   const remoteUrl = await git.getConfig({
     fs,
     dir,
-    path: `remote.${remoteName}.url`,
+    path: `remote.origin.url`,
   });
 
   const remoteToken = await git.getConfig({
     fs,
     dir,
-    path: `remote.${remoteName}.token`,
+    path: `remote.origin.token`,
   });
 
-  return [remoteUrl, remoteToken];
+  return { url: remoteUrl, token: remoteToken };
 }
 
 // must pass remote name for fastForward
-export async function pull(uuid, remoteName, remoteUrl, remoteToken) {
+export async function pull(uuid, remoteUrl, remoteToken) {
   const dir = await findDir(uuid);
 
   const tokenPartial = remoteToken
@@ -236,13 +228,13 @@ export async function pull(uuid, remoteName, remoteUrl, remoteToken) {
     http,
     dir,
     url: remoteUrl,
-    remote: remoteName,
+    remote: "origin",
     ...tokenPartial,
   });
 }
 
 // must pass remote name here for push
-export async function push(uuid, remoteName, remoteUrl, remoteToken) {
+export async function push(uuid, remoteUrl, remoteToken) {
   const dir = await findDir(uuid);
 
   const tokenPartial = remoteToken
@@ -259,7 +251,7 @@ export async function push(uuid, remoteName, remoteUrl, remoteToken) {
     force: true,
     dir,
     url: remoteUrl,
-    remote: remoteName,
+    remote: "origin",
     ...tokenPartial,
   });
 }

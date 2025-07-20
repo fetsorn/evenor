@@ -3,14 +3,13 @@ import git from "isomorphic-git";
 import { fs } from "@/api/browser/lightningfs.js";
 import {
   nameDir,
-  createRepo,
+  init,
   commit,
   clone,
   pull,
   push,
-  listRemotes,
-  addRemote,
-  getRemote,
+  setOrigin,
+  getOrigin,
 } from "@/api/browser/git.js";
 import stub from "./stub.js";
 
@@ -31,7 +30,6 @@ vi.mock("isomorphic-git", async (importOriginal) => {
       setConfig: vi.fn(mod.setConfig),
       fastForward: vi.fn(),
       push: vi.fn(),
-      listRemotes: vi.fn(mod.listRemotes),
       addRemote: vi.fn(mod.addRemote),
       getConfig: vi.fn(mod.getConfig),
     },
@@ -52,9 +50,11 @@ describe("nameDir", () => {
   });
 });
 
-describe("createRepo", () => {
+describe.only("init", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
+
+    git.init.mockReset();
   });
 
   afterEach(async () => {
@@ -63,7 +63,7 @@ describe("createRepo", () => {
   });
 
   test("creates a directory", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     const listing = await fs.promises.readdir("/");
 
@@ -91,8 +91,8 @@ describe("createRepo", () => {
     );
   });
 
-  test("creates root", async () => {
-    await createRepo("root");
+  test.only("creates root", async () => {
+    await init("root");
 
     const listing = await fs.promises.readdir("/");
 
@@ -115,19 +115,19 @@ describe("createRepo", () => {
   });
 
   test("throws when root exists", async () => {
-    await createRepo("root");
+    await init("root");
 
-    await expect(createRepo("root")).rejects.toThrowError();
+    await expect(init("root")).rejects.toThrowError();
   });
 
   test("renames a directory", async () => {
-    await createRepo(stub.dir);
+    await init(stub.dir);
 
     const newName = "newName";
 
     const newDir = `${stub.uuid}-${newName}`;
 
-    await createRepo(stub.uuid, newName);
+    await init(stub.uuid, newName);
 
     const listing = await fs.promises.readdir("/");
 
@@ -151,12 +151,12 @@ describe("clone", () => {
 
     // try to clone
     await expect(
-      clone(stub.uuid, stub.url, stub.token, stub.name),
+      clone(stub.uuid, stub.name, { url: stub.url, token: stub.token }),
     ).rejects.toThrowError();
   });
 
   test("calls git.clone", async () => {
-    await clone(stub.uuid, stub.url, stub.token, stub.name);
+    await clone(stub.uuid, stub.name, { url: stub.url, token: stub.token });
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -200,7 +200,7 @@ describe("commit", () => {
   });
 
   test("adds", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
@@ -230,7 +230,7 @@ describe("commit", () => {
   });
 });
 
-describe("getRemote", () => {
+describe("getOrigin", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });
@@ -241,25 +241,25 @@ describe("getRemote", () => {
   });
 
   test("throws when no repo", async () => {
-    await expect(getRemote(stub.uuid, stub.remote)).rejects.toThrowError();
+    await expect(getOrigin(stub.uuid)).rejects.toThrowError();
   });
 
   test("throws when remote undefined", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await expect(getRemote(stub.uuid, undefined)).rejects.toThrowError();
+    await expect(getOrigin(stub.uuid)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
-    const [remoteUrl, remoteToken] = await getRemote(stub.uuid, stub.remote);
+    const [remoteUrl, remoteToken] = await getOrigin(stub.uuid);
 
     expect(git.getConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -281,7 +281,7 @@ describe("getRemote", () => {
   });
 });
 
-describe("addRemote", () => {
+describe("setOrigin", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });
@@ -293,16 +293,16 @@ describe("addRemote", () => {
 
   test("throws when no repo", async () => {
     await expect(
-      addRemote(stub.uuid, stub.remote, stub.url, stub.token),
+      setOrigin(stub.uuid, stub.url, stub.token),
     ).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
     expect(git.addRemote).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -315,59 +315,10 @@ describe("addRemote", () => {
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
-        path: `remote.${stub.remote}.token`,
+        path: `remote.origin.token`,
         value: stub.token,
       }),
     );
-  });
-});
-
-describe("listRemotes", () => {
-  beforeEach(() => {
-    fs.init("test", { wipe: true });
-  });
-
-  afterEach(async () => {
-    // for lightning fs to release mutex on indexedDB
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  });
-
-  test("throws when no repo", async () => {
-    await expect(listRemotes(stub.uuid)).rejects.toThrowError();
-  });
-
-  test("empty when no remotes", async () => {
-    await createRepo(stub.uuid, stub.name);
-
-    await commit(stub.uuid);
-
-    const remotes = await listRemotes(stub.uuid);
-
-    expect(git.listRemotes).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dir: stub.dirpath,
-      }),
-    );
-
-    expect(remotes).toEqual([]);
-  });
-
-  test("finds remotes", async () => {
-    await createRepo(stub.uuid, stub.name);
-
-    await commit(stub.uuid);
-
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
-
-    const remotes = await listRemotes(stub.uuid);
-
-    expect(git.listRemotes).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dir: stub.dirpath,
-      }),
-    );
-
-    expect(remotes).toEqual([stub.remote]);
   });
 });
 
@@ -382,25 +333,25 @@ describe("pull", () => {
   });
 
   test("throws if no repo", async () => {
-    await expect(pull(stub.uuid, undefined)).rejects.toThrowError();
+    await expect(pull(stub.uuid)).rejects.toThrowError();
   });
 
   test("throws if remote is undefined", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await expect(pull(stub.uuid, undefined)).rejects.toThrowError();
+    await expect(pull(stub.uuid)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
-    await pull(stub.uuid, stub.remote);
+    await pull(stub.uuid);
 
     expect(git.fastForward).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -424,25 +375,25 @@ describe("push", () => {
   });
 
   test("throws if no repo", async () => {
-    await expect(push(stub.uuid, undefined)).rejects.toThrowError();
+    await expect(push(stub.uuid)).rejects.toThrowError();
   });
 
   test("throws if remote is undefined", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await expect(push(stub.uuid, undefined)).rejects.toThrowError();
+    await expect(push(stub.uuid)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
-    await push(stub.uuid, stub.remote);
+    await push(stub.uuid);
 
     expect(git.push).toHaveBeenCalledWith(
       expect.objectContaining({

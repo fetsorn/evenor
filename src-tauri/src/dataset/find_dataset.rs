@@ -5,8 +5,8 @@ use std::path::PathBuf;
 use tauri::Runtime;
 
 // find ^uuid in app_data_dir
-pub fn find_dataset<R: Runtime>(api: &Dataset<R>) -> Result<Option<PathBuf>> {
-    let store_dir = api.get_store_dir()?;
+pub fn find_dataset<R: Runtime>(dataset: &Dataset<R>) -> Result<Option<PathBuf>> {
+    let store_dir = dataset.get_store_dir()?;
 
     let existing_entry = read_dir(store_dir)?
         .map(|res| res.map(|e| e.path()))
@@ -30,7 +30,9 @@ pub fn find_dataset<R: Runtime>(api: &Dataset<R>) -> Result<Option<PathBuf>> {
                 Some(s) => s,
             };
 
-            Regex::new(&format!("^{}", api.uuid)).unwrap().is_match(s)
+            Regex::new(&format!("^{}", dataset.uuid))
+                .unwrap()
+                .is_match(s)
         });
 
     let existing_dataset: Option<PathBuf> = match existing_entry {
@@ -80,9 +82,9 @@ mod test {
 
         create_dir(&dirpath)?;
 
-        let api = Dataset::new(app.handle().clone(), uuid);
+        let dataset = Dataset::new(app.handle().clone(), uuid);
 
-        let dataset = api.find_dataset()?.unwrap();
+        let dataset = dataset.find_dataset()?.unwrap();
 
         assert_eq!(dataset, dirpath);
 

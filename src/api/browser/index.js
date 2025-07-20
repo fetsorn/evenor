@@ -1,14 +1,13 @@
 import { zip } from "./zip.js";
 import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
 import {
-  createRepo,
+  init,
   clone,
   commit,
   pull,
   push,
-  listRemotes,
-  addRemote,
-  getRemote,
+  setOrigin,
+  getOrigin,
 } from "./git.js";
 import {
   createLFS,
@@ -18,8 +17,8 @@ import {
   uploadBlobsLFS,
   downloadAsset,
   downloadUrlFromPointer,
-  addAssetPath,
-  listAssetPaths,
+  setAssetPath,
+  getAssetPath,
 } from "./lfs.js";
 
 export {
@@ -29,22 +28,21 @@ export {
   uploadBlobsLFS,
   downloadAsset,
   downloadUrlFromPointer,
-  addAssetPath,
-  listAssetPaths,
+  setAssetPath,
+  getAssetPath,
   select,
   selectStream,
   updateRecord,
   deleteRecord,
-  createRepo,
+  init,
   createLFS,
   clone,
   commit,
   push,
   pull,
   fetchAsset,
-  listRemotes,
-  addRemote,
-  getRemote,
+  setOrigin,
+  getOrigin,
 };
 
 export default {
@@ -54,20 +52,19 @@ export default {
   uploadBlobsLFS,
   downloadAsset,
   downloadUrlFromPointer,
-  addAssetPath,
-  listAssetPaths,
+  setAssetPath,
+  getAssetPath,
   select,
   selectStream,
   updateRecord,
   deleteRecord,
-  createRepo,
+  init,
   createLFS,
   clone,
   commit,
   push,
   pull,
   fetchAsset,
-  listRemotes,
-  addRemote,
-  getRemote,
+  setOrigin,
+  getOrigin,
 };

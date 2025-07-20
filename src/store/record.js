@@ -69,7 +69,7 @@ export async function readSchema(uuid) {
 export async function createRoot() {
   try {
     // fails if root exists
-    await api.createRepo("root");
+    await api.init("root");
 
     const branchRecords = schemaToBranchRecords(schemaRoot);
 
@@ -95,7 +95,7 @@ export async function saveRepoRecord(record) {
     ? record.reponame[0]
     : record.reponame;
 
-  await api.createRepo(repoUUID, reponame);
+  await api.init(repoUUID, reponame);
 
   await api.createLFS(repoUUID);
 
@@ -107,7 +107,7 @@ export async function saveRepoRecord(record) {
   }
 
   // write remotes to .git/config
-  await writeRemoteTags(repoUUID, record.remote_tag);
+  await writeRemoteTags(repoUUID, record.origin_url);
 
   // write locals to .git/config
   await writeLocalTags(repoUUID, record.local_tag);
@@ -135,7 +135,7 @@ export async function loadRepoRecord(record) {
 
   // get remote
   const tagsRemotePartial =
-    tagsRemote.length > 0 ? { remote_tag: tagsRemote } : {};
+    tagsRemote.length > 0 ? { origin_url: tagsRemote } : {};
 
   const tagsLocal = await readLocalTags(repoUUID);
 
@@ -156,13 +156,13 @@ export async function onZip(uuid) {
   await api.zip(uuid);
 }
 
-export async function pull(repouuid, remoteName, remoteUrl, remoteToken) {
+export async function pull(repouuid, remoteUrl, remoteToken) {
   await api.commit(repouuid);
 
-  await api.pull(repouuid, remoteName, remoteUrl, remoteToken);
+  await api.pull(repouuid, remoteUrl, remoteToken);
 }
 
-export async function push(repouuid, remoteName, remoteUrl, remoteToken) {
+export async function push(repouuid, remoteUrl, remoteToken) {
   await api.commit(repouuid);
 
   try {
@@ -171,5 +171,5 @@ export async function push(repouuid, remoteName, remoteUrl, remoteToken) {
     // do nothing
   }
 
-  await api.push(repouuid, remoteName, remoteUrl, remoteToken);
+  await api.push(repouuid, remoteUrl, remoteToken);
 }

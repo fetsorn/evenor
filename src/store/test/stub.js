@@ -14,6 +14,8 @@ export const nonExisting = "c";
 
 export const uuid = "uuid";
 
+export const repo = "repo";
+
 export const reponame = "reponame";
 
 export const cases = {
@@ -103,11 +105,10 @@ export const cases = {
     remote: "remote",
     url: "https://example.com/reponame",
     token: "token",
-    remoteTag: {
-      _: "remote_tag",
-      remote_tag: "remote",
-      remote_url: "https://example.com/reponame",
-      remote_token: "token",
+    originUrl: {
+      _: "origin_url",
+      origin_url: "https://example.com/reponame",
+      origin_token: "token",
     },
     assetPath: "assetpath",
     localTag: {
@@ -128,12 +129,11 @@ export const cases = {
           task: "date",
         },
       ],
-      remote_tag: [
+      origin_url: [
         {
-          _: "remote_tag",
-          remote_tag: "remote",
-          remote_url: "https://example.com/reponame",
-          remote_token: "token",
+          _: "origin_url",
+          origin_url: "https://example.com/reponame",
+          origin_token: "token",
         },
       ],
       local_tag: [
@@ -153,6 +153,7 @@ export default {
   twig,
   nonExisting,
   uuid,
+  repo,
   reponame,
   cases,
 };

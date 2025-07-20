@@ -6,7 +6,7 @@
       "category",
       "branch",
       "local_tag",
-      "remote_tag",
+      "origin_url",
       "sync_tag"
     ],
     "description": {
@@ -87,25 +87,17 @@
       "ru": "Путь к локальному архиву"
     }
   },
-  "remote_tag": {
+  "origin_url": {
     "trunks": ["repo"],
-    "leaves": ["remote_url", "remote_token"],
+    "leaves": ["origin_token"],
     "task": "remote",
-    "description": {
-      "en": "Name of git repository",
-      "ru": "Название git репозитория"
-    }
-  },
-  "remote_url": {
-    "trunks": ["remote_tag"],
-    "leaves": [],
     "description": {
       "en": "URL to git repository",
       "ru": "Путь к git репозиторию"
     }
   },
-  "remote_token": {
-    "trunks": ["remote_tag"],
+  "origin_token": {
+    "trunks": ["origin_url"],
     "leaves": [],
     "description": {
       "en": "Authentication token",

@@ -12,8 +12,6 @@ export const entry = { c: "d" };
 
 export const overview = [entry];
 
-export const remote = "g";
-
 export const url = "e";
 
 export const token = "f";
@@ -45,7 +43,6 @@ export default {
   query,
   entry,
   overview,
-  remote,
   url,
   token,
   content,

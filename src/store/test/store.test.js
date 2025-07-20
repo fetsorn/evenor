@@ -247,7 +247,7 @@ describe("store", () => {
         "category",
         "branch",
         "local_tag",
-        "remote_tag",
+        "origin_url",
         "sync_tag",
         "repo",
         "__",

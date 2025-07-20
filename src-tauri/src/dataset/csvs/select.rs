@@ -33,7 +33,7 @@ pub async fn select(dataset_dir: PathBuf, query: Value) -> Result<Vec<Value>> {
 
 mod test {
     use crate::create_app;
-    use crate::{Dataset, Result, CSVS};
+    use crate::{Dataset, Result, dataset::CSVS};
     use assert_json_diff::assert_json_eq;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::Manager;

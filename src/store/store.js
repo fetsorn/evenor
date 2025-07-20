@@ -213,11 +213,11 @@ export async function onClone(repouuid, reponame, remoteUrl, remoteToken) {
   }
 }
 
-export async function onPullRepo(repouuid, remoteName, remoteUrl, remoteToken) {
+export async function onPullRepo(repouuid, remoteUrl, remoteToken) {
   setStore("loading", true);
 
   try {
-    await pull(repouuid, remoteName, remoteUrl, remoteToken);
+    await pull(repouuid, remoteUrl, remoteToken);
   } catch (e) {
     console.log(e);
   }
@@ -225,11 +225,11 @@ export async function onPullRepo(repouuid, remoteName, remoteUrl, remoteToken) {
   setStore("loading", false);
 }
 
-export async function onPushRepo(repouuid, remoteName, remoteUrl, remoteToken) {
+export async function onPushRepo(repouuid, remoteUrl, remoteToken) {
   setStore("loading", true);
 
   try {
-    await push(repouuid, remoteName, remoteUrl, remoteToken);
+    await push(repouuid, remoteUrl, remoteToken);
   } catch (e) {
     console.log(e);
   }

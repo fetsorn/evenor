@@ -3,7 +3,7 @@ import git from "isomorphic-git";
 import lfs from "@fetsorn/isogit-lfs";
 import { saveAs } from "file-saver";
 import { fs } from "@/api/browser/lightningfs.js";
-import { createRepo, commit, addRemote } from "@/api/browser/git.js";
+import { init, commit, setOrigin } from "@/api/browser/git.js";
 import { writeFile } from "@/api/browser/io.js";
 import {
   lfsDir,
@@ -15,8 +15,8 @@ import {
   uploadBlobsLFS,
   downloadAsset,
   downloadUrlFromPointer,
-  addAssetPath,
-  listAssetPaths,
+  setAssetPath,
+  getAssetPath,
 } from "@/api/browser/lfs.js";
 import stub from "./stub.js";
 
@@ -87,7 +87,7 @@ describe("createLFS", () => {
   });
 
   test("writes git config", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
@@ -163,7 +163,7 @@ describe("putAsset", () => {
   });
 
   test("calls io", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
@@ -181,7 +181,7 @@ test("downloadAsset", async () => {
   expect(saveAs).toHaveBeenCalledWith(stub.content, stub.filename);
 });
 
-describe("addAssetPath", () => {
+describe("setAssetPath", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });
@@ -192,15 +192,15 @@ describe("addAssetPath", () => {
   });
 
   test("throws if no repo", async () => {
-    await expect(addAssetPath(stub.uuid, stub.dirpath)).rejects.toThrowError();
+    await expect(setAssetPath(stub.uuid, stub.dirpath)).rejects.toThrowError();
   });
 
-  test("addAssetPath", async () => {
-    await createRepo(stub.uuid, stub.name);
+  test("setAssetPath", async () => {
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addAssetPath(stub.uuid, stub.dirpath);
+    await setAssetPath(stub.uuid, stub.dirpath);
 
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -212,7 +212,7 @@ describe("addAssetPath", () => {
   });
 });
 
-describe("listAssetPath", () => {
+describe("getAssetPath", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });
@@ -223,15 +223,15 @@ describe("listAssetPath", () => {
   });
 
   test("throws if no repo", async () => {
-    await expect(listAssetPaths(stub.uuid)).rejects.toThrowError();
+    await expect(getAssetPath(stub.uuid)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await listAssetPaths(stub.uuid, stub.dirpath);
+    await getAssetPath(stub.uuid, stub.dirpath);
 
     expect(git.getConfigAll).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -242,13 +242,13 @@ describe("listAssetPath", () => {
   });
 
   test("reads asset path", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addAssetPath(stub.uuid, stub.dirpath);
+    await setAssetPath(stub.uuid, stub.dirpath);
 
-    const listing = await listAssetPaths(stub.uuid, stub.dirpath);
+    const listing = await getAssetPath(stub.uuid, stub.dirpath);
 
     expect(listing).toEqual([stub.dirpath]);
   });
@@ -284,11 +284,11 @@ describe("fetchAsset", () => {
   });
 
   test("fetches a blob from pointer", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 
@@ -336,16 +336,16 @@ describe("uploadBlobsLFS", () => {
   });
 
   test("uploads files from parameters", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
     // clear call history
     lfs.uploadBlobs.mockReset();
 
-    await uploadBlobsLFS(stub.uuid, stub.remote, [""]);
+    await uploadBlobsLFS(stub.uuid, stub.url, stub.token, [""]);
 
     expect(lfs.uploadBlobs).toHaveBeenCalledWith(
       {
@@ -360,11 +360,11 @@ describe("uploadBlobsLFS", () => {
   });
 
   test("uploads files from asset path", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 
-    await addRemote(stub.uuid, stub.remote, stub.url, stub.token);
+    await setOrigin(stub.uuid, stub.url, stub.token);
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 
@@ -383,7 +383,7 @@ describe("uploadBlobsLFS", () => {
         : true;
     });
 
-    await uploadBlobsLFS(stub.uuid, stub.remote, undefined);
+    await uploadBlobsLFS(stub.uuid, stub.url, stub.token, undefined);
 
     expect(lfs.uploadBlobs).toHaveBeenCalledWith(
       {
@@ -415,7 +415,7 @@ describe("uploadFile", () => {
   });
 
   test("uploads a file", async () => {
-    await createRepo(stub.uuid, stub.name);
+    await init(stub.uuid, stub.name);
 
     await commit(stub.uuid);
 

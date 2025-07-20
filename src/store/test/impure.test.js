@@ -17,7 +17,7 @@ vi.mock("@/api/index.js", async (importOriginal) => {
   return {
     ...mod,
     default: {
-      createRepo: vi.fn(),
+      init: vi.fn(),
       deleteRecord: vi.fn(),
       updateRecord: vi.fn(),
       select: vi.fn(),

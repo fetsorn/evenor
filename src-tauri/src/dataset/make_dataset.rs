@@ -1,17 +1,18 @@
-use crate::{Dataset, Result, Repository};
+use crate::{Dataset, Result};
+use git2kit::Repository;
 use std::fs::{create_dir, rename, write};
 use tauri::Runtime;
 
-pub async fn make_dataset<R: Runtime>(api: &Dataset<R>, name: Option<&str>) -> Result<()> {
-    let dataset_dir = api.name_dataset(name)?;
+pub async fn make_dataset<R: Runtime>(dataset: &Dataset<R>, name: Option<&str>) -> Result<()> {
+    let dataset_dir = dataset.name_dataset(name)?;
 
-    if api.uuid == "root" {
+    if dataset.uuid == "root" {
         create_dir(dataset_dir)?;
 
         return Ok(());
     }
 
-    let existing_dataset = api.find_dataset()?;
+    let existing_dataset = dataset.find_dataset()?;
 
     match existing_dataset {
         Some(s) => {
@@ -64,9 +65,9 @@ mod test {
 
         let name = "etest";
 
-        let api = Dataset::new(app.handle().clone(), &uuid);
+        let dataset = Dataset::new(app.handle().clone(), &uuid);
 
-        api.make_dataset(None).await?;
+        dataset.make_dataset(None).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -81,10 +82,10 @@ mod test {
             });
         });
 
-        let api = Dataset::new(app.handle().clone(), &uuid);
+        let dataset = Dataset::new(app.handle().clone(), &uuid);
 
         // must error when root already exists
-        let result = api.make_dataset(None).await;
+        let result = dataset.make_dataset(None).await;
 
         assert!(result.is_err());
 
@@ -109,9 +110,9 @@ mod test {
 
         let name = "etest";
 
-        let api = Dataset::new(app.handle().clone(), &uuid);
+        let dataset = Dataset::new(app.handle().clone(), &uuid);
 
-        api.make_dataset(Some(name)).await?;
+        dataset.make_dataset(Some(name)).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -129,7 +130,7 @@ mod test {
         let name = "etest1";
 
         // must rename when root already exists
-        let result = api.make_dataset(Some(name)).await;
+        let result = dataset.make_dataset(Some(name)).await;
 
         read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();

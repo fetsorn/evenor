@@ -1,11 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import api from "@/api/index.js";
-import {
-  readSchema,
-  createRoot,
-  updateRepo,
-  saveRepoRecord,
-} from "@/store/record.js";
+import { readSchema, createRoot } from "@/store/record.js";
 import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -39,9 +34,7 @@ vi.mock("@/store/record.js", async (importOriginal) => {
   return {
     ...mod,
     readSchema: vi.fn(),
-    updateRepo: vi.fn(),
     createRoot: vi.fn(),
-    saveRepoRecord: vi.fn(),
   };
 });
 
@@ -146,19 +139,14 @@ describe("clone", () => {
           trunk: ["branch1"],
         },
       ],
-      remote_tag: {
-        _: "remote_tag",
-        remote_tag: "origin",
-        remote_token: "token",
-        remote_url: "https://example.com/reponame",
+      origin_url: {
+        _: "origin_url",
+        origin_url: "https://example.com/reponame",
+        origin_token: "token",
       },
       repo: "uuid",
       reponame: "reponame",
     };
-
-    expect(updateRepo).toHaveBeenCalledWith(c);
-
-    expect(saveRepoRecord).toHaveBeenCalledWith(c);
 
     expect(result).toStrictEqual({ schema: testCase.schema, repo: c });
   });

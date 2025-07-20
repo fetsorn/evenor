@@ -82,9 +82,9 @@ mod test {
 
         let name = "ename";
 
-        let api = Dataset::new(app.handle().clone(), &uuid);
+        let dataset = Dataset::new(app.handle().clone(), &uuid);
 
-        let dataset_dir = api.name_dataset(None)?;
+        let dataset_dir = dataset.name_dataset(None)?;
 
         create_dir(&dataset_dir)?;
 
@@ -116,10 +116,10 @@ mod test {
     }
 }
 
-pub async fn zip<R: Runtime>(api: &Dataset<R>) -> Result<()> {
-    let dataset_dir = api.find_dataset()?.expect("no directory");
+pub async fn zip<R: Runtime>(dataset: &Dataset<R>) -> Result<()> {
+    let dataset_dir = dataset.find_dataset()?.expect("no directory");
 
-    let file_path = api
+    let file_path = dataset
         .app
         .dialog()
         .file()

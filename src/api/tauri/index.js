@@ -67,8 +67,8 @@ export async function deleteRecord(uuid, record) {
   return invoke("delete_record", { uuid, record });
 }
 
-export async function createRepo(uuid, name) {
-  return invoke("create_repo", { uuid, name });
+export async function init(uuid, name) {
+  return invoke("init", { uuid, name });
 }
 
 export async function createLFS(uuid, name) {
@@ -83,18 +83,20 @@ export async function commit(uuid) {
 export async function clone(uuid, remoteUrl, remoteToken, name) {
   return invoke("clone", {
     uuid,
-    remoteUrl,
-    remoteToken: "",
     name,
+    remote: {
+      url: remoteUrl,
+      token: remoteToken,
+    },
   });
 }
 
-export async function push(uuid, remote) {
-  return invoke("push", { uuid, remote });
+export async function push(uuid) {
+  return invoke("push", { uuid });
 }
 
-export async function pull(uuid, remote) {
-  return invoke("pull", { uuid, remote });
+export async function pull(uuid) {
+  return invoke("pull", { uuid });
 }
 
 export async function uploadBlobsLFS(uuid, remote, files) {
@@ -105,29 +107,26 @@ export async function zip(uuid) {
   return invoke("zip", { uuid });
 }
 
-export async function listRemotes(uuid) {
-  return invoke("list_remotes", { uuid });
-}
-
-export async function addRemote(uuid, remoteName, remoteUrl, remoteToken) {
-  return invoke("add_remote", {
+export async function setOrigin(uuid, remoteUrl, remoteToken) {
+  return invoke("set_origin", {
     uuid,
-    remoteName,
-    remoteUrl,
-    remoteToken,
+    remote: {
+      url: remoteUrl,
+      token: remoteToken,
+    },
   });
 }
 
-export async function getRemote(uuid, remote) {
-  return invoke("get_remote", { uuid, remote });
+export async function getOrigin(uuid) {
+  return invoke("get_origin", { uuid });
 }
 
-export async function addAssetPath(uuid, assetPath) {
-  return invoke("add_asset_path", { uuid, assetPath });
+export async function setAssetPath(uuid, assetPath) {
+  return invoke("set_asset_path", { uuid, assetPath });
 }
 
-export async function listAssetPaths(uuid) {
-  return invoke("list_asset_paths", { uuid });
+export async function getAssetPath(uuid) {
+  return invoke("get_asset_path", { uuid });
 }
 
 export async function downloadUrlFromPointer(url, token, pointerInfo) {
@@ -145,20 +144,19 @@ export default {
   uploadBlobsLFS,
   downloadAsset,
   downloadUrlFromPointer,
-  addAssetPath,
-  listAssetPaths,
+  setAssetPath,
+  getAssetPath,
   select,
   selectStream,
   updateRecord,
   deleteRecord,
-  createRepo,
+  init,
   createLFS,
   clone,
   commit,
   push,
   pull,
   fetchAsset,
-  listRemotes,
-  addRemote,
-  getRemote,
+  setOrigin,
+  getOrigin,
 };

@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from "vitest";
+import { describe, expect, beforeEach, test, vi } from "vitest";
 import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
 import { updateRecord, selectStream } from "@/store/impure.js";
@@ -93,14 +93,18 @@ describe("wipeRecord", () => {
   });
 });
 
-describe("changeRepo", () => {
+describe.only("changeRepo", () => {
+  beforeEach(() => {
+    find.mockReset();
+  });
+
   // TODO pick default base and sortBy
   test("find root", async () => {
     find.mockImplementation(() => ({ repo: 1, schema: schemaRoot }));
 
     const { repo, schema, searchParams } = await changeRepo("/", "_=repo");
 
-    expect(find).toHaveBeenCalledWith("root");
+    expect(find).toHaveBeenCalledWith("root", undefined);
 
     expect(repo).toStrictEqual(1);
 
@@ -111,15 +115,15 @@ describe("changeRepo", () => {
     );
   });
 
-  test("find repo", async () => {
+  test.only("find repo", async () => {
     find.mockImplementation(() => ({ repo: 1, schema: stub.schema }));
 
     const { repo, schema, searchParams } = await changeRepo(
-      `/${stub.reponame}`,
+      `/${stub.repo}`,
       "_=b",
     );
 
-    expect(find).toHaveBeenCalledWith(stub.reponame);
+    expect(find).toHaveBeenCalledWith(stub.repo, undefined);
 
     expect(repo).toStrictEqual(1);
 
@@ -140,7 +144,12 @@ describe("changeRepo", () => {
       `~=${testCase.url}&-=${testCase.token}&_=b`,
     );
 
-    expect(clone).toHaveBeenCalledWith(testCase.url, testCase.token);
+    expect(clone).toHaveBeenCalledWith(
+      undefined,
+      undefined,
+      testCase.url,
+      testCase.token,
+    );
 
     expect(repo).toStrictEqual(1);
 

@@ -65,11 +65,10 @@ export async function clone(repouuid, reponame, url, token) {
     repo: repoUUIDRemote,
     reponame: reponameClone,
     branch: branchRecordsClone,
-    remote_tag: {
-      _: "remote_tag",
-      remote_tag: "origin",
-      remote_token: token,
-      remote_url: url,
+    origin_url: {
+      _: "origin_url",
+      origin_url: url,
+      origin_token: token,
     },
   };
 

@@ -75,13 +75,13 @@ export async function clone() {
   await click(await $("aria/repo -").nextElement().nextElement());
 
   // click button "add remote"
-  await click(await $("aria/remote_tag"));
+  await click(await $("aria/origin_tag"));
 
-  await setValue(await $("aria/remote_tag -"), "origin");
+  await setValue(await $("aria/origin_tag -"), "origin");
 
   // with
   await click(
-    await $("aria/remote_tag -")
+    await $("aria/origin_tag -")
       .nextElement()
       .nextElement()
       .nextElement()
@@ -90,7 +90,7 @@ export async function clone() {
 
   // add
   await click(
-    await $("aria/remote_tag -")
+    await $("aria/origin_tag -")
       .nextElement()
       .nextElement()
       .nextElement()
@@ -124,7 +124,7 @@ export async function pull() {
 
   // with
   await click(
-    await $("aria/remote_tag -")
+    await $("aria/origin_tag -")
       .nextElement()
       .nextElement()
       .nextElement()
@@ -149,7 +149,7 @@ export async function push() {
 
   // with
   await click(
-    await $("aria/remote_tag -")
+    await $("aria/origin_tag -")
       .nextElement()
       .nextElement()
       .nextElement()

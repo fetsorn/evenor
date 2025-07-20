@@ -25,7 +25,7 @@ export function ProfileRecord(props) {
   const isRemote = () => {
     if (store.repo === undefined) return false;
 
-    return store.repo.repo === "root" && props.record._ === "remote_tag";
+    return store.repo.repo === "root" && props.record._ === "origin_url";
   };
 
   return (
@@ -44,12 +44,12 @@ export function ProfileRecord(props) {
             onClone(
               store.record.repo,
               store.record.reponame[0],
-              Array.isArray(props.record.remote_url)
-                ? props.record.remote_url[0]
-                : props.record.remote_url,
-              props.record.remote_token === undefined
+              Array.isArray(props.record.origin_url)
+                ? props.record.origin_url[0]
+                : props.record.origin_url,
+              props.record.origin_token === undefined
                 ? undefined
-                : props.record.remote_token[0],
+                : props.record.origin_token[0],
             )
           }
         />
@@ -58,13 +58,13 @@ export function ProfileRecord(props) {
           onClick={() =>
             onPullRepo(
               store.record.repo,
-              props.record.remote_tag,
-              Array.isArray(props.record.remote_url)
-                ? props.record.remote_url[0]
-                : props.record.remote_url,
-              props.record.remote_token === undefined
+              props.record.origin_url,
+              Array.isArray(props.record.origin_url)
+                ? props.record.origin_url[0]
+                : props.record.origin_url,
+              props.record.origin_token === undefined
                 ? undefined
-                : props.record.remote_token[0],
+                : props.record.origin_token[0],
             )
           }
         >
@@ -75,13 +75,13 @@ export function ProfileRecord(props) {
           onClick={() =>
             onPushRepo(
               store.record.repo,
-              props.record.remote_tag,
-              Array.isArray(props.record.remote_url)
-                ? props.record.remote_url[0]
-                : props.record.remote_url,
-              props.record.remote_token === undefined
+              props.record.origin_url,
+              Array.isArray(props.record.origin_url)
+                ? props.record.origin_url[0]
+                : props.record.origin_url,
+              props.record.origin_token === undefined
                 ? undefined
-                : props.record.remote_token[0],
+                : props.record.origin_token[0],
             )
           }
         >

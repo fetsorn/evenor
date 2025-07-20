@@ -21,20 +21,18 @@ time = "0.3.36" # to fix a rust version error in dependency tree https://github.
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 csvs = { version = "0.1.0", git = "https://codeberg.org/norcivilianlabs/csvs-rs" }
-git2 = "0.20.0"
 regex = "1.11.1"
 futures-util = "0.3.31"
 futures-core = "0.3.31"
 async-stream = "0.3.6"
 backtrace = "0.3.74"
 crossterm = "0.28.1"
-bstr = "1.11.3"
 assert-json-diff = "2.0.2"
 log = "0.4.25"
 tauri-plugin-dialog = "2.2.0"
 zip = "2.2.2"
 walkdir = "2.5.0"
 tokio = "1.45.0"
-mockall = "0.13.1"
 temp-dir = "0.1.16"
 sha256 = "1.6.0"
+git2kit = { path = "../../git2kit" }

@@ -1,9 +1,8 @@
-use std::io::Write;
-use std::{fmt, io};
-
 use backtrace::Backtrace;
 use crossterm::style::{Attribute, Color, ResetColor, SetAttribute, SetForegroundColor};
 use serde::{Serialize, Serializer};
+use std::io::Write;
+use std::{fmt, io};
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -56,17 +55,6 @@ impl Error {
     }
 }
 
-impl From<git2::Error> for Error {
-    fn from(err: git2::Error) -> Error {
-        if log::log_enabled!(log::Level::Error) {
-            log::error!("Git error: {} at {:?}", err, Backtrace::new());
-        }
-        Error {
-            inner: err.message().into(),
-        }
-    }
-}
-
 impl From<io::Error> for Error {
     fn from(err: io::Error) -> Error {
         Error { inner: err.into() }
@@ -99,6 +87,12 @@ impl From<tauri::Error> for Error {
 
 impl From<zip::result::ZipError> for Error {
     fn from(ctx: zip::result::ZipError) -> Error {
+        Error { inner: ctx.into() }
+    }
+}
+
+impl From<git2kit::Error> for Error {
+    fn from(ctx: git2kit::Error) -> Error {
         Error { inner: ctx.into() }
     }
 }

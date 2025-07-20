@@ -7,7 +7,10 @@ import styles from "./overview.module.css";
 
 export function Overview(props) {
   const { store } = useContext(StoreContext);
+
   let parentRef;
+
+  //const records = () => getSortedRecords();
 
   const virtualizer = () =>
     createVirtualizer({
@@ -19,6 +22,11 @@ export function Overview(props) {
       overscan: 5,
     });
 
+  // must be here in a const, breaks when inside of templates
+  const virtualItems = virtualizer().getVirtualItems();
+
+  const totalSize = virtualizer().getTotalSize();
+
   return (
     <div ref={parentRef} className={styles.overview}>
       <h1>Entries</h1>
@@ -26,11 +34,11 @@ export function Overview(props) {
       <div
         className={styles.foo}
         style={{
-          height: `${virtualizer().getTotalSize()}px`,
+          height: `${totalSize}px`,
         }}
       >
         <For
-          each={virtualizer().getVirtualItems()}
+          each={virtualItems}
           fallback={
             <span>press "new" in the top right corner to add entries</span>
           }

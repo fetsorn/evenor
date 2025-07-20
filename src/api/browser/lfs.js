@@ -4,7 +4,7 @@ import http from "isomorphic-git/http/web/index.cjs";
 import { saveAs } from "file-saver";
 import { fs } from "@/api/browser/lightningfs.js";
 import { findDir, fetchFile, writeFile, pickFile } from "@/api/browser/io.js";
-import { listRemotes, getRemote } from "@/api/browser/git.js";
+import { getOrigin } from "@/api/browser/git.js";
 
 export const lfsDir = "lfs";
 
@@ -73,7 +73,7 @@ export async function downloadUrlFromPointer(url, token, pointerInfo) {
   });
 }
 
-export async function addAssetPath(uuid, assetPath) {
+export async function setAssetPath(uuid, assetPath) {
   const dir = await findDir(uuid);
 
   await git.setConfig({
@@ -84,7 +84,7 @@ export async function addAssetPath(uuid, assetPath) {
   });
 }
 
-export async function listAssetPaths(uuid) {
+export async function getAssetPath(uuid) {
   const dir = await findDir(uuid);
 
   return git.getConfigAll({
@@ -154,28 +154,24 @@ export async function fetchAsset(uuid, filename) {
   if (lfs.pointsToLFS(contentUTF8)) {
     const pointer = await lfs.readPointer({ dir, content: contentUTF8 });
 
-    const remotes = await listRemotes(uuid);
-
     // loop over remotes trying to resolve LFS
-    for (const remote of remotes) {
-      const [remoteUrl, remoteToken] = await getRemote(uuid, remote);
+    const { url: remoteUrl, token: remoteToken } = await getOrigin(uuid);
 
-      try {
-        content = await lfs.downloadBlobFromPointer({
-          fs,
-          http,
-          url: remoteUrl,
-          auth: {
-            username: remoteToken,
-            password: remoteToken,
-          },
-          pointer,
-        });
+    try {
+      content = await lfs.downloadBlobFromPointer({
+        fs,
+        http,
+        url: remoteUrl,
+        auth: {
+          username: remoteToken,
+          password: remoteToken,
+        },
+        pointer,
+      });
 
-        return content;
-      } catch {
-        // do nothing
-      }
+      return content;
+    } catch {
+      // do nothing
     }
   }
 

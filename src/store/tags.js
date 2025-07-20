@@ -1,61 +1,46 @@
 import api from "@/api/index.js";
 
 export async function readRemoteTags(uuid) {
-  const remotes = await api.listRemotes(uuid);
+  const { url: originUrl, token: originToken } = await api.getOrigin(uuid);
 
-  const remoteTags = await Promise.all(
-    remotes.map(async (remoteName) => {
-      const [remoteUrl, remoteToken] = await api.getRemote(uuid, remoteName);
+  const partialToken = originToken ? { origin_token: originToken } : {};
 
-      const partialToken = remoteToken ? { remote_token: remoteToken } : {};
-
-      return {
-        _: "remote_tag",
-        remote_tag: remoteName,
-        remote_url: remoteUrl,
-        ...partialToken,
-      };
-    }),
-  );
-
-  return remoteTags;
+  return [
+    {
+      _: "origin_url",
+      origin_url: originUrl,
+      ...partialToken,
+    },
+  ];
 }
 
 export async function readLocalTags(uuid) {
-  const locals = await api.listAssetPaths(uuid);
+  const local = await api.getAssetPath(uuid);
 
-  const localTags = locals.map((local) => ({
+  const localTag = {
     _: "local_tag",
     local_tag: local,
-  }));
+  };
 
-  return localTags;
+  return [localTag];
 }
 
-export async function writeRemoteTags(uuid, tags) {
-  if (tags === undefined) return;
+export async function writeRemoteTags(uuid, originUrls) {
+  const originUrl = Array.isArray(originUrls) ? originUrls[0] : originUrls;
 
-  const tagsList = Array.isArray(tags) ? tags : [tags];
+  const url = Array.isArray(originUrl.origin_url)
+    ? originUrl.origin_url[0]
+    : originUrl.origin_url;
 
-  for (const tag of tagsList) {
-    const name = Array.isArray(tag.remote_tag)
-      ? tag.remote_tag[0]
-      : tag.remote_tag;
+  const token = Array.isArray(originUrl.origin_token)
+    ? originUrl.origin_token[0]
+    : originUrl.origin_token;
 
-    const url = Array.isArray(tag.remote_url)
-      ? tag.remote_url[0]
-      : tag.remote_url;
-
-    const token = Array.isArray(tag.remote_token)
-      ? tag.remote_token[0]
-      : tag.remote_token;
-
-    try {
-      await api.addRemote(uuid, name, url, token);
-    } catch (e) {
-      console.log(e);
-      // do nothing
-    }
+  try {
+    await api.setOrigin(uuid, url, token);
+  } catch (e) {
+    console.log(e);
+    // do nothing
   }
 }
 
@@ -68,7 +53,7 @@ export async function writeLocalTags(uuid, tags) {
     const assetPath = typeof tag === "object" ? tag.local_tag : tag;
 
     try {
-      api.addAssetPath(uuid, assetPath);
+      api.setAssetPath(uuid, assetPath);
     } catch {
       // do nothing
     }

@@ -27,7 +27,7 @@ vi.mock("@/api/index.js", async (importOriginal) => {
   return {
     ...mod,
     default: {
-      createRepo: vi.fn(),
+      init: vi.fn(),
       deleteRecord: vi.fn(),
       updateRecord: vi.fn(),
       createLFS: vi.fn(),
@@ -139,7 +139,7 @@ describe("createRoot", () => {
 
     await createRoot();
 
-    expect(api.createRepo).toHaveBeenCalledWith("root");
+    expect(api.init).toHaveBeenCalledWith("root");
 
     for (const branchRecord of testCase.branchRecords) {
       expect(api.updateRecord).toHaveBeenCalledWith("root", branchRecord);
@@ -153,11 +153,11 @@ describe("saveRepoRecord", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    api.createRepo.mockReset();
+    api.init.mockReset();
 
     await saveRepoRecord(testCase.record);
 
-    expect(api.createRepo).toHaveBeenCalledWith(stub.uuid, stub.reponame);
+    expect(api.init).toHaveBeenCalledWith(stub.uuid, stub.reponame);
 
     expect(api.createLFS).toHaveBeenCalledWith(stub.uuid);
 
@@ -171,7 +171,7 @@ describe("saveRepoRecord", () => {
     }
 
     expect(writeRemoteTags).toHaveBeenCalledWith(stub.uuid, [
-      testCase.remoteTag,
+      testCase.originUrl,
     ]);
 
     expect(writeLocalTags).toHaveBeenCalledWith(stub.uuid, [testCase.localTag]);
@@ -188,7 +188,7 @@ describe("loadRepoRecord", () => {
       .mockImplementationOnce(() => [testCase.schemaRecord])
       .mockImplementationOnce(() => testCase.branchRecords);
 
-    readRemoteTags.mockImplementation(() => [testCase.remoteTag]);
+    readRemoteTags.mockImplementation(() => [testCase.originUrl]);
 
     readLocalTags.mockImplementation(() => [testCase.localTag]);
 

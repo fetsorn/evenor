@@ -1,4 +1,4 @@
-use crate::{mind::{Mind, SelectEvent, CSVS}, error::Result};
+use crate::{Mind, Result};
 use git2kit::{Origin, Repository, Settings};
 use std::fs::remove_dir_all;
 use tauri::{ipc::Channel, AppHandle, Runtime};

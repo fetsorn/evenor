@@ -1,4 +1,4 @@
-use crate::{mind::{Mind, SelectEvent, CSVS}, error::Result};
+use crate::{Mind, Result};
 use tauri::{ipc::Channel, AppHandle, Runtime};
 
 #[tauri::command]

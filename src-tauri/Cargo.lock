@@ -1040,8 +1040,8 @@ dependencies = [
 
 [[package]]
 name = "csvs"
-version = "0.1.0"
-source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#f7f80197bb73262552aae46c52738526d1f34831"
+version = "0.2.0"
+source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#76f4a34fc4300096cbe165deeb2aa140be3fbbaa"
 dependencies = [
  "assert-json-diff",
  "async-stream",
@@ -1838,6 +1838,7 @@ dependencies = [
 [[package]]
 name = "git2kit"
 version = "0.1.0"
+source = "git+https://codeberg.org/fetsorn/git2kit#fa85752aaf3bde67f30a4c9c41a91096637b9d4d"
 dependencies = [
  "backtrace",
  "bstr",

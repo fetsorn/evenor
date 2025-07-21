@@ -1,7 +1,5 @@
 use crate::Result;
-mod csvs;
 mod zip;
-pub use csvs::{SelectEvent, CSVS};
 use std::path::PathBuf;
 use tauri::{AppHandle, Runtime};
 mod find_mind;

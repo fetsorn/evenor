@@ -2,18 +2,33 @@ import http from "isomorphic-git/http/web/index.cjs";
 import git from "isomorphic-git";
 import { addLFS } from "@/api/browser/lfs.js";
 import { fs } from "@/api/browser/lightningfs.js";
-import { findDir, rimraf } from "@/api/browser/io.js";
+import { findMind, rimraf } from "@/api/browser/io.js";
 
-export function nameDir(uuid, name) {
-  if (uuid === undefined) throw "uuid is undefined";
+/**
+ * This
+ * @name nameMind
+ * @function
+ * @param {String} mind -
+ * @param {String} name -
+ * @returns {String}
+ */
+export function nameMind(mind, name) {
+  if (mind === undefined) throw "id is undefined";
 
-  return `/${uuid}${name !== undefined ? `-${name}` : ""}`;
+  return `/${mind}${name !== undefined ? `-${name}` : ""}`;
 }
 
-export async function init(uuid, name) {
-  const dir = nameDir(uuid, name);
+/**
+ * This
+ * @name init
+ * @function
+ * @param {String} mind -
+ * @param {String} name -
+ */
+export async function init(mind, name) {
+  const dir = nameMind(mind, name);
 
-  if (uuid === "root") {
+  if (mind === "root") {
     // should fail if root exists
     await fs.promises.mkdir(dir);
 
@@ -24,10 +39,10 @@ export async function init(uuid, name) {
     await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
   } else {
     try {
-      const existingRepo = await findDir(uuid);
+      const existingMind = await findMind(mind);
 
-      if (existingRepo !== dir) {
-        await fs.promises.rename(`/${existingRepo}`, dir);
+      if (existingMind !== dir) {
+        await fs.promises.rename(`/${existingMind}`, dir);
       }
     } catch {
       await fs.promises.mkdir(dir);
@@ -41,8 +56,14 @@ export async function init(uuid, name) {
   }
 }
 
-export async function commit(uuid) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name commit
+ * @function
+ * @param {String} mind -
+ */
+export async function commit(mind) {
+  const dir = await findMind(mind);
 
   const message = [];
 
@@ -118,11 +139,19 @@ export async function commit(uuid) {
   }
 }
 
-export async function clone(uuid, name, remote) {
-  const dir = nameDir(uuid, name);
+/**
+ * This
+ * @name clone
+ * @function
+ * @param {String} mind -
+ * @param {String} name -
+ * @param {String} remote -
+ */
+export async function clone(mind, name, remote) {
+  const dir = nameMind(mind, name);
 
   try {
-    await findDir(uuid);
+    await findMind(mind);
 
     // remove existing directory
     await rimraf(dir);
@@ -171,8 +200,16 @@ export async function clone(uuid, name, remote) {
   }
 }
 
-export async function setOrigin(uuid, remoteUrl, remoteToken) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name setOrigin
+ * @function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function setOrigin(mind, remoteUrl, remoteToken) {
+  const dir = await findMind(mind);
 
   await git.addRemote({
     fs,
@@ -191,8 +228,15 @@ export async function setOrigin(uuid, remoteUrl, remoteToken) {
   }
 }
 
-export async function getOrigin(uuid) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name getOrigin
+ * @function
+ * @param {String} mind -
+ * @returns {object}
+ */
+export async function getOrigin(mind) {
+  const dir = await findMind(mind);
 
   const remoteUrl = await git.getConfig({
     fs,
@@ -209,9 +253,16 @@ export async function getOrigin(uuid) {
   return { url: remoteUrl, token: remoteToken };
 }
 
-// must pass remote name for fastForward
-export async function pull(uuid, remoteUrl, remoteToken) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name pull
+ * @function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function pull(mind, remoteUrl, remoteToken) {
+  const dir = await findMind(mind);
 
   const tokenPartial = remoteToken
     ? {
@@ -233,9 +284,16 @@ export async function pull(uuid, remoteUrl, remoteToken) {
   });
 }
 
-// must pass remote name here for push
-export async function push(uuid, remoteUrl, remoteToken) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name push
+ * @function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function push(mind, remoteUrl, remoteToken) {
+  const dir = await findMind(mind);
 
   const tokenPartial = remoteToken
     ? {

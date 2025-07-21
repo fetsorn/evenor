@@ -7,7 +7,7 @@ import { NavigationRevert } from "./navigation_revert.jsx";
 
 describe("NavigationRevert", () => {
   test("", async () => {
-    setStore("record", { _: "repo", repo: "uuid" });
+    setStore("record", { _: "mind", mind: "mind" });
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

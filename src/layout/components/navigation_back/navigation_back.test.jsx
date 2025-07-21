@@ -7,7 +7,7 @@ import { NavigationBack } from "./navigation_back.jsx";
 
 describe("NavigationBack", () => {
   test("", async () => {
-    setStore("repo", { _: "repo", repo: "uuid" });
+    setStore("mind", { _: "mind", mind: "mind" });
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -19,6 +19,6 @@ describe("NavigationBack", () => {
 
     await userEvent.click(back);
 
-    expect(store.repo).toEqual({ _: "repo", repo: "root" });
+    expect(store.mind).toEqual({ _: "mind", mind: "root" });
   });
 });

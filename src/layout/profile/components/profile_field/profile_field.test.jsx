@@ -30,8 +30,8 @@ describe("ProfileField", () => {
     const items = [item];
 
     const baseRecord = {
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [
         {
           _: "branch",
@@ -65,8 +65,8 @@ describe("ProfileField", () => {
     expect(onRecordEdit).toHaveBeenCalledWith(["record", "branch"], []);
 
     expect(store.record).toEqual({
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [],
     });
   });

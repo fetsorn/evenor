@@ -1,21 +1,36 @@
 import { fs } from "@/api/browser/lightningfs.js";
 
-export async function findDir(uuid) {
-  const existingRepo = (await fs.promises.readdir("/")).find((repo) =>
-    new RegExp(`^${uuid}`).test(repo),
+/**
+ * This
+ * @name findMind
+ * @function
+ * @param {String} mind -
+ * @returns {String}
+ */
+export async function findMind(mind) {
+  const existingMind = (await fs.promises.readdir("/")).find((mind) =>
+    new RegExp(`^${mind}`).test(mind),
   );
 
-  if (existingRepo === undefined) {
-    throw Error("no repo found");
+  if (existingMind === undefined) {
+    throw Error("no mind found");
   } else {
-    return `/${existingRepo}`;
+    return `/${existingMind}`;
   }
 }
 
-export async function fetchFile(uuid, filepath) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name fetchFile
+ * @function
+ * @param {String} mind -
+ * @param {String} filepath -
+ * @returns {File}
+ */
+export async function fetchFile(mind, filepath) {
+  const dir = await findMind(mind);
 
-  // check if path exists in the repo
+  // check if path exists in the mind
   const pathElements = dir
     .replace(/^\//, "")
     .split("/")
@@ -48,16 +63,32 @@ export async function fetchFile(uuid, filepath) {
   return file;
 }
 
-export async function readFile(uuid, filepath) {
-  const file = await fetchFile(uuid, filepath);
+/**
+ * This
+ * @name readFile
+ * @function
+ * @param {String} mind -
+ * @param {String} filepath -
+ * @returns {String}
+ */
+export async function readFile(mind, filepath) {
+  const file = await fetchFile(mind, filepath);
 
   const restext = new TextDecoder().decode(file);
 
   return restext;
 }
 
-export async function writeFile(uuid, filepath, content) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name writeFile
+ * @function
+ * @param {String} mind -
+ * @param {String} filepath -
+ * @param {String} content -
+ */
+export async function writeFile(mind, filepath, content) {
+  const dir = await findMind(mind);
 
   // if path doesn't exist, create it
   // split path into array of directory names
@@ -95,6 +126,12 @@ export async function writeFile(uuid, filepath, content) {
   await fs.promises.writeFile(`${dir}/${filepath}`, content, "utf8");
 }
 
+/**
+ * This
+ * @name rimraf
+ * @function
+ * @param {String} rimrafpath -
+ */
 export async function rimraf(rimrafpath) {
   let files;
 
@@ -119,6 +156,12 @@ export async function rimraf(rimrafpath) {
   await fs.promises.rmdir(rimrafpath);
 }
 
+/**
+ * This
+ * @name ls
+ * @function
+ * @param {String} lspath -
+ */
 export async function ls(lspath) {
   let files;
 
@@ -145,6 +188,11 @@ export async function ls(lspath) {
   return message;
 }
 
+/**
+ * This
+ * @name pickFile
+ * @function
+ */
 export async function pickFile() {
   const input = document.createElement("input");
 

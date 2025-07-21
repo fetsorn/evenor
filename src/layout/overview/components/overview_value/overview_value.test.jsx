@@ -7,9 +7,9 @@ import { OverviewValue } from "./overview_value.jsx";
 
 describe("OverviewValue", () => {
   test("", async () => {
-    const branch = "repo";
+    const branch = "mind";
 
-    const value = "uuid";
+    const value = "mind";
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -17,6 +17,6 @@ describe("OverviewValue", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("uuid")).not.toThrowError();
+    expect(() => getByText("mind")).not.toThrowError();
   });
 });

@@ -10,7 +10,7 @@ describe("OverviewFieldItem", () => {
 
     const item = "a";
 
-    const branch = "reponame";
+    const branch = "name";
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

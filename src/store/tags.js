@@ -1,7 +1,14 @@
 import api from "@/api/index.js";
 
-export async function readRemoteTags(uuid) {
-  const { url: originUrl, token: originToken } = await api.getOrigin(uuid);
+/**
+ * This
+ * @name readRemoteTags
+ * @export function
+ * @param {String} mind -
+ * @returns {object[]}
+ */
+export async function readRemoteTags(mind) {
+  const { url: originUrl, token: originToken } = await api.getOrigin(mind);
 
   const partialToken = originToken ? { origin_token: originToken } : {};
 
@@ -14,8 +21,15 @@ export async function readRemoteTags(uuid) {
   ];
 }
 
-export async function readLocalTags(uuid) {
-  const local = await api.getAssetPath(uuid);
+/**
+ * This
+ * @name readLocalTags
+ * @export function
+ * @param {String} mind -
+ * @returns {object}
+ */
+export async function readLocalTags(mind) {
+  const local = await api.getAssetPath(mind);
 
   const localTag = {
     _: "local_tag",
@@ -25,7 +39,15 @@ export async function readLocalTags(uuid) {
   return [localTag];
 }
 
-export async function writeRemoteTags(uuid, originUrls) {
+/**
+ * This
+ * @name writeRemoteTags
+ * @export function
+ * @param {String} mind -
+ * @param {String[]} originURLs -
+ * @returns {object}
+ */
+export async function writeRemoteTags(mind, originUrls) {
   const originUrl = Array.isArray(originUrls) ? originUrls[0] : originUrls;
 
   const url = Array.isArray(originUrl.origin_url)
@@ -37,14 +59,22 @@ export async function writeRemoteTags(uuid, originUrls) {
     : originUrl.origin_token;
 
   try {
-    await api.setOrigin(uuid, url, token);
+    await api.setOrigin(mind, url, token);
   } catch (e) {
     console.log(e);
     // do nothing
   }
 }
 
-export async function writeLocalTags(uuid, tags) {
+/**
+ * This
+ * @name writeLocalTags
+ * @export function
+ * @param {String} mind -
+ * @param {object[]} tags -
+ * @returns {object}
+ */
+export async function writeLocalTags(mind, tags) {
   if (tags === undefined) return;
 
   const tagList = Array.isArray(tags) ? tags : [tags];
@@ -53,7 +83,7 @@ export async function writeLocalTags(uuid, tags) {
     const assetPath = typeof tag === "object" ? tag.local_tag : tag;
 
     try {
-      api.setAssetPath(uuid, assetPath);
+      api.setAssetPath(mind, assetPath);
     } catch {
       // do nothing
     }

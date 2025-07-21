@@ -3,13 +3,13 @@ import { sha256 } from "js-sha256";
 import api from "@/api/index.js";
 import {
   newUUID,
-  updateRepo,
+  updateMind,
   updateEntry,
   deleteRecord,
   readSchema,
   createRoot,
-  saveRepoRecord,
-  loadRepoRecord,
+  saveMindRecord,
+  loadMindRecord,
 } from "@/store/record.js";
 import {
   readRemoteTags,
@@ -68,7 +68,7 @@ describe("newUUID", () => {
     };
   });
 
-  test("generates a uuid", () => {
+  test("generates a id", () => {
     const uuid = newUUID();
 
     expect(sha256).toHaveBeenCalled();
@@ -79,17 +79,17 @@ describe("newUUID", () => {
 
 describe("deleteRecord", () => {
   test("", async () => {
-    await deleteRecord("repo", {});
+    await deleteRecord("mind", {});
 
-    expect(api.deleteRecord).toHaveBeenCalledWith("repo", {});
+    expect(api.deleteRecord).toHaveBeenCalledWith("mind", {});
 
-    expect(api.commit).toHaveBeenCalledWith("repo");
+    expect(api.commit).toHaveBeenCalledWith("mind");
   });
 });
 
-describe("updateRepo", () => {
+describe("updateMind", () => {
   test("", async () => {
-    await updateRepo({});
+    await updateMind({});
 
     expect(api.updateRecord).toHaveBeenCalledWith("root", {});
 
@@ -99,11 +99,11 @@ describe("updateRepo", () => {
 
 describe("updateEntry", () => {
   test("", async () => {
-    await updateEntry("repo", {});
+    await updateEntry("mind", {});
 
-    expect(api.updateRecord).toHaveBeenCalledWith("repo", {});
+    expect(api.updateRecord).toHaveBeenCalledWith("mind", {});
 
-    expect(api.commit).toHaveBeenCalledWith("repo");
+    expect(api.commit).toHaveBeenCalledWith("mind");
   });
 });
 
@@ -114,18 +114,18 @@ describe("readSchema", () => {
     expect(schema).toStrictEqual(schemaRoot);
   });
 
-  test("uuid", async () => {
+  test("id", async () => {
     const testCase = stub.cases.trunk;
 
     api.select
       .mockImplementationOnce(() => [testCase.schemaRecord])
       .mockImplementationOnce(() => testCase.branchRecords);
 
-    const schema = await readSchema(stub.uuid);
+    const schema = await readSchema(stub.id);
 
-    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "_" });
+    expect(api.select).toHaveBeenCalledWith(stub.id, { _: "_" });
 
-    expect(api.select).toHaveBeenCalledWith(stub.uuid, { _: "branch" });
+    expect(api.select).toHaveBeenCalledWith(stub.id, { _: "branch" });
 
     expect(schema).toStrictEqual(testCase.schema);
   });
@@ -149,38 +149,36 @@ describe("createRoot", () => {
   });
 });
 
-describe("saveRepoRecord", () => {
+describe("saveMindRecord", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
     api.init.mockReset();
 
-    await saveRepoRecord(testCase.record);
+    await saveMindRecord(testCase.record);
 
-    expect(api.init).toHaveBeenCalledWith(stub.uuid, stub.reponame);
+    expect(api.init).toHaveBeenCalledWith(stub.id, stub.name);
 
-    expect(api.createLFS).toHaveBeenCalledWith(stub.uuid);
+    expect(api.createLFS).toHaveBeenCalledWith(stub.id);
 
     expect(api.updateRecord).toHaveBeenCalledWith(
-      stub.uuid,
+      stub.id,
       testCase.schemaRecord,
     );
 
     for (const metaRecord of testCase.metaRecords) {
-      expect(api.updateRecord).toHaveBeenCalledWith(stub.uuid, metaRecord);
+      expect(api.updateRecord).toHaveBeenCalledWith(stub.id, metaRecord);
     }
 
-    expect(writeRemoteTags).toHaveBeenCalledWith(stub.uuid, [
-      testCase.originUrl,
-    ]);
+    expect(writeRemoteTags).toHaveBeenCalledWith(stub.id, [testCase.originUrl]);
 
-    expect(writeLocalTags).toHaveBeenCalledWith(stub.uuid, [testCase.localTag]);
+    expect(writeLocalTags).toHaveBeenCalledWith(stub.id, [testCase.localTag]);
 
-    expect(api.commit).toHaveBeenCalledWith(stub.uuid);
+    expect(api.commit).toHaveBeenCalledWith(stub.id);
   });
 });
 
-describe("loadRepoRecord", () => {
+describe("loadMindRecord", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
@@ -192,7 +190,7 @@ describe("loadRepoRecord", () => {
 
     readLocalTags.mockImplementation(() => [testCase.localTag]);
 
-    const record = await loadRepoRecord(testCase.record);
+    const record = await loadMindRecord(testCase.record);
 
     expect(record).toStrictEqual(testCase.record);
   });

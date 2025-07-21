@@ -1,12 +1,12 @@
-use crate::{Dataset, Result};
+use crate::{Mind, Result};
 use regex::Regex;
 use std::fs::{create_dir, read_dir};
 use std::path::PathBuf;
 use tauri::Runtime;
 
-// find ^uuid in app_data_dir
-pub fn find_dataset<R: Runtime>(dataset: &Dataset<R>) -> Result<Option<PathBuf>> {
-    let store_dir = dataset.get_store_dir()?;
+// find ^mind in app_data_dir
+pub fn find_mind<R: Runtime>(mind: &Mind<R>) -> Result<Option<PathBuf>> {
+    let store_dir = mind.get_store_dir()?;
 
     let existing_entry = read_dir(store_dir)?
         .map(|res| res.map(|e| e.path()))
@@ -30,12 +30,12 @@ pub fn find_dataset<R: Runtime>(dataset: &Dataset<R>) -> Result<Option<PathBuf>>
                 Some(s) => s,
             };
 
-            Regex::new(&format!("^{}", dataset.uuid))
+            Regex::new(&format!("^{}", mind.mind))
                 .unwrap()
                 .is_match(s)
         });
 
-    let existing_dataset: Option<PathBuf> = match existing_entry {
+    let existing_mind: Option<PathBuf> = match existing_entry {
         None => None,
         Some(res) => match res {
             Err(e) => None,
@@ -43,19 +43,19 @@ pub fn find_dataset<R: Runtime>(dataset: &Dataset<R>) -> Result<Option<PathBuf>>
         },
     };
 
-    Ok(existing_dataset)
+    Ok(existing_mind)
 }
 
 mod test {
     use crate::create_app;
-    use crate::{Dataset, Result};
+    use crate::{Mind, Result};
     use std::fs::create_dir;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::Manager;
     use temp_dir::TempDir;
 
     #[tokio::test]
-    async fn find_dataset_test() -> Result<()> {
+    async fn find_mind_test() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
         let temp_dir = TempDir::new();
@@ -68,11 +68,11 @@ mod test {
         // save temporary directory path in the tauri state
         app.manage(temp_path.clone());
 
-        let uuid = "atest";
+        let mind = "atest";
 
         let name = "etest";
 
-        let dir = format!("{uuid}-{name}");
+        let dir = format!("{mind}-{name}");
 
         let storepath = temp_path.join("store");
 
@@ -82,11 +82,11 @@ mod test {
 
         create_dir(&dirpath)?;
 
-        let dataset = Dataset::new(app.handle().clone(), uuid);
+        let mind = Mind::new(app.handle().clone(), mind);
 
-        let dataset = dataset.find_dataset()?.unwrap();
+        let mind = mind.find_mind()?.unwrap();
 
-        assert_eq!(dataset, dirpath);
+        assert_eq!(mind, dirpath);
 
         Ok(())
     }

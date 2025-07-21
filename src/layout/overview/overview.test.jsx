@@ -22,8 +22,8 @@ describe("Overview", () => {
 
   test("item", async () => {
     const item = {
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
     };
 
     const items = [item];
@@ -36,6 +36,6 @@ describe("Overview", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("uuid")).not.toThrowError();
+    expect(() => getByText("mind")).not.toThrowError();
   });
 });

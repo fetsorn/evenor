@@ -15,7 +15,7 @@ vi.mock("./components/index.js", () => {
 
 describe("Profile", () => {
   test("", () => {
-    const baseRecord = { _: "repo", repo: "uuid" };
+    const baseRecord = { _: "mind", mind: "mind" };
 
     setStore("record", baseRecord);
 
@@ -29,8 +29,8 @@ describe("Profile", () => {
       index: "_",
       isOpenDefault: true,
       record: {
-        _: "repo",
-        repo: "uuid",
+        _: "mind",
+        mind: "mind",
       },
       path: ["record"],
     });

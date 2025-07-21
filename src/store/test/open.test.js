@@ -44,7 +44,7 @@ describe("find", () => {
       throw Error("error");
     });
 
-    await expect(() => find(undefined, stub.reponame)).rejects.toThrowError();
+    await expect(() => find(undefined, stub.name)).rejects.toThrowError();
   });
 
   test("finds the root", async () => {
@@ -52,27 +52,27 @@ describe("find", () => {
 
     expect(result).toStrictEqual({
       schema: schemaRoot,
-      repo: { _: "repo", repo: "root" },
+      mind: { _: "mind", mind: "root" },
     });
   });
 
-  test("finds a repo", async () => {
+  test("finds a mind", async () => {
     const testCase = stub.cases.tags;
 
     api.select.mockImplementation(() => [testCase.record]);
 
     readSchema.mockImplementation(() => stub.schema);
 
-    const result = await find(stub.uuid, undefined);
+    const result = await find(stub.id, undefined);
 
     expect(api.select).toHaveBeenCalledWith("root", {
-      _: "repo",
-      repo: stub.uuid,
+      _: "mind",
+      mind: stub.id,
     });
 
     expect(result).toStrictEqual({
       schema: stub.schema,
-      repo: testCase.record,
+      mind: testCase.record,
     });
   });
 });
@@ -90,10 +90,10 @@ describe("clone", () => {
     ).rejects.toThrowError();
   });
 
-  test("clones a repo", async () => {
+  test("clones a mind", async () => {
     const testCase = stub.cases.tags;
 
-    crypto.subtle.digest = vi.fn(() => stub.uuid);
+    crypto.subtle.digest = vi.fn(() => stub.id);
 
     readSchema.mockImplementation(() => testCase.schema);
 
@@ -114,16 +114,16 @@ describe("clone", () => {
     expect(createRoot).toHaveBeenCalled();
 
     expect(api.clone).toHaveBeenCalledWith(
-      stub.uuid,
+      stub.id,
       undefined,
       testCase.url,
       testCase.token,
     );
 
-    expect(readSchema).toHaveBeenCalledWith(stub.uuid);
+    expect(readSchema).toHaveBeenCalledWith(stub.id);
 
     const c = {
-      _: "repo",
+      _: "mind",
       branch: [
         {
           _: "branch",
@@ -141,13 +141,13 @@ describe("clone", () => {
       ],
       origin_url: {
         _: "origin_url",
-        origin_url: "https://example.com/reponame",
+        origin_url: "https://example.com/name",
         origin_token: "token",
       },
-      repo: "uuid",
-      reponame: "reponame",
+      mind: "id",
+      name: "name",
     };
 
-    expect(result).toStrictEqual({ schema: testCase.schema, repo: c });
+    expect(result).toStrictEqual({ schema: testCase.schema, mind: c });
   });
 });

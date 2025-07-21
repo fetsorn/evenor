@@ -3,7 +3,7 @@ import {
   StoreContext,
   onRecordEdit,
   onRecordWipe,
-  onRepoChange,
+  onMindChange,
   onZip,
 } from "@/store/index.js";
 import { Confirmation, Spoiler } from "@/layout/components/index.js";
@@ -12,16 +12,16 @@ import { OverviewRecord } from "../index.js";
 export function OverviewItem(props) {
   const { store } = useContext(StoreContext);
 
-  const isHomeScreen = store.repo.repo === "root";
+  const isHomeScreen = store.mind.mind === "root";
 
-  const isRepo = store.searchParams.get("_") === "repo";
+  const isMind = store.searchParams.get("_") === "mind";
 
-  const canOpenRepo = isHomeScreen && isRepo;
+  const canOpenMind = isHomeScreen && isMind;
 
   return (
     <>
-      <Show when={canOpenRepo} fallback={<></>}>
-        <span className={"reponame"}>{props.item.reponame} </span>
+      <Show when={canOpenMind} fallback={<></>}>
+        <span className={"name"}>{props.item.name} </span>
       </Show>
 
       <OverviewRecord
@@ -45,20 +45,20 @@ export function OverviewItem(props) {
         onAction={() => onRecordWipe(props.item)}
       />
 
-      <Show when={canOpenRepo} fallback={<></>}>
-        <button title="zip" onClick={() => onZip(props.item.repo)}>
+      <Show when={canOpenMind} fallback={<></>}>
+        <button title="zip" onClick={() => onZip(props.item.mind)}>
           Zip{" "}
         </button>
       </Show>
 
-      <Show when={canOpenRepo} fallback={<></>}>
+      <Show when={canOpenMind} fallback={<></>}>
         <Spoiler index={props.index + "open"} title={"open"}>
           <For each={props.item["branch"]} fallback={<span>no items</span>}>
             {(item, index) => (
               <button
                 className={"open"}
                 onClick={() =>
-                  onRepoChange(`/${props.item.repo}`, `_=${item["branch"]}`)
+                  onMindChange(`/${props.item.mind}`, `_=${item["branch"]}`)
                 }
               >
                 {item["branch"]}{" "}

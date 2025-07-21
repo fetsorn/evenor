@@ -1,6 +1,6 @@
 import history from "history/hash";
 import { onMount, useContext } from "solid-js";
-import { StoreContext, store, onRepoChange } from "@/store/index.js";
+import { StoreContext, store, onMindChange } from "@/store/index.js";
 import {
   NavigationBack,
   NavigationNew,
@@ -56,7 +56,7 @@ export function LayoutProfile() {
 
 export function App() {
   onMount(() =>
-    onRepoChange(history.location.pathname, history.location.search),
+    onMindChange(history.location.pathname, history.location.search),
   );
 
   return (

@@ -3,54 +3,69 @@ import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
 import { readSchema, createRoot } from "@/store/record.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
-export async function find(uuid, reponame) {
-  if (uuid === "root")
+/**
+ * This
+ * @name find
+ * @function
+ * @param {String} mind -
+ * @param {String} name -
+ * @returns {object}
+ */
+export async function find(mind, name) {
+  if (mind === "root")
     return {
-      repo: { _: "repo", repo: "root" },
+      mind: { _: "mind", mind: "root" },
       schema: schemaRoot,
     };
 
-  const uuidPartial = uuid !== undefined ? { repo: uuid } : {};
+  const mindPartial = mind !== undefined ? { mind: mind } : {};
 
-  const namePartial = reponame !== undefined ? { reponame } : {};
+  const namePartial = name !== undefined ? { name } : {};
 
   const query = {
-    _: "repo",
-    ...uuidPartial,
+    _: "mind",
+    ...mindPartial,
     ...namePartial,
   };
 
-  // find uuid in root folder
-  const [repo] = await api.select("root", query);
+  // find mind in root folder
+  const [mind] = await api.select("root", query);
 
-  const { repo: repoUUID } = repo;
+  const schema = await readSchema(mind.mind);
 
-  const schema = await readSchema(repoUUID);
-
-  return { repo, schema };
+  return { mind, schema };
 }
 
-export async function clone(repouuid, reponame, url, token) {
+/**
+ * This
+ * @name clone
+ * @function
+ * @param {String} mind -
+ * @param {String} name -
+ * @param {String} url -
+ * @param {String} token -
+ * @returns {object}
+ */
+export async function clone(mind, name, url, token) {
   // if no root here try to create
   await createRoot();
 
   // if uri specifies a remote
   // try to clone remote
-  // where repo uuid is a digest of remote
-  // and repo name is uri-encoded remote
+  // where mind string is a digest of remote
+  // and mind name is uri-encoded remote
   const encoded = new TextEncoder().encode(url);
 
-  const repoUUIDRemote = repouuid ?? crypto.subtle.digest("SHA-256", encoded);
+  const mindRemote = mind ?? crypto.subtle.digest("SHA-256", encoded);
 
-  await api.clone(repoUUIDRemote, reponame, url, token);
+  await api.clone(mindRemote, name, url, token);
 
   const pathname = new URL(url).pathname;
 
-  // get repo name from remote
-  const reponameClone =
-    reponame ?? pathname.substring(pathname.lastIndexOf("/") + 1);
+  // get mind name from remote
+  const nameClone = name ?? pathname.substring(pathname.lastIndexOf("/") + 1);
 
-  const schemaClone = await readSchema(repoUUIDRemote);
+  const schemaClone = await readSchema(mindRemote);
 
   const [schemaRecordClone, ...metaRecordsClone] =
     schemaToBranchRecords(schemaClone);
@@ -61,9 +76,9 @@ export async function clone(repouuid, reponame, url, token) {
   );
 
   const recordClone = {
-    _: "repo",
-    repo: repoUUIDRemote,
-    reponame: reponameClone,
+    _: "mind",
+    mind: mindRemote,
+    name: nameClone,
     branch: branchRecordsClone,
     origin_url: {
       _: "origin_url",
@@ -72,5 +87,5 @@ export async function clone(repouuid, reponame, url, token) {
     },
   };
 
-  return { schema: schemaClone, repo: recordClone };
+  return { schema: schemaClone, mind: recordClone };
 }

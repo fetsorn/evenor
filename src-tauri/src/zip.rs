@@ -1,14 +1,14 @@
-use crate::{dataset::{Dataset, SelectEvent, CSVS}, error::Result};
+use crate::{mind::{Mind, SelectEvent, CSVS}, error::Result};
 use tauri::{ipc::Channel, AppHandle, Runtime};
 
 #[tauri::command]
-pub async fn zip<R>(app: AppHandle<R>, uuid: &str) -> Result<()>
+pub async fn zip<R>(app: AppHandle<R>, mind: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let dataset = Dataset::new(app, uuid);
+    let mind = Mind::new(app, mind);
 
-    dataset.zip().await?;
+    mind.zip().await?;
 
     Ok(())
 }

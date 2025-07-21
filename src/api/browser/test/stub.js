@@ -1,4 +1,4 @@
-export const uuid = "a";
+export const mind = "a";
 
 export const name = "e";
 
@@ -36,7 +36,7 @@ export const pointer = "i";
 export const file = new File([encoded], filename);
 
 export default {
-  uuid,
+  mind,
   name,
   dir,
   dirpath,

@@ -3,8 +3,8 @@ import {
   StoreContext,
   onRecordEdit,
   onClone,
-  onPullRepo,
-  onPushRepo,
+  onPull,
+  onPush,
 } from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
@@ -23,9 +23,9 @@ export function ProfileRecord(props) {
   };
 
   const isRemote = () => {
-    if (store.repo === undefined) return false;
+    if (store.mind === undefined) return false;
 
-    return store.repo.repo === "root" && props.record._ === "origin_url";
+    return store.mind.mind === "root" && props.record._ === "origin_url";
   };
 
   return (
@@ -42,8 +42,8 @@ export function ProfileRecord(props) {
           question={"really overwrite?"}
           onAction={() =>
             onClone(
-              store.record.repo,
-              store.record.reponame[0],
+              store.record.mind,
+              store.record.name[0],
               Array.isArray(props.record.origin_url)
                 ? props.record.origin_url[0]
                 : props.record.origin_url,
@@ -56,8 +56,8 @@ export function ProfileRecord(props) {
 
         <button
           onClick={() =>
-            onPullRepo(
-              store.record.repo,
+            onPull(
+              store.record.mind,
               props.record.origin_url,
               Array.isArray(props.record.origin_url)
                 ? props.record.origin_url[0]
@@ -73,8 +73,8 @@ export function ProfileRecord(props) {
 
         <button
           onClick={() =>
-            onPushRepo(
-              store.record.repo,
+            onPush(
+              store.record.mind,
               props.record.origin_url,
               Array.isArray(props.record.origin_url)
                 ? props.record.origin_url[0]

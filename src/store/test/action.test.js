@@ -1,5 +1,5 @@
 import { describe, expect, beforeEach, test, vi } from "vitest";
-import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
+import { saveRecord, wipeRecord, changeMind, search } from "@/store/action.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
 import { updateRecord, selectStream } from "@/store/impure.js";
 import { find, clone } from "@/store/open.js";
@@ -49,18 +49,18 @@ vi.mock("@/store/impure.js", async (importOriginal) => {
 
 describe("saveRecord", () => {
   test("", async () => {
-    const repo = {};
+    const mind = {};
 
     const base = "b";
 
-    const recordOld = { _: "b", b: "uuid1", c: "1" };
+    const recordOld = { _: "b", b: "id1", c: "1" };
 
     const records = [recordOld];
 
-    const recordNew = { _: "b", b: "uuid2", c: "2" };
+    const recordNew = { _: "b", b: "id2", c: "2" };
 
     const recordsNew = await saveRecord(
-      repo,
+      mind,
       base,
       records,
       recordOld,
@@ -69,7 +69,7 @@ describe("saveRecord", () => {
 
     expect(createRoot).toHaveBeenCalled();
 
-    expect(updateRecord).toHaveBeenCalledWith(repo, base, recordNew);
+    expect(updateRecord).toHaveBeenCalledWith(mind, base, recordNew);
 
     expect(recordsNew).toStrictEqual([recordNew]);
   });
@@ -77,55 +77,55 @@ describe("saveRecord", () => {
 
 describe("wipeRecord", () => {
   test("deletes", async () => {
-    const repo = {};
+    const mind = {};
 
     const base = "b";
 
-    const record = { _: "b", b: "uuid1", c: "1" };
+    const record = { _: "b", b: "id1", c: "1" };
 
     const records = [record];
 
-    const recordsNew = await wipeRecord(repo, base, records, record);
+    const recordsNew = await wipeRecord(mind, base, records, record);
 
-    expect(deleteRecord).toHaveBeenCalledWith(repo, record);
+    expect(deleteRecord).toHaveBeenCalledWith(mind, record);
 
     expect(recordsNew).toStrictEqual([]);
   });
 });
 
-describe.only("changeRepo", () => {
+describe.only("changeMind", () => {
   beforeEach(() => {
     find.mockReset();
   });
 
   // TODO pick default base and sortBy
   test("find root", async () => {
-    find.mockImplementation(() => ({ repo: 1, schema: schemaRoot }));
+    find.mockImplementation(() => ({ mind: 1, schema: schemaRoot }));
 
-    const { repo, schema, searchParams } = await changeRepo("/", "_=repo");
+    const { mind, schema, searchParams } = await changeMind("/", "_=mind");
 
     expect(find).toHaveBeenCalledWith("root", undefined);
 
-    expect(repo).toStrictEqual(1);
+    expect(mind).toStrictEqual(1);
 
     expect(schema).toStrictEqual(schemaRoot);
 
     expect(searchParams.toString()).toStrictEqual(
-      new URLSearchParams(`_=repo&.sortBy=repo`).toString(),
+      new URLSearchParams(`_=mind&.sortBy=mind`).toString(),
     );
   });
 
-  test.only("find repo", async () => {
-    find.mockImplementation(() => ({ repo: 1, schema: stub.schema }));
+  test.only("find mind", async () => {
+    find.mockImplementation(() => ({ mind: 1, schema: stub.schema }));
 
-    const { repo, schema, searchParams } = await changeRepo(
-      `/${stub.repo}`,
+    const { mind, schema, searchParams } = await changeMind(
+      `/${stub.mind}`,
       "_=b",
     );
 
-    expect(find).toHaveBeenCalledWith(stub.repo, undefined);
+    expect(find).toHaveBeenCalledWith(stub.mind, undefined);
 
-    expect(repo).toStrictEqual(1);
+    expect(mind).toStrictEqual(1);
 
     expect(schema).toStrictEqual(stub.schema);
 
@@ -137,9 +137,9 @@ describe.only("changeRepo", () => {
   test("clone", async () => {
     const testCase = stub.cases.tags;
 
-    clone.mockImplementation(() => ({ repo: 1, schema: stub.schema }));
+    clone.mockImplementation(() => ({ mind: 1, schema: stub.schema }));
 
-    const { repo, schema, searchParams } = await changeRepo(
+    const { mind, schema, searchParams } = await changeMind(
       "/",
       `~=${testCase.url}&-=${testCase.token}&_=b`,
     );
@@ -151,7 +151,7 @@ describe.only("changeRepo", () => {
       testCase.token,
     );
 
-    expect(repo).toStrictEqual(1);
+    expect(mind).toStrictEqual(1);
 
     expect(schema).toStrictEqual(stub.schema);
 
@@ -178,7 +178,7 @@ describe("search", () => {
 
     const schema = stub.schema;
     const searchParamsOld = new URLSearchParams();
-    const repo = {};
+    const mind = {};
     const field = "a";
     const value = "b";
     const appendRecord = {};
@@ -186,8 +186,8 @@ describe("search", () => {
     const { searchParams, abortPreviousStream, startStream } = await search(
       schema,
       searchParamsOld,
-      repo,
-      stub.reponame,
+      mind,
+      stub.name,
       field,
       value,
       appendRecord,
@@ -201,7 +201,7 @@ describe("search", () => {
 
     expect(window.history.replaceState).toHaveBeenCalledWith(null, null, 2);
 
-    expect(selectStream).toHaveBeenCalledWith(schema, repo, appendRecord, 1);
+    expect(selectStream).toHaveBeenCalledWith(schema, mind, appendRecord, 1);
 
     expect(searchParams).toBe(1);
 
@@ -219,7 +219,7 @@ describe("search", () => {
 
     const schema = stub.schema;
     const searchParamsOld = new URLSearchParams();
-    const repo = {};
+    const mind = {};
     const field = ".a";
     const value = "b";
     const appendRecord = {};
@@ -229,8 +229,8 @@ describe("search", () => {
     const { searchParams, abortPreviousStream, startStream } = await search(
       schema,
       searchParamsOld,
-      repo,
-      stub.reponame,
+      mind,
+      stub.name,
       field,
       value,
       appendRecord,

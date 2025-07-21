@@ -3,13 +3,19 @@ import git from "isomorphic-git";
 import http from "isomorphic-git/http/web/index.cjs";
 import { saveAs } from "file-saver";
 import { fs } from "@/api/browser/lightningfs.js";
-import { findDir, fetchFile, writeFile, pickFile } from "@/api/browser/io.js";
+import { findMind, fetchFile, writeFile, pickFile } from "@/api/browser/io.js";
 import { getOrigin } from "@/api/browser/git.js";
 
 export const lfsDir = "lfs";
 
-export async function createLFS(uuid) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name createLFS
+ * @function
+ * @param {String} mind -
+ */
+export async function createLFS(mind) {
+  const dir = await findMind(mind);
 
   await fs.promises.writeFile(
     `${dir}/.gitattributes`,
@@ -48,6 +54,13 @@ export async function createLFS(uuid) {
   });
 }
 
+/**
+ * This
+ * @name addLFS
+ * @function
+ * @param {String} dir -
+ * @param {String} filepath -
+ */
 export async function addLFS(dir, filepath) {
   if (filepath.startsWith(lfsDir)) {
     // stage files in remoteEndpoint as LFS pointers
@@ -61,6 +74,15 @@ export async function addLFS(dir, filepath) {
   }
 }
 
+/**
+ * This
+ * @name downloadUrlFromPointer
+ * @function
+ * @param {String} url -
+ * @param {String} token -
+ * @param {object} pointerInfo -
+ * @returns {String}
+ */
 export async function downloadUrlFromPointer(url, token, pointerInfo) {
   return lfs.downloadUrlFromPointer({
     http,
@@ -73,8 +95,15 @@ export async function downloadUrlFromPointer(url, token, pointerInfo) {
   });
 }
 
-export async function setAssetPath(uuid, assetPath) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name setAssetPath
+ * @function
+ * @param {String} mind -
+ * @param {String} assetPath -
+ */
+export async function setAssetPath(mind, assetPath) {
+  const dir = await findMind(mind);
 
   await git.setConfig({
     fs,
@@ -84,8 +113,15 @@ export async function setAssetPath(uuid, assetPath) {
   });
 }
 
-export async function getAssetPath(uuid) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name getAssetPath
+ * @function
+ * @param {String} mind -
+ * @returns {String}
+ */
+export async function getAssetPath(mind) {
+  const dir = await findMind(mind);
 
   return git.getConfigAll({
     fs,
@@ -94,24 +130,46 @@ export async function getAssetPath(uuid) {
   });
 }
 
-export async function putAsset(uuid, filename, content) {
+/**
+ * This
+ * @name putAsset
+ * @function
+ * @param {String} mind -
+ * @param {String} filename -
+ * @param {String} content -
+ */
+export async function putAsset(mind, filename, content) {
   // write buffer to assetEndpoint/filename
   const assetEndpoint = `${lfsDir}/${filename}`;
 
-  await writeFile(uuid, assetEndpoint, content);
+  await writeFile(mind, assetEndpoint, content);
 }
 
+/**
+ * This
+ * @name downloadAsset
+ * @function
+ * @param {String} content -
+ * @param {String} filename -
+ */
 export function downloadAsset(content, filename) {
   saveAs(content, filename);
 }
 
-// returns Uint8Array file contents
-export async function fetchAsset(uuid, filename) {
+/**
+ * This returns file contents
+ * @name downloadAsset
+ * @function
+ * @param {String} mind -
+ * @param {String} filename -
+ * @returns {Uint8Array}
+ */
+export async function fetchAsset(mind, filename) {
   let assetEndpoint;
 
   let content;
 
-  const dir = await findDir(uuid);
+  const dir = await findMind(mind);
 
   try {
     assetEndpoint = await git.getConfig({
@@ -155,7 +213,7 @@ export async function fetchAsset(uuid, filename) {
     const pointer = await lfs.readPointer({ dir, content: contentUTF8 });
 
     // loop over remotes trying to resolve LFS
-    const { url: remoteUrl, token: remoteToken } = await getOrigin(uuid);
+    const { url: remoteUrl, token: remoteToken } = await getOrigin(mind);
 
     try {
       content = await lfs.downloadBlobFromPointer({
@@ -178,9 +236,18 @@ export async function fetchAsset(uuid, filename) {
   return content;
 }
 
-// called without "files" on push
-export async function uploadBlobsLFS(uuid, remoteUrl, remoteToken, files) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name uploadBlobsLFS
+ * @note called without "files" on push
+ * @function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ * @param {File[]} files -
+ */
+export async function uploadBlobsLFS(mind, remoteUrl, remoteToken, files) {
+  const dir = await findMind(mind);
 
   let assets;
 
@@ -194,7 +261,7 @@ export async function uploadBlobsLFS(uuid, remoteUrl, remoteToken, files) {
     assets = (
       await Promise.all(
         filenames.map(async (filename) => {
-          const file = await fetchFile(uuid, `${lfsDir}/${filename}`);
+          const file = await fetchFile(mind, `${lfsDir}/${filename}`);
 
           if (!lfs.pointsToLFS(file)) {
             return file;
@@ -220,8 +287,13 @@ export async function uploadBlobsLFS(uuid, remoteUrl, remoteToken, files) {
   );
 }
 
-// pick file, write file and return metadata
-export async function uploadFile(uuid) {
+/**
+ * This will pick file, write file and return metadata
+ * @name uploadFile
+ * @function
+ * @param {String} mind -
+ */
+export async function uploadFile(mind) {
   let metadata = [];
 
   const files = await pickFile();
@@ -247,7 +319,7 @@ export async function uploadFile(uuid) {
     const assetname =
       extension !== undefined ? `${hashHexString}.${extension}` : hashHexString;
 
-    await putAsset(uuid, assetname, fileArrayBuffer);
+    await putAsset(mind, assetname, fileArrayBuffer);
 
     const metadatum = { hash: hashHexString, name, extension };
 

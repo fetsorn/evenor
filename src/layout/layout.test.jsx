@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeEach, vi } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
-import { StoreContext, store, onRepoChange } from "@/store/index.js";
+import { StoreContext, store, onMindChange } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import {
   NavigationBack,
@@ -19,7 +19,7 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 
   return {
     ...mod,
-    onRepoChange: vi.fn(),
+    onMindChange: vi.fn(),
   };
 });
 
@@ -58,7 +58,7 @@ describe("LayoutOverview", () => {
 
 describe("LayoutProfile", () => {
   test("", async () => {
-    setStore("record", { _: "repo", repo: "uuid" });
+    setStore("record", { _: "mind", mind: "mind" });
 
     render(() => (
       <StoreContext.Provider value={{ store }}>
@@ -85,9 +85,9 @@ describe("App", () => {
     ).not.toThrowError();
   });
 
-  test("change repo", async () => {
+  test("change mind", async () => {
     render(() => <App />);
 
-    expect(onRepoChange).toHaveBeenCalledWith("/", "");
+    expect(onMindChange).toHaveBeenCalledWith("/", "");
   });
 });

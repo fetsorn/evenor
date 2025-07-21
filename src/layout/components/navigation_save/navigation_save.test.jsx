@@ -16,7 +16,7 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 
 describe("NavigationSave", () => {
   test("", async () => {
-    const record = { _: "repo", repo: "uuid" };
+    const record = { _: "mind", mind: "mind" };
 
     setStore("record", record);
 

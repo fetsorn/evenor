@@ -1,4 +1,4 @@
-use crate::{Dataset, Result};
+use crate::{Mind, Result};
 use async_stream::try_stream;
 use csvs::{select::select_record_stream, types::entry::Entry, types::into_value::IntoValue};
 use futures_util::pin_mut;
@@ -6,7 +6,7 @@ use futures_util::stream::StreamExt;
 use serde_json::Value;
 use std::path::PathBuf;
 
-pub async fn select(dataset_dir: PathBuf, query: Value) -> Result<Vec<Value>> {
+pub async fn select(mind_dir: PathBuf, query: Value) -> Result<Vec<Value>> {
     let query: Entry = query.try_into().unwrap();
 
     // needed to clone for the stream scope
@@ -16,7 +16,7 @@ pub async fn select(dataset_dir: PathBuf, query: Value) -> Result<Vec<Value>> {
         yield query_for_stream;
     };
 
-    let s = select_record_stream(readable_stream, dataset_dir);
+    let s = select_record_stream(readable_stream, mind_dir);
 
     pin_mut!(s); // needed for iteration
 
@@ -33,7 +33,7 @@ pub async fn select(dataset_dir: PathBuf, query: Value) -> Result<Vec<Value>> {
 
 mod test {
     use crate::create_app;
-    use crate::{Dataset, Result, dataset::CSVS};
+    use crate::{Mind, Result, mind::CSVS};
     use assert_json_diff::assert_json_eq;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::Manager;
@@ -42,12 +42,12 @@ mod test {
     //async fn select_test() -> Result<()> {
     //    let app = create_app(mock_builder());
     //
-    //    let uuid = "a";
+    //    let mind = "a";
     //
     //    // TODO: mock csvs-rs here somewhere
     //    let query = serde_json::json!({ "a": "b" });
     //
-    //    let overview = select(app.handle().clone(), uuid, query).await?;
+    //    let overview = select(app.handle().clone(), mind, query).await?;
     //
     //    let stub_overview = serde_json::json!({
     //        });

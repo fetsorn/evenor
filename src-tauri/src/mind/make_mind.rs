@@ -1,37 +1,37 @@
-use crate::{Dataset, Result};
+use crate::{Mind, Result};
 use git2kit::Repository;
 use std::fs::{create_dir, rename, write};
 use tauri::Runtime;
 
-pub async fn make_dataset<R: Runtime>(dataset: &Dataset<R>, name: Option<&str>) -> Result<()> {
-    let dataset_dir = dataset.name_dataset(name)?;
+pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
+    let mind_dir = mind.name_mind(name)?;
 
-    if dataset.uuid == "root" {
-        create_dir(dataset_dir)?;
+    if mind.mind == "root" {
+        create_dir(mind_dir)?;
 
         return Ok(());
     }
 
-    let existing_dataset = dataset.find_dataset()?;
+    let existing_mind = mind.find_mind()?;
 
-    match existing_dataset {
+    match existing_mind {
         Some(s) => {
             let foo = s;
 
-            if foo != dataset_dir {
-                rename(foo, &dataset_dir)?;
+            if foo != mind_dir {
+                rename(foo, &mind_dir)?;
             }
         }
         None => {
-            create_dir(&dataset_dir)?;
+            create_dir(&mind_dir)?;
 
-            Repository::init(&dataset_dir)?;
+            Repository::init(&mind_dir)?;
 
-            let gitignore_path = dataset_dir.join(".gitignore");
+            let gitignore_path = mind_dir.join(".gitignore");
 
             write(&gitignore_path, ".DS_Store")?;
 
-            let csvscsv_path = dataset_dir.join(".csvs.csv");
+            let csvscsv_path = mind_dir.join(".csvs.csv");
 
             write(&csvscsv_path, "csvs,0.0.2")?;
         }
@@ -41,14 +41,14 @@ pub async fn make_dataset<R: Runtime>(dataset: &Dataset<R>, name: Option<&str>) 
 }
 
 mod test {
-    use crate::{create_app, Dataset, Result};
+    use crate::{create_app, Mind, Result};
     use std::fs::read_dir;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
     use temp_dir::TempDir;
 
     #[tokio::test]
-    async fn make_dataset_root() -> Result<()> {
+    async fn make_mind_root() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
         let temp_dir = TempDir::new();
@@ -61,13 +61,13 @@ mod test {
         // save temporary directory path in the tauri state
         app.manage(temp_path.clone());
 
-        let uuid = "root";
+        let mind = "root";
 
         let name = "etest";
 
-        let dataset = Dataset::new(app.handle().clone(), &uuid);
+        let mind = Mind::new(app.handle().clone(), &mind);
 
-        dataset.make_dataset(None).await?;
+        mind.make_mind(None).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -82,10 +82,8 @@ mod test {
             });
         });
 
-        let dataset = Dataset::new(app.handle().clone(), &uuid);
-
         // must error when root already exists
-        let result = dataset.make_dataset(None).await;
+        let result = mind.make_mind(None).await;
 
         assert!(result.is_err());
 
@@ -93,7 +91,7 @@ mod test {
     }
 
     #[tokio::test]
-    async fn make_dataset_name() -> Result<()> {
+    async fn make_mind_name() -> Result<()> {
         // create a temporary directory, will be deleted by destructor
         // must assign to keep in scope;
         let temp_dir = TempDir::new();
@@ -106,13 +104,13 @@ mod test {
         // save temporary directory path in the tauri state
         app.manage(temp_path.clone());
 
-        let uuid = "euuid";
+        let mind = "emind";
 
         let name = "etest";
 
-        let dataset = Dataset::new(app.handle().clone(), &uuid);
+        let mind = Mind::new(app.handle().clone(), &mind);
 
-        dataset.make_dataset(Some(name)).await?;
+        mind.make_mind(Some(name)).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -123,14 +121,14 @@ mod test {
             read_dir(entry.path()).unwrap().for_each(|entry| {
                 let entry = entry.unwrap();
 
-                assert!(entry.file_name() == "euuid-etest");
+                assert!(entry.file_name() == "emind-etest");
             });
         });
 
         let name = "etest1";
 
         // must rename when root already exists
-        let result = dataset.make_dataset(Some(name)).await;
+        let result = mind.make_mind(Some(name)).await;
 
         read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();
@@ -140,7 +138,7 @@ mod test {
             read_dir(entry.path()).unwrap().for_each(|entry| {
                 let entry = entry.unwrap();
 
-                assert!(entry.file_name() == "euuid-etest1");
+                assert!(entry.file_name() == "emind-etest1");
             });
         });
 

@@ -11,8 +11,8 @@ describe("OverviewItem", () => {
     const value = "a";
 
     const baseRecord = {
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
     };
 
     const record = baseRecord;
@@ -23,6 +23,6 @@ describe("OverviewItem", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("uuid")).not.toThrowError();
+    expect(() => getByText("mind")).not.toThrowError();
   });
 });

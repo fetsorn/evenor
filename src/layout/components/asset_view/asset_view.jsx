@@ -36,7 +36,7 @@ export function AssetView(props) {
     let contents;
 
     try {
-      contents = await api.fetchAsset(store.repo.repo, filenameFull);
+      contents = await api.fetchAsset(store.mind.mind, filenameFull);
     } catch (e) {
       console.log(e);
     }

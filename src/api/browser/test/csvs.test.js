@@ -1,6 +1,6 @@
 import { expect, test, describe, vi } from "vitest";
 import csvs from "@fetsorn/csvs-js";
-import { findDir } from "@/api/browser/io.js";
+import { findMind } from "@/api/browser/io.js";
 import {
   select,
   selectStream,
@@ -12,15 +12,15 @@ import stub from "./stub.js";
 vi.mock("@/api/browser/io.js", async (importOriginal) => {
   const mod = await importOriginal();
 
-  const findDir = vi.fn(async (uuid) => {
-    expect(uuid).toBe(stub.uuid);
+  const findMind = vi.fn(async (mind) => {
+    expect(mind).toBe(stub.mind);
 
     return stub.dir;
   });
 
   return {
     ...mod,
-    findDir,
+    findMind,
   };
 });
 
@@ -74,9 +74,9 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
 
 describe("csvs", () => {
   test("select", async () => {
-    const overview = await select(stub.uuid, stub.query);
+    const overview = await select(stub.mind, stub.query);
 
-    expect(findDir).toHaveBeenCalled();
+    expect(findMind).toHaveBeenCalled();
 
     expect(csvs.selectRecord).toHaveBeenCalled();
 
@@ -84,7 +84,7 @@ describe("csvs", () => {
   });
 
   test("selectStream", async () => {
-    const { strm } = await selectStream(stub.uuid, stub.query);
+    const { strm } = await selectStream(stub.mind, stub.query);
 
     let overview = [];
 
@@ -96,7 +96,7 @@ describe("csvs", () => {
 
     await strm.pipeTo(outputStream);
 
-    expect(findDir).toHaveBeenCalled();
+    expect(findMind).toHaveBeenCalled();
 
     expect(csvs.selectRecordStream).toHaveBeenCalled();
 
@@ -106,17 +106,17 @@ describe("csvs", () => {
   });
 
   test("updateRecord", async () => {
-    await updateRecord(stub.uuid, stub.entry);
+    await updateRecord(stub.mind, stub.entry);
 
-    expect(findDir).toHaveBeenCalled();
+    expect(findMind).toHaveBeenCalled();
 
     expect(csvs.updateRecord).toHaveBeenCalled();
   });
 
   test("deleteRecord", async () => {
-    await deleteRecord(stub.uuid, stub.entry);
+    await deleteRecord(stub.mind, stub.entry);
 
-    expect(findDir).toHaveBeenCalled();
+    expect(findMind).toHaveBeenCalled();
 
     expect(csvs.deleteRecord).toHaveBeenCalled();
   });

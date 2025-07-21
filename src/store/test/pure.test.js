@@ -225,16 +225,16 @@ describe("makeURL", () => {
     ).toStrictEqual("#?_=a&a=1&b=2");
   });
 
-  test("sets repo", () => {
+  test("sets mind", () => {
     expect(
-      makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "uuid", "name"),
-    ).toStrictEqual("#/uuid?_=a&a=1&b=2");
+      makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "id", "name"),
+    ).toStrictEqual("#/id?_=a&a=1&b=2");
   });
 
   test("sets sortBy", () => {
     expect(
-      makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "uuid", "name"),
-    ).toStrictEqual("#/uuid?_=a&a=1&b=2&.sortBy=b");
+      makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "id", "name"),
+    ).toStrictEqual("#/id?_=a&a=1&b=2&.sortBy=b");
   });
 });
 

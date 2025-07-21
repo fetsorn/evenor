@@ -8,17 +8,22 @@ import {
 } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 
-export async function saveRecord(
-  repouuid,
-  base,
-  records,
-  recordOld,
-  recordNew,
-) {
+/**
+ * This
+ * @name saveRecord
+ * @function
+ * @param {String} mind -
+ * @param {String} base -
+ * @param {object[]} records -
+ * @param {object} recordOld -
+ * @param {object} recordNew -
+ * @returns {object[]}
+ */
+export async function saveRecord(mind, base, records, recordOld, recordNew) {
   // if no root here try to create
   await createRoot();
 
-  await updateRecord(repouuid, base, recordNew);
+  await updateRecord(mind, base, recordNew);
 
   const recordsNew = records
     .filter((r) => r[base] !== recordOld[base])
@@ -27,26 +32,44 @@ export async function saveRecord(
   return recordsNew;
 }
 
-export async function wipeRecord(repo, base, records, record) {
-  await deleteRecord(repo, record);
+/**
+ * This
+ * @name wipeRecord
+ * @function
+ * @param {object} mind -
+ * @param {String} base -
+ * @param {object[]} records -
+ * @param {object} record -
+ * @returns {object[]}
+ */
+export async function wipeRecord(mind, base, records, record) {
+  await deleteRecord(mind, record);
 
   const recordsNew = records.filter((r) => r[base] !== record[base]);
 
   return recordsNew;
 }
 
-export async function changeRepo(pathname, search) {
-  const uuid = pathname === "/" ? "root" : pathname.replace("/", "");
+/**
+ * This
+ * @name changeMind
+ * @function
+ * @param {String} pathname -
+ * @param {String} searchString -
+ * @returns {object}
+ */
+export async function changeMind(pathname, searchString) {
+  const mind = pathname === "/" ? "root" : pathname.replace("/", "");
 
-  const searchParams = new URLSearchParams(search);
+  const searchParams = new URLSearchParams(searchString);
 
   const remoteUrl = searchParams.get("~");
 
   const token = searchParams.get("-") ?? "";
 
-  const { repo, schema } = searchParams.has("~")
+  const { mind, schema } = searchParams.has("~")
     ? await clone(undefined, undefined, remoteUrl, token)
-    : await find(uuid, undefined);
+    : await find(mind, undefined);
 
   if (!searchParams.has("_")) {
     searchParams.set("_", pickDefaultBase(schema));
@@ -60,17 +83,30 @@ export async function changeRepo(pathname, search) {
   }
 
   return {
-    repo,
+    mind,
     schema,
     searchParams,
   };
 }
 
+/**
+ * This
+ * @name search
+ * @function
+ * @param {object} schema -
+ * @param {SearchParams} searchParams -
+ * @param {object} mind -
+ * @param {String} name -
+ * @param {String} field -
+ * @param {String} value -
+ * @param {Function} appendRecord -
+ * @returns {object}
+ */
 export async function search(
   schema,
   searchParams,
-  repo,
-  reponame,
+  mind,
+  name,
   field,
   value,
   appendRecord,
@@ -78,7 +114,7 @@ export async function search(
   // update searchParams
   const searchParamsNew = changeSearchParams(searchParams, field, value);
 
-  const url = makeURL(searchParamsNew, value, repo, reponame);
+  const url = makeURL(searchParamsNew, value, mind, name);
 
   window.history.replaceState(null, null, url);
 
@@ -91,7 +127,7 @@ export async function search(
 
   const { abortPreviousStream, startStream } = await selectStream(
     schema,
-    repo,
+    mind,
     appendRecord,
     searchParamsNew,
   );

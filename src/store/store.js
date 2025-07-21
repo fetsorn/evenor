@@ -3,7 +3,7 @@ import { createStore, produce } from "solid-js/store";
 import { createRecord } from "@/store/impure.js";
 import { push, pull } from "@/store/record.js";
 import { clone } from "@/store/open.js";
-import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
+import { saveRecord, wipeRecord, changeMind, search } from "@/store/action.js";
 import { findFirstSortBy } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
@@ -11,8 +11,8 @@ export const StoreContext = createContext();
 
 export const [store, setStore] = createStore({
   abortPreviousStream: async () => {},
-  searchParams: new URLSearchParams("_=repo"),
-  repo: { _: "repo", repo: "root" },
+  searchParams: new URLSearchParams("_=mind"),
+  mind: { _: "mind", mind: "root" },
   schema: schemaRoot,
   record: undefined,
   records: [],
@@ -20,6 +20,12 @@ export const [store, setStore] = createStore({
   loading: false,
 });
 
+/**
+ * This
+ * @name getSortedRecords
+ * @export function
+ * @returns {Function}
+ */
 export function getSortedRecords() {
   return store.records.toSorted((a, b) => {
     if (store.searchParams === undefined) return 0;
@@ -43,6 +49,12 @@ export function getSortedRecords() {
   });
 }
 
+/**
+ * This
+ * @name getFilterQueries
+ * @export function
+ * @returns {String[]}
+ */
 export function getFilterQueries() {
   if (store.searchParams === undefined) return [];
 
@@ -52,6 +64,12 @@ export function getFilterQueries() {
   );
 }
 
+/**
+ * This
+ * @name getFilterOptions
+ * @export function
+ * @returns {String[]}
+ */
 export function getFilterOptions() {
   if (store.schema === undefined || store.searchParams === undefined) return [];
 
@@ -70,17 +88,35 @@ export function getFilterOptions() {
   return notAddedFields;
 }
 
+/**
+ * This
+ * @name getSpoilerOpen
+ * @param {String} index -
+ * @export function
+ */
 export function getSpoilerOpen(index) {
   return store.spoilerMap[index];
 }
 
+/**
+ * This
+ * @name setSpoilerOpen
+ * @param {String} index -
+ * @param {boolean} isOpen -
+ * @export function
+ */
 export function setSpoilerOpen(index, isOpen) {
   setStore("spoilerMap", { [index]: isOpen });
 }
 
+/**
+ * This
+ * @name onRecordCreate
+ * @export function
+ */
 export async function onRecordCreate() {
   const record = await createRecord(
-    store.repo.repo,
+    store.mind.mind,
     store.searchParams.get("_"),
   );
 
@@ -91,13 +127,27 @@ export async function onRecordCreate() {
   );
 }
 
+/**
+ * This
+ * @name onRecordEdit
+ * @export function
+ * @param {String[]} path -
+ * @param {String} value -
+ */
 export async function onRecordEdit(path, value) {
   setStore(...path, value);
 }
 
+/**
+ * This
+ * @name onRecordSave
+ * @export function
+ * @param {object} recordOld -
+ * @param {object} recordNew -
+ */
 export async function onRecordSave(recordOld, recordNew) {
   const records = await saveRecord(
-    store.repo.repo,
+    store.mind.mind,
     store.searchParams.get("_"),
     store.records,
     recordOld,
@@ -112,9 +162,15 @@ export async function onRecordSave(recordOld, recordNew) {
   );
 }
 
+/**
+ * This
+ * @name onRecordWipe
+ * @export function
+ * @param {object} record -
+ */
 export async function onRecordWipe(record) {
   const records = await wipeRecord(
-    store.repo.repo,
+    store.mind.mind,
     store.searchParams.get("_"),
     store.records,
     record,
@@ -127,17 +183,30 @@ export async function onRecordWipe(record) {
   );
 }
 
+/**
+ * This
+ * @name appendRecord
+ * @export function
+ * @param {object} record -
+ */
 export function appendRecord(record) {
   setStore("records", store.records.length, record);
 }
 
+/**
+ * This
+ * @name onSearch
+ * @export function
+ * @param {String} field -
+ * @param {String} value -
+ */
 export async function onSearch(field, value) {
   try {
     const { searchParams, abortPreviousStream, startStream } = await search(
       store.schema,
       store.searchParams,
-      store.repo.repo,
-      store.repo.reponame,
+      store.mind.mind,
+      store.mind.name,
       field,
       value,
       appendRecord,
@@ -170,25 +239,32 @@ export async function onSearch(field, value) {
   }
 }
 
-export async function onRepoChange(pathname, search) {
+/**
+ * This
+ * @name onMindChange
+ * @export function
+ * @param {String} pathname -
+ * @param {String} searchString -
+ */
+export async function onMindChange(pathname, searchString) {
   let result;
 
   // in case of error fallback to root
   try {
-    result = await changeRepo(pathname, search);
+    result = await changeMind(pathname, searchString);
   } catch (e) {
     console.log(e);
 
-    result = await changeRepo("/", "_=repo");
+    result = await changeMind("/", "_=mind");
   }
 
   // TODO somewhere here in case of error doesn't change url to root
 
-  const { repo, schema, searchParams } = result;
+  const { mind, schema, searchParams } = result;
 
   setStore(
     produce((state) => {
-      state.repo = repo;
+      state.mind = mind;
       state.schema = schema;
       state.searchParams = searchParams;
     }),
@@ -198,13 +274,22 @@ export async function onRepoChange(pathname, search) {
   await onSearch("", undefined);
 }
 
-export async function onClone(repouuid, reponame, remoteUrl, remoteToken) {
+/**
+ * This
+ * @name onClone
+ * @export function
+ * @param {String} mind -
+ * @param {String} name -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function onClone(mind, name, remoteUrl, remoteToken) {
   try {
-    const { repo } = await clone(repouuid, reponame, remoteUrl, remoteToken);
+    const { mind } = await clone(mind, name, remoteUrl, remoteToken);
 
     setStore(
       produce((state) => {
-        state.record = repo;
+        state.record = mind;
       }),
     );
   } catch (e) {
@@ -213,11 +298,19 @@ export async function onClone(repouuid, reponame, remoteUrl, remoteToken) {
   }
 }
 
-export async function onPullRepo(repouuid, remoteUrl, remoteToken) {
+/**
+ * This
+ * @name onPull
+ * @export function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function onPull(mind, remoteUrl, remoteToken) {
   setStore("loading", true);
 
   try {
-    await pull(repouuid, remoteUrl, remoteToken);
+    await pull(mind, remoteUrl, remoteToken);
   } catch (e) {
     console.log(e);
   }
@@ -225,11 +318,19 @@ export async function onPullRepo(repouuid, remoteUrl, remoteToken) {
   setStore("loading", false);
 }
 
-export async function onPushRepo(repouuid, remoteUrl, remoteToken) {
+/**
+ * This
+ * @name onPush
+ * @export function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function onPush(mind, remoteUrl, remoteToken) {
   setStore("loading", true);
 
   try {
-    await push(repouuid, remoteUrl, remoteToken);
+    await push(mind, remoteUrl, remoteToken);
   } catch (e) {
     console.log(e);
   }
@@ -237,7 +338,14 @@ export async function onPushRepo(repouuid, remoteUrl, remoteToken) {
   setStore("loading", false);
 }
 
-// lateral jump
+/**
+ * This lateral jumps
+ * @name leapfrog
+ * @export function
+ * @param {String} branch -
+ * @param {String} value -
+ * @param {String} cognate -
+ */
 export async function leapfrog(branch, value, cognate) {
   await onSearch(undefined, undefined);
 
@@ -248,7 +356,14 @@ export async function leapfrog(branch, value, cognate) {
   await onSearch(branch, value);
 }
 
-// deep jump
+/**
+ * This deep jumps
+ * @name backflip
+ * @export function
+ * @param {String} branch -
+ * @param {String} value -
+ * @param {String} cognate -
+ */
 export async function backflip(branch, value, cognate) {
   await onSearch(undefined, undefined);
 
@@ -259,6 +374,14 @@ export async function backflip(branch, value, cognate) {
   await onSearch(cognate, value);
 }
 
+/**
+ * This
+ * @name sidestep
+ * @export function
+ * @param {String} branch -
+ * @param {String} value -
+ * @param {String} cognate -
+ */
 export async function sidestep(branch, value, cognate) {
   await onSearch(undefined, undefined);
 
@@ -267,7 +390,14 @@ export async function sidestep(branch, value, cognate) {
   await onSearch(cognate, value);
 }
 
-// side jump
+/**
+ * This side jumps
+ * @name warp
+ * @export function
+ * @param {String} branch -
+ * @param {String} value -
+ * @param {String} cognate -
+ */
 export async function warp(branch, value, cognate) {
   await onSearch(undefined, undefined);
 

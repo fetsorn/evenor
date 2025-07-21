@@ -31,9 +31,9 @@ describe("readRemoteTags", () => {
       token: testCase.token,
     }));
 
-    const remoteTags = await readRemoteTags(stub.uuid);
+    const remoteTags = await readRemoteTags(stub.id);
 
-    expect(api.getOrigin).toHaveBeenCalledWith(stub.uuid);
+    expect(api.getOrigin).toHaveBeenCalledWith(stub.id);
 
     expect(remoteTags).toStrictEqual([testCase.originUrl]);
   });
@@ -45,9 +45,9 @@ describe("readLocalTags", () => {
 
     api.getAssetPath.mockImplementation(() => testCase.assetPath);
 
-    const localTags = await readLocalTags(stub.uuid);
+    const localTags = await readLocalTags(stub.id);
 
-    expect(api.getAssetPath).toHaveBeenCalledWith(stub.uuid);
+    expect(api.getAssetPath).toHaveBeenCalledWith(stub.id);
 
     expect(localTags).toStrictEqual([testCase.localTag]);
   });
@@ -57,10 +57,10 @@ describe("writeRemoteTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    await writeRemoteTags(stub.uuid, [testCase.originUrl]);
+    await writeRemoteTags(stub.id, [testCase.originUrl]);
 
     expect(api.setOrigin).toHaveBeenCalledWith(
-      stub.uuid,
+      stub.id,
       testCase.url,
       testCase.token,
     );
@@ -71,11 +71,8 @@ describe("writeLocalTags", () => {
   test("", async () => {
     const testCase = stub.cases.tags;
 
-    await writeLocalTags(stub.uuid, [testCase.localTag]);
+    await writeLocalTags(stub.id, [testCase.localTag]);
 
-    expect(api.setAssetPath).toHaveBeenCalledWith(
-      stub.uuid,
-      testCase.assetPath,
-    );
+    expect(api.setAssetPath).toHaveBeenCalledWith(stub.id, testCase.assetPath);
   });
 });

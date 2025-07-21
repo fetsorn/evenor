@@ -39,11 +39,11 @@ describe("Filter", () => {
 
     await userEvent.click(getByText(/search/));
 
-    expect(FilterOption).toHaveBeenNthCalledWith(1, { field: "reponame" });
+    expect(FilterOption).toHaveBeenNthCalledWith(1, { field: "name" });
 
     expect(FilterQuery).toHaveBeenNthCalledWith(1, {
       field: "_",
-      value: "repo",
+      value: "mind",
     });
 
     expect(FilterScroll).toHaveBeenCalledWith({});

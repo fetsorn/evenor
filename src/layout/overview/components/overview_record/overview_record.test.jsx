@@ -8,7 +8,7 @@ describe("OverviewRecord", () => {
   test("no items", async () => {
     const index = "";
 
-    const baseRecord = { _: "repo", repo: "uuid" };
+    const baseRecord = { _: "mind", mind: "mind" };
 
     const record = baseRecord;
 
@@ -29,8 +29,8 @@ describe("OverviewRecord", () => {
     const value = "a";
 
     const baseRecord = {
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [{ _: "branch", branch: value }],
     };
 

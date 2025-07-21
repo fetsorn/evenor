@@ -1,4 +1,4 @@
-use crate::{Dataset, Result};
+use crate::{Mind, Result};
 use tauri::Runtime;
 use tauri_plugin_dialog::DialogExt;
 
@@ -8,10 +8,10 @@ use std::path::{Path, PathBuf};
 use walkdir::WalkDir;
 use zip::{write::SimpleFileOptions, CompressionMethod, ZipWriter};
 
-pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
+pub fn add_to_zip(mind_dir_path: PathBuf, file_path: &Path) -> Result<()> {
     let writer = File::create(file_path).unwrap();
 
-    let walkdir = WalkDir::new(&dataset_dir_path);
+    let walkdir = WalkDir::new(&mind_dir_path);
 
     let it = walkdir.into_iter();
     let it = &mut it.filter_map(|e| e.ok());
@@ -23,7 +23,7 @@ pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
         .compression_method(method)
         .unix_permissions(0o755);
 
-    let prefix = Path::new(&dataset_dir_path);
+    let prefix = Path::new(&mind_dir_path);
     let mut buffer = Vec::new();
     for entry in it {
         let path = entry.path();
@@ -56,7 +56,7 @@ pub fn add_to_zip(dataset_dir_path: PathBuf, file_path: &Path) -> Result<()> {
 
 mod test {
     use super::add_to_zip;
-    use crate::{create_app, Dataset, Result};
+    use crate::{create_app, Mind, Result};
     use std::fs::{create_dir, write, File};
     use std::io::prelude::*;
     use tauri::test::{mock_builder, mock_context, noop_assets};
@@ -78,23 +78,23 @@ mod test {
         // save temporary directory path in the tauri state
         app.manage(temp_path.clone());
 
-        let uuid = "euuid";
+        let mind = "emind";
 
         let name = "ename";
 
-        let dataset = Dataset::new(app.handle().clone(), &uuid);
+        let mind = Mind::new(app.handle().clone(), &mind);
 
-        let dataset_dir = dataset.name_dataset(None)?;
+        let mind_dir = mind.name_mind(None)?;
 
-        create_dir(&dataset_dir)?;
+        create_dir(&mind_dir)?;
 
-        let check_path = dataset_dir.join("check.txt");
+        let check_path = mind_dir.join("check.txt");
 
         write(check_path, "check")?;
 
         let file_path = temp_path.join("a.zip");
 
-        add_to_zip(dataset_dir, &file_path)?;
+        add_to_zip(mind_dir, &file_path)?;
 
         let mut reader = File::open(&file_path)?;
 
@@ -116,10 +116,10 @@ mod test {
     }
 }
 
-pub async fn zip<R: Runtime>(dataset: &Dataset<R>) -> Result<()> {
-    let dataset_dir = dataset.find_dataset()?.expect("no directory");
+pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
+    let mind_dir = mind.find_mind()?.expect("no directory");
 
-    let file_path = dataset
+    let file_path = mind
         .app
         .dialog()
         .file()
@@ -130,7 +130,7 @@ pub async fn zip<R: Runtime>(dataset: &Dataset<R>) -> Result<()> {
 
     let file_path = file_path.as_path().unwrap();
 
-    add_to_zip(dataset_dir, &file_path)?;
+    add_to_zip(mind_dir, &file_path)?;
 
     Ok(())
 }

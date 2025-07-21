@@ -15,19 +15,38 @@ import {
 } from "@/store/tags.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
+/**
+ * This
+ * @name newUUID
+ * @export function
+ * @returns {String}
+ */
 export function newUUID() {
   return sha256(uuidv4());
 }
 
-export async function deleteRecord(repo, record) {
-  await api.deleteRecord(repo, record);
+/**
+ * This
+ * @name deleteRecord
+ * @export function
+ * @param {object} mind -
+ * @param {object} record -
+ */
+export async function deleteRecord(mind, record) {
+  await api.deleteRecord(mind, record);
 
-  await api.commit(repo);
+  await api.commit(mind);
 }
 
-export async function updateRepo(recordNew) {
-  // won't save root/branch-trunk.csv to disk as it's read from repo/_-_.csv
-  // TODO move this outside and merge updateRepo with updateEntry
+/**
+ * This
+ * @name updateMind
+ * @export function
+ * @param {object} recordNew -
+ */
+export async function updateMind(recordNew) {
+  // won't save root/branch-trunk.csv to disk as it's read from mind/_-_.csv
+  // TODO move this outside and merge updateMind with updateEntry
   const branchesPartial =
     recordNew.branch !== undefined
       ? {
@@ -45,20 +64,34 @@ export async function updateRepo(recordNew) {
   await api.commit("root");
 }
 
-export async function updateEntry(repo, recordNew) {
-  await api.updateRecord(repo, recordNew);
+/**
+ * This
+ * @name updateEntry
+ * @export function
+ * @param {object} mind -
+ * @param {object} recordNew -
+ */
+export async function updateEntry(mind, recordNew) {
+  await api.updateRecord(mind, recordNew);
 
-  await api.commit(repo);
+  await api.commit(mind);
 }
 
-export async function readSchema(uuid) {
-  if (uuid === "root") {
+/**
+ * This
+ * @name readSchema
+ * @export function
+ * @param {String} mind -
+ * @returns {object}
+ */
+export async function readSchema(mind) {
+  if (mind === "root") {
     return schemaRoot;
   }
 
-  const [schemaRecord] = await api.select(uuid, { _: "_" });
+  const [schemaRecord] = await api.select(mind, { _: "_" });
 
-  const branchRecords = await api.select(uuid, { _: "branch" });
+  const branchRecords = await api.select(mind, { _: "branch" });
 
   const schema = recordsToSchema(schemaRecord, branchRecords);
 
@@ -66,6 +99,11 @@ export async function readSchema(uuid) {
 }
 
 // TODO rename to differ from solidjs "createRoot"
+/**
+ * This
+ * @name createRoot
+ * @export function
+ */
 export async function createRoot() {
   try {
     // fails if root exists
@@ -83,61 +121,70 @@ export async function createRoot() {
   }
 }
 
-// write schema and git state
-export async function saveRepoRecord(record) {
-  const repoUUID = record.repo;
+/**
+ * This writes schema and git state
+ * @name saveMindRecord
+ * @export function
+ * @param {object} record
+ */
+export async function saveMindRecord(record) {
+  const mind = record.mind;
 
   // extract schema record with trunks from branch records
   const [schemaRecord, ...metaRecords] = extractSchemaRecords(record.branch);
 
-  // create repo directory
-  const reponame = Array.isArray(record.reponame)
-    ? record.reponame[0]
-    : record.reponame;
+  // create mind directory
+  const name = Array.isArray(record.name) ? record.name[0] : record.name;
 
-  await api.init(repoUUID, reponame);
+  await api.init(mind, name);
 
-  await api.createLFS(repoUUID);
+  await api.createLFS(mind);
 
-  // write schema to repo
-  await api.updateRecord(repoUUID, schemaRecord);
+  // write schema to mind
+  await api.updateRecord(mind, schemaRecord);
 
   for (const metaRecord of metaRecords) {
-    await api.updateRecord(repoUUID, metaRecord);
+    await api.updateRecord(mind, metaRecord);
   }
 
   // write remotes to .git/config
-  await writeRemoteTags(repoUUID, record.origin_url);
+  await writeRemoteTags(mind, record.origin_url);
 
   // write locals to .git/config
-  await writeLocalTags(repoUUID, record.local_tag);
+  await writeLocalTags(mind, record.local_tag);
 
-  await api.commit(repoUUID);
+  await api.commit(mind);
 
   return undefined;
 }
 
-// load git state and schema from folder into the record
-export async function loadRepoRecord(record) {
-  const repoUUID = record.repo;
+/**
+ * This loads git state and schema from folder into the record
+ * @name loadMindRecord
+ * @export function
+ * @param {object} record
+ * @returns {object}
+ */
+export async function loadMindRecord(record) {
+  const mind = record.mind;
 
-  const [schemaRecord] = await api.select(repoUUID, { _: "_" });
+  const [schemaRecord] = await api.select(mind, { _: "_" });
 
   // query {_:branch}
-  const metaRecords = await api.select(repoUUID, { _: "branch" });
+  const metaRecords = await api.select(mind, { _: "branch" });
 
   // add trunk field from schema record to branch records
   const branchRecords = enrichBranchRecords(schemaRecord, metaRecords);
 
   const branchPartial = { branch: branchRecords };
 
-  const tagsRemote = await readRemoteTags(repoUUID);
+  const tagsRemote = await readRemoteTags(mind);
 
   // get remote
   const tagsRemotePartial =
     tagsRemote.length > 0 ? { origin_url: tagsRemote } : {};
 
-  const tagsLocal = await readLocalTags(repoUUID);
+  const tagsLocal = await readLocalTags(mind);
 
   // get locals
   const tagsLocalPartial = tagsLocal.length > 0 ? { local_tag: tagsLocal } : {};
@@ -152,24 +199,46 @@ export async function loadRepoRecord(record) {
   return recordNew;
 }
 
-export async function onZip(uuid) {
-  await api.zip(uuid);
+/**
+ * This
+ * @name onZip
+ * @export function
+ * @param {String} mind
+ */
+export async function onZip(mind) {
+  await api.zip(mind);
 }
 
-export async function pull(repouuid, remoteUrl, remoteToken) {
-  await api.commit(repouuid);
+/**
+ * This
+ * @name pull
+ * @export function
+ * @param {String} mind
+ * @param {String} remoteUrl
+ * @param {String} remoteToken
+ */
+export async function pull(mind, remoteUrl, remoteToken) {
+  await api.commit(mind);
 
-  await api.pull(repouuid, remoteUrl, remoteToken);
+  await api.pull(mind, remoteUrl, remoteToken);
 }
 
-export async function push(repouuid, remoteUrl, remoteToken) {
-  await api.commit(repouuid);
+/**
+ * This
+ * @name push
+ * @export function
+ * @param {String} mind
+ * @param {String} remoteUrl
+ * @param {String} remoteToken
+ */
+export async function push(mind, remoteUrl, remoteToken) {
+  await api.commit(mind);
 
   try {
-    await api.uploadBlobsLFS(repouuid, remoteUrl, remoteToken);
+    await api.uploadBlobsLFS(mind, remoteUrl, remoteToken);
   } catch {
     // do nothing
   }
 
-  await api.push(repouuid, remoteUrl, remoteToken);
+  await api.push(mind, remoteUrl, remoteToken);
 }

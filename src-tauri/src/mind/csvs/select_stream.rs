@@ -1,4 +1,4 @@
-use crate::{Dataset, Result};
+use crate::{Mind, Result};
 use async_stream::try_stream;
 use csvs::{select::select_record_stream, types::entry::Entry, types::into_value::IntoValue};
 use futures_util::pin_mut;
@@ -20,7 +20,7 @@ pub enum SelectEvent {
 }
 
 pub async fn select_stream(
-    dataset_dir: PathBuf,
+    mind_dir: PathBuf,
     query: Value,
     on_event: Channel<SelectEvent>,
 ) -> Result<()> {
@@ -32,7 +32,7 @@ pub async fn select_stream(
        yield query_for_stream;
     };
 
-    let s = select_record_stream(readable_stream, dataset_dir);
+    let s = select_record_stream(readable_stream, mind_dir);
 
     pin_mut!(s); // needed for iteration
 

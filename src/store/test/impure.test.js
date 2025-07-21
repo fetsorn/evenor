@@ -3,12 +3,12 @@ import api from "@/api/index.js";
 import { updateRecord, createRecord, selectStream } from "@/store/impure.js";
 import {
   newUUID,
-  updateRepo,
+  updateMind,
   updateEntry,
-  saveRepoRecord,
-  loadRepoRecord,
+  saveMindRecord,
+  loadMindRecord,
 } from "@/store/record.js";
-import defaultRepoRecord from "@/store/default_repo_record.json";
+import defaultMindRecord from "@/store/default_mind_record.json";
 import stub from "./stub.js";
 
 vi.mock("@/api/index.js", async (importOriginal) => {
@@ -57,11 +57,11 @@ vi.mock("@/store/record.js", async (importOriginal) => {
     newUUID: vi.fn(),
     readSchema: vi.fn(),
     createRoot: vi.fn(),
-    updateRepo: vi.fn(),
+    updateMind: vi.fn(),
     updateEntry: vi.fn(),
     deleteRecord: vi.fn(),
-    saveRepoRecord: vi.fn(),
-    loadRepoRecord: vi.fn(),
+    saveMindRecord: vi.fn(),
+    loadMindRecord: vi.fn(),
   };
 });
 
@@ -69,45 +69,45 @@ describe("updateRecord", () => {
   test("root", async () => {
     updateEntry.mockReset();
 
-    saveRepoRecord.mockReset();
+    saveMindRecord.mockReset();
 
-    await updateRecord("root", "repo", {});
+    await updateRecord("root", "mind", {});
 
-    expect(updateRepo).toHaveBeenCalledWith({});
+    expect(updateMind).toHaveBeenCalledWith({});
 
-    expect(saveRepoRecord).toHaveBeenCalledWith({});
+    expect(saveMindRecord).toHaveBeenCalledWith({});
   });
 
-  test("uuid", async () => {
+  test("id", async () => {
     updateEntry.mockReset();
 
-    saveRepoRecord.mockReset();
+    saveMindRecord.mockReset();
 
-    await updateRecord(stub.uuid, stub.trunk, {});
+    await updateRecord(stub.id, stub.trunk, {});
 
-    expect(updateEntry).toHaveBeenCalledWith(stub.uuid, {});
+    expect(updateEntry).toHaveBeenCalledWith(stub.id, {});
 
-    expect(saveRepoRecord).not.toHaveBeenCalled();
+    expect(saveMindRecord).not.toHaveBeenCalled();
   });
 });
 
 describe("createRecord", () => {
-  newUUID.mockImplementation(() => stub.uuid);
+  newUUID.mockImplementation(() => stub.id);
 
   test("root", async () => {
-    const record = await createRecord("root", "repo");
+    const record = await createRecord("root", "mind");
 
     expect(record).toStrictEqual({
-      _: "repo",
-      repo: stub.uuid,
-      ...defaultRepoRecord,
+      _: "mind",
+      mind: stub.id,
+      ...defaultMindRecord,
     });
   });
 
-  test("uuid", async () => {
-    const record = await createRecord(stub.uuid, stub.trunk);
+  test("id", async () => {
+    const record = await createRecord(stub.id, stub.trunk);
 
-    expect(record).toStrictEqual({ _: stub.trunk, [stub.trunk]: stub.uuid });
+    expect(record).toStrictEqual({ _: stub.trunk, [stub.trunk]: stub.id });
   });
 });
 
@@ -122,9 +122,9 @@ describe("selectStream", () => {
       closeHandler: vi.fn(),
     }));
 
-    loadRepoRecord.mockReset();
+    loadMindRecord.mockReset();
 
-    loadRepoRecord.mockImplementation(() => ({}));
+    loadMindRecord.mockImplementation(() => ({}));
 
     const { startStream } = await selectStream(
       stub.schema,
@@ -137,13 +137,13 @@ describe("selectStream", () => {
     // call start stream and check stub.record
     await startStream();
 
-    // check that loadRepoRecord() was called with stub.record
-    expect(loadRepoRecord).toHaveBeenCalledWith({});
+    // check that loadMindRecord() was called with stub.record
+    expect(loadMindRecord).toHaveBeenCalledWith({});
     // check that appendRecord was called with stub.record
     expect(appendRecord).toHaveBeenCalledWith({});
   });
 
-  test("uuid", async () => {
+  test("id", async () => {
     const testCase = stub.cases.baseValue;
 
     const appendRecord = vi.fn();
@@ -153,11 +153,11 @@ describe("selectStream", () => {
       closeHandler: vi.fn(),
     }));
 
-    loadRepoRecord.mockReset();
+    loadMindRecord.mockReset();
 
     const { startStream } = await selectStream(
       stub.schema,
-      stub.uuid,
+      stub.id,
       appendRecord,
       new URLSearchParams(testCase.queryString),
     );
@@ -168,7 +168,7 @@ describe("selectStream", () => {
 
     // check that appendRecord was called with stub.record
     expect(appendRecord).toHaveBeenCalledWith({});
-    // check that loadRepoRecord() was called with stub.record
-    expect(loadRepoRecord).not.toHaveBeenCalled();
+    // check that loadMindRecord() was called with stub.record
+    expect(loadMindRecord).not.toHaveBeenCalled();
   });
 });

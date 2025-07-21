@@ -12,11 +12,11 @@ export const twig = "d";
 
 export const nonExisting = "c";
 
-export const uuid = "uuid";
+export const id = "id";
 
-export const repo = "repo";
+export const mind = "mind";
 
-export const reponame = "reponame";
+export const name = "name";
 
 export const cases = {
   noBase: {
@@ -103,11 +103,11 @@ export const cases = {
       },
     ],
     remote: "remote",
-    url: "https://example.com/reponame",
+    url: "https://example.com/name",
     token: "token",
     originUrl: {
       _: "origin_url",
-      origin_url: "https://example.com/reponame",
+      origin_url: "https://example.com/name",
       origin_token: "token",
     },
     assetPath: "assetpath",
@@ -116,9 +116,9 @@ export const cases = {
       local_tag: "assetpath",
     },
     record: {
-      _: "repo",
-      repo: "uuid",
-      reponame: "reponame",
+      _: "mind",
+      mind: "id",
+      name: "name",
       branch: [
         { _: "branch", branch: "branch1", trunk: [], leaf: ["branch2"] },
         {
@@ -132,7 +132,7 @@ export const cases = {
       origin_url: [
         {
           _: "origin_url",
-          origin_url: "https://example.com/reponame",
+          origin_url: "https://example.com/name",
           origin_token: "token",
         },
       ],
@@ -152,8 +152,8 @@ export default {
   trunk,
   twig,
   nonExisting,
-  uuid,
-  repo,
-  reponame,
+  id,
+  mind,
+  name,
   cases,
 };

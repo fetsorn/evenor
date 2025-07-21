@@ -1,13 +1,13 @@
 #![allow(warnings)]
 mod csvs;
-mod dataset;
 mod error;
 mod git;
 mod lfs;
+mod mind;
 mod zip;
 
-pub use dataset::Dataset;
 pub use error::{Error, Result};
+pub use mind::Mind;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R> {

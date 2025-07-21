@@ -1,8 +1,15 @@
 import JsZip from "jszip";
 import { saveAs } from "file-saver";
 import { fs } from "@/api/browser/lightningfs.js";
-import { findDir } from "@/api/browser/io.js";
+import { findMind } from "@/api/browser/io.js";
 
+/**
+ * This
+ * @name addToZip
+ * @function
+ * @param {String} dir -
+ * @param {object} zipDir -
+ */
 export async function addToZip(dir, zipDir) {
   const files = await fs.promises.readdir(dir);
 
@@ -23,10 +30,16 @@ export async function addToZip(dir, zipDir) {
   }
 }
 
-export async function zip(uuid) {
-  const zip = new JsZip();
+/**
+ * This
+ * @name zip
+ * @function
+ * @param {String} mind -
+ */
+export async function zip(mind) {
+  const dir = await findMind(mind);
 
-  const dir = await findDir(uuid);
+  const zip = new JsZip();
 
   await addToZip(dir, zip);
 

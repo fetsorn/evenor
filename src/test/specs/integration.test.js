@@ -2,7 +2,7 @@ import {
   make,
   save,
   setValue,
-  newRepo,
+  newMind,
   wipe,
   open,
   close,
@@ -12,11 +12,11 @@ import {
 } from "./actions.js";
 
 export function t() {
-  it("should create a repo", async () => {
+  it("should create a mind", async () => {
     await make();
 
-    // input reponame in profile
-    setValue(await $("aria/reponame -"), "foobar");
+    // input name in profile
+    setValue(await $("aria/name -"), "foobar");
 
     await save();
 
@@ -26,8 +26,8 @@ export function t() {
     await expect(element).toHaveText("found 1");
   });
 
-  //it("should delete a repo", async () => {
-  //  await newRepo();
+  //it("should delete a mind", async () => {
+  //  await newMind();
 
   //  await wipe();
 
@@ -36,12 +36,12 @@ export function t() {
   //  await expect(element).toHaveText("found 0");
   //});
 
-  //it("should open a repo", async () => {
+  //it("should open a mind", async () => {
   //  await expect(browser).toHaveUrl(
-  //    expect.stringContaining("#?_=repo&.sortBy=repo"),
+  //    expect.stringContaining("#?_=mind&.sortBy=mind"),
   //  );
 
-  //  await newRepo();
+  //  await newMind();
 
   //  // check that one record in the overview
   //  await open();
@@ -54,12 +54,12 @@ export function t() {
   //  await close();
 
   //  await expect(browser).toHaveUrl(
-  //    expect.stringContaining("#?_=repo&.sortBy=repo"),
+  //    expect.stringContaining("#?_=mind&.sortBy=mind"),
   //  );
   //});
 
   //it("should create an event", async () => {
-  //  await newRepo();
+  //  await newMind();
 
   //  await open();
 
@@ -70,7 +70,7 @@ export function t() {
 
   //  await click(await $("aria/datum"));
 
-  //  // input reponame in profile
+  //  // input name in profile
   //  await setValue(await $("aria/datum -"), "baz");
 
   //  await save();
@@ -82,7 +82,7 @@ export function t() {
   //  await expect(element).toBeDisplayed();
   //});
 
-  //it("should clone a repo", async () => {
+  //it("should clone a mind", async () => {
   //  // check that no records in the overview
 
   //  await clone();
@@ -94,7 +94,7 @@ export function t() {
   //  await expect(element).toHaveText("found 7");
   //});
 
-  //it("should pull a repo", async () => {
+  //it("should pull a mind", async () => {
   //  await clone();
 
   //  await pull();
@@ -107,7 +107,7 @@ export function t() {
   //  await expect(element).toHaveText("found 6");
   //});
 
-  //it("should push a repo", async () => {
+  //it("should push a mind", async () => {
   //  await clone();
 
   //  await pull();
@@ -120,7 +120,7 @@ export function t() {
 
   //  await click(await $("aria/datum"));
 
-  //  // input reponame in profile
+  //  // input name in profile
   //  await setValue(await $("aria/datum -"), "baz");
 
   //  await save();
@@ -129,6 +129,6 @@ export function t() {
 
   //  await push();
 
-  //  // check that remote repo changed
+  //  // check that remote mind changed
   //});
 }

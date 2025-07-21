@@ -2,7 +2,7 @@ import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import git from "isomorphic-git";
 import { fs } from "@/api/browser/lightningfs.js";
 import {
-  nameDir,
+  nameMind,
   init,
   commit,
   clone,
@@ -36,17 +36,17 @@ vi.mock("isomorphic-git", async (importOriginal) => {
   };
 });
 
-describe("nameDir", () => {
-  test("throws if uuid is undefined", async () => {
-    expect(() => nameDir(undefined, stub.name)).toThrowError();
+describe("nameMind", () => {
+  test("throws if mind is undefined", async () => {
+    expect(() => nameMind(undefined, stub.name)).toThrowError();
   });
 
   test("concatenates a name", async () => {
-    expect(nameDir(stub.uuid, stub.name)).toBe(stub.dirpath);
+    expect(nameMind(stub.mind, stub.name)).toBe(stub.dirpath);
   });
 
-  test("returns uuid when name is undefined", async () => {
-    expect(nameDir("root", undefined)).toBe("/root");
+  test("returns mind when name is undefined", async () => {
+    expect(nameMind("root", undefined)).toBe("/root");
   });
 });
 
@@ -63,7 +63,7 @@ describe.only("init", () => {
   });
 
   test("creates a directory", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
     const listing = await fs.promises.readdir("/");
 
@@ -125,9 +125,9 @@ describe.only("init", () => {
 
     const newName = "newName";
 
-    const newDir = `${stub.uuid}-${newName}`;
+    const newDir = `${stub.mind}-${newName}`;
 
-    await init(stub.uuid, newName);
+    await init(stub.mind, newName);
 
     const listing = await fs.promises.readdir("/");
 
@@ -151,12 +151,12 @@ describe("clone", () => {
 
     // try to clone
     await expect(
-      clone(stub.uuid, stub.name, { url: stub.url, token: stub.token }),
+      clone(stub.mind, stub.name, { url: stub.url, token: stub.token }),
     ).rejects.toThrowError();
   });
 
   test("calls git.clone", async () => {
-    await clone(stub.uuid, stub.name, { url: stub.url, token: stub.token });
+    await clone(stub.mind, stub.name, { url: stub.url, token: stub.token });
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -195,14 +195,14 @@ describe("commit", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws when no repo", async () => {
-    await expect(commit(stub.uuid)).rejects.toThrowError();
+  test("throws when no mind", async () => {
+    await expect(commit(stub.mind)).rejects.toThrowError();
   });
 
   test("adds", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
     expect(git.statusMatrix).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -240,26 +240,26 @@ describe("getOrigin", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws when no repo", async () => {
-    await expect(getOrigin(stub.uuid)).rejects.toThrowError();
+  test("throws when no mind", async () => {
+    await expect(getOrigin(stub.mind)).rejects.toThrowError();
   });
 
   test("throws when remote undefined", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await expect(getOrigin(stub.uuid)).rejects.toThrowError();
+    await expect(getOrigin(stub.mind)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
-    const [remoteUrl, remoteToken] = await getOrigin(stub.uuid);
+    const [remoteUrl, remoteToken] = await getOrigin(stub.mind);
 
     expect(git.getConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -291,18 +291,18 @@ describe("setOrigin", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws when no repo", async () => {
+  test("throws when no mind", async () => {
     await expect(
-      setOrigin(stub.uuid, stub.url, stub.token),
+      setOrigin(stub.mind, stub.url, stub.token),
     ).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
     expect(git.addRemote).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -332,26 +332,26 @@ describe("pull", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(pull(stub.uuid)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(pull(stub.mind)).rejects.toThrowError();
   });
 
   test("throws if remote is undefined", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await expect(pull(stub.uuid)).rejects.toThrowError();
+    await expect(pull(stub.mind)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
-    await pull(stub.uuid);
+    await pull(stub.mind);
 
     expect(git.fastForward).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -374,26 +374,26 @@ describe("push", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(push(stub.uuid)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(push(stub.mind)).rejects.toThrowError();
   });
 
   test("throws if remote is undefined", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await expect(push(stub.uuid)).rejects.toThrowError();
+    await expect(push(stub.mind)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
-    await push(stub.uuid);
+    await push(stub.mind);
 
     expect(git.push).toHaveBeenCalledWith(
       expect.objectContaining({

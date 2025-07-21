@@ -1,21 +1,37 @@
 import csvs from "@fetsorn/csvs-js";
 import { fs } from "@/api/browser/lightningfs.js";
-import { findDir } from "@/api/browser/io.js";
+import { findMind } from "@/api/browser/io.js";
 
-export async function select(uuid, query) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name select
+ * @function
+ * @param {String} mind -
+ * @param {object} query -
+ * @returns {Object[]}
+ */
+export async function select(mind, query) {
+  const dir = await findMind(mind);
 
-  const overview = await csvs.selectRecord({
+  const records = await csvs.selectRecord({
     fs,
     dir,
     query,
   });
 
-  return overview;
+  return records;
 }
 
-export async function selectStream(uuid, query) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name selectStream
+ * @function
+ * @param {String} mind -
+ * @param {object} query -
+ * @returns {object}
+ */
+export async function selectStream(mind, query) {
+  const dir = await findMind(mind);
 
   // TODO terminate previous stream
   const selectStream = csvs.selectRecordStream({
@@ -39,8 +55,15 @@ export async function selectStream(uuid, query) {
   return { strm, closeHandler };
 }
 
-export async function updateRecord(uuid, record) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name updateRecord
+ * @function
+ * @param {String} mind -
+ * @param {object} record -
+ */
+export async function updateRecord(mind, record) {
+  const dir = await findMind(mind);
 
   await csvs.updateRecord({
     fs,
@@ -49,8 +72,15 @@ export async function updateRecord(uuid, record) {
   });
 }
 
-export async function deleteRecord(uuid, record) {
-  const dir = await findDir(uuid);
+/**
+ * This
+ * @name deleteRecord
+ * @function
+ * @param {String} mind -
+ * @param {object} record -
+ */
+export async function deleteRecord(mind, record) {
+  const dir = await findMind(mind);
 
   await csvs.deleteRecord({
     fs,

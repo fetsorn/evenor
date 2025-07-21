@@ -6,7 +6,7 @@ import {
   onRecordSave,
   onRecordWipe,
   onRecordCreate,
-  onRepoChange,
+  onMindChange,
   onSearch,
   setSpoilerOpen,
   getSpoilerOpen,
@@ -14,8 +14,8 @@ import {
   getFilterOptions,
   getSortedRecords,
   onClone,
-  onPullRepo,
-  onPushRepo,
+  onPull,
+  onPush,
 } from "./store.js";
 
 export {
@@ -25,7 +25,7 @@ export {
   onRecordSave,
   onRecordWipe,
   onRecordCreate,
-  onRepoChange,
+  onMindChange,
   onSearch,
   setSpoilerOpen,
   getSpoilerOpen,
@@ -34,8 +34,8 @@ export {
   getSortedRecords,
   onZip,
   onClone,
-  onPullRepo,
-  onPushRepo,
+  onPull,
+  onPush,
 };
 
 export default {
@@ -45,7 +45,7 @@ export default {
   onRecordSave,
   onRecordWipe,
   onRecordCreate,
-  onRepoChange,
+  onMindChange,
   onSearch,
   setSpoilerOpen,
   getSpoilerOpen,
@@ -54,6 +54,6 @@ export default {
   getSortedRecords,
   onZip,
   onClone,
-  onPullRepo,
-  onPushRepo,
+  onPull,
+  onPush,
 };

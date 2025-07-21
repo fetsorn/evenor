@@ -16,25 +16,25 @@ vi.mock("@/store/index.js", async (importOriginal) => {
 });
 
 test("profile value", async () => {
-  const record = { _: "repo", repo: "uuid" };
+  const record = { _: "mind", mind: "mind" };
 
   setStore("record", record);
 
-  const path = ["record", "repo"];
+  const path = ["record", "mind"];
 
   const { getByText, getByRole } = render(() => (
-    <ProfileValue value={store.record.repo} branch="repo" path={path} />
+    <ProfileValue value={store.record.mind} branch="mind" path={path} />
   ));
 
   const input = getByRole("textbox");
 
-  expect(input).toHaveTextContent("uuid");
+  expect(input).toHaveTextContent("mind");
 
   input.focus();
 
   await userEvent.keyboard("a");
 
-  expect(onRecordEdit).toHaveBeenCalledWith(path, "auuid");
+  expect(onRecordEdit).toHaveBeenCalledWith(path, "amind");
 
-  expect(store.record.repo).toBe("auuid");
+  expect(store.record.mind).toBe("amind");
 });

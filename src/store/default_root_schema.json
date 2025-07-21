@@ -1,8 +1,8 @@
 {
-  "repo": {
+  "mind": {
     "trunks": [],
     "leaves": [
-      "reponame",
+      "name",
       "category",
       "branch",
       "local_tag",
@@ -10,28 +10,28 @@
       "sync_tag"
     ],
     "description": {
-      "en": "Dataset",
+      "en": "mind",
       "ru": "Проект"
     }
   },
-  "reponame": {
-    "trunks": ["repo"],
+  "name": {
+    "trunks": ["mind"],
     "leaves": [],
     "description": {
-      "en": "Name of the dataset",
+      "en": "Name of the mind",
       "ru": "Название проекта"
     }
   },
   "category": {
-    "trunks": ["repo"],
+    "trunks": ["mind"],
     "leaves": [],
     "description": {
-      "en": "Category of the dataset",
+      "en": "Category of the mind",
       "ru": "Категория проекта"
     }
   },
   "branch": {
-    "trunks": ["repo"],
+    "trunks": ["mind"],
     "leaves": ["trunk", "task", "cognate", "description_en", "description_ru"],
     "description": {
       "en": "Branch name",
@@ -79,7 +79,7 @@
     }
   },
   "local_tag": {
-    "trunks": ["repo"],
+    "trunks": ["mind"],
     "leaves": [],
     "task": "directory",
     "description": {
@@ -88,12 +88,12 @@
     }
   },
   "origin_url": {
-    "trunks": ["repo"],
+    "trunks": ["mind"],
     "leaves": ["origin_token"],
     "task": "remote",
     "description": {
-      "en": "URL to git repository",
-      "ru": "Путь к git репозиторию"
+      "en": "URL to remote git repository",
+      "ru": "Путь к удалённому git репозиторию"
     }
   },
   "origin_token": {
@@ -105,7 +105,7 @@
     }
   },
   "sync_tag": {
-    "trunks": ["repo"],
+    "trunks": ["mind"],
     "leaves": ["sync_tag_search"],
     "task": "sync",
     "description": {

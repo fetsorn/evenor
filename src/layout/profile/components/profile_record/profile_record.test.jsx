@@ -20,7 +20,7 @@ describe("ProfileRecord", () => {
 
     const branch = "branch";
 
-    const baseRecord = { _: "repo", repo: "uuid" };
+    const baseRecord = { _: "mind", mind: "mind" };
 
     setStore("record", baseRecord);
 
@@ -37,7 +37,7 @@ describe("ProfileRecord", () => {
     //const input = getByRole("textbox");
 
     //// render an input with value
-    //expect(input).toHaveTextContent("uuid");
+    //expect(input).toHaveTextContent("id");
 
     await userEvent.click(getByText("add..."));
 
@@ -54,8 +54,8 @@ describe("ProfileRecord", () => {
     );
 
     expect(store.record).toEqual({
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [
         {
           _: "branch",
@@ -71,8 +71,8 @@ describe("ProfileRecord", () => {
     const branch = "branch";
 
     const baseRecord = {
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [
         {
           _: "branch",
@@ -103,8 +103,8 @@ describe("ProfileRecord", () => {
     });
 
     expect(store.record).toEqual({
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [
         {
           _: "branch",
@@ -129,8 +129,8 @@ describe("ProfileRecord", () => {
     };
 
     const baseRecord = {
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [item],
     };
 
@@ -165,8 +165,8 @@ describe("ProfileRecord", () => {
     );
 
     expect(store.record).toEqual({
-      _: "repo",
-      repo: "uuid",
+      _: "mind",
+      mind: "mind",
       branch: [
         {
           _: "branch",

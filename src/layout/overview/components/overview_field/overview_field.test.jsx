@@ -10,7 +10,7 @@ describe("OverviewField", () => {
 
     const branch = "branch";
 
-    const baseRecord = { _: "repo", repo: "uuid" };
+    const baseRecord = { _: "mind", mind: "mind" };
 
     const items = [];
 
@@ -32,7 +32,7 @@ describe("OverviewField", () => {
 
     const items = [item];
 
-    const baseRecord = { _: "repo", repo: "uuid", branch: items };
+    const baseRecord = { _: "mind", mind: "mind", branch: items };
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

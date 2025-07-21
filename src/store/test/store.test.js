@@ -10,13 +10,13 @@ import {
   onRecordSave,
   onRecordWipe,
   onSearch,
-  onRepoChange,
+  onMindChange,
   appendRecord,
   getSpoilerOpen,
   setSpoilerOpen,
 } from "@/store/store.js";
 import { createRecord } from "@/store/impure.js";
-import { saveRecord, wipeRecord, changeRepo, search } from "@/store/action.js";
+import { saveRecord, wipeRecord, changeMind, search } from "@/store/action.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 vi.mock("@/store/action.js", async (importOriginal) => {
@@ -26,7 +26,7 @@ vi.mock("@/store/action.js", async (importOriginal) => {
     ...mod,
     saveRecord: vi.fn(),
     wipeRecord: vi.fn(),
-    changeRepo: vi.fn(),
+    changeMind: vi.fn(),
     search: vi.fn(),
   };
 });
@@ -48,8 +48,8 @@ describe("store", () => {
 
     setStore({
       abortPreviousStream: () => {},
-      searchParams: new URLSearchParams("_=repo"),
-      repo: { _: "repo", repo: "root" },
+      searchParams: new URLSearchParams("_=mind"),
+      mind: { _: "mind", mind: "root" },
       schema: schemaRoot,
       record: undefined,
       records: [],
@@ -70,7 +70,7 @@ describe("store", () => {
 
       await onRecordCreate();
 
-      expect(createRecord).toHaveBeenCalledWith("root", "repo");
+      expect(createRecord).toHaveBeenCalledWith("root", "mind");
 
       expect(store.record).toStrictEqual(1);
     });
@@ -82,7 +82,7 @@ describe("store", () => {
 
       await onRecordSave({}, {});
 
-      expect(saveRecord).toHaveBeenCalledWith("root", "repo", [], {}, {});
+      expect(saveRecord).toHaveBeenCalledWith("root", "mind", [], {}, {});
 
       expect(store.records).toStrictEqual(1);
     });
@@ -94,7 +94,7 @@ describe("store", () => {
 
       await onRecordWipe({});
 
-      expect(wipeRecord).toHaveBeenCalledWith("root", "repo", [], {});
+      expect(wipeRecord).toHaveBeenCalledWith("root", "mind", [], {});
 
       expect(store.records).toStrictEqual(1);
     });
@@ -128,7 +128,7 @@ describe("store", () => {
 
       expect(search).toHaveBeenCalledWith(
         schemaRoot,
-        new URLSearchParams("_=repo"),
+        new URLSearchParams("_=mind"),
         "root",
         undefined,
         field,
@@ -144,12 +144,12 @@ describe("store", () => {
     });
   });
 
-  describe("onRepoChange", () => {
+  describe("onMindChange", () => {
     test("", async () => {
-      const repo = { _: "uuid", repo: "uuid", reponame: "reponame" };
+      const mind = { _: "mind", mind: "id", name: "name" };
 
-      changeRepo.mockImplementation(async () => ({
-        repo: repo,
+      changeMind.mockImplementation(async () => ({
+        mind: mind,
         schema: 2,
         searchParams: 3,
       }));
@@ -160,9 +160,9 @@ describe("store", () => {
         startStream: () => {},
       }));
 
-      await onRepoChange("/", "_=repo");
+      await onMindChange("/", "_=mind");
 
-      expect(store.repo).toStrictEqual(repo);
+      expect(store.mind).toStrictEqual(mind);
 
       expect(store.schema).toStrictEqual(2);
 
@@ -171,8 +171,8 @@ describe("store", () => {
       expect(search).toHaveBeenCalledWith(
         2,
         3,
-        "uuid",
-        "reponame",
+        "id",
+        "name",
         "",
         undefined,
         appendRecord,
@@ -204,30 +204,30 @@ describe("store", () => {
 
   describe("getSortedRecords", () => {
     test("sorts descending", async () => {
-      const record1 = { _: "repo", repo: "uuid1" };
+      const record1 = { _: "mind", mind: "id1" };
 
-      const record2 = { _: "repo", repo: "uuid2" };
+      const record2 = { _: "mind", mind: "id2" };
 
       setStore("records", [record1, record2]);
 
       setStore(
         "searchParams",
-        new URLSearchParams(".sortBy=repo&.sortDirection=first"),
+        new URLSearchParams(".sortBy=mind&.sortDirection=first"),
       );
 
       expect(getSortedRecords()[0]).toStrictEqual(record1);
     });
 
     test("sorts ascending", async () => {
-      const record1 = { _: "repo", repo: "uuid1" };
+      const record1 = { _: "mind", mind: "id1" };
 
-      const record2 = { _: "repo", repo: "uuid2" };
+      const record2 = { _: "mind", mind: "id2" };
 
       setStore("records", [record1, record2]);
 
       setStore(
         "searchParams",
-        new URLSearchParams(".sortBy=repo&.sortDirection=last"),
+        new URLSearchParams(".sortBy=mind&.sortDirection=last"),
       );
 
       expect(getSortedRecords()[0]).toStrictEqual(record2);
@@ -236,20 +236,20 @@ describe("store", () => {
 
   describe("getFilterQueries", () => {
     test("", async () => {
-      expect(getFilterQueries()).toStrictEqual([["_", "repo"]]);
+      expect(getFilterQueries()).toStrictEqual([["_", "mind"]]);
     });
   });
 
   describe("getFilterOptions", () => {
     test("", async () => {
       expect(getFilterOptions()).toStrictEqual([
-        "reponame",
+        "name",
         "category",
         "branch",
         "local_tag",
         "origin_url",
         "sync_tag",
-        "repo",
+        "mind",
         "__",
       ]);
     });

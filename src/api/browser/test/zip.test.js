@@ -58,7 +58,7 @@ describe("zip", () => {
 
     await fs.promises.writeFile(stub.filepath, stub.content);
 
-    await zip(stub.uuid);
+    await zip(stub.mind);
 
     await expect(saveAs).toHaveBeenCalledWith(new Blob(), "archive.zip");
   });

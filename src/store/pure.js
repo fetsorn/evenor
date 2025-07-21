@@ -29,7 +29,16 @@ export function queryToSearchParams(query) {
   return searchParams;
 }
 
-// make sure record has trunk and all trunks of trunk until root
+/**
+ * This makes sure record has trunk and all trunks of trunk until root
+ * @name ensureTrunk
+ * @function
+ * @param {object} schema -
+ * @param {object} record -
+ * @param {String} trunk -
+ * @param {String} leaf -
+ * @returns {object}
+ */
 export function ensureTrunk(schema, record, trunk, leaf) {
   if (!Object.hasOwn(record, "_")) throw Error("record has no base");
 
@@ -70,7 +79,7 @@ export function ensureTrunk(schema, record, trunk, leaf) {
  * This returns a csvs query from a query string
  * @name searchParamsToQuery
  * @export function
- * @param {Object} schema - dataset schema.
+ * @param {Object} schema - mind schema.
  * @param {URLSearchParams} searchParams - search params from a query string.
  * @returns {Object}
  */
@@ -134,7 +143,14 @@ export function searchParamsToQuery(schema, searchParams) {
   return query;
 }
 
-// add trunk field from schema record to branch records
+/**
+ * This adds trunk field from schema record to branch records
+ * @name enrichBranchRecords
+ * @function
+ * @param {object} schemaRecord -
+ * @param {object[]} metaRecords -
+ * @returns {object[]}
+ */
 export function enrichBranchRecords(schemaRecord, metaRecords) {
   // [[branch1, [branch2]]]
   const schemaRelations = Object.entries(schemaRecord).filter(
@@ -191,7 +207,13 @@ export function enrichBranchRecords(schemaRecord, metaRecords) {
   return branchRecords;
 }
 
-// extract schema record with trunks from branch records
+/**
+ * This extracts schema record with trunks from branch records
+ * @name extractSchemaRecords
+ * @function
+ * @param {object} branchRecords -
+ * @returns {object[]}
+ */
 export function extractSchemaRecords(branchRecords) {
   const records = branchRecords.reduce(
     (withBranch, branchRecord) => {
@@ -220,7 +242,13 @@ export function extractSchemaRecords(branchRecords) {
   return [records.schemaRecord, ...records.metaRecords];
 }
 
-// convert schema to schema record and branch records
+/**
+ * This converts schema to schema record and branch records
+ * @name schemaToBranchRecords
+ * @function
+ * @param {object} schema -
+ * @returns {object}
+ */
 export function schemaToBranchRecords(schema) {
   const records = Object.entries(schema).reduce(
     (withEntry, [branch, { leaves, task, cognate, description }]) => {
@@ -268,6 +296,14 @@ export function schemaToBranchRecords(schema) {
   return [records.schemaRecord, ...records.metaRecords];
 }
 
+/**
+ * This
+ * @name recordsToSchema
+ * @function
+ * @param {object} schemaRecord -
+ * @param {object[]} metaRecords -
+ * @returns {object}
+ */
 export function recordsToSchema(schemaRecord, metaRecords) {
   // [[branch1, [branch2]]]
   const schemaRelations = Object.entries(schemaRecord).filter(
@@ -330,6 +366,15 @@ export function recordsToSchema(schemaRecord, metaRecords) {
   return schema;
 }
 
+/**
+ * This
+ * @name changeSearchParams
+ * @function
+ * @param {SearchParams} searchParams -
+ * @param {String} field -
+ * @param {String} value -
+ * @returns {SearchParams}
+ */
 export function changeSearchParams(searchParams, field, value) {
   // if query field is undefined, delete searchParams
   if (field === undefined) {
@@ -358,12 +403,21 @@ export function changeSearchParams(searchParams, field, value) {
   return searchParams;
 }
 
-export function makeURL(searchParams, sortBy, repoUUID) {
+/**
+ * This
+ * @name makeURL
+ * @function
+ * @param {SearchParams} searchParams -
+ * @param {String} sortBy -
+ * @param {String} mind -
+ * @returns {String}
+ */
+export function makeURL(searchParams, sortBy, mind) {
   if (sortBy) {
     searchParams.set(".sortBy", sortBy);
   }
 
-  const pathname = repoUUID === "root" ? "#" : `#/${repoUUID}`;
+  const pathname = mind === "root" ? "#" : `#/${mind}`;
 
   const queryString = searchParams.toString();
 
@@ -372,7 +426,13 @@ export function makeURL(searchParams, sortBy, repoUUID) {
   return url;
 }
 
-// pick default base from a root branch of schema
+/**
+ * This picks default base from a root branch of schema
+ * @name pickDefaultBase
+ * @function
+ * @param {object} schema -
+ * @returns {String}
+ */
 export function pickDefaultBase(schema) {
   if (Object.keys(schema) === 0) throw Error("schema empty");
 
@@ -385,7 +445,14 @@ export function pickDefaultBase(schema) {
   return base;
 }
 
-// pick default sortBy from task === "date" of schema
+/**
+ * This picks default sortBy from task === "date" of schema
+ * @name pickDefaultSortBy
+ * @function
+ * @param {object} schema -
+ * @param {String} base -
+ * @returns {String}
+ */
 export function pickDefaultSortBy(schema, base) {
   if (!Object.hasOwn(schema, base)) throw Error("schema does not have base");
 
@@ -396,7 +463,14 @@ export function pickDefaultSortBy(schema, base) {
   return sortBy;
 }
 
-// find first available string value for sorting
+/**
+ * This finds first available string value for sorting
+ * @name findFirstSortBy
+ * @function
+ * @param {object} branch -
+ * @param {String} value -
+ * @returns {String}
+ */
 export function findFirstSortBy(branch, value) {
   // if array, take first item
   const car = Array.isArray(value) ? value[0] : value;
@@ -405,7 +479,7 @@ export function findFirstSortBy(branch, value) {
   const key = typeof car === "object" ? car[branch] : car;
 
   // if undefined, return empty string
-  const id = key === undefined ? "" : key;
+  const sortBy = key === undefined ? "" : key;
 
-  return id;
+  return sortBy;
 }

@@ -35,11 +35,11 @@ export async function edit() {
   await click(await $("aria/edit"));
 }
 
-export async function newRepo() {
+export async function newMind() {
   await make();
 
-  // input reponame in profile
-  await setValue(await $("aria/reponame -"), "foobar");
+  // input name in profile
+  await setValue(await $("aria/name -"), "foobar");
 
   await save();
 }
@@ -68,11 +68,11 @@ export async function close() {
 export async function clone() {
   await make();
 
-  // input reponame in profile
-  await setValue(await $("aria/reponame -"), "foobar");
+  // input name in profile
+  await setValue(await $("aria/name -"), "foobar");
 
   // add
-  await click(await $("aria/repo -").nextElement().nextElement());
+  await click(await $("aria/mind -").nextElement().nextElement());
 
   // click button "add remote"
   await click(await $("aria/origin_tag"));
@@ -103,7 +103,7 @@ export async function clone() {
   // git-http-mock-server
   await setValue(
     await $("aria/remote_url -"),
-    "http://localhost:8174/test-repo1.git",
+    "http://localhost:8174/test-mind1.git",
   );
 
   await click(await $("aria/clone..."));
@@ -133,7 +133,7 @@ export async function pull() {
 
   await setValue(
     await $("aria/remote_url -"),
-    "http://localhost:8174/test-repo2.git",
+    "http://localhost:8174/test-mind2.git",
   );
 
   await click(await $("aria/pull"));
@@ -158,7 +158,7 @@ export async function push() {
 
   await setValue(
     await $("aria/remote_url -"),
-    "http://localhost:8174/test-repo1.git",
+    "http://localhost:8174/test-mind1.git",
   );
 
   await click(await $("aria/push"));

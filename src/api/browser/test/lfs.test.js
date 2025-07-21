@@ -82,16 +82,16 @@ describe("createLFS", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(createLFS(stub.uuid)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(createLFS(stub.mind)).rejects.toThrowError();
   });
 
   test("writes git config", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await createLFS(stub.uuid);
+    await createLFS(stub.mind);
 
     // writes .gitattributes
     const gitattributes = await fs.promises.readFile(
@@ -156,22 +156,22 @@ describe("putAsset", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
+  test("throws if no mind", async () => {
     await expect(
-      putAsset(stub.uuid, stub.filename, stub.content),
+      putAsset(stub.mind, stub.filename, stub.content),
     ).rejects.toThrowError();
   });
 
   test("calls io", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
     const filepath = `${lfsDir}/${stub.filename}`;
 
-    await putAsset(stub.uuid, stub.filename, stub.content);
+    await putAsset(stub.mind, stub.filename, stub.content);
 
-    expect(writeFile).toHaveBeenCalledWith(stub.uuid, filepath, stub.content);
+    expect(writeFile).toHaveBeenCalledWith(stub.mind, filepath, stub.content);
   });
 });
 
@@ -191,16 +191,16 @@ describe("setAssetPath", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(setAssetPath(stub.uuid, stub.dirpath)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(setAssetPath(stub.mind, stub.dirpath)).rejects.toThrowError();
   });
 
   test("setAssetPath", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setAssetPath(stub.uuid, stub.dirpath);
+    await setAssetPath(stub.mind, stub.dirpath);
 
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -222,16 +222,16 @@ describe("getAssetPath", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(getAssetPath(stub.uuid)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(getAssetPath(stub.mind)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await getAssetPath(stub.uuid, stub.dirpath);
+    await getAssetPath(stub.mind, stub.dirpath);
 
     expect(git.getConfigAll).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -242,13 +242,13 @@ describe("getAssetPath", () => {
   });
 
   test("reads asset path", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setAssetPath(stub.uuid, stub.dirpath);
+    await setAssetPath(stub.mind, stub.dirpath);
 
-    const listing = await getAssetPath(stub.uuid, stub.dirpath);
+    const listing = await getAssetPath(stub.mind, stub.dirpath);
 
     expect(listing).toEqual([stub.dirpath]);
   });
@@ -279,16 +279,16 @@ describe("fetchAsset", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(fetchAsset(stub.uuid, stub.filename)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(fetchAsset(stub.mind, stub.filename)).rejects.toThrowError();
   });
 
   test("fetches a blob from pointer", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 
@@ -297,12 +297,12 @@ describe("fetchAsset", () => {
       stub.content,
     );
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
     // always assume it's a pointer and try to fetch
     lfs.pointsToLFS.mockImplementation(() => true);
 
-    const content = await fetchAsset(stub.uuid, stub.filename);
+    const content = await fetchAsset(stub.mind, stub.filename);
 
     expect(lfs.downloadBlobFromPointer).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -329,23 +329,23 @@ describe("uploadBlobsLFS", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
+  test("throws if no mind", async () => {
     await expect(
-      uploadBlobsLFS(stub.uuid, stub.remote, []),
+      uploadBlobsLFS(stub.mind, stub.remote, []),
     ).rejects.toThrowError();
   });
 
   test("uploads files from parameters", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
     // clear call history
     lfs.uploadBlobs.mockReset();
 
-    await uploadBlobsLFS(stub.uuid, stub.url, stub.token, [""]);
+    await uploadBlobsLFS(stub.mind, stub.url, stub.token, [""]);
 
     expect(lfs.uploadBlobs).toHaveBeenCalledWith(
       {
@@ -360,11 +360,11 @@ describe("uploadBlobsLFS", () => {
   });
 
   test("uploads files from asset path", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
-    await setOrigin(stub.uuid, stub.url, stub.token);
+    await setOrigin(stub.mind, stub.url, stub.token);
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 
@@ -383,7 +383,7 @@ describe("uploadBlobsLFS", () => {
         : true;
     });
 
-    await uploadBlobsLFS(stub.uuid, stub.url, stub.token, undefined);
+    await uploadBlobsLFS(stub.mind, stub.url, stub.token, undefined);
 
     expect(lfs.uploadBlobs).toHaveBeenCalledWith(
       {
@@ -408,20 +408,20 @@ describe("uploadFile", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
+  test("throws if no mind", async () => {
     await expect(
-      uploadBlobsLFS(stub.uuid, stub.remote, []),
+      uploadBlobsLFS(stub.mind, stub.remote, []),
     ).rejects.toThrowError();
   });
 
   test("uploads a file", async () => {
-    await init(stub.uuid, stub.name);
+    await init(stub.mind, stub.name);
 
-    await commit(stub.uuid);
+    await commit(stub.mind);
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 
-    const metadata = await uploadFile(stub.uuid);
+    const metadata = await uploadFile(stub.mind);
 
     expect(metadata).toEqual([
       {

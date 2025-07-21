@@ -1,6 +1,6 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import {
-  findDir,
+  findMind,
   fetchFile,
   readFile,
   writeFile,
@@ -11,7 +11,7 @@ import {
 import { fs } from "@/api/browser/lightningfs.js";
 import stub from "./stub.js";
 
-describe("findDir", () => {
+describe("findMind", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });
@@ -21,14 +21,14 @@ describe("findDir", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo is found", async () => {
-    await expect(findDir(stub.uuid)).rejects.toThrowError();
+  test("throws if no mind is found", async () => {
+    await expect(findMind(stub.mind)).rejects.toThrowError();
   });
 
   test("finds the directory", async () => {
     await fs.promises.mkdir(stub.dirpath);
 
-    const dir = await findDir(stub.uuid);
+    const dir = await findMind(stub.mind);
 
     expect(dir).toBe(stub.dirpath);
   });
@@ -44,8 +44,8 @@ describe("fetchFile", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(fetchFile(stub.uuid, stub.filename)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(fetchFile(stub.mind, stub.filename)).rejects.toThrowError();
   });
 
   test("reads file", async () => {
@@ -53,9 +53,9 @@ describe("fetchFile", () => {
 
     await fs.promises.writeFile(stub.filepath, stub.content);
 
-    const content = await fetchFile(stub.uuid, stub.filename);
+    const content = await fetchFile(stub.mind, stub.filename);
 
-    // stringify to get rid of prototype methods on Uint8Array
+    // stringify to get rmind of prototype methods on Uint8Array
     expect(JSON.stringify(content)).toEqual(JSON.stringify(stub.encoded));
   });
 
@@ -74,9 +74,9 @@ describe("fetchFile", () => {
 
     await fs.promises.writeFile(absoluteFile, stub.content);
 
-    const content = await fetchFile(stub.uuid, relativeFile);
+    const content = await fetchFile(stub.mind, relativeFile);
 
-    // stringify to get rid of prototype methods on Uint8Array
+    // stringify to get rmind of prototype methods on Uint8Array
     expect(JSON.stringify(content)).toEqual(JSON.stringify(stub.encoded));
   });
 });
@@ -91,8 +91,8 @@ describe("readFile", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
-    await expect(readFile(stub.uuid, stub.filename)).rejects.toThrowError();
+  test("throws if no mind", async () => {
+    await expect(readFile(stub.mind, stub.filename)).rejects.toThrowError();
   });
 
   test("reads file", async () => {
@@ -100,7 +100,7 @@ describe("readFile", () => {
 
     await fs.promises.writeFile(stub.filepath, stub.content);
 
-    const content = await readFile(stub.uuid, stub.filename);
+    const content = await readFile(stub.mind, stub.filename);
 
     expect(content).toEqual(stub.content);
   });
@@ -120,7 +120,7 @@ describe("readFile", () => {
 
     await fs.promises.writeFile(absoluteFile, stub.content);
 
-    const content = await readFile(stub.uuid, relativeFile);
+    const content = await readFile(stub.mind, relativeFile);
 
     expect(content).toEqual(stub.content);
   });
@@ -136,16 +136,16 @@ describe("writeFile", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if no repo", async () => {
+  test("throws if no mind", async () => {
     await expect(
-      writeFile(stub.uuid, stub.filename, stub.content),
+      writeFile(stub.mind, stub.filename, stub.content),
     ).rejects.toThrowError();
   });
 
   test("writes file", async () => {
     await fs.promises.mkdir(stub.dirpath);
 
-    await writeFile(stub.uuid, stub.filename, stub.content);
+    await writeFile(stub.mind, stub.filename, stub.content);
 
     const content = await fs.promises.readFile(stub.filepath, "utf8");
 
@@ -165,7 +165,7 @@ describe("writeFile", () => {
 
     const relativeFile = `${relativeDir}/${stub.filename}`;
 
-    await writeFile(stub.uuid, relativeFile, stub.content);
+    await writeFile(stub.mind, relativeFile, stub.content);
 
     const content = await fs.promises.readFile(absoluteFile, "utf8");
 

@@ -67,7 +67,7 @@ export async function changeMind(pathname, searchString) {
 
   const token = searchParams.get("-") ?? "";
 
-  const { mind, schema } = searchParams.has("~")
+  const { mind: mindPartial, schema } = searchParams.has("~")
     ? await clone(undefined, undefined, remoteUrl, token)
     : await find(mind, undefined);
 
@@ -83,7 +83,7 @@ export async function changeMind(pathname, searchString) {
   }
 
   return {
-    mind,
+    mind: mindPartial,
     schema,
     searchParams,
   };

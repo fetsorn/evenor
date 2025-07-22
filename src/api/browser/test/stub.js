@@ -10,7 +10,7 @@ export const query = { a: "b" };
 
 export const entry = { c: "d" };
 
-export const overview = [entry];
+export const records = [entry];
 
 export const url = "e";
 
@@ -42,7 +42,7 @@ export default {
   dirpath,
   query,
   entry,
-  overview,
+  records,
   url,
   token,
   content,

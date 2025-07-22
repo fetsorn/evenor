@@ -29,11 +29,11 @@ export async function find(mind, name) {
   };
 
   // find mind in root folder
-  const [mind] = await api.select("root", query);
+  const [mindRecord] = await api.select("root", query);
 
   const schema = await readSchema(mind.mind);
 
-  return { mind, schema };
+  return { mind: mindRecord, schema };
 }
 
 /**

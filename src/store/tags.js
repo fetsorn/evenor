@@ -8,17 +8,21 @@ import api from "@/api/index.js";
  * @returns {object[]}
  */
 export async function readRemoteTags(mind) {
-  const { url: originUrl, token: originToken } = await api.getOrigin(mind);
+  try {
+    const { url: originUrl, token: originToken } = await api.getOrigin(mind);
 
-  const partialToken = originToken ? { origin_token: originToken } : {};
+    const partialToken = originToken ? { origin_token: originToken } : {};
 
-  return [
-    {
-      _: "origin_url",
-      origin_url: originUrl,
-      ...partialToken,
-    },
-  ];
+    return [
+      {
+        _: "origin_url",
+        origin_url: originUrl,
+        ...partialToken,
+      },
+    ];
+  } catch {
+    return [];
+  }
 }
 
 /**
@@ -29,14 +33,18 @@ export async function readRemoteTags(mind) {
  * @returns {object}
  */
 export async function readLocalTags(mind) {
-  const local = await api.getAssetPath(mind);
+  try {
+    const local = await api.getAssetPath(mind);
 
-  const localTag = {
-    _: "local_tag",
-    local_tag: local,
-  };
+    const localTag = {
+      _: "local_tag",
+      local_tag: local,
+    };
 
-  return [localTag];
+    return [localTag];
+  } catch {
+    return [];
+  }
 }
 
 /**
@@ -48,6 +56,8 @@ export async function readLocalTags(mind) {
  * @returns {object}
  */
 export async function writeRemoteTags(mind, originUrls) {
+  if (originUrls === undefined) return;
+
   const originUrl = Array.isArray(originUrls) ? originUrls[0] : originUrls;
 
   const url = Array.isArray(originUrl.origin_url)

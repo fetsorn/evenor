@@ -24,7 +24,7 @@ describe("FilterDirection", () => {
     await userEvent.click(first);
 
     expect(store.searchParams.toString()).toEqual(
-      new URLSearchParams(".sortDirection=last&.sortBy=last").toString(),
+      new URLSearchParams(".sortDirection=last").toString(),
     );
   });
 
@@ -42,7 +42,7 @@ describe("FilterDirection", () => {
     await userEvent.click(last);
 
     expect(store.searchParams.toString()).toEqual(
-      new URLSearchParams(".sortDirection=first&.sortBy=first").toString(),
+      new URLSearchParams(".sortDirection=first").toString(),
     );
   });
 });

@@ -10,22 +10,18 @@ export function Overview(props) {
 
   let parentRef;
 
-  //const records = () => getSortedRecords();
-
   const virtualizer = () =>
     createVirtualizer({
       get count() {
+        // here just to trigger recount on sort change
+        const searchParams = store.searchParams;
+
         return store.records.length;
       },
       getScrollElement: () => parentRef,
       estimateSize: () => 35,
       overscan: 5,
     });
-
-  // must be here in a const, breaks when inside of templates
-  const virtualItems = virtualizer().getVirtualItems();
-
-  const totalSize = virtualizer().getTotalSize();
 
   return (
     <div ref={parentRef} className={styles.overview}>
@@ -34,11 +30,16 @@ export function Overview(props) {
       <div
         className={styles.foo}
         style={{
-          height: `${totalSize}px`,
+          height: `${virtualizer().getTotalSize()}px`,
         }}
       >
         <For
-          each={virtualItems}
+          each={(() => {
+            // here just to trigger render on sort change
+            const searchParams = store.searchParams;
+
+            return virtualizer().getVirtualItems();
+          })()}
           fallback={
             <span>press "new" in the top right corner to add entries</span>
           }
@@ -63,7 +64,7 @@ export function Overview(props) {
               >
                 <OverviewItem
                   index={virtualRow.key}
-                  item={getSortedRecords()[virtualRow.index]}
+                  item={getSortedRecords(virtualRow.index)}
                 />
               </div>
             </div>

@@ -37,7 +37,7 @@ where
 
     let mind_dir = mind.name_mind(name.as_deref())?;
 
-    let repo = Repository::clone(mind_dir, name, &remote).await?;
+    let repo = Repository::clone(mind_dir, &remote).await?;
 
     Ok(())
 }

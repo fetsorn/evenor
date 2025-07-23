@@ -1,10 +1,10 @@
 import { createContext } from "solid-js";
 import { createStore, produce } from "solid-js/store";
-import { createRecord } from "@/store/impure.js";
-import { push, pull } from "@/store/record.js";
+import { createRecord, selectStream } from "@/store/impure.js";
+import { push, pull, createRoot } from "@/store/record.js";
 import { clone } from "@/store/open.js";
-import { saveRecord, wipeRecord, changeMind, search } from "@/store/action.js";
-import { findFirstSortBy } from "@/store/pure.js";
+import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
+import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 export const StoreContext = createContext();
@@ -26,27 +26,14 @@ export const [store, setStore] = createStore({
  * @export function
  * @returns {Function}
  */
-export function getSortedRecords() {
-  return store.records.toSorted((a, b) => {
-    if (store.searchParams === undefined) return 0;
+export function getSortedRecords(index) {
+  const sortBy = store.searchParams.get(".sortBy");
 
-    const sortBy = store.searchParams.get(".sortBy");
+  const sortDirection = store.searchParams.get(".sortDirection");
 
-    const valueA = findFirstSortBy(sortBy, a[sortBy]);
+  const records = store.records.toSorted(sortCallback(sortBy, sortDirection));
 
-    const valueB = findFirstSortBy(sortBy, b[sortBy]);
-
-    const sortDirection = store.searchParams.get(".sortDirection");
-
-    switch (sortDirection) {
-      case "first":
-        return valueA.localeCompare(valueB);
-      case "last":
-        return valueB.localeCompare(valueA);
-      default:
-        return valueA.localeCompare(valueB);
-    }
-  });
+  return records[index];
 }
 
 /**
@@ -202,14 +189,32 @@ export function appendRecord(record) {
  */
 export async function onSearch(field, value) {
   try {
-    const { searchParams, abortPreviousStream, startStream } = await search(
+    // update searchParams
+    const searchParams = changeSearchParams(store.searchParams, field, value);
+
+    const url = makeURL(searchParams, store.mind.mind);
+
+    window.history.replaceState(null, null, url);
+
+    setStore(
+      produce((state) => {
+        state.searchParams = new URLSearchParams();
+      }),
+    );
+
+    setStore(
+      produce((state) => {
+        state.searchParams = searchParams;
+      }),
+    );
+
+    if (field.startsWith(".")) return undefined;
+
+    const { abortPreviousStream, startStream } = await selectStream(
       store.schema,
-      store.searchParams,
       store.mind.mind,
-      store.mind.name,
-      field,
-      value,
       appendRecord,
+      searchParams,
     );
 
     // stop previous stream
@@ -217,7 +222,6 @@ export async function onSearch(field, value) {
 
     setStore(
       produce((state) => {
-        state.searchParams = searchParams;
         // solid store tries to call the function, so pass a factory here
         state.abortPreviousStream = () => abortPreviousStream;
         // erase existing records
@@ -228,7 +232,7 @@ export async function onSearch(field, value) {
     // start appending records
     await startStream();
   } catch (e) {
-    console.log(e);
+    console.error(e);
 
     setStore(
       produce((state) => {
@@ -253,12 +257,20 @@ export async function onMindChange(pathname, searchString) {
   try {
     result = await changeMind(pathname, searchString);
   } catch (e) {
-    console.log(e);
+    console.error(e);
 
     result = await changeMind("/", "_=mind");
   }
 
   // TODO somewhere here in case of error doesn't change url to root
+  setStore(
+    produce((state) => {
+      // erase searchParams to re-render the filter index
+      state.searchParams = new URLSearchParams();
+      // erase records to re-render the overview
+      state.records = [];
+    }),
+  );
 
   const { mind, schema, searchParams } = result;
 
@@ -406,4 +418,14 @@ export async function warp(branch, value, cognate) {
   await onSearch("__", cognate);
 
   await onSearch(store.schema[cognate].trunks[0], value);
+}
+
+/**
+ * This
+ * @name onStartup
+ * @export function
+ * @param {object} record -
+ */
+export async function onStartup() {
+  createRoot();
 }

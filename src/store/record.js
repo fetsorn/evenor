@@ -9,9 +9,9 @@ import {
 } from "@/store/pure.js";
 import {
   readRemoteTags,
-  readLocalTags,
+  //readLocalTags,
   writeRemoteTags,
-  writeLocalTags,
+  //writeLocalTags,
 } from "@/store/tags.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
@@ -138,7 +138,7 @@ export async function saveMindRecord(record) {
 
   await api.init(mind, name);
 
-  await api.createLFS(mind);
+  //await api.createLFS(mind);
 
   // write schema to mind
   await api.updateRecord(mind, schemaRecord);
@@ -151,7 +151,7 @@ export async function saveMindRecord(record) {
   await writeRemoteTags(mind, record.origin_url);
 
   // write locals to .git/config
-  await writeLocalTags(mind, record.local_tag);
+  //await writeLocalTags(mind, record.local_tag);
 
   await api.commit(mind);
 
@@ -184,16 +184,16 @@ export async function loadMindRecord(record) {
   const tagsRemotePartial =
     tagsRemote.length > 0 ? { origin_url: tagsRemote } : {};
 
-  const tagsLocal = await readLocalTags(mind);
+  //const tagsLocal = await readLocalTags(mind);
 
   // get locals
-  const tagsLocalPartial = tagsLocal.length > 0 ? { local_tag: tagsLocal } : {};
+  //const tagsLocalPartial = tagsLocal.length > 0 ? { local_tag: tagsLocal } : {};
 
   const recordNew = {
     ...record,
     ...branchPartial,
     ...tagsRemotePartial,
-    ...tagsLocalPartial,
+    //  ...tagsLocalPartial,
   };
 
   return recordNew;

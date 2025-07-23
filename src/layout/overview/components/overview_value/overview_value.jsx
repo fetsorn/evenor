@@ -31,6 +31,8 @@ export function OverviewValue(props) {
 
   const laterals = [];
 
+  const valueEscaped = props.value.replace("\\n", "\n");
+
   return (
     <>
       <Show
@@ -50,8 +52,7 @@ export function OverviewValue(props) {
           onClick={() => setIsValue(false)}
           style={{ borderBottom: "thin solid" }}
         >
-          {props.value.replace("\\n", "\n")}{" "}
-          {/* TODO remove this unescape after csvs if fixed */}
+          {valueEscaped} {/* TODO remove this unescape after csvs if fixed */}
         </button>
       </Show>
 

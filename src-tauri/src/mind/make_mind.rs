@@ -7,7 +7,21 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
     let mind_dir = mind.name_mind(name)?;
 
     if mind.mind == "root" {
-        create_dir(mind_dir)?;
+        create_dir(&mind_dir)?;
+
+        let repository = Repository::init(&mind_dir)?;
+
+        repository.commit();
+
+        let gitignore_path = mind_dir.join(".gitignore");
+
+        write(&gitignore_path, ".DS_Store")?;
+
+        let csvscsv_path = mind_dir.join(".csvs.csv");
+
+        write(&csvscsv_path, "csvs,0.0.2")?;
+
+        repository.commit();
 
         return Ok(());
     }
@@ -25,7 +39,9 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
         None => {
             create_dir(&mind_dir)?;
 
-            Repository::init(&mind_dir)?;
+            let repository = Repository::init(&mind_dir)?;
+
+            repository.commit();
 
             let gitignore_path = mind_dir.join(".gitignore");
 
@@ -34,6 +50,8 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
             let csvscsv_path = mind_dir.join(".csvs.csv");
 
             write(&csvscsv_path, "csvs,0.0.2")?;
+
+            repository.commit();
         }
     }
 

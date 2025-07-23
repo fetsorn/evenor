@@ -221,16 +221,18 @@ export function extractSchemaRecords(branchRecords) {
 
       const trunks = Array.isArray(trunk) ? trunk : [trunk];
 
-      const schemaRecord = trunks.reduce((withTrunk, trunk) => {
-        const leaves = withBranch.schemaRecord[trunk] ?? [];
+      const schemaRecord = trunks
+        .filter((t) => t !== undefined)
+        .reduce((withTrunk, trunk) => {
+          const leaves = withBranch.schemaRecord[trunk] ?? [];
 
-        const schemaRecord = {
-          ...withBranch.schemaRecord,
-          [trunk]: [...new Set([branchRecord.branch, ...leaves])],
-        };
+          const schemaRecord = {
+            ...withBranch.schemaRecord,
+            [trunk]: [...new Set([branchRecord.branch, ...leaves])],
+          };
 
-        return schemaRecord;
-      }, withBranch.schemaRecord);
+          return schemaRecord;
+        }, withBranch.schemaRecord);
 
       const metaRecords = [branchRecordOmitted, ...withBranch.metaRecords];
 
@@ -412,11 +414,7 @@ export function changeSearchParams(searchParams, field, value) {
  * @param {String} mind -
  * @returns {String}
  */
-export function makeURL(searchParams, sortBy, mind) {
-  if (sortBy) {
-    searchParams.set(".sortBy", sortBy);
-  }
-
+export function makeURL(searchParams, mind) {
   const pathname = mind === "root" ? "#" : `#/${mind}`;
 
   const queryString = searchParams.toString();
@@ -482,4 +480,21 @@ export function findFirstSortBy(branch, value) {
   const sortBy = key === undefined ? "" : key;
 
   return sortBy;
+}
+
+export function sortCallback(sortBy, sortDirection) {
+  return (a, b) => {
+    const valueA = findFirstSortBy(sortBy, a[sortBy]);
+
+    const valueB = findFirstSortBy(sortBy, b[sortBy]);
+
+    switch (sortDirection) {
+      case "first":
+        return valueA.localeCompare(valueB);
+      case "last":
+        return valueB.localeCompare(valueA);
+      default:
+        return valueA.localeCompare(valueB);
+    }
+  };
 }

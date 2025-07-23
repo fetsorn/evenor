@@ -4,16 +4,9 @@ import { StoreContext, onSearch } from "@/store/index.js";
 export function FilterDirection() {
   const { store } = useContext(StoreContext);
 
-  const isLast = () => {
-    return (
-      store.searchParams !== undefined &&
-      store.searchParams.get(".sortDirection") === "last"
-    );
-  };
-
   return (
     <Show
-      when={isLast()}
+      when={store.searchParams.get(".sortDirection") === "last"}
       fallback={
         <button onClick={() => onSearch(".sortDirection", "last")}>
           sort first

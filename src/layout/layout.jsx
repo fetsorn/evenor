@@ -1,6 +1,6 @@
 import history from "history/hash";
 import { onMount, useContext } from "solid-js";
-import { StoreContext, store, onMindChange } from "@/store/index.js";
+import { StoreContext, store, onMindChange, onStartup } from "@/store/index.js";
 import {
   NavigationBack,
   NavigationNew,
@@ -55,9 +55,11 @@ export function LayoutProfile() {
 }
 
 export function App() {
-  onMount(() =>
-    onMindChange(history.location.pathname, history.location.search),
-  );
+  onMount(async () => {
+    await onStartup();
+
+    await onMindChange(history.location.pathname, history.location.search);
+  });
 
   return (
     <StoreContext.Provider value={{ store }}>

@@ -1,11 +1,6 @@
-import { updateRecord, selectStream } from "@/store/impure.js";
+import { updateRecord } from "@/store/impure.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
-import {
-  changeSearchParams,
-  makeURL,
-  pickDefaultBase,
-  pickDefaultSortBy,
-} from "@/store/pure.js";
+import { pickDefaultBase, pickDefaultSortBy } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 
 /**
@@ -67,7 +62,7 @@ export async function changeMind(pathname, searchString) {
 
   const token = searchParams.get("-") ?? "";
 
-  const { mind: mindPartial, schema } = searchParams.has("~")
+  const { mind: mindRecord, schema } = searchParams.has("~")
     ? await clone(undefined, undefined, remoteUrl, token)
     : await find(mind, undefined);
 
@@ -83,54 +78,8 @@ export async function changeMind(pathname, searchString) {
   }
 
   return {
-    mind: mindPartial,
+    mind: mindRecord,
     schema,
     searchParams,
   };
-}
-
-/**
- * This
- * @name search
- * @function
- * @param {object} schema -
- * @param {SearchParams} searchParams -
- * @param {object} mind -
- * @param {String} name -
- * @param {String} field -
- * @param {String} value -
- * @param {Function} appendRecord -
- * @returns {object}
- */
-export async function search(
-  schema,
-  searchParams,
-  mind,
-  name,
-  field,
-  value,
-  appendRecord,
-) {
-  // update searchParams
-  const searchParamsNew = changeSearchParams(searchParams, field, value);
-
-  const url = makeURL(searchParamsNew, value, mind, name);
-
-  window.history.replaceState(null, null, url);
-
-  if (field.startsWith("."))
-    return {
-      searchParams: searchParamsNew,
-      abortPreviousStream: () => {},
-      startStream: () => {},
-    };
-
-  const { abortPreviousStream, startStream } = await selectStream(
-    schema,
-    mind,
-    appendRecord,
-    searchParamsNew,
-  );
-
-  return { searchParams: searchParamsNew, abortPreviousStream, startStream };
 }

@@ -31,7 +31,7 @@ export async function find(mind, name) {
   // find mind in root folder
   const [mindRecord] = await api.select("root", query);
 
-  const schema = await readSchema(mind.mind);
+  const schema = await readSchema(mindRecord.mind);
 
   return { mind: mindRecord, schema };
 }

@@ -26,7 +26,7 @@ describe("FilterQuery", () => {
     await userEvent.keyboard("1");
 
     expect(store.searchParams.toString()).toEqual(
-      new URLSearchParams("field=value1&.sortBy=value1").toString(),
+      new URLSearchParams("field=value1").toString(),
     );
   });
 

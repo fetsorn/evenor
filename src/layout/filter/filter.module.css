@@ -1,4 +1,5 @@
 .filter {
-  position: sticky;
+  /* position: sticky; */
+  /* TODO: sticky breaks re-rendering */
   top: 0;
 }

@@ -1,5 +1,4 @@
-use crate::{Mind, Result};
-use csvs::{Dataset, Entry, IntoValue};
+use crate::{Mind, Result}; use csvs::{Dataset, Entry, IntoValue};
 use tauri::{ipc::Channel, AppHandle, Runtime};
 use async_stream::try_stream;
 use futures_util::stream::StreamExt;
@@ -8,14 +7,18 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 
 #[tauri::command]
-pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Entry) -> Result<Vec<Entry>> {
+pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
+    let query = query.try_into()?;
+
     let mind = Mind::new(app, mind);
 
     let mind_dir = mind.find_mind()?.unwrap();
 
     let dataset = Dataset::new(&mind_dir);
 
-    let records = dataset.select_record(vec![query]).await?;
+    let entries = dataset.select_record(vec![query]).await?;
+
+    let records = entries.into_iter().map(|e| e.into_value()).collect();
 
     Ok(records)
 }
@@ -35,10 +38,12 @@ pub enum SelectEvent {
 pub async fn select_stream<R: Runtime>(
     app: AppHandle<R>,
     mind: &str,
-    query: Entry,
+    query: Value,
     on_event: Channel<SelectEvent>,
 ) -> Result<()>
 {
+    let query: Entry = query.try_into()?;
+
     let mind = Mind::new(app, mind);
 
     let mind_dir = mind.find_mind()?.unwrap();
@@ -82,8 +87,10 @@ pub async fn select_stream<R: Runtime>(
 }
 
 #[tauri::command]
-pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Entry) -> Result<()>
+pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()>
 {
+    let record = record.try_into()?;
+
     let mind = Mind::new(app, mind);
 
     let mind_dir = mind.find_mind()?.unwrap();
@@ -96,8 +103,10 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: En
 }
 
 #[tauri::command]
-pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Entry) -> Result<()>
+pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()>
 {
+    let record = record.try_into()?;
+
     let mind = Mind::new(app, mind);
 
     let mind_dir = mind.find_mind()?.unwrap();

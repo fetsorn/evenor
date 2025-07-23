@@ -2,6 +2,7 @@ import { onZip } from "./record.js";
 import {
   StoreContext,
   store,
+  onStartup,
   onRecordEdit,
   onRecordSave,
   onRecordWipe,
@@ -21,6 +22,7 @@ import {
 export {
   StoreContext,
   store,
+  onStartup,
   onRecordEdit,
   onRecordSave,
   onRecordWipe,
@@ -41,6 +43,7 @@ export {
 export default {
   StoreContext,
   store,
+  onStartup,
   onRecordEdit,
   onRecordSave,
   onRecordWipe,

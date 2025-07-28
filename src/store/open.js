@@ -31,6 +31,8 @@ export async function find(mind, name) {
   // find mind in root folder
   const [mindRecord] = await api.select("root", query);
 
+  if (mindRecord === undefined) throw Error("where is my mind");
+
   const schema = await readSchema(mindRecord.mind);
 
   return { mind: mindRecord, schema };

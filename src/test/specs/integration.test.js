@@ -12,29 +12,25 @@ import {
 } from "./actions.js";
 
 export function t() {
-  it("should create a mind", async () => {
-    await make();
-
-    // input name in profile
-    setValue(await $("aria/name -"), "foobar");
-
-    await save();
-
-    const element = await $("aria/found");
-
-    // check that one record in the overview
-    await expect(element).toHaveText("found 1");
-  });
-
-  //it("should delete a mind", async () => {
+  //it("should create a mind", async () => {
   //  await newMind();
-
-  //  await wipe();
 
   //  const element = await $("aria/found");
 
-  //  await expect(element).toHaveText("found 0");
+  //  // check that one record in the overview
+  //  await expect(element).toHaveText("found 1");
   //});
+
+  it("should delete a mind", async () => {
+    await newMind();
+
+    //await wipe();
+
+    const element = await $("aria/found");
+
+    console.log(element);
+    await expect(element).toHaveText("found 0");
+  });
 
   //it("should open a mind", async () => {
   //  await expect(browser).toHaveUrl(

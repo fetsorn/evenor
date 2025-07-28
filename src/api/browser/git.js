@@ -244,6 +244,8 @@ export async function getOrigin(mind) {
     path: `remote.origin.url`,
   });
 
+  if (remoteUrl === undefined) throw Error("no remote");
+
   const remoteToken = await git.getConfig({
     fs,
     dir,

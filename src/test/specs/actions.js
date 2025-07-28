@@ -48,6 +48,8 @@ export async function wipe() {
   await click(await $("aria/delete"));
 
   await click(await $("aria/Yes"));
+
+  await new Promise((resolve) => setTimeout(resolve, 500));
 }
 
 export async function open() {

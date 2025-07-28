@@ -54,6 +54,25 @@ pub fn add_to_zip(mind_dir_path: PathBuf, file_path: &Path) -> Result<()> {
     Ok(())
 }
 
+pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
+    let mind_dir = mind.find_mind()?.expect("no directory");
+
+    let file_path = mind
+        .app
+        .dialog()
+        .file()
+        .add_filter("My Filter", &["zip"])
+        .blocking_save_file();
+
+    let file_path = file_path.unwrap();
+
+    let file_path = file_path.as_path().unwrap();
+
+    add_to_zip(mind_dir, &file_path)?;
+
+    Ok(())
+}
+
 mod test {
     use super::add_to_zip;
     use crate::{create_app, Mind, Result};
@@ -114,23 +133,4 @@ mod test {
 
         Ok(())
     }
-}
-
-pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
-    let mind_dir = mind.find_mind()?.expect("no directory");
-
-    let file_path = mind
-        .app
-        .dialog()
-        .file()
-        .add_filter("My Filter", &["zip"])
-        .blocking_save_file();
-
-    let file_path = file_path.unwrap();
-
-    let file_path = file_path.as_path().unwrap();
-
-    add_to_zip(mind_dir, &file_path)?;
-
-    Ok(())
 }

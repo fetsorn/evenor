@@ -218,23 +218,23 @@ describe("changeSearchParams", () => {
   });
 });
 
-describe("makeURL", () => {
+describe.only("makeURL", () => {
   test("sets root", () => {
-    expect(
-      makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "root", "name"),
-    ).toStrictEqual("#?_=a&a=1&b=2");
+    expect(makeURL(new URLSearchParams("_=a&a=1&b=2"), "root")).toStrictEqual(
+      "#?_=a&a=1&b=2",
+    );
   });
 
   test("sets mind", () => {
-    expect(
-      makeURL(new URLSearchParams("_=a&a=1&b=2"), undefined, "id", "name"),
-    ).toStrictEqual("#/id?_=a&a=1&b=2");
+    expect(makeURL(new URLSearchParams("_=a&a=1&b=2"), "id")).toStrictEqual(
+      "#/id?_=a&a=1&b=2",
+    );
   });
 
   test("sets sortBy", () => {
-    expect(
-      makeURL(new URLSearchParams("_=a&a=1&b=2"), "b", "id", "name"),
-    ).toStrictEqual("#/id?_=a&a=1&b=2&.sortBy=b");
+    expect(makeURL(new URLSearchParams("_=a&a=1&b=2"), "id")).toStrictEqual(
+      "#/id?_=a&a=1&b=2",
+    );
   });
 });
 

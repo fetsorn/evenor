@@ -410,7 +410,6 @@ export function changeSearchParams(searchParams, field, value) {
  * @name makeURL
  * @function
  * @param {SearchParams} searchParams -
- * @param {String} sortBy -
  * @param {String} mind -
  * @returns {String}
  */

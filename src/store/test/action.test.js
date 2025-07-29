@@ -1,9 +1,8 @@
 import { describe, expect, beforeEach, test, vi } from "vitest";
-import { saveRecord, wipeRecord, changeMind, search } from "@/store/action.js";
+import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { createRoot, deleteRecord } from "@/store/record.js";
-import { updateRecord, selectStream } from "@/store/impure.js";
+import { updateRecord } from "@/store/impure.js";
 import { find, clone } from "@/store/open.js";
-import { changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
 import stub from "./stub.js";
 
@@ -93,7 +92,7 @@ describe("wipeRecord", () => {
   });
 });
 
-describe.only("changeMind", () => {
+describe("changeMind", () => {
   beforeEach(() => {
     find.mockReset();
   });
@@ -115,7 +114,7 @@ describe.only("changeMind", () => {
     );
   });
 
-  test.only("find mind", async () => {
+  test("find mind", async () => {
     find.mockImplementation(() => ({ mind: 1, schema: stub.schema }));
 
     const { mind, schema, searchParams } = await changeMind(
@@ -160,88 +159,5 @@ describe.only("changeMind", () => {
         `~=${testCase.url}&-=${testCase.token}&_=b&.sortBy=b`,
       ).toString(),
     );
-  });
-});
-
-describe("search", () => {
-  test("calls search", async () => {
-    changeSearchParams.mockImplementation(() => 1);
-
-    makeURL.mockImplementation(() => 2);
-
-    window.history.replaceState = vi.fn();
-
-    selectStream.mockImplementation(() => ({
-      abortPreviousStream: 3,
-      startStream: 4,
-    }));
-
-    const schema = stub.schema;
-    const searchParamsOld = new URLSearchParams();
-    const mind = {};
-    const field = "a";
-    const value = "b";
-    const appendRecord = {};
-
-    const { searchParams, abortPreviousStream, startStream } = await search(
-      schema,
-      searchParamsOld,
-      mind,
-      stub.name,
-      field,
-      value,
-      appendRecord,
-    );
-
-    expect(changeSearchParams).toHaveBeenCalledWith(
-      searchParamsOld,
-      field,
-      value,
-    );
-
-    expect(window.history.replaceState).toHaveBeenCalledWith(null, null, 2);
-
-    expect(selectStream).toHaveBeenCalledWith(schema, mind, appendRecord, 1);
-
-    expect(searchParams).toBe(1);
-
-    expect(abortPreviousStream).toBe(3);
-
-    expect(startStream).toBe(4);
-  });
-
-  test("ignores evenor specific param", async () => {
-    changeSearchParams.mockImplementation(() => 1);
-
-    makeURL.mockImplementation(() => 2);
-
-    window.history.replaceState = vi.fn();
-
-    const schema = stub.schema;
-    const searchParamsOld = new URLSearchParams();
-    const mind = {};
-    const field = ".a";
-    const value = "b";
-    const appendRecord = {};
-
-    selectStream.mockReset();
-
-    const { searchParams, abortPreviousStream, startStream } = await search(
-      schema,
-      searchParamsOld,
-      mind,
-      stub.name,
-      field,
-      value,
-      appendRecord,
-    );
-
-    expect(selectStream).not.toHaveBeenCalled();
-
-    expect(searchParams).toBe(1);
-
-    expect(abortPreviousStream).toBeTypeOf("function");
-
-    expect(startStream).toBeTypeOf("function");
   });
 });

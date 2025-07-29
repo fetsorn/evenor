@@ -15,8 +15,9 @@ import {
   getSpoilerOpen,
   setSpoilerOpen,
 } from "@/store/store.js";
-import { createRecord } from "@/store/impure.js";
-import { saveRecord, wipeRecord, changeMind, search } from "@/store/action.js";
+import { changeSearchParams, makeURL } from "@/store/pure.js";
+import { createRecord, selectStream } from "@/store/impure.js";
+import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 vi.mock("@/store/action.js", async (importOriginal) => {
@@ -27,7 +28,6 @@ vi.mock("@/store/action.js", async (importOriginal) => {
     saveRecord: vi.fn(),
     wipeRecord: vi.fn(),
     changeMind: vi.fn(),
-    search: vi.fn(),
   };
 });
 
@@ -37,6 +37,17 @@ vi.mock("@/store/impure.js", async (importOriginal) => {
   return {
     ...mod,
     createRecord: vi.fn(),
+    selectStream: vi.fn(),
+  };
+});
+
+vi.mock("@/store/pure.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    changeSearchParams: vi.fn(),
+    makeURL: vi.fn(),
   };
 });
 
@@ -45,6 +56,14 @@ describe("store", () => {
   // to keep initial state
   afterEach(() => {
     setStore(undefined);
+
+    changeSearchParams.mockReset();
+    makeURL.mockReset();
+    createRecord.mockReset();
+    selectStream.mockReset();
+    saveRecord.mockReset();
+    wipeRecord.mockReset();
+    changeMind.mockReset();
 
     setStore({
       abortPreviousStream: () => {},
@@ -109,38 +128,62 @@ describe("store", () => {
   });
 
   describe("onSearch", () => {
-    test("", async () => {
+    test("searches", async () => {
       const field = "a";
 
       const value = "b";
 
-      const abortPreviousStream = vi.fn();
+      changeSearchParams.mockImplementation(() => 1);
+
+      window.history.replaceState = vi.fn();
+
+      makeURL.mockImplementation(() => 2);
 
       const startStream = vi.fn();
 
-      search.mockImplementation(() => ({
-        searchParams: 1,
-        abortPreviousStream,
+      selectStream.mockImplementation(() => ({
+        abortPreviousStream: 3,
         startStream,
       }));
 
       await onSearch(field, value);
-
-      expect(search).toHaveBeenCalledWith(
-        schemaRoot,
-        new URLSearchParams("_=mind"),
-        "root",
-        undefined,
-        field,
-        value,
-        appendRecord,
-      );
 
       expect(store.searchParams).toStrictEqual(1);
 
       expect(store.records).toStrictEqual([]);
 
       expect(startStream).toHaveBeenCalled();
+
+      expect(window.history.replaceState).toHaveBeenCalledWith(null, null, 2);
+
+      expect(selectStream).toHaveBeenCalled();
+
+      expect(store.searchParams).toBe(1);
+
+      expect(store.abortPreviousStream()).toBe(3);
+    });
+
+    test("ignores evenor specific param", async () => {
+      const field = ".a";
+
+      const value = "b";
+
+      changeSearchParams.mockImplementation(() => 1);
+
+      window.history.replaceState = vi.fn();
+
+      makeURL.mockImplementation(() => 2);
+
+      selectStream.mockImplementation(() => ({
+        abortPreviousStream: 3,
+        startStream: 4,
+      }));
+
+      await onSearch(field, value);
+
+      expect(selectStream).not.toHaveBeenCalled();
+
+      expect(store.searchParams).toBe(1);
     });
   });
 
@@ -154,11 +197,11 @@ describe("store", () => {
         searchParams: 3,
       }));
 
-      search.mockImplementation(() => ({
-        searchParams: 3,
-        abortPreviousStream: () => {},
-        startStream: () => {},
-      }));
+      changeSearchParams.mockImplementation(() => 4);
+
+      window.history.replaceState = vi.fn();
+
+      makeURL.mockImplementation(() => 5);
 
       await onMindChange("/", "_=mind");
 
@@ -166,17 +209,7 @@ describe("store", () => {
 
       expect(store.schema).toStrictEqual(2);
 
-      expect(store.searchParams).toStrictEqual(3);
-
-      expect(search).toHaveBeenCalledWith(
-        2,
-        3,
-        "id",
-        "name",
-        "",
-        undefined,
-        appendRecord,
-      );
+      expect(store.searchParams).toStrictEqual(4);
     });
   });
 
@@ -215,7 +248,7 @@ describe("store", () => {
         new URLSearchParams(".sortBy=mind&.sortDirection=first"),
       );
 
-      expect(getSortedRecords()[0]).toStrictEqual(record1);
+      expect(getSortedRecords(0)).toStrictEqual(record1);
     });
 
     test("sorts ascending", async () => {
@@ -230,7 +263,7 @@ describe("store", () => {
         new URLSearchParams(".sortBy=mind&.sortDirection=last"),
       );
 
-      expect(getSortedRecords()[0]).toStrictEqual(record2);
+      expect(getSortedRecords(0)).toStrictEqual(record2);
     });
   });
 

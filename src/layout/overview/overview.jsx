@@ -10,18 +10,20 @@ export function Overview(props) {
 
   let parentRef;
 
-  const virtualizer = () =>
-    createVirtualizer({
-      get count() {
-        // here just to trigger recount on sort change
-        const searchParams = store.searchParams;
+  const virtualizer = createVirtualizer({
+    get count() {
+      // here just to trigger recount on sort change
+      const searchParams = store.searchParams;
 
-        return store.records.length;
-      },
-      getScrollElement: () => parentRef,
-      estimateSize: () => 35,
-      overscan: 5,
-    });
+      return store.records.length;
+    },
+    getScrollElement: () => parentRef,
+    estimateSize: () => 35,
+    overscan: 5,
+  });
+
+  // overview.test needs this to be a variable
+  const virtualItems = virtualizer.getVirtualItems();
 
   return (
     <div ref={parentRef} className={styles.overview}>
@@ -30,7 +32,7 @@ export function Overview(props) {
       <div
         className={styles.foo}
         style={{
-          height: `${virtualizer().getTotalSize()}px`,
+          height: `${virtualizer.getTotalSize()}px`,
         }}
       >
         <For
@@ -38,7 +40,7 @@ export function Overview(props) {
             // here just to trigger render on sort change
             const searchParams = store.searchParams;
 
-            return virtualizer().getVirtualItems();
+            return virtualItems;
           })()}
           fallback={
             <span>press "new" in the top right corner to add entries</span>
@@ -59,7 +61,7 @@ export function Overview(props) {
                   // https://github.com/TanStack/virtual/issues/930
                   node.dataset.index = virtualRow.index.toString();
 
-                  virtualizer().measureElement(node);
+                  virtualizer.measureElement(node);
                 }}
               >
                 <OverviewItem

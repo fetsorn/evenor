@@ -198,6 +198,8 @@ export async function onSearch(field, value) {
 
     setStore(
       produce((state) => {
+        // this updates the overview on change of params
+        // TODO but removes focus from the filter
         state.searchParams = new URLSearchParams();
       }),
     );
@@ -265,6 +267,8 @@ export async function onMindChange(pathname, searchString) {
   // TODO somewhere here in case of error doesn't change url to root
   setStore(
     produce((state) => {
+      // this updates the overview on change of params
+      // TODO but removes focus from the filter
       // erase searchParams to re-render the filter index
       state.searchParams = new URLSearchParams();
       // erase records to re-render the overview

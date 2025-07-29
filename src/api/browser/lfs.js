@@ -1,6 +1,6 @@
 import lfs from "@fetsorn/isogit-lfs";
 import git from "isomorphic-git";
-import http from "isomorphic-git/http/web/index.cjs";
+import http from "isomorphic-git/http/web";
 import { saveAs } from "file-saver";
 import { fs } from "@/api/browser/lightningfs.js";
 import { findMind, fetchFile, writeFile, pickFile } from "@/api/browser/io.js";

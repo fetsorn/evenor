@@ -1,4 +1,4 @@
-import http from "isomorphic-git/http/web/index.cjs";
+import http from "isomorphic-git/http/web";
 import git from "isomorphic-git";
 import { addLFS } from "@/api/browser/lfs.js";
 import { fs } from "@/api/browser/lightningfs.js";

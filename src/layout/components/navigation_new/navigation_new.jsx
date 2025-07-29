@@ -12,8 +12,9 @@ export function NavigationNew() {
       return false;
 
     return (
-      store.schema[store.searchParams.get("_")] &&
-      store.schema[store.searchParams.get("_")].leaves.length > 0
+      store.schema[new URLSearchParams(store.searchParams).get("_")] &&
+      store.schema[new URLSearchParams(store.searchParams).get("_")].leaves
+        .length > 0
     );
   };
   return (

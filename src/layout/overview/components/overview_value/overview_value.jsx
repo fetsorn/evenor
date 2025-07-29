@@ -9,7 +9,9 @@ export function OverviewValue(props) {
 
   // TODO: add schema[base].cognate from branch-cognate.csv
   const basePartial =
-    props.branch === store.searchParams.get("_") ? [] : [props.branch];
+    props.branch === new URLSearchParams(store.searchParams).get("_")
+      ? []
+      : [props.branch];
 
   //const foo = store.schema[props.branch].trunks.some((t) =>
   //  store.schema[cognate].trunks.includes(t),

@@ -6,7 +6,9 @@ export function FilterDirection() {
 
   return (
     <Show
-      when={store.searchParams.get(".sortDirection") === "last"}
+      when={
+        new URLSearchParams(store.searchParams).get(".sortDirection") === "last"
+      }
       fallback={
         <button onClick={() => onSearch(".sortDirection", "last")}>
           sort first

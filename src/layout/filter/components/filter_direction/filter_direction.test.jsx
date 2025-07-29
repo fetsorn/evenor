@@ -9,7 +9,7 @@ describe("FilterDirection", () => {
   test("first to last", async () => {
     setStore("searchParams", new URLSearchParams(".sortDirection=first"));
 
-    expect(store.searchParams.toString()).toEqual(
+    expect(new URLSearchParams(store.searchParams).toString()).toEqual(
       new URLSearchParams(".sortDirection=first").toString(),
     );
 
@@ -23,7 +23,7 @@ describe("FilterDirection", () => {
 
     await userEvent.click(first);
 
-    expect(store.searchParams.toString()).toEqual(
+    expect(new URLSearchParams(store.searchParams).toString()).toEqual(
       new URLSearchParams(".sortDirection=last").toString(),
     );
   });
@@ -41,7 +41,7 @@ describe("FilterDirection", () => {
 
     await userEvent.click(last);
 
-    expect(store.searchParams.toString()).toEqual(
+    expect(new URLSearchParams(store.searchParams).toString()).toEqual(
       new URLSearchParams(".sortDirection=first").toString(),
     );
   });

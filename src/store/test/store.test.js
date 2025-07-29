@@ -133,7 +133,7 @@ describe("store", () => {
 
       const value = "b";
 
-      changeSearchParams.mockImplementation(() => 1);
+      changeSearchParams.mockImplementation(() => "1");
 
       window.history.replaceState = vi.fn();
 
@@ -148,7 +148,7 @@ describe("store", () => {
 
       await onSearch(field, value);
 
-      expect(store.searchParams).toStrictEqual(1);
+      expect(store.searchParams).toStrictEqual("1");
 
       expect(store.records).toStrictEqual([]);
 
@@ -158,8 +158,6 @@ describe("store", () => {
 
       expect(selectStream).toHaveBeenCalled();
 
-      expect(store.searchParams).toBe(1);
-
       expect(store.abortPreviousStream()).toBe(3);
     });
 
@@ -168,7 +166,7 @@ describe("store", () => {
 
       const value = "b";
 
-      changeSearchParams.mockImplementation(() => 1);
+      changeSearchParams.mockImplementation(() => "1");
 
       window.history.replaceState = vi.fn();
 
@@ -183,7 +181,7 @@ describe("store", () => {
 
       expect(selectStream).not.toHaveBeenCalled();
 
-      expect(store.searchParams).toBe(1);
+      expect(store.searchParams).toBe("1");
     });
   });
 
@@ -197,7 +195,7 @@ describe("store", () => {
         searchParams: 3,
       }));
 
-      changeSearchParams.mockImplementation(() => 4);
+      changeSearchParams.mockImplementation(() => "4");
 
       window.history.replaceState = vi.fn();
 
@@ -209,7 +207,7 @@ describe("store", () => {
 
       expect(store.schema).toStrictEqual(2);
 
-      expect(store.searchParams).toStrictEqual(4);
+      expect(store.searchParams).toStrictEqual("4");
     });
   });
 

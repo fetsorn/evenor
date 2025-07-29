@@ -14,7 +14,7 @@ export function OverviewItem(props) {
 
   const isHomeScreen = store.mind.mind === "root";
 
-  const isMind = store.searchParams.get("_") === "mind";
+  const isMind = new URLSearchParams(store.searchParams).get("_") === "mind";
 
   const canOpenMind = isHomeScreen && isMind;
 

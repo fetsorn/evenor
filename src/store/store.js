@@ -11,7 +11,7 @@ export const StoreContext = createContext();
 
 export const [store, setStore] = createStore({
   abortPreviousStream: async () => {},
-  searchParams: new URLSearchParams("_=mind"),
+  searchParams: "_=mind",
   mind: { _: "mind", mind: "root" },
   schema: schemaRoot,
   record: undefined,
@@ -27,9 +27,11 @@ export const [store, setStore] = createStore({
  * @returns {Function}
  */
 export function getSortedRecords(index) {
-  const sortBy = store.searchParams.get(".sortBy");
+  const sortBy = new URLSearchParams(store.searchParams).get(".sortBy");
 
-  const sortDirection = store.searchParams.get(".sortDirection");
+  const sortDirection = new URLSearchParams(store.searchParams).get(
+    ".sortDirection",
+  );
 
   const records = store.records.toSorted(sortCallback(sortBy, sortDirection));
 
@@ -47,7 +49,9 @@ export function getFilterQueries() {
 
   // convert entries iterator to array for Index
   return Array.from(
-    store.searchParams.entries().filter(([key]) => key !== ".sortDirection"),
+    new URLSearchParams(store.searchParams)
+      .entries()
+      .filter(([key]) => key !== ".sortDirection"),
   );
 }
 
@@ -61,13 +65,14 @@ export function getFilterOptions() {
   if (store.schema === undefined || store.searchParams === undefined) return [];
 
   // find all fields name
-  const leafFields = store.schema[store.searchParams.get("_")].leaves.concat([
-    store.searchParams.get("_"),
-    "__",
-  ]);
+  const leafFields = store.schema[
+    new URLSearchParams(store.searchParams).get("_")
+  ].leaves.concat([new URLSearchParams(store.searchParams).get("_"), "__"]);
 
   // find field name which is added to filter search params
-  const addedFields = Array.from(store.searchParams.keys());
+  const addedFields = Array.from(
+    new URLSearchParams(store.searchParams).keys(),
+  );
 
   // find name fields which is not added to filter search params
   const notAddedFields = leafFields.filter((key) => !addedFields.includes(key));
@@ -104,7 +109,7 @@ export function setSpoilerOpen(index, isOpen) {
 export async function onRecordCreate() {
   const record = await createRecord(
     store.mind.mind,
-    store.searchParams.get("_"),
+    new URLSearchParams(store.searchParams).get("_"),
   );
 
   setStore(
@@ -135,7 +140,7 @@ export async function onRecordEdit(path, value) {
 export async function onRecordSave(recordOld, recordNew) {
   const records = await saveRecord(
     store.mind.mind,
-    store.searchParams.get("_"),
+    new URLSearchParams(store.searchParams).get("_"),
     store.records,
     recordOld,
     recordNew,
@@ -158,7 +163,7 @@ export async function onRecordSave(recordOld, recordNew) {
 export async function onRecordWipe(record) {
   const records = await wipeRecord(
     store.mind.mind,
-    store.searchParams.get("_"),
+    new URLSearchParams(store.searchParams).get("_"),
     store.records,
     record,
   );
@@ -190,23 +195,21 @@ export function appendRecord(record) {
 export async function onSearch(field, value) {
   try {
     // update searchParams
-    const searchParams = changeSearchParams(store.searchParams, field, value);
+    const searchParams = changeSearchParams(
+      new URLSearchParams(store.searchParams),
+      field,
+      value,
+    );
 
     const url = makeURL(searchParams, store.mind.mind);
 
     window.history.replaceState(null, null, url);
 
-    setStore(
-      produce((state) => {
-        // this updates the overview on change of params
-        // TODO but removes focus from the filter
-        state.searchParams = new URLSearchParams();
-      }),
-    );
+    // do not reset searchParams here to preserve focus on filter
 
     setStore(
       produce((state) => {
-        state.searchParams = searchParams;
+        state.searchParams = searchParams.toString();
       }),
     );
 
@@ -268,9 +271,9 @@ export async function onMindChange(pathname, searchString) {
   setStore(
     produce((state) => {
       // this updates the overview on change of params
-      // TODO but removes focus from the filter
+      // and removes focus from the filter
       // erase searchParams to re-render the filter index
-      state.searchParams = new URLSearchParams();
+      state.searchParams = "";
       // erase records to re-render the overview
       state.records = [];
     }),
@@ -282,7 +285,7 @@ export async function onMindChange(pathname, searchString) {
     produce((state) => {
       state.mind = mind;
       state.schema = schema;
-      state.searchParams = searchParams;
+      state.searchParams = searchParams.toString();
     }),
   );
 
@@ -365,7 +368,7 @@ export async function onPush(mind, remoteUrl, remoteToken) {
 export async function leapfrog(branch, value, cognate) {
   await onSearch(undefined, undefined);
 
-  await onSearch("_", store.searchParams.get("_"));
+  await onSearch("_", new URLSearchParams(store.searchParams).get("_"));
 
   await onSearch("__", cognate);
 

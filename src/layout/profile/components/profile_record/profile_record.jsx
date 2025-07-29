@@ -58,7 +58,6 @@ export function ProfileRecord(props) {
           onClick={() =>
             onPull(
               store.record.mind,
-              props.record.origin_url,
               Array.isArray(props.record.origin_url)
                 ? props.record.origin_url[0]
                 : props.record.origin_url,
@@ -75,7 +74,6 @@ export function ProfileRecord(props) {
           onClick={() =>
             onPush(
               store.record.mind,
-              props.record.origin_url,
               Array.isArray(props.record.origin_url)
                 ? props.record.origin_url[0]
                 : props.record.origin_url,

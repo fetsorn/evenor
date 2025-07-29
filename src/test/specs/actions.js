@@ -1,10 +1,14 @@
 export async function click(element) {
+  // polyfill doesn't work in browser
+  //await element.click();
   // element.click() doesn't work on tauri
   // https://github.com/tauri-apps/tauri/issues/6541
   await browser.execute("arguments[0].click();", element);
 }
 
 export async function setValue(field, value) {
+  // polyfill doesn't work in browser
+  //await field.setValue(value);
   // element.setValue(value) doesn't work on tauri
   // https://github.com/tauri-apps/tauri/issues/6541
   await browser.execute(`arguments[0].value="${value}"`, field);
@@ -15,8 +19,12 @@ export async function setValue(field, value) {
 }
 
 export async function make() {
+  await (await $("aria/new")).waitForExist({ timeout: 5000 });
+
   // check that no records in the overview
   await click(await $("aria/new"));
+
+  await (await $("aria/save")).waitForExist({ timeout: 5000 });
 }
 
 export async function save() {
@@ -24,7 +32,7 @@ export async function save() {
   await click(await $("aria/save"));
 
   // wait for record to save
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await (await $("aria/save")).waitForExist({ reverse: true, timeout: 5000 });
 }
 
 export async function revert() {
@@ -45,21 +53,29 @@ export async function newMind() {
 }
 
 export async function wipe() {
+  await (await $("aria/delete")).waitForExist({ timeout: 5000 });
+
   await click(await $("aria/delete"));
+
+  await (await $("aria/Yes")).waitForExist({ timeout: 5000 });
 
   await click(await $("aria/Yes"));
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await (await $("aria/delete")).waitForExist({ reverse: true, timeout: 5000 });
 }
 
 export async function open() {
+  await (await $("aria/open")).waitForExist({ timeout: 5000 });
+
   // find button "open event"
   await click(await $("aria/open"));
 
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  await (await $("aria/open").nextElement()).waitForExist({ timeout: 5000 });
 
   // click button "open event"
   await click(await $("aria/open").nextElement());
+
+  await (await $("aria/back")).waitForExist({ timeout: 5000 });
 }
 
 export async function close() {
@@ -77,13 +93,13 @@ export async function clone() {
   await click(await $("aria/mind -").nextElement().nextElement());
 
   // click button "add remote"
-  await click(await $("aria/origin_tag"));
+  await click(await $("aria/origin_url"));
 
-  await setValue(await $("aria/origin_tag -"), "origin");
+  await setValue(await $("aria/origin_url -"), "origin");
 
   // with
   await click(
-    await $("aria/origin_tag -")
+    await $("aria/origin_url -")
       .nextElement()
       .nextElement()
       .nextElement()
@@ -92,7 +108,7 @@ export async function clone() {
 
   // add
   await click(
-    await $("aria/origin_tag -")
+    await $("aria/origin_url -")
       .nextElement()
       .nextElement()
       .nextElement()
@@ -100,11 +116,11 @@ export async function clone() {
       .nextElement(),
   );
 
-  await click(await $("aria/remote_url"));
+  await click(await $("aria/origin_url"));
 
   // git-http-mock-server
   await setValue(
-    await $("aria/remote_url -"),
+    await $("aria/origin_url -"),
     "http://localhost:8174/test-mind1.git",
   );
 
@@ -112,8 +128,7 @@ export async function clone() {
 
   await click(await $("aria/Yes"));
 
-  // wait for clone
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await (await $("aria/Yes")).waitForExist({ reverse: true, timeout: 5000 });
 
   await save();
 }
@@ -126,7 +141,7 @@ export async function pull() {
 
   // with
   await click(
-    await $("aria/origin_tag -")
+    await $("aria/origin_url -")
       .nextElement()
       .nextElement()
       .nextElement()
@@ -134,13 +149,15 @@ export async function pull() {
   );
 
   await setValue(
-    await $("aria/remote_url -"),
+    await $("aria/origin_url -"),
     "http://localhost:8174/test-mind2.git",
   );
 
   await click(await $("aria/pull"));
 
-  await new Promise((resolve) => setTimeout(resolve, 5000));
+  await (
+    await $("aria/Loading")
+  ).waitUntil(() => {}, { reverse: true, timeout: 5000 });
 
   await save();
 }
@@ -151,21 +168,16 @@ export async function push() {
 
   // with
   await click(
-    await $("aria/origin_tag -")
+    await $("aria/origin_url -")
       .nextElement()
       .nextElement()
       .nextElement()
       .nextElement(),
   );
 
-  await setValue(
-    await $("aria/remote_url -"),
-    "http://localhost:8174/test-mind1.git",
-  );
+  await setValue(await $("aria/url -"), "http://localhost:8174/test-mind1.git");
 
   await click(await $("aria/push"));
-
-  await new Promise((resolve) => setTimeout(resolve, 5000));
 
   await save();
 }

@@ -220,7 +220,7 @@ export async function onZip(mind) {
 export async function pull(mind, remoteUrl, remoteToken) {
   await api.commit(mind);
 
-  await api.pull(mind, remoteUrl, remoteToken);
+  await api.pull(mind, { url: remoteUrl, token: remoteToken });
 }
 
 /**
@@ -235,10 +235,10 @@ export async function push(mind, remoteUrl, remoteToken) {
   await api.commit(mind);
 
   try {
-    await api.uploadBlobsLFS(mind, remoteUrl, remoteToken);
+    await api.uploadBlobsLFS(mind, { url: remoteUrl, token: remoteToken });
   } catch {
     // do nothing
   }
 
-  await api.push(mind, remoteUrl, remoteToken);
+  await api.push(mind, { url: remoteUrl, token: remoteToken });
 }

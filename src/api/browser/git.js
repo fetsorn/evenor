@@ -176,27 +176,29 @@ export async function clone(mind, name, remote) {
   try {
     await git.clone(options);
   } catch (e) {
-    // if clone failed, remove directory
-    await rimraf(dir);
+    try {
+      // if clone failed, remove directory
+      await rimraf(dir);
+    } catch {
+      // do nothing
+    }
 
     console.log(e);
     throw e;
   }
 
-  await git.setConfig({
-    fs,
-    dir,
-    path: "remote.origin.url",
-    value: remote.url,
-  });
-
-  if (remote.token !== undefined) {
-    await git.setConfig({
-      fs,
-      dir,
-      path: "remote.origin.token",
-      value: remote.token,
-    });
+  // if clone is successful, try to set url
+  try {
+    if (remote.token !== undefined) {
+      await git.setConfig({
+        fs,
+        dir,
+        path: "remote.origin.token",
+        value: remote.token,
+      });
+    }
+  } catch {
+    // do nothing
   }
 }
 
@@ -263,8 +265,10 @@ export async function getOrigin(mind) {
  * @param {String} remoteUrl -
  * @param {String} remoteToken -
  */
-export async function pull(mind, remoteUrl, remoteToken) {
+export async function pull(mind, remote) {
   const dir = await findMind(mind);
+
+  const { url: remoteUrl, token: remoteToken } = remote;
 
   const tokenPartial = remoteToken
     ? {
@@ -294,8 +298,10 @@ export async function pull(mind, remoteUrl, remoteToken) {
  * @param {String} remoteUrl -
  * @param {String} remoteToken -
  */
-export async function push(mind, remoteUrl, remoteToken) {
+export async function push(mind, remote) {
   const dir = await findMind(mind);
+
+  const { url: remoteUrl, token: remoteToken } = remote;
 
   const tokenPartial = remoteToken
     ? {

@@ -7321,11 +7321,6 @@ to-buffer@^1.2.0:
     safe-buffer "^5.2.1"
     typed-array-buffer "^1.0.3"
 
-to-fast-properties@^4.0.0:
-  version "4.0.0"
-  resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-4.0.0.tgz#43dc36ce460f10070d35f48228253c370e5c161b"
-  integrity sha512-y4PM/CFhbderIl3OTBsHbdrh+pTCiv4pNlrPNlEUQCRxZc1o41fJDG7YNDunH2LVERQ4pR0n3G/yIKjxv8fgJw==
-
 to-regex-range@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/to-regex-range/-/to-regex-range-5.0.1.tgz#1648c44aae7c8d988a326018ed72f5b4dd0392e4"

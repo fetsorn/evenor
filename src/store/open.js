@@ -60,7 +60,7 @@ export async function clone(mind, name, url, token) {
 
   const mindRemote = mind ?? crypto.subtle.digest("SHA-256", encoded);
 
-  await api.clone(mindRemote, name, url, token);
+  await api.clone(mindRemote, name, { url, token });
 
   const pathname = new URL(url).pathname;
 

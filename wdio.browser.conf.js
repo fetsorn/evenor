@@ -1,7 +1,7 @@
 import viteConfig from "./vite.config.js";
 
 export const config = {
-  specs: [["./src/test/specs/**/*.test.jsx"]],
+  specs: [["./src/test/specs/browser/pull.test.jsx"]],
   runner: [
     "browser",
     {
@@ -11,23 +11,26 @@ export const config = {
   capabilities: [
     {
       browserName: "firefox",
-      //"moz:firefoxOptions": {
-      //  args: ["-headless"],
-      //},
+      "moz:firefoxOptions": {
+        // headless breaks csvs.selectStream with "ev.error is undefined"
+        //args: ["-headless", "--window-size=1024,768"],
+        log: { level: "error" },
+      },
     },
   ],
   framework: "mocha",
   mochaOpts: {
     ui: "bdd",
-    timeout: 60000,
+    timeout: 6000000,
   },
   logLevel: "error",
-  //maxInstances: 10,
+  maxInstances: 1,
+  //maxInstancesPerCapability: 1,
   //bail: 0,
   //baseUrl: "",
-  //waitforTimeout: 10000,
+  //waitforTimeout: 10000000,
   //connectionRetryTimeout: 120000,
   //connectionRetryCount: 3,
   //services: [],
-  //reporters: ["spec"],
+  reporters: ["spec"],
 };

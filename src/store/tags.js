@@ -71,7 +71,7 @@ export async function writeRemoteTags(mind, originUrls) {
   try {
     await api.setOrigin(mind, url, token);
   } catch (e) {
-    console.log(e);
+    //console.error(e);
     // do nothing
   }
 }

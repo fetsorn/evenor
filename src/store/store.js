@@ -1,7 +1,12 @@
 import { createContext } from "solid-js";
+import api from "@/api/index.js";
+import { findMind } from "@/api/browser/io.js";
+import csvs from "@fetsorn/csvs-js";
+import { fs } from "@/api/browser/lightningfs.js";
+import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { push, pull, createRoot } from "@/store/record.js";
+import { push, pull, createRoot, loadMindRecord } from "@/store/record.js";
 import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
@@ -248,6 +253,56 @@ export async function onSearch(field, value) {
   }
 }
 
+export async function onFoo(m) {
+  //onMindChange(`/${props.item.mind}`, `_=${item["branch"]}`)
+  const { mind, schema, searchParams } = await changeMind(`/${m}`, "_=event");
+
+  setStore(
+    produce((state) => {
+      state.mind = mind;
+      state.schema = schema;
+      state.searchParams = searchParams.toString();
+    }),
+  );
+
+  // remove all evenor-specific searchParams before passing to csvs
+  const searchParamsWithoutCustom = new URLSearchParams(
+    searchParams.entries().filter(([key]) => !key.startsWith(".")),
+  );
+
+  const query = searchParamsToQuery(store.schema, searchParamsWithoutCustom);
+
+  const queryStream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(query);
+
+      controller.close();
+    },
+  });
+
+  const dir = await findMind(store.mind.mind);
+
+  const selectStream = csvs.selectRecordStream({
+    fs,
+    dir,
+  });
+
+  const fromStrm = queryStream.pipeThrough(selectStream);
+
+  // create a stream that appends to records
+  const toStrm = new WritableStream({
+    async write(chunk) {
+      appendRecord(chunk);
+    },
+  });
+
+  try {
+    await fromStrm.pipeTo(toStrm);
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 /**
  * This
  * @name onMindChange
@@ -304,11 +359,16 @@ export async function onMindChange(pathname, searchString) {
  */
 export async function onClone(mind, name, remoteUrl, remoteToken) {
   try {
-    const { mind } = await clone(mind, name, remoteUrl, remoteToken);
+    const { mind: mindRecord } = await clone(
+      mind,
+      name,
+      remoteUrl,
+      remoteToken,
+    );
 
     setStore(
       produce((state) => {
-        state.record = mind;
+        state.record = mindRecord;
       }),
     );
   } catch (e) {

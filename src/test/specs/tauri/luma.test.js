@@ -1,5 +1,3 @@
-import { t } from "./integration.test.js";
-
 // calculates the luma from a hex color `#abcdef`
 //function luma(hex) {
 //  if (hex.startsWith("#")) {
@@ -32,7 +30,3 @@ import { t } from "./integration.test.js";
 //    expect(luma(backgroundColor.parsed.hex)).toBeLessThan(100);
 //  });
 //});
-
-describe("integration", () => {
-  t();
-});

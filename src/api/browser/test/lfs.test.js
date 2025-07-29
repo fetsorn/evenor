@@ -25,11 +25,8 @@ vi.mock("isomorphic-git", async (importOriginal) => {
 
   return {
     ...mod,
-    default: {
-      ...mod,
-      setConfig: vi.fn(mod.setConfig),
-      getConfigAll: vi.fn(mod.getConfigAll),
-    },
+    setConfig: vi.fn(mod.setConfig),
+    getConfigAll: vi.fn(mod.getConfigAll),
   };
 });
 

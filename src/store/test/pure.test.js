@@ -218,7 +218,7 @@ describe("changeSearchParams", () => {
   });
 });
 
-describe.only("makeURL", () => {
+describe("makeURL", () => {
   test("sets root", () => {
     expect(makeURL(new URLSearchParams("_=a&a=1&b=2"), "root")).toStrictEqual(
       "#?_=a&a=1&b=2",

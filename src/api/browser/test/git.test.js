@@ -18,6 +18,18 @@ vi.mock("isomorphic-git", async (importOriginal) => {
 
   return {
     ...mod,
+    init: vi.fn(mod.init),
+    clone: vi.fn(),
+    statusMatrix: vi.fn(mod.statusMatrix),
+    resetIndex: vi.fn(mod.resetIndex),
+    remove: vi.fn(mod.remove),
+    add: vi.fn(mod.add),
+    commit: vi.fn(mod.commit),
+    setConfig: vi.fn(mod.setConfig),
+    fastForward: vi.fn(),
+    push: vi.fn(),
+    addRemote: vi.fn(mod.addRemote),
+    getConfig: vi.fn(mod.getConfig),
     default: {
       ...mod,
       init: vi.fn(mod.init),
@@ -50,7 +62,7 @@ describe("nameMind", () => {
   });
 });
 
-describe.only("init", () => {
+describe("init", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
 
@@ -91,7 +103,7 @@ describe.only("init", () => {
     );
   });
 
-  test.only("creates root", async () => {
+  test("creates root", async () => {
     await init("root");
 
     const listing = await fs.promises.readdir("/");
@@ -145,14 +157,12 @@ describe("clone", () => {
     await new Promise((resolve) => setTimeout(resolve, 500));
   });
 
-  test("throws if dir exists", async () => {
+  test("removes and overwrites if dir exists", async () => {
     // create dir
     await fs.promises.mkdir(stub.dirpath);
 
     // try to clone
-    await expect(
-      clone(stub.mind, stub.name, { url: stub.url, token: stub.token }),
-    ).rejects.toThrowError();
+    await clone(stub.mind, stub.name, { url: stub.url, token: stub.token });
   });
 
   test("calls git.clone", async () => {
@@ -259,19 +269,19 @@ describe("getOrigin", () => {
 
     await setOrigin(stub.mind, stub.url, stub.token);
 
-    const [remoteUrl, remoteToken] = await getOrigin(stub.mind);
+    const { url: remoteUrl, token: remoteToken } = await getOrigin(stub.mind);
 
     expect(git.getConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
-        path: `remote.${stub.remote}.url`,
+        path: `remote.origin.url`,
       }),
     );
 
     expect(git.getConfig).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
-        path: `remote.${stub.remote}.token`,
+        path: `remote.origin.token`,
       }),
     );
 
@@ -307,7 +317,7 @@ describe("setOrigin", () => {
     expect(git.addRemote).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
-        remote: stub.remote,
+        remote: "origin",
         url: stub.url,
       }),
     );
@@ -333,15 +343,7 @@ describe("pull", () => {
   });
 
   test("throws if no mind", async () => {
-    await expect(pull(stub.mind)).rejects.toThrowError();
-  });
-
-  test("throws if remote is undefined", async () => {
-    await init(stub.mind, stub.name);
-
-    await commit(stub.mind);
-
-    await expect(pull(stub.mind)).rejects.toThrowError();
+    await expect(pull(stub.mind, stub.url, stub.token)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
@@ -351,13 +353,13 @@ describe("pull", () => {
 
     await setOrigin(stub.mind, stub.url, stub.token);
 
-    await pull(stub.mind);
+    await pull(stub.mind, stub.url, stub.token);
 
     expect(git.fastForward).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
         url: stub.url,
-        remote: stub.remote,
+        remote: "origin",
         onAuth: expect.any(Function),
       }),
     );
@@ -375,15 +377,7 @@ describe("push", () => {
   });
 
   test("throws if no mind", async () => {
-    await expect(push(stub.mind)).rejects.toThrowError();
-  });
-
-  test("throws if remote is undefined", async () => {
-    await init(stub.mind, stub.name);
-
-    await commit(stub.mind);
-
-    await expect(push(stub.mind)).rejects.toThrowError();
+    await expect(push(stub.mind, stub.url, stub.token)).rejects.toThrowError();
   });
 
   test("calls git", async () => {
@@ -393,13 +387,13 @@ describe("push", () => {
 
     await setOrigin(stub.mind, stub.url, stub.token);
 
-    await push(stub.mind);
+    await push(stub.mind, stub.url, stub.token);
 
     expect(git.push).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
         url: stub.url,
-        remote: stub.remote,
+        remote: "origin",
         onAuth: expect.any(Function),
       }),
     );

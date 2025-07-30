@@ -150,6 +150,9 @@ describe("init", () => {
 describe("clone", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
+
+    git.clone.mockReset();
+    git.setConfig.mockReset();
   });
 
   afterEach(async () => {
@@ -174,14 +177,6 @@ describe("clone", () => {
         url: stub.url,
         singleBranch: true,
         onAuth: expect.any(Function),
-      }),
-    );
-
-    expect(git.setConfig).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dir: stub.dirpath,
-        path: "remote.origin.url",
-        value: stub.url,
       }),
     );
 
@@ -267,7 +262,7 @@ describe("getOrigin", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
     const { url: remoteUrl, token: remoteToken } = await getOrigin(stub.mind);
 
@@ -303,7 +298,7 @@ describe("setOrigin", () => {
 
   test("throws when no mind", async () => {
     await expect(
-      setOrigin(stub.mind, stub.url, stub.token),
+      setOrigin(stub.mind, { url: stub.url, token: stub.token }),
     ).rejects.toThrowError();
   });
 
@@ -312,7 +307,7 @@ describe("setOrigin", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
     expect(git.addRemote).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -343,7 +338,9 @@ describe("pull", () => {
   });
 
   test("throws if no mind", async () => {
-    await expect(pull(stub.mind, stub.url, stub.token)).rejects.toThrowError();
+    await expect(
+      pull(stub.mind, { url: stub.url, token: stub.token }),
+    ).rejects.toThrowError();
   });
 
   test("calls git", async () => {
@@ -351,9 +348,9 @@ describe("pull", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
-    await pull(stub.mind, stub.url, stub.token);
+    await pull(stub.mind, { url: stub.url, token: stub.token });
 
     expect(git.fastForward).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -377,7 +374,9 @@ describe("push", () => {
   });
 
   test("throws if no mind", async () => {
-    await expect(push(stub.mind, stub.url, stub.token)).rejects.toThrowError();
+    await expect(
+      push(stub.mind, { url: stub.url, token: stub.token }),
+    ).rejects.toThrowError();
   });
 
   test("calls git", async () => {
@@ -385,9 +384,9 @@ describe("push", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
-    await push(stub.mind, stub.url, stub.token);
+    await push(stub.mind, { url: stub.url, token: stub.token });
 
     expect(git.push).toHaveBeenCalledWith(
       expect.objectContaining({

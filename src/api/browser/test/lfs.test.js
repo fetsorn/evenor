@@ -285,7 +285,7 @@ describe("fetchAsset", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 
@@ -337,7 +337,7 @@ describe("uploadBlobsLFS", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
     // clear call history
     lfs.uploadBlobs.mockReset();
@@ -361,7 +361,7 @@ describe("uploadBlobsLFS", () => {
 
     await commit(stub.mind);
 
-    await setOrigin(stub.mind, stub.url, stub.token);
+    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
     await fs.promises.mkdir(`${stub.dirpath}/${lfsDir}`);
 

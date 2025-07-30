@@ -113,12 +113,10 @@ describe("clone", () => {
 
     expect(createRoot).toHaveBeenCalled();
 
-    expect(api.clone).toHaveBeenCalledWith(
-      stub.id,
-      undefined,
-      testCase.url,
-      testCase.token,
-    );
+    expect(api.clone).toHaveBeenCalledWith(stub.id, undefined, {
+      url: testCase.url,
+      token: testCase.token,
+    });
 
     expect(readSchema).toHaveBeenCalledWith(stub.id);
 

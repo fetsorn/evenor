@@ -187,7 +187,7 @@ export async function clone(mind, name, remote) {
     throw e;
   }
 
-  // if clone is successful, try to set url
+  // if clone is successful, try to set token
   try {
     if (remote.token !== undefined) {
       await git.setConfig({
@@ -210,8 +210,10 @@ export async function clone(mind, name, remote) {
  * @param {String} remoteUrl -
  * @param {String} remoteToken -
  */
-export async function setOrigin(mind, remoteUrl, remoteToken) {
+export async function setOrigin(mind, remote) {
   const dir = await findMind(mind);
+
+  const { url: remoteUrl, token: remoteToken } = remote;
 
   await git.addRemote({
     fs,

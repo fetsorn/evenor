@@ -224,7 +224,11 @@ export async function onSearch(field, value) {
       }),
     );
 
-    if (field.startsWith(".")) return undefined;
+    if (field.startsWith(".")) {
+      setStore("loading", false);
+
+      return undefined;
+    }
 
     const { abortPreviousStream, startStream } = await selectStream(
       store.schema,

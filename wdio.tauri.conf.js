@@ -9,7 +9,7 @@ export const config = {
   runner: "local",
   hostname: "localhost",
   port: 4444,
-  specs: ["./src/test/specs/tauri/*.test.js"],
+  specs: ["./src/test/tauri/*.test.js"],
   maxInstances: 1,
   capabilities: [
     {

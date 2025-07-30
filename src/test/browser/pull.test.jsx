@@ -1,6 +1,6 @@
 import { render } from "@solidjs/testing-library";
-import "../../setup.js";
-import App from "../../../layout/layout.jsx";
+import "../setup.js";
+import App from "../../layout/layout.jsx";
 import { testPull } from "../common/index.js";
 import { cleanup } from "./cleanup.js";
 

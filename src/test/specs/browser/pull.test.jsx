@@ -10,7 +10,7 @@ describe("pull", () => {
     render(() => <App />);
   });
 
-  //testPull();
+  testPull();
 
   afterEach(async () => {
     //await browser.debug();

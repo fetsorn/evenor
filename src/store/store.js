@@ -1,12 +1,8 @@
 import { createContext } from "solid-js";
-import api from "@/api/index.js";
-import { findMind } from "@/api/browser/io.js";
-import csvs from "@fetsorn/csvs-js";
-import { fs } from "@/api/browser/lightningfs.js";
 import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { push, pull, createRoot, loadMindRecord } from "@/store/record.js";
+import { push, pull, createRoot } from "@/store/record.js";
 import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
@@ -143,6 +139,8 @@ export async function onRecordEdit(path, value) {
  * @param {object} recordNew -
  */
 export async function onRecordSave(recordOld, recordNew) {
+  setStore("loading", true);
+
   const records = await saveRecord(
     store.mind.mind,
     new URLSearchParams(store.searchParams).get("_"),
@@ -157,6 +155,8 @@ export async function onRecordSave(recordOld, recordNew) {
       state.record = undefined;
     }),
   );
+
+  setStore("loading", false);
 }
 
 /**
@@ -166,6 +166,8 @@ export async function onRecordSave(recordOld, recordNew) {
  * @param {object} record -
  */
 export async function onRecordWipe(record) {
+  setStore("loading", true);
+
   const records = await wipeRecord(
     store.mind.mind,
     new URLSearchParams(store.searchParams).get("_"),
@@ -178,6 +180,8 @@ export async function onRecordWipe(record) {
       state.records = records;
     }),
   );
+
+  setStore("loading", false);
 }
 
 /**
@@ -198,6 +202,8 @@ export function appendRecord(record) {
  * @param {String} value -
  */
 export async function onSearch(field, value) {
+  setStore("loading", true);
+
   try {
     // update searchParams
     const searchParams = changeSearchParams(
@@ -251,9 +257,18 @@ export async function onSearch(field, value) {
       }),
     );
   }
+
+  setStore("loading", false);
 }
 
+// here to reproduce the ev.error heisenbug
 export async function onFoo(m) {
+  setStore("loading", true);
+
+  const { findMind } = await import("@/api/browser/io.js");
+  const csvs = await import("@fetsorn/csvs-js");
+  const { fs } = await import("@/api/browser/lightningfs.js");
+
   //onMindChange(`/${props.item.mind}`, `_=${item["branch"]}`)
   const { mind, schema, searchParams } = await changeMind(`/${m}`, "_=event");
 
@@ -301,6 +316,8 @@ export async function onFoo(m) {
   } catch (e) {
     console.error(e);
   }
+
+  setStore("loading", false);
 }
 
 /**
@@ -358,6 +375,8 @@ export async function onMindChange(pathname, searchString) {
  * @param {String} remoteToken -
  */
 export async function onClone(mind, name, remoteUrl, remoteToken) {
+  setStore("loading", true);
+
   try {
     const { mind: mindRecord } = await clone(
       mind,
@@ -375,6 +394,8 @@ export async function onClone(mind, name, remoteUrl, remoteToken) {
     console.log("clone failed", e);
     // do nothing
   }
+
+  setStore("loading", false);
 }
 
 /**
@@ -494,5 +515,9 @@ export async function warp(branch, value, cognate) {
  * @param {object} record -
  */
 export async function onStartup() {
+  setStore("loading", true);
+
   createRoot();
+
+  setStore("loading", false);
 }

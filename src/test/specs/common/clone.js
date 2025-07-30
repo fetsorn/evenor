@@ -21,6 +21,10 @@ export async function clone() {
   await click(await $("aria/Yes"));
   await (await $("aria/Yes")).waitForExist({ reverse: true, timeout: 5000 });
 
+  await (
+    await $("aria/Loading...")
+  ).waitForExist({ reverse: true, timeout: 5000 });
+
   await save();
 }
 

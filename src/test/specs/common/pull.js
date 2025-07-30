@@ -7,15 +7,6 @@ export async function pull() {
   // edit
   await click(await $("aria/edit"));
 
-  // with
-  await click(
-    await $("aria/origin_url -")
-      .nextElement()
-      .nextElement()
-      .nextElement()
-      .nextElement(),
-  );
-
   await setValue(
     await $("aria/origin_url -"),
     "http://localhost:8174/test-mind2.git",
@@ -24,8 +15,8 @@ export async function pull() {
   await click(await $("aria/pull"));
 
   await (
-    await $("aria/Loading")
-  ).waitUntil(() => {}, { reverse: true, timeout: 5000 });
+    await $("aria/Loading...")
+  ).waitForExist({ reverse: true, timeout: 5000 });
 
   await save();
 }

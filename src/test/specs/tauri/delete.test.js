@@ -1,4 +1,4 @@
-import { testDelete } from "../integration.test.js";
+import { testDelete } from "../common/index.js";
 
 describe("delete", () => {
   testDelete();

@@ -1,4 +1,4 @@
-import { testCreateEvent } from "../integration.test.js";
+import { testCreateEvent } from "../common/index.js";
 
 describe("create event", () => {
   testCreateEvent();

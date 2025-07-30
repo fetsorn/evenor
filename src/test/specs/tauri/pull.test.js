@@ -1,4 +1,4 @@
-import { testPull } from "../integration.test.js";
+import { testPull } from "../common/index.js";
 
 describe("pull", () => {
   //testPull();

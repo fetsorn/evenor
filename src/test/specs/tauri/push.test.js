@@ -1,4 +1,4 @@
-import { testPush } from "../integration.test.js";
+import { testPush } from "../common/index.js";
 
 describe("push", () => {
   //testPush();

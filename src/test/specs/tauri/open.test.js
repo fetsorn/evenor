@@ -1,4 +1,4 @@
-import { testOpen } from "../integration.test.js";
+import { testOpen } from "../common/index.js";
 
 describe("open", () => {
   testOpen();

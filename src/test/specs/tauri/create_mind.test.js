@@ -1,4 +1,4 @@
-import { testCreateMind } from "../integration.test.js";
+import { testCreateMind } from "../common/index.js";
 
 describe("create mind", () => {
   testCreateMind();

@@ -5,25 +5,25 @@ import { getSortedRecords } from "@/store/index.js";
 import { OverviewItem } from "./components/index.js";
 import styles from "./overview.module.css";
 
-export function Overview(props) {
+export function Overview() {
   const { store } = useContext(StoreContext);
 
   let parentRef;
 
-  const virtualizer = createVirtualizer({
-    get count() {
-      // here just to trigger recount on sort change
-      const searchParams = store.searchParams;
+  const virtualize = () =>
+    createVirtualizer({
+      get count() {
+        // here just to trigger recount on sort change
+        const searchParams = store.searchParams;
 
-      return store.records.length;
-    },
-    getScrollElement: () => parentRef,
-    estimateSize: () => 35,
-    overscan: 5,
-  });
+        return store.records.length;
+      },
+      getScrollElement: () => parentRef,
+      estimateSize: () => 35,
+      overscan: 5,
+    });
 
-  // overview.test needs this to be a variable
-  const virtualItems = virtualizer.getVirtualItems();
+  const virtualizer = virtualize();
 
   return (
     <div ref={parentRef} className={styles.overview}>
@@ -32,7 +32,7 @@ export function Overview(props) {
       <div
         className={styles.foo}
         style={{
-          height: `${virtualizer.getTotalSize()}px`,
+          height: `${virtualize().getTotalSize()}px`,
         }}
       >
         <For
@@ -40,7 +40,11 @@ export function Overview(props) {
             // here just to trigger render on sort change
             const searchParams = store.searchParams;
 
-            return virtualItems;
+            // for some reason we need this for test to pass
+            virtualizer.getVirtualItems().toString();
+
+            // need to call virtualize each time to re-render on store.records = []
+            return virtualize().getVirtualItems();
           })()}
           fallback={
             <span>press "new" in the top right corner to add entries</span>
@@ -61,7 +65,7 @@ export function Overview(props) {
                   // https://github.com/TanStack/virtual/issues/930
                   node.dataset.index = virtualRow.index.toString();
 
-                  virtualizer.measureElement(node);
+                  virtualize().measureElement(node);
                 }}
               >
                 <OverviewItem

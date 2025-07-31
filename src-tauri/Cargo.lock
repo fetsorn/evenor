@@ -1000,6 +1000,7 @@ dependencies = [
 [[package]]
 name = "csvs"
 version = "0.2.0"
+source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#78d4cb46fa931bcf3067b562d6dd20c1e33b3171"
 dependencies = [
  "assert-json-diff",
  "async-stream",

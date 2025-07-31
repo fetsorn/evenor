@@ -9,7 +9,7 @@
     "frontendDist": "../dist"
   },
   "app": {
-    "withGlobalTauri": false,
+    "withGlobalTauri": true,
     "windows": [
       {
         "fullscreen": false,
@@ -27,6 +27,7 @@
     "active": true,
     "targets": "all",
     "copyright": "GPLv3",
+    "category": "Utilities",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -35,7 +36,7 @@
       "icons/icon.ico"
     ],
     "macOS": {
-      "entitlements": "entitlements.plist"
+      "entitlements": "./entitlements.plist"
     },
     "iOS": {
       "developmentTeam": "PU6CTXHGJ5"

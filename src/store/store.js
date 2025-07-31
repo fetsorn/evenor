@@ -52,8 +52,7 @@ export function getFilterQueries() {
   return Array.from(
     new URLSearchParams(store.searchParams)
       .entries()
-      .filter(([key]) => key !== ".sortDirection"),
-  );
+  ).filter(([key]) => key !== ".sortDirection");
 }
 
 /**
@@ -286,7 +285,7 @@ export async function onFoo(m) {
 
   // remove all evenor-specific searchParams before passing to csvs
   const searchParamsWithoutCustom = new URLSearchParams(
-    searchParams.entries().filter(([key]) => !key.startsWith(".")),
+    Array.from(searchParams.entries()).filter(([key]) => !key.startsWith(".")),
   );
 
   const query = searchParamsToQuery(store.schema, searchParamsWithoutCustom);

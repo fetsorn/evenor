@@ -1,5 +1,5 @@
 use crate::{Mind, Result}; use csvs::{Dataset, Entry, IntoValue};
-use tauri::{ipc::Channel, AppHandle, Runtime};
+use tauri::{ipc::Channel, AppHandle, Runtime, Manager};
 use async_stream::try_stream;
 use futures_util::stream::StreamExt;
 use futures_util::pin_mut;

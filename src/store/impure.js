@@ -83,7 +83,7 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
 
   // remove all evenor-specific searchParams before passing to csvs
   const searchParamsWithoutCustom = new URLSearchParams(
-    searchParams.entries().filter(([key]) => !key.startsWith(".")),
+    Array.from(searchParams.entries()).filter(([key]) => !key.startsWith(".")),
   );
 
   const query = searchParamsToQuery(schema, searchParamsWithoutCustom);

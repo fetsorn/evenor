@@ -8,6 +8,7 @@ pub async fn init<R>(app: AppHandle<R>, mind: &str, name: Option<&str>) -> Resul
 where
     R: Runtime,
 {
+    println!("yes");
     let mind = Mind::new(app, mind);
 
     mind.make_mind(name).await?;

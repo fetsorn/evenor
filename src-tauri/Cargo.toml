@@ -29,6 +29,7 @@ backtrace = "0.3.74"
 crossterm = "0.28.1"
 assert-json-diff = "2.0.2"
 log = "0.4.25"
+openssl-sys = { version = "0.9", features = ["vendored"] }
 tauri-plugin-dialog = "2.2.0"
 zip = "2.2.2"
 walkdir = "2.5.0"

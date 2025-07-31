@@ -28,9 +28,7 @@ export function Filter() {
 
           return Array.from(
             new URLSearchParams(store.searchParams)
-              .entries()
-              .filter(([key]) => key !== ".sortDirection"),
-          );
+              .entries()).filter(([key]) => key !== ".sortDirection");
         })()}
       >
         {(item, index) => {

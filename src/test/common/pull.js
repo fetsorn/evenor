@@ -3,14 +3,11 @@ import { clone } from "./clone.js";
 import { open } from "./open.js";
 import { save } from "./create.js";
 
-export async function pull() {
+export async function pull(url) {
   // edit
   await click(await $("aria/edit"));
 
-  await setValue(
-    await $("aria/origin_url -"),
-    "http://localhost:8174/test-mind2.git",
-  );
+  await setValue(await $("aria/origin_url -"), url);
 
   await click(await $("aria/pull"));
 
@@ -23,9 +20,9 @@ export async function pull() {
 
 export function testPull() {
   it("should pull a mind", async () => {
-    await clone();
+    await clone("http://localhost:8174/test-mind1.git");
 
-    await pull();
+    await pull("http://localhost:8174/test-mind2.git");
 
     // TODO check that record changed in the overview
 

@@ -1,7 +1,9 @@
 import viteConfig from "./vite.config.js";
 
+let gitServer;
+
 export const config = {
-  specs: [["./src/test/browser/pull.test.jsx"]],
+  specs: [["./src/test/browser/*.test.jsx"]],
   runner: [
     "browser",
     {
@@ -12,7 +14,7 @@ export const config = {
     {
       browserName: "firefox",
       "moz:firefoxOptions": {
-        // headless breaks csvs.selectStream with "ev.error is undefined"
+        //NOTE: headless breaks csvs.selectStream with "ev.error is undefined"
         //args: ["-headless", "--window-size=1024,768"],
         log: { level: "error" },
       },
@@ -33,4 +35,23 @@ export const config = {
   //connectionRetryCount: 3,
   //services: [],
   reporters: ["spec"],
+  beforeSession: async () => {
+    const http = await import("http");
+    const path = await import("path");
+    const { default: factory } = await import(
+      "git-http-mock-server/middleware.js"
+    );
+    const { default: cors } = await import("git-http-mock-server/cors.js");
+
+    var config = {
+      root: path.resolve(import.meta.dirname, "src/test/fixtures/bare"),
+      glob: "*",
+      route: "/",
+    };
+    gitServer = http.createServer(cors(factory(config)));
+    gitServer.listen(8174);
+  },
+  afterSession: () => {
+    gitServer.close();
+  },
 };

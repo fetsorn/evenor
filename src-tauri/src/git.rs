@@ -53,13 +53,13 @@ where
 
     let repo = Repository::open(&mind_dir)?;
 
-    repo.pull()?;
+    repo.pull(&remote)?;
 
     Ok(())
 }
 
 #[tauri::command]
-pub async fn push<R>(app: AppHandle<R>, mind: &str) -> Result<()>
+pub async fn push<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
 where
     R: Runtime,
 {
@@ -69,7 +69,7 @@ where
 
     let repository = Repository::open(&mind_dir)?;
 
-    repository.push()?;
+    repository.push(&remote)?;
 
     Ok(())
 }

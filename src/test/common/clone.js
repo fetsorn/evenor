@@ -2,7 +2,7 @@ import { click, setValue } from "./actions.js";
 import { draft, save } from "./create.js";
 import { open } from "./open.js";
 
-export async function clone() {
+export async function clone(url) {
   await draft();
 
   await setValue(await $("aria/name -"), "foobar");
@@ -11,10 +11,7 @@ export async function clone() {
 
   await click(await $("aria/origin_url"));
 
-  await setValue(
-    await $("aria/origin_url -"),
-    "http://localhost:8174/test-mind1.git",
-  );
+  await setValue(await $("aria/origin_url -"), url);
 
   await click(await $("aria/clone..."));
 
@@ -30,7 +27,7 @@ export async function clone() {
 
 export function testClone() {
   it("should clone a mind", async () => {
-    await clone();
+    await clone("http://localhost:8174/test-mind1.git");
 
     await open();
 

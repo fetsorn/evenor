@@ -3,20 +3,15 @@ use crate::Result;
 use std::path::PathBuf;
 use tauri::{Manager, Runtime, State};
 
-#[cfg(test)]
 pub fn get_app_data_dir<R: Runtime>(mind: &Mind<R>) -> Result<PathBuf> {
-    // state is initialized in the test case
-    // /tmp/t####-0 on linux
-    let temp_path: State<PathBuf> = mind.app.state();
+    // initialized with .manage() on app creation
+    // in tests as temporary path, /tmp/t####-0 on linux
+    // in production from cli arguments or xdg, ~/.loca/share/com.evenor on linux
+    let data_dir: State<PathBuf> = mind.app.state();
 
-    // reference to get inner out of state, then clone to move out of scope
-    let app_data_dir: PathBuf = temp_path.inner().clone();
+    let app_data_dir: PathBuf = data_dir.inner().clone();
 
-    Ok(app_data_dir)
-}
-
-#[cfg(not(test))]
-pub fn get_app_data_dir<R: Runtime>(mind: &Mind<R>) -> Result<PathBuf> {
+    // mind.app.path().app_data_dir()?
     // .local/share on linux
-    Ok(mind.app.path().app_data_dir()?)
+    Ok(app_data_dir)
 }

@@ -80,23 +80,20 @@ export async function commit(mind) {
 }
 
 // fresh clone from url to mind dir, symlink to name
-export async function clone(mind, remoteUrl, remoteToken, name) {
+export async function clone(mind, name, remote) {
   return invoke("clone", {
     mind,
     name,
-    remote: {
-      url: remoteUrl,
-      token: remoteToken,
-    },
+    remote,
   });
 }
 
-export async function push(mind) {
-  return invoke("push", { mind });
+export async function push(mind, remote) {
+  return invoke("push", { mind, remote });
 }
 
-export async function pull(mind) {
-  return invoke("pull", { mind });
+export async function pull(mind, remote) {
+  return invoke("pull", { mind, remote });
 }
 
 export async function uploadBlobsLFS(mind, remote, files) {

@@ -10,7 +10,7 @@ describe("push", () => {
     render(() => <App />);
   });
 
-  //testPush();
+  testPush();
 
   afterEach(async () => {
     //await browser.debug();

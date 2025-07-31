@@ -10,7 +10,7 @@ export const config = {
   runner: "local",
   hostname: "localhost",
   port: 4444,
-  specs: ["./src/test/tauri/push.test.js"],
+  specs: ["./src/test/tauri/*.test.js"],
   maxInstances: 1,
   capabilities: [
     {
@@ -54,6 +54,13 @@ export const config = {
     };
     gitServer = http.createServer(cors(factory(config)));
     gitServer.listen(8174);
+  },
+  afterTest: async () => {
+    const path = await import("path");
+    const fs = await import("fs");
+
+    // remove /tmp/store to reset test state
+    await fs.promises.rm(path.join(tmpdir(), "store"), { recursive: true });
   },
   // clean up the `tauri-driver` process we spawned at the start of the session
   afterSession: () => {

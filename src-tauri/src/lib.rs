@@ -20,7 +20,10 @@ fn greet(name: &str) -> Result<String> {
 //mobile entry point must have 0 arguments
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    create_app(tauri::Builder::default()).run(|_app_handle, event| match event {
+    create_app(tauri::Builder::default().plugin(
+        tauri_plugin_log::Builder::new().build(), // log plugin is here because log breaks mock_builder in tests
+    ))
+    .run(|_app_handle, event| match event {
         tauri::RunEvent::ExitRequested { api, .. } => {
             api.prevent_exit();
         }

@@ -18,6 +18,15 @@ fn main() {
 
     evenor_lib::create_app(
         tauri::Builder::default()
+            .plugin(
+                tauri_plugin_log::Builder::new()
+                    .target(tauri_plugin_log::Target::new(
+                        tauri_plugin_log::TargetKind::LogDir {
+                            file_name: Some("logs".to_string()),
+                        },
+                    ))
+                    .build(),
+            ) // log plugin is here because log breaks mock_builder in tests
             .setup(|app| {
                 let data_dir = match cli.data_dir {
                     Some(p) => std::path::Path::new(&p).to_owned(),

@@ -8,6 +8,8 @@ pub async fn init<R>(app: AppHandle<R>, mind: &str, name: Option<&str>) -> Resul
 where
     R: Runtime,
 {
+    log::info!("git init");
+
     let mind = Mind::new(app, mind);
 
     mind.make_mind(name).await?;
@@ -91,7 +93,7 @@ where
 }
 
 #[tauri::command]
-pub async fn get_origin<R>(app: AppHandle<R>, mind: &str) -> Result<Origin>
+pub async fn get_origin<R>(app: AppHandle<R>, mind: &str) -> Result<Option<Origin>>
 where
     R: Runtime,
 {
@@ -101,9 +103,7 @@ where
 
     let repository = Repository::open(&mind_dir)?;
 
-    let origin = repository.get_origin()?;
-
-    Ok(origin)
+    Ok(repository.get_origin())
 }
 
 #[tauri::command]

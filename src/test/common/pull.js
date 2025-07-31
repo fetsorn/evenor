@@ -24,8 +24,6 @@ export function testPull() {
 
     await pull("http://localhost:8174/test-mind2.git");
 
-    // TODO check that record changed in the overview
-
     await open();
 
     const element = await $("aria/found");

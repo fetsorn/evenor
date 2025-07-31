@@ -49,10 +49,9 @@ export function getFilterQueries() {
   if (store.searchParams === undefined) return [];
 
   // convert entries iterator to array for Index
-  return Array.from(
-    new URLSearchParams(store.searchParams)
-      .entries()
-  ).filter(([key]) => key !== ".sortDirection");
+  return Array.from(new URLSearchParams(store.searchParams).entries()).filter(
+    ([key]) => key !== ".sortDirection",
+  );
 }
 
 /**

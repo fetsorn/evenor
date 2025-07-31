@@ -318,12 +318,13 @@ export function recordsToSchema(schemaRecord, metaRecords) {
   const schema = branches.reduce((accBranch, branch) => {
     const relationsPartial = schemaRelations.reduce(
       (accTrunk, [trunk, leaves]) => {
+        const leavesArray = Array.isArray(leaves) ? leaves : [leaves];
         // if old is array, [ ...old, new ]
         // if old is string, [ old, new ]
         // is old is undefined, [ new ]
-        const trunkPartial = leaves.includes(branch) ? [trunk] : [];
+        const trunkPartial = leavesArray.includes(branch) ? [trunk] : [];
 
-        const leavesPartial = trunk === branch ? leaves : [];
+        const leavesPartial = trunk === branch ? leavesArray : [];
 
         return {
           trunks: [...accTrunk.trunks, ...trunkPartial],

@@ -30,9 +30,7 @@ pub fn find_mind<R: Runtime>(mind: &Mind<R>) -> Result<Option<PathBuf>> {
                 Some(s) => s,
             };
 
-            Regex::new(&format!("^{}", mind.mind))
-                .unwrap()
-                .is_match(s)
+            Regex::new(&format!("^{}", mind.mind)).unwrap().is_match(s)
         });
 
     let existing_mind: Option<PathBuf> = match existing_entry {

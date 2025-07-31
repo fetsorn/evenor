@@ -1,10 +1,11 @@
-use crate::{Mind, Result}; use csvs::{Dataset, Entry, IntoValue};
-use tauri::{ipc::Channel, AppHandle, Runtime, Manager};
+use crate::{Mind, Result};
 use async_stream::try_stream;
-use futures_util::stream::StreamExt;
+use csvs::{Dataset, Entry, IntoValue};
 use futures_util::pin_mut;
+use futures_util::stream::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use tauri::{ipc::Channel, AppHandle, Manager, Runtime};
 
 #[tauri::command]
 pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
@@ -40,8 +41,7 @@ pub async fn select_stream<R: Runtime>(
     mind: &str,
     query: Value,
     on_event: Channel<SelectEvent>,
-) -> Result<()>
-{
+) -> Result<()> {
     let query: Entry = query.try_into()?;
 
     let mind = Mind::new(app, mind);
@@ -87,8 +87,7 @@ pub async fn select_stream<R: Runtime>(
 }
 
 #[tauri::command]
-pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()>
-{
+pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
     let record = record.try_into()?;
 
     let mind = Mind::new(app, mind);
@@ -103,8 +102,7 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 }
 
 #[tauri::command]
-pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()>
-{
+pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
     let record = record.try_into()?;
 
     let mind = Mind::new(app, mind);

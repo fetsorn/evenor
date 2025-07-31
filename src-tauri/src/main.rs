@@ -16,17 +16,20 @@ struct Cli {
 fn main() {
     let cli = Cli::parse();
 
-    evenor_lib::create_app(tauri::Builder::default().setup(|app| {
-        let data_dir = match cli.data_dir {
-            Some(p) => std::path::Path::new(&p).to_owned(),
-            // .local/share on linux
-            None => app.path().app_data_dir()?,
-        };
+    evenor_lib::create_app(
+        tauri::Builder::default()
+            .setup(|app| {
+                let data_dir = match cli.data_dir {
+                    Some(p) => std::path::Path::new(&p).to_owned(),
+                    // .local/share on linux
+                    None => app.path().app_data_dir()?,
+                };
 
-        app.manage(data_dir);
+                app.manage(data_dir);
 
-        Ok(())
-    }))
+                Ok(())
+            }),
+    )
     .run(|_app_handle, event| match event {
         tauri::RunEvent::ExitRequested { api, .. } => {
             api.prevent_exit();

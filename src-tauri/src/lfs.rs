@@ -34,7 +34,13 @@ where
 }
 
 #[tauri::command]
-pub async fn upload_blobs_lfs<R>(app: AppHandle<R>, mind: &str, url: &str, token: &str, files: &str) -> Result<()>
+pub async fn upload_blobs_lfs<R>(
+    app: AppHandle<R>,
+    mind: &str,
+    url: &str,
+    token: &str,
+    files: &str,
+) -> Result<()>
 where
     R: Runtime,
 {

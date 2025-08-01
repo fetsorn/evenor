@@ -1,8 +1,8 @@
 use crate::{Mind, Result};
 use async_stream::try_stream;
-//use csvs::{Dataset, Entry, IntoValue};
-//use futures_util::pin_mut;
-//use futures_util::stream::StreamExt;
+use csvs::{Dataset, Entry, IntoValue};
+use futures_util::pin_mut;
+use futures_util::stream::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{ipc::Channel, AppHandle, Manager, Runtime};
@@ -13,21 +13,19 @@ pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> 
             
     crate::log(&app, "select");
 
-    Ok(vec![])
+    let mind = Mind::new(app, mind);
 
-    //let query = query.try_into()?;
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let mind = Mind::new(app, mind);
+    let dataset = Dataset::new(&mind_dir);
+    
+    let query = query.try_into()?;
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let entries = dataset.select_record(vec![query]).await?;
 
-    //let dataset = Dataset::new(&mind_dir);
+    let records = entries.into_iter().map(|e| e.into_value()).collect();
 
-    //let entries = dataset.select_record(vec![query]).await?;
-
-    //let records = entries.into_iter().map(|e| e.into_value()).collect();
-
-    //Ok(records)
+    Ok(records)
 }
 
 #[derive(Clone, Serialize)]
@@ -52,61 +50,48 @@ pub async fn select_stream<R: Runtime>(
     
     crate::log(&app, "select stream");
 
+    let mind = Mind::new(app, mind);
+
+    let mind_dir = mind.find_mind()?.unwrap();
+
+    let dataset = Dataset::new(&mind_dir);
+        
+    let query: Entry = query.try_into()?;
+
+    let query_for_stream = query.clone();
+
+    let readable_stream = try_stream! {
+       yield query_for_stream;
+    };
+
+    let s = dataset.select_record_stream(readable_stream);
+
+    pin_mut!(s); // needed for iteration
+
     on_event
         .send(SelectEvent::Started {
-            query: query.clone(),
+            query: query.clone().into_value(),
         })
         .unwrap();
 
+    while let Some(entry) = s.next().await {
+        let entry = entry?;
+
+        on_event
+            .send(SelectEvent::Progress {
+                query: query.clone().into_value(),
+                entry: entry.into_value(),
+            })
+            .unwrap();
+    }
+
     on_event
         .send(SelectEvent::Finished {
-            query: query.clone(),
+            query: query.into_value(),
         })
         .unwrap();
 
     Ok(())
-    //let query: Entry = query.try_into()?;
-
-    //let mind = Mind::new(app, mind);
-
-    //let mind_dir = mind.find_mind()?.unwrap();
-
-    //let dataset = Dataset::new(&mind_dir);
-
-    //let query_for_stream = query.clone();
-
-    //let readable_stream = try_stream! {
-    //   yield query_for_stream;
-    //};
-
-    //let s = dataset.select_record_stream(readable_stream);
-
-    //pin_mut!(s); // needed for iteration
-
-    //on_event
-    //    .send(SelectEvent::Started {
-    //        query: query.clone().into_value(),
-    //    })
-    //    .unwrap();
-
-    //while let Some(entry) = s.next().await {
-    //    let entry = entry?;
-
-    //    on_event
-    //        .send(SelectEvent::Progress {
-    //            query: query.clone().into_value(),
-    //            entry: entry.into_value(),
-    //        })
-    //        .unwrap();
-    //}
-
-    //on_event
-    //    .send(SelectEvent::Finished {
-    //        query: query.into_value(),
-    //    })
-    //    .unwrap();
-
-    //Ok(())
 }
 
 #[tauri::command]
@@ -115,15 +100,17 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
     
     crate::log(&app, "update record");
 
-    //let record = record.try_into()?;
+    let mind = Mind::new(app.clone(), mind);
 
-    //let mind = Mind::new(app, mind);
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let dataset = Dataset::new(&mind_dir);
+    
+    let record = record.try_into()?;
 
-    //let dataset = Dataset::new(&mind_dir);
-
-    //dataset.update_record(vec![record]).await?;
+    dataset.update_record(vec![record]).await?;
+        
+    crate::log(&app, "di");
 
     Ok(())
 }
@@ -134,15 +121,15 @@ pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
     
     crate::log(&app, "delete record");
 
-    //let record = record.try_into()?;
+    let record = record.try_into()?;
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let dataset = Dataset::new(&mind_dir);
+    let dataset = Dataset::new(&mind_dir);
 
-    //dataset.delete_record(vec![record]).await?;
+    dataset.delete_record(vec![record]).await?;
 
     Ok(())
 }

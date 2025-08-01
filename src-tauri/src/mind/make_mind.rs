@@ -1,5 +1,5 @@
 use crate::{Mind, Result};
-//use git2kit::Repository;
+use git2kit::Repository;
 use std::fs::{create_dir_all, rename, write};
 use tauri::Runtime;
 
@@ -20,9 +20,9 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
         
         crate::log(&mind.app, "created dir");
 
-        //let repository = Repository::init(&mind_dir)?;
+        let repository = Repository::init(&mind_dir)?;
 
-        //repository.commit();
+        repository.commit();
 
         let gitignore_path = mind_dir.join(".gitignore");
 
@@ -32,7 +32,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
         write(&csvscsv_path, "csvs,0.0.2")?;
 
-        //repository.commit();
+        repository.commit();
 
         return Ok(());
     }
@@ -50,9 +50,9 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
         None => {
             create_dir_all(&mind_dir)?;
 
-            //let repository = Repository::init(&mind_dir)?;
+            let repository = Repository::init(&mind_dir)?;
 
-            //repository.commit();
+            repository.commit();
 
             let gitignore_path = mind_dir.join(".gitignore");
 
@@ -62,7 +62,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
             write(&csvscsv_path, "csvs,0.0.2")?;
 
-            //repository.commit();
+            repository.commit();
         }
     }
 

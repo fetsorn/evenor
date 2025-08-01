@@ -34,19 +34,19 @@ where
     
     crate::log(&app, "clone");
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //match mind.find_mind() {
-    //    Err(_) => (),
-    //    Ok(p) => match p {
-    //        None => (),
-    //        Some(d) => remove_dir_all(d)?,
-    //    },
-    //};
+    match mind.find_mind() {
+        Err(_) => (),
+        Ok(p) => match p {
+            None => (),
+            Some(d) => remove_dir_all(d)?,
+        },
+    };
 
-    //let mind_dir = mind.name_mind(name.as_deref())?;
+    let mind_dir = mind.name_mind(name.as_deref())?;
 
-    //let repo = Repository::clone(mind_dir, &remote).await?;
+    let repo = Repository::clone(mind_dir, &remote).await?;
 
     Ok(())
 }
@@ -60,13 +60,13 @@ where
     
     crate::log(&app, "pull");
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let repo = Repository::open(&mind_dir)?;
+    let repo = Repository::open(&mind_dir)?;
 
-    //repo.pull(&remote)?;
+    repo.pull(&remote)?;
 
     Ok(())
 }
@@ -80,13 +80,13 @@ where
     
     crate::log(&app, "push");
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let repository = Repository::open(&mind_dir)?;
+    let repository = Repository::open(&mind_dir)?;
 
-    //repository.push(&remote)?;
+    repository.push(&remote)?;
 
     Ok(())
 }
@@ -100,13 +100,13 @@ where
     
     crate::log(&app, "set origin");
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let repository = Repository::open(&mind_dir)?;
+    let repository = Repository::open(&mind_dir)?;
 
-    //repository.set_origin(remote)?;
+    repository.set_origin(remote)?;
 
     Ok(())
 }
@@ -120,15 +120,13 @@ where
     
     crate::log(&app, "get origin");
 
-    Ok(None)
+    let mind = Mind::new(app, mind);
 
-    //let mind = Mind::new(app, mind);
+    let mind_dir = mind.find_mind()?.unwrap();
 
-    //let mind_dir = mind.find_mind()?.unwrap();
+    let repository = Repository::open(&mind_dir)?;
 
-    //let repository = Repository::open(&mind_dir)?;
-
-    //Ok(repository.get_origin())
+    Ok(repository.get_origin())
 }
 
 #[tauri::command]
@@ -140,13 +138,13 @@ where
     
     crate::log(&app, "commit");
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //let mind_dir_path = mind.find_mind()?.unwrap();
+    let mind_dir_path = mind.find_mind()?.unwrap();
 
-    //let repo = Repository::open(&mind_dir_path)?;
+    let repo = Repository::open(&mind_dir_path)?;
 
-    //repo.commit();
+    repo.commit();
 
     Ok(())
 }

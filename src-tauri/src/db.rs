@@ -10,6 +10,8 @@ use tauri::{ipc::Channel, AppHandle, Manager, Runtime};
 #[tauri::command]
 pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
     log::info!("select");
+            
+    crate::log(&app, "select");
 
     Ok(vec![])
 
@@ -48,6 +50,8 @@ pub async fn select_stream<R: Runtime>(
 ) -> Result<()> {
     log::info!("select stream");
     
+    crate::log(&app, "select stream");
+
     on_event
         .send(SelectEvent::Started {
             query: query.clone(),
@@ -108,6 +112,8 @@ pub async fn select_stream<R: Runtime>(
 #[tauri::command]
 pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
     log::info!("update record");
+    
+    crate::log(&app, "update record");
 
     //let record = record.try_into()?;
 
@@ -125,6 +131,8 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 #[tauri::command]
 pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
     log::info!("delete record");
+    
+    crate::log(&app, "delete record");
 
     //let record = record.try_into()?;
 

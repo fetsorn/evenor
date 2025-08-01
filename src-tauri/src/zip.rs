@@ -7,6 +7,8 @@ where
     R: Runtime,
 {
     log::info!("zip");
+    
+    crate::log(&app, "zip");
 
     //let mind = Mind::new(app, mind);
 

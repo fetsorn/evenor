@@ -31,6 +31,8 @@ where
     R: Runtime,
 {
     log::info!("git clone");
+    
+    crate::log(&app, "clone");
 
     //let mind = Mind::new(app, mind);
 
@@ -55,6 +57,8 @@ where
     R: Runtime,
 {
     log::info!("git pull");
+    
+    crate::log(&app, "pull");
 
     //let mind = Mind::new(app, mind);
 
@@ -73,6 +77,8 @@ where
     R: Runtime,
 {
     log::info!("git push");
+    
+    crate::log(&app, "push");
 
     //let mind = Mind::new(app, mind);
 
@@ -91,6 +97,8 @@ where
     R: Runtime,
 {
     log::info!("git set origin");
+    
+    crate::log(&app, "set origin");
 
     //let mind = Mind::new(app, mind);
 
@@ -109,6 +117,8 @@ where
     R: Runtime,
 {
     log::info!("git get origin");
+    
+    crate::log(&app, "get origin");
 
     Ok(None)
 
@@ -127,6 +137,8 @@ where
     R: Runtime,
 {
     log::info!("git commit");
+    
+    crate::log(&app, "commit");
 
     //let mind = Mind::new(app, mind);
 

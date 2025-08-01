@@ -2,6 +2,7 @@ use crate::{Mind, Result};
 use git2kit::{Origin, Repository, Settings};
 use std::fs::remove_dir_all;
 use tauri::{ipc::Channel, AppHandle, Runtime};
+use crate::{log};
 
 #[tauri::command]
 pub async fn init<R>(app: AppHandle<R>, mind: &str, name: Option<&str>) -> Result<()>
@@ -9,10 +10,12 @@ where
     R: Runtime,
 {
     log::info!("git init");
+        
+    log(&app, "git init");
+    
+    let mind = Mind::new(app.clone(), mind);
 
-    //let mind = Mind::new(app, mind);
-
-    //mind.make_mind(name).await?;
+    mind.make_mind(name).await?;
 
     Ok(())
 }

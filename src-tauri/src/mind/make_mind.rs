@@ -1,13 +1,24 @@
 use crate::{Mind, Result};
 //use git2kit::Repository;
-use std::fs::{create_dir, rename, write};
+use std::fs::{create_dir_all, rename, write};
 use tauri::Runtime;
 
 pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
     let mind_dir = mind.name_mind(name)?;
+    
+    crate::log(&mind.app, "make");
+    
+    crate::log(&mind.app, &mind.mind);
+        
+    crate::log(&mind.app, mind_dir.clone().into_os_string().to_str().unwrap());
 
     if mind.mind == "root" {
-        create_dir(&mind_dir)?;
+        match create_dir_all(&mind_dir) {
+            Ok(_) => (),
+            Err(e) => crate::log(&mind.app, &e.to_string())?
+        };
+        
+        crate::log(&mind.app, "created dir");
 
         //let repository = Repository::init(&mind_dir)?;
 
@@ -37,7 +48,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
             }
         }
         None => {
-            create_dir(&mind_dir)?;
+            create_dir_all(&mind_dir)?;
 
             //let repository = Repository::init(&mind_dir)?;
 

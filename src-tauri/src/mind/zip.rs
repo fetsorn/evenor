@@ -76,7 +76,7 @@ pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
 mod test {
     use super::add_to_zip;
     use crate::{create_app, Mind, Result};
-    use std::fs::{create_dir, write, File};
+    use std::fs::{create_dir_all, write, File};
     use std::io::prelude::*;
     use tauri::test::{mock_builder, mock_context, noop_assets};
     use tauri::{Manager, State};
@@ -105,7 +105,7 @@ mod test {
 
         let mind_dir = mind.name_mind(None)?;
 
-        create_dir(&mind_dir)?;
+        create_dir_all(&mind_dir)?;
 
         let check_path = mind_dir.join("check.txt");
 

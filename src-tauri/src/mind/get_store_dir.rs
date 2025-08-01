@@ -1,5 +1,5 @@
 use crate::{Mind, Result};
-use std::fs::create_dir;
+use std::fs::create_dir_all;
 use std::path::PathBuf;
 use tauri::Runtime;
 
@@ -10,7 +10,7 @@ pub fn get_store_dir<R: Runtime>(mind: &Mind<R>) -> Result<PathBuf> {
     let store_dir = app_data_dir.join("store");
 
     if !store_dir.exists() {
-        create_dir(&store_dir)?;
+        create_dir_all(&store_dir)?;
     }
 
     Ok(store_dir)

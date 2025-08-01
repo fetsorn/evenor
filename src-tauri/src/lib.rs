@@ -10,6 +10,16 @@ pub use error::{Error, Result};
 pub use mind::Mind;
 use tauri::Manager;
 
+pub fn log<R: tauri::Runtime>(app: &tauri::AppHandle<R>, message: &str) -> Result<()> {
+    let webview = app.get_webview_window("main").unwrap();
+
+    let code = format!("console.log('{message}')");
+    
+    webview.eval(code)?;
+    
+    Ok(())
+}
+
 #[tauri::command]
 fn greet(name: &str) -> Result<String> {
     log::info!("Tauri is awesome!");
@@ -23,10 +33,19 @@ fn greet(name: &str) -> Result<String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     create_app(tauri::Builder::default().setup(|app| {
+            log(&app.handle(), "hello from Rust");
+
             let data_dir = app.path().app_data_dir().expect("App Data Directory is required to run this application.");
             
+            log(&app.handle(), data_dir.clone().into_os_string().to_str().unwrap());
+            
             if !data_dir.exists() {
-                std::fs::create_dir(&data_dir).expect("Could not create application bundle location in data directory");
+                log(&app.handle(), "does not exist");
+                
+                match std::fs::create_dir_all(&data_dir) {
+                  Ok(_) => (),
+                  Err(e) => log(&app.handle(), &e.to_string())?
+                };
             }
 
             app.manage(data_dir);

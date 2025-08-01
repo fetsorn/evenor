@@ -35,7 +35,7 @@ fn main() {
                 };
                 
             if !data_dir.exists() {
-                std::fs::create_dir(&data_dir).expect("Could not create application bundle location in data directory");
+                std::fs::create_dir_all(&data_dir).expect("Could not create application bundle location in data directory");
             }
 
                 app.manage(data_dir);

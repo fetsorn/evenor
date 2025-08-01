@@ -10,9 +10,9 @@ where
 {
     log::info!("git init");
 
-    let mind = Mind::new(app, mind);
+    //let mind = Mind::new(app, mind);
 
-    mind.make_mind(name).await?;
+    //mind.make_mind(name).await?;
 
     Ok(())
 }
@@ -27,19 +27,21 @@ pub async fn clone<R>(
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("git clone");
 
-    match mind.find_mind() {
-        Err(_) => (),
-        Ok(p) => match p {
-            None => (),
-            Some(d) => remove_dir_all(d)?,
-        },
-    };
+    //let mind = Mind::new(app, mind);
 
-    let mind_dir = mind.name_mind(name.as_deref())?;
+    //match mind.find_mind() {
+    //    Err(_) => (),
+    //    Ok(p) => match p {
+    //        None => (),
+    //        Some(d) => remove_dir_all(d)?,
+    //    },
+    //};
 
-    let repo = Repository::clone(mind_dir, &remote).await?;
+    //let mind_dir = mind.name_mind(name.as_deref())?;
+
+    //let repo = Repository::clone(mind_dir, &remote).await?;
 
     Ok(())
 }
@@ -49,13 +51,15 @@ pub async fn pull<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("git pull");
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    //let mind = Mind::new(app, mind);
 
-    let repo = Repository::open(&mind_dir)?;
+    //let mind_dir = mind.find_mind()?.unwrap();
 
-    repo.pull(&remote)?;
+    //let repo = Repository::open(&mind_dir)?;
+
+    //repo.pull(&remote)?;
 
     Ok(())
 }
@@ -65,13 +69,15 @@ pub async fn push<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("git push");
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    //let mind = Mind::new(app, mind);
 
-    let repository = Repository::open(&mind_dir)?;
+    //let mind_dir = mind.find_mind()?.unwrap();
 
-    repository.push(&remote)?;
+    //let repository = Repository::open(&mind_dir)?;
+
+    //repository.push(&remote)?;
 
     Ok(())
 }
@@ -81,13 +87,15 @@ pub async fn set_origin<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Res
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("git set origin");
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    //let mind = Mind::new(app, mind);
 
-    let repository = Repository::open(&mind_dir)?;
+    //let mind_dir = mind.find_mind()?.unwrap();
 
-    repository.set_origin(remote)?;
+    //let repository = Repository::open(&mind_dir)?;
+
+    //repository.set_origin(remote)?;
 
     Ok(())
 }
@@ -97,13 +105,17 @@ pub async fn get_origin<R>(app: AppHandle<R>, mind: &str) -> Result<Option<Origi
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("git get origin");
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    Ok(None)
 
-    let repository = Repository::open(&mind_dir)?;
+    //let mind = Mind::new(app, mind);
 
-    Ok(repository.get_origin())
+    //let mind_dir = mind.find_mind()?.unwrap();
+
+    //let repository = Repository::open(&mind_dir)?;
+
+    //Ok(repository.get_origin())
 }
 
 #[tauri::command]
@@ -111,13 +123,15 @@ pub fn commit<R>(app: AppHandle<R>, mind: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("git commit");
 
-    let mind_dir_path = mind.find_mind()?.unwrap();
+    //let mind = Mind::new(app, mind);
 
-    let repo = Repository::open(&mind_dir_path)?;
+    //let mind_dir_path = mind.find_mind()?.unwrap();
 
-    repo.commit();
+    //let repo = Repository::open(&mind_dir_path)?;
+
+    //repo.commit();
 
     Ok(())
 }

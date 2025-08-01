@@ -1,6 +1,5 @@
 use super::Mind;
 use crate::Result;
-use std::fs::create_dir;
 use std::path::PathBuf;
 use tauri::{Manager, Runtime, State};
 
@@ -12,9 +11,5 @@ pub fn get_app_data_dir<R: Runtime>(mind: &Mind<R>) -> Result<PathBuf> {
 
     let app_data_dir: PathBuf = data_dir.inner().clone();
 
-    create_dir(&app_data_dir);
-
-    // mind.app.path().app_data_dir()?
-    // .local/share on linux
     Ok(app_data_dir)
 }

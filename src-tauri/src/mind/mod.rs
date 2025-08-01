@@ -1,5 +1,5 @@
 use crate::Result;
-mod zip;
+//mod zip;
 use std::path::PathBuf;
 use tauri::{AppHandle, Runtime};
 mod find_mind;
@@ -51,6 +51,7 @@ where
     }
 
     pub async fn zip(&self) -> Result<()> {
-        zip::zip(self).await
+        Ok(())
+        //zip::zip(self).await
     }
 }

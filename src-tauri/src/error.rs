@@ -85,23 +85,23 @@ impl From<tauri::Error> for Error {
     }
 }
 
-impl From<zip::result::ZipError> for Error {
-    fn from(ctx: zip::result::ZipError) -> Error {
-        Error { inner: ctx.into() }
-    }
-}
+//impl From<zip::result::ZipError> for Error {
+//    fn from(ctx: zip::result::ZipError) -> Error {
+//        Error { inner: ctx.into() }
+//    }
+//}
 
-impl From<git2kit::Error> for Error {
-    fn from(ctx: git2kit::Error) -> Error {
-        Error { inner: ctx.into() }
-    }
-}
+//impl From<git2kit::Error> for Error {
+//    fn from(ctx: git2kit::Error) -> Error {
+//        Error { inner: ctx.into() }
+//    }
+//}
 
-impl From<csvs::error::Error> for Error {
-    fn from(ctx: csvs::error::Error) -> Error {
-        Error { inner: ctx.into() }
-    }
-}
+//impl From<csvs::error::Error> for Error {
+//    fn from(ctx: csvs::error::Error) -> Error {
+//        Error { inner: ctx.into() }
+//    }
+//}
 
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {

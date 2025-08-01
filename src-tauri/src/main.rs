@@ -26,13 +26,17 @@ fn main() {
                         },
                     ))
                     .build(),
-            ) // log plugin is here because log breaks mock_builder in tests
+            ) // log plugin is outside create_app because log breaks mock_builder in tests
             .setup(|app| {
                 let data_dir = match cli.data_dir {
                     Some(p) => std::path::Path::new(&p).to_owned(),
                     // .local/share on linux
                     None => app.path().app_data_dir()?,
                 };
+                
+            if !data_dir.exists() {
+                std::fs::create_dir(&data_dir).expect("Could not create application bundle location in data directory");
+            }
 
                 app.manage(data_dir);
 

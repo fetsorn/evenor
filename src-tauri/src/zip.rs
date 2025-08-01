@@ -6,9 +6,11 @@ pub async fn zip<R>(app: AppHandle<R>, mind: &str) -> Result<()>
 where
     R: Runtime,
 {
-    let mind = Mind::new(app, mind);
+    log::info!("zip");
 
-    mind.zip().await?;
+    //let mind = Mind::new(app, mind);
+
+    //mind.zip().await?;
 
     Ok(())
 }

@@ -5,3 +5,4 @@ export { NavigationBack } from "./navigation_back/navigation_back.jsx";
 export { NavigationNew } from "./navigation_new/navigation_new.jsx";
 export { NavigationRevert } from "./navigation_revert/navigation_revert.jsx";
 export { NavigationSave } from "./navigation_save/navigation_save.jsx";
+export { NavigationLoader } from "./navigation_loader/navigation_loader.jsx";

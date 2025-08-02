@@ -3,7 +3,7 @@ import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
-import { FilterSort } from "./filter_direction.jsx";
+import { FilterSort } from "./filter_sort.jsx";
 
 describe("FilterSort", () => {
   test("first to last", async () => {

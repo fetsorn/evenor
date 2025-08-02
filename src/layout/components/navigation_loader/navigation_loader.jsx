@@ -1,7 +1,7 @@
 import { useContext } from "solid-js";
 import { StoreContext } from "@/store/index.js";
 
-export function FilterLoader() {
+export function NavigationLoader() {
   const { store } = useContext(StoreContext);
 
   return (

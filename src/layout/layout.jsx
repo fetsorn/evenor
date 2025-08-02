@@ -6,6 +6,7 @@ import {
   NavigationNew,
   NavigationRevert,
   NavigationSave,
+  NavigationLoader,
 } from "./components/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
@@ -18,7 +19,7 @@ export function LayoutOverview() {
       <nav className={styles.buttonbar} title="navigationOverview">
         <NavigationBack />
 
-        <span></span>
+        <NavigationLoader />
 
         <NavigationNew />
       </nav>
@@ -41,7 +42,7 @@ export function LayoutProfile() {
             <nav className={styles.buttonbar} title="navigationProfile">
               <NavigationRevert />
 
-              <span></span>
+              <NavigationLoader />
 
               <NavigationSave />
             </nav>

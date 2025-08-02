@@ -8,7 +8,6 @@ import {
   FilterOption,
   FilterQuery,
   FilterScroll,
-  FilterLoader,
 } from "@/layout/filter/components/index.js";
 import styles from "./filter.module.css";
 
@@ -50,8 +49,6 @@ export function Filter() {
       <FilterCount />
 
       <FilterScroll />
-
-      <FilterLoader />
     </span>
   );
 }

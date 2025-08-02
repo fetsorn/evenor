@@ -1,4 +1,5 @@
 import { invoke, Channel } from "@tauri-apps/api/core";
+import { emit } from "@tauri-apps/api/event";
 
 export async function helloWorld(mind, someVariable = "") {
   return invoke("hello_world", { someVariable });
@@ -42,6 +43,9 @@ export async function selectStream(mind, query) {
 
         closeHandler = () => {
           try {
+            // ask tauri to stop streaming
+            emit("stop-stream");
+
             controller.close();
           } catch {
             // do nothing

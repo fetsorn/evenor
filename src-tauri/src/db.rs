@@ -5,7 +5,7 @@ use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::{ipc::Channel, AppHandle, Manager, Runtime};
+use tauri::{ipc::Channel, AppHandle, Manager, Runtime, Listener};
 
 #[tauri::command]
 pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
@@ -50,7 +50,7 @@ pub async fn select_stream<R: Runtime>(
     
     crate::log(&app, "select stream");
 
-    let mind = Mind::new(app, mind);
+    let mind = Mind::new(app.clone(), mind);
 
     let mind_dir = mind.find_mind()?.unwrap();
 
@@ -74,8 +74,24 @@ pub async fn select_stream<R: Runtime>(
         })
         .unwrap();
 
+    // clone handle here to move into the closure
+    let app_for_event = app.clone();
+
+    app_for_event.manage(false);
+
+    app.once("stop-stream", move |event| {
+        log::info!("stopped");
+        app_for_event.manage(true);
+    });
+
     while let Some(entry) = s.next().await {
+        let is_stopped: bool = *app.state();
+
+        if is_stopped { break };
+
         let entry = entry?;
+
+        //log::info!("{:#?}", serde_json::to_string(&entry.clone().into_value()).unwrap());
 
         on_event
             .send(SelectEvent::Progress {

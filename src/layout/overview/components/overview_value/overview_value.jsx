@@ -17,12 +17,13 @@ export function OverviewValue(props) {
   //  store.schema[cognate].trunks.includes(t),
   //);
 
-  const cognatePartial = (store.schema[props.branch].cognates ?? []).concat(
-    basePartial,
-  );
+  // empty object if no branch in schema
+  const branchObject = store.schema[props.branch] ?? {};
+
+  const cognatePartial = (branchObject.cognates ?? []).concat(basePartial);
 
   const recurses = cognatePartial.filter((cognate) =>
-    store.schema[props.branch].trunks.includes(cognate),
+    (branchObject.trunks ?? []).includes(cognate),
   );
 
   const neighbours = cognatePartial.filter(

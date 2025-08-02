@@ -93,3 +93,4 @@ out/
 /.vite/
 /public/
 __screenshots__
+/src-tauri/.cargo/config.toml

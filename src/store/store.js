@@ -241,7 +241,9 @@ export async function onSearch(field, value) {
     setStore(
       produce((state) => {
         // solid store tries to call the function, so pass a factory here
-        state.abortPreviousStream = () => abortPreviousStream;
+        state.abortPreviousStream = () => {
+          abortPreviousStream();
+        };
         // erase existing records
         state.records = [];
       }),

@@ -49,8 +49,7 @@ export async function selectStream(mind, query) {
 
   const strm = queryStream.pipeThrough(selectStream);
 
-  // let closeHandler = () => strm.cancel();
-  let closeHandler = () => {};
+  let closeHandler = () => strm.cancel();
 
   return { strm, closeHandler };
 }

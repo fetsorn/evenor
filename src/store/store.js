@@ -27,7 +27,7 @@ export const [store, setStore] = createStore({
  * @export function
  * @returns {Function}
  */
-export function getSortedRecords(index) {
+export function getSortedRecords() {
   const sortBy = new URLSearchParams(store.searchParams).get(".sortBy");
 
   const sortDirection = new URLSearchParams(store.searchParams).get(
@@ -36,7 +36,7 @@ export function getSortedRecords(index) {
 
   const records = store.records.toSorted(sortCallback(sortBy, sortDirection));
 
-  return records[index];
+  return records;
 }
 
 /**
@@ -223,6 +223,13 @@ export async function onSearch(field, value) {
     );
 
     if (field.startsWith(".")) {
+      if (field === ".sortDirection") {
+        setStore(
+          produce((state) => {
+            state.records = getSortedRecords();
+          }),
+        );
+      }
       setStore("loading", false);
 
       return undefined;

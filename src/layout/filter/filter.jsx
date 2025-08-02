@@ -4,7 +4,7 @@ import { StoreContext } from "@/store/index.js";
 import { Spoiler } from "@/layout/components/index.js";
 import {
   FilterCount,
-  FilterDirection,
+  FilterSort,
   FilterOption,
   FilterQuery,
   FilterScroll,
@@ -27,8 +27,8 @@ export function Filter() {
           const mind = store.mind;
 
           return Array.from(
-            new URLSearchParams(store.searchParams)
-              .entries()).filter(([key]) => key !== ".sortDirection");
+            new URLSearchParams(store.searchParams).entries(),
+          ).filter(([key]) => key !== ".sortDirection");
         })()}
       >
         {(item, index) => {
@@ -39,7 +39,7 @@ export function Filter() {
         }}
       </Index>
 
-      <FilterDirection />
+      <FilterSort />
 
       <Spoiler title={"search"}>
         <For each={getFilterOptions()} fallback={<></>}>

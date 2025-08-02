@@ -1,7 +1,7 @@
 import { useContext } from "solid-js";
 import { StoreContext, onSearch } from "@/store/index.js";
 
-export function FilterDirection() {
+export function FilterSort() {
   const { store } = useContext(StoreContext);
 
   return (

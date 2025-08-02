@@ -54,7 +54,6 @@
     "@fetsorn/csvs-js": "0.21.2",
     "@fetsorn/isogit-lfs": "^0.5.3",
     "@isomorphic-git/lightning-fs": "4.6.2",
-    "@tanstack/solid-virtual": "^3.13.12",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "buffer": "^6.0.3",

@@ -11,12 +11,12 @@ export function MenuSortDirection(props) {
         new URLSearchParams(store.searchParams).get(".sortDirection") === "last"
       }
       fallback={
-        <button className={cn(props.className)} onClick={() => onSearch(".sortDirection", "last")}>
+        <button id="sortDirectionFirst" className={cn(props.className)} onClick={() => onSearch(".sortDirection", "last")}>
           sort first
         </button>
       }
     >
-      <button className={cn(props.className)} onClick={() => onSearch(".sortDirection", "first")}>
+      <button id="sortDirectionLast" className={cn(props.className)} onClick={() => onSearch(".sortDirection", "first")}>
         sort last
       </button>
     </Show>

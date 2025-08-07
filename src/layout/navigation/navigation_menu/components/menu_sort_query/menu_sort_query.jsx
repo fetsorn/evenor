@@ -7,6 +7,7 @@ export function MenuSortQuery(props) {
 
   return (
     <select
+      id="selectSort"
       value={new URLSearchParams(store.searchParams).get(".sortBy")}
       onChange={({ target: { value } }) => onSearch(".sortBy", value)}
     >

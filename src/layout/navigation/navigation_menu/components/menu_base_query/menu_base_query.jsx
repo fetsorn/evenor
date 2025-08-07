@@ -7,6 +7,7 @@ export function MenuBaseQuery(props) {
 
   return (
     <select
+      id="selectBase"
       value={new URLSearchParams(store.searchParams).get("_")}
       onChange={({ target: { value } }) => onSearch("_", value)}
     >

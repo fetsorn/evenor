@@ -1,7 +1,7 @@
 import { createSignal, createEffect } from "solid-js";
 import cn from "classnames";
-import styles from "./navigation_menu.module.css";
 import { MenuSortDirection, MenuSortQuery, MenuBaseQuery } from "./components/index.js";
+import styles from "./navigation_menu.module.css";
 
 export function NavigationMenu() {
   const [isOpen, setIsOpen] = createSignal(false)
@@ -9,11 +9,19 @@ export function NavigationMenu() {
   function close(e) {
     // NOTE: can't check for document.getElementById('menu').contains
     // because by the time this triggers a button is no longer in the menu
-    if (e.target.className == styles.menuButton) {
+
+    const ids = [
+      "selectSort",
+      "selectBase",
+      "sortDirectionFirst",
+      "sortDirectionLast"
+    ];
+
+    if (ids.includes(e.target.id)) {
       // Clicked in box
     } else {
       // Clicked outside the box
-      //setIsOpen(false);
+      setIsOpen(false);
     }
   }
 

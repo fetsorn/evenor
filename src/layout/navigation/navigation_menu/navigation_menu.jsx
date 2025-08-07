@@ -1,9 +1,13 @@
 import { createSignal, createEffect } from "solid-js";
+import { useContext } from "solid-js";
+import { StoreContext } from "@/store/index.js";
 import cn from "classnames";
 import styles from "./navigation_menu.module.css";
-import { MenuSortDirection } from "./components/index.js";
+import { MenuSortDirection, MenuSortQuery, MenuBaseQuery } from "./components/index.js";
 
 export function NavigationMenu() {
+  const { store } = useContext(StoreContext);
+
   const [isOpen, setIsOpen] = createSignal(false)
 
   function close(e) {
@@ -36,20 +40,13 @@ export function NavigationMenu() {
 
       <div id="menu" className={cn(styles.menu, { [styles.opened]: isOpen() })}>
         {/*sort direction toggle*/}
-        <MenuSortDirection className={styles.menuButton} />
+        <MenuSortDirection />
 
         {/*sort query dropdown*/}
-        <button
-          className={styles.menuButton}
-        >
-          sort
-          </button>
+        <MenuSortQuery field={".sortBy"} value={new URLSearchParams(store.searchParams).get(".sortBy")} />
+
         {/*base query dropdown*/}
-        <button
-          className={styles.menuButton}
-        >
-          sort
-          </button>
+        <MenuBaseQuery field={"_"} value={new URLSearchParams(store.searchParams).get("_")} />
       </div>
     </div>
   );

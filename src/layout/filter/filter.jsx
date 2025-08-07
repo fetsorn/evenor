@@ -5,7 +5,6 @@ import { Spoiler } from "@/layout/components/index.js";
 import {
   FilterOption,
   FilterQuery,
-  FilterScroll,
 } from "@/layout/filter/components/index.js";
 import styles from "./filter.module.css";
 
@@ -25,7 +24,7 @@ export function Filter() {
 
           return Array.from(
             new URLSearchParams(store.searchParams).entries(),
-          ).filter(([key]) => key !== ".sortDirection");
+          ).filter(([key]) => key !== ".sortDirection" && key !== ".sortBy" && key !== "_");
         })()}
       >
         {(item, index) => {

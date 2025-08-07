@@ -1,6 +1,7 @@
 import history from "history/hash";
 import cn from "classnames";
 import { onMount, useContext } from "solid-js";
+import { MetaProvider, Title } from "@solidjs/meta";
 import { StoreContext, store, onMindChange, onStartup } from "@/store/index.js";
 import {
   NavigationBack,
@@ -70,6 +71,10 @@ export function App() {
 
   return (
     <StoreContext.Provider value={{ store }}>
+      <MetaProvider>
+        <Title>{"evenor – " + store.mind.name}</Title>
+      </MetaProvider>
+
       <main className={styles.main}>
         <LayoutOverview />
 

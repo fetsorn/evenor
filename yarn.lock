@@ -1763,6 +1763,11 @@
   resolved "https://registry.yarnpkg.com/@sindresorhus/merge-streams/-/merge-streams-4.0.0.tgz#abb11d99aeb6d27f1b563c38147a72d50058e339"
   integrity sha512-tlqY9xq5ukxTUZBmoOp+m61cqwQD5pHJtFY3Mn8CA8ps6yghLH/Hw8UPdqg4OLmFW3IFlcXnQNmo/dh8HzXYIQ==
 
+"@solidjs/meta@^0.29.4":
+  version "0.29.4"
+  resolved "https://registry.yarnpkg.com/@solidjs/meta/-/meta-0.29.4.tgz#28a444db5200d1c9e4e62d8762ea808d3e8beffd"
+  integrity sha512-zdIWBGpR9zGx1p1bzIPqF5Gs+Ks/BH8R6fWhmUa/dcK1L2rUC8BAcZJzNRYBQv74kScf1TSOs0EY//Vd/I0V8g==
+
 "@solidjs/testing-library@^0.8.10":
   version "0.8.10"
   resolved "https://registry.yarnpkg.com/@solidjs/testing-library/-/testing-library-0.8.10.tgz#26cb611ef18cf6557e6857c26f73a9c211756d60"

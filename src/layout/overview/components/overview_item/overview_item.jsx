@@ -20,10 +20,6 @@ export function OverviewItem(props) {
 
   return (
     <>
-      <Show when={canOpenMind} fallback={<></>}>
-        <span className={"name"}>{props.item.name} </span>
-      </Show>
-
       <OverviewRecord
         index={props.index}
         record={props.item}

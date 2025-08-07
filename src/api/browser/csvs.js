@@ -33,7 +33,6 @@ export async function select(mind, query) {
 export async function selectStream(mind, query) {
   const dir = await findMind(mind);
 
-  // TODO terminate previous stream
   const selectStream = csvs.selectRecordStream({
     fs,
     dir,

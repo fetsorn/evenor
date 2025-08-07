@@ -1,7 +1,7 @@
 import { useContext } from "solid-js";
 import { StoreContext, onRecordCreate } from "@/store/index.js";
 
-export function NavigationNew() {
+export function BottomNew() {
   const { store } = useContext(StoreContext);
 
   // if base is twig, it has no connections
@@ -19,7 +19,7 @@ export function NavigationNew() {
   };
   return (
     <Show when={canAdd()} fallback={<></>}>
-      <button className="navigationNew" onClick={() => onRecordCreate()}>
+      <button className="bottomNew" onClick={() => onRecordCreate()}>
         new
       </button>
     </Show>

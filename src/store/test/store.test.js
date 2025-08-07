@@ -142,7 +142,7 @@ describe("store", () => {
       const startStream = vi.fn();
 
       selectStream.mockImplementation(() => ({
-        abortPreviousStream: 3,
+        abortPreviousStream: () => 3,
         startStream,
       }));
 
@@ -158,7 +158,7 @@ describe("store", () => {
 
       expect(selectStream).toHaveBeenCalled();
 
-      expect(store.abortPreviousStream()).toBe(3);
+      expect(store.abortPreviousStream()()).toBe(3);
     });
 
     test("ignores evenor specific param", async () => {
@@ -246,7 +246,7 @@ describe("store", () => {
         new URLSearchParams(".sortBy=mind&.sortDirection=first"),
       );
 
-      expect(getSortedRecords(0)).toStrictEqual(record1);
+      expect(getSortedRecords()).toStrictEqual([record1, record2]);
     });
 
     test("sorts ascending", async () => {
@@ -261,7 +261,7 @@ describe("store", () => {
         new URLSearchParams(".sortBy=mind&.sortDirection=last"),
       );
 
-      expect(getSortedRecords(0)).toStrictEqual(record2);
+      expect(getSortedRecords()).toStrictEqual([record2, record1]);
     });
   });
 

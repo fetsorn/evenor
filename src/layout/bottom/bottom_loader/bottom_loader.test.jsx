@@ -3,15 +3,15 @@ import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
-import { NavigationLoader } from "./navigation_loader.jsx";
+import { BottomLoader } from "./bottom_loader.jsx";
 
-describe("NavigationLoader", () => {
+describe("BottomLoader", () => {
   test("first to last", async () => {
     setStore("loading", true);
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <NavigationLoader />
+        <BottomLoader />
       </StoreContext.Provider>
     ));
 

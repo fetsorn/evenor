@@ -3,9 +3,9 @@ import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
-import { FilterSort } from "./filter_sort.jsx";
+import { MenuSortDirection } from "./menu_sort_direction.jsx";
 
-describe("FilterSort", () => {
+describe("MenuSortDirection", () => {
   test("first to last", async () => {
     setStore("searchParams", new URLSearchParams(".sortDirection=first"));
 
@@ -15,7 +15,7 @@ describe("FilterSort", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <FilterSort />
+        <MenuSortDirection />
       </StoreContext.Provider>
     ));
 
@@ -33,7 +33,7 @@ describe("FilterSort", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <FilterSort />
+        <MenuSortDirection />
       </StoreContext.Provider>
     ));
 

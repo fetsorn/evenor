@@ -5,10 +5,15 @@ import { StoreContext, store, onMindChange } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import {
   NavigationBack,
-  NavigationNew,
   NavigationRevert,
   NavigationSave,
-} from "./components/index.js";
+  NavigationMenu,
+} from "./navigation/index.js";
+import {
+  BottomCount,
+  BottomLoader,
+  BottomNew
+} from "./bottom/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
 import { Filter } from "./filter/filter.jsx";
@@ -23,11 +28,17 @@ vi.mock("@/store/index.js", async (importOriginal) => {
   };
 });
 
-vi.mock("./components/index.js", () => ({
+vi.mock("./navigation/index.js", () => ({
   NavigationBack: vi.fn(),
-  NavigationNew: vi.fn(),
   NavigationRevert: vi.fn(),
   NavigationSave: vi.fn(),
+  NavigationMenu: vi.fn(),
+}));
+
+vi.mock("./bottom/index.js", () => ({
+  BottomCount: vi.fn(),
+  BottomLoader: vi.fn(),
+  BottomNew: vi.fn(),
 }));
 
 vi.mock("./overview/overview.jsx", () => ({
@@ -48,11 +59,17 @@ describe("LayoutOverview", () => {
 
     expect(NavigationBack).toHaveBeenCalledWith({});
 
-    expect(NavigationNew).toHaveBeenCalledWith({});
+    expect(NavigationMenu).toHaveBeenCalledWith({});
 
     expect(Filter).toHaveBeenCalledWith({});
 
     expect(Overview).toHaveBeenCalledWith({});
+
+    expect(BottomCount).toHaveBeenCalledWith({});
+
+    expect(BottomLoader).toHaveBeenCalledWith({});
+
+    expect(BottomNew).toHaveBeenCalledWith({});
   });
 });
 

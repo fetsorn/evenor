@@ -5,7 +5,7 @@ import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import {
   FilterCount,
-  FilterDirection,
+  FilterSort,
   FilterOption,
   FilterQuery,
   FilterScroll,
@@ -18,7 +18,7 @@ vi.mock("@/layout/filter/components/index.js", async (importOriginal) => {
   return {
     ...mod,
     FilterCount: vi.fn(),
-    FilterDirection: vi.fn(),
+    FilterSort: vi.fn(),
     FilterOption: vi.fn(),
     FilterQuery: vi.fn(),
     FilterScroll: vi.fn(),
@@ -35,7 +35,7 @@ describe("Filter", () => {
 
     expect(FilterCount).toHaveBeenCalledWith({});
 
-    expect(FilterDirection).toHaveBeenCalledWith({});
+    expect(FilterSort).toHaveBeenCalledWith({});
 
     await userEvent.click(getByText(/search/));
 

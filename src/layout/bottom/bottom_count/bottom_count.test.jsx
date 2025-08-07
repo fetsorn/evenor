@@ -3,13 +3,13 @@ import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
-import { FilterCount } from "./filter_count.jsx";
+import { BottomCount } from "./bottom_count.jsx";
 
-describe("FilterCount", () => {
+describe("BottomCount", () => {
   test("0", async () => {
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <FilterCount />
+        <BottomCount />
       </StoreContext.Provider>
     ));
 
@@ -21,7 +21,7 @@ describe("FilterCount", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <FilterCount />
+        <BottomCount />
       </StoreContext.Provider>
     ));
 

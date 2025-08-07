@@ -1,7 +1,8 @@
 import { useContext } from "solid-js";
+import cn from "classnames";
 import { StoreContext, onSearch } from "@/store/index.js";
 
-export function FilterSort() {
+export function MenuSortDirection(props) {
   const { store } = useContext(StoreContext);
 
   return (
@@ -10,12 +11,12 @@ export function FilterSort() {
         new URLSearchParams(store.searchParams).get(".sortDirection") === "last"
       }
       fallback={
-        <button onClick={() => onSearch(".sortDirection", "last")}>
+        <button className={cn(props.className)} onClick={() => onSearch(".sortDirection", "last")}>
           sort first
         </button>
       }
     >
-      <button onClick={() => onSearch(".sortDirection", "first")}>
+      <button className={cn(props.className)} onClick={() => onSearch(".sortDirection", "first")}>
         sort last
       </button>
     </Show>

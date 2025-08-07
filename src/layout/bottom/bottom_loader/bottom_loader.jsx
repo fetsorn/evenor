@@ -1,7 +1,7 @@
 import { useContext } from "solid-js";
 import { StoreContext } from "@/store/index.js";
 
-export function NavigationLoader() {
+export function BottomLoader() {
   const { store } = useContext(StoreContext);
 
   return (

@@ -3,8 +3,6 @@ import { useContext } from "solid-js";
 import { StoreContext } from "@/store/index.js";
 import { Spoiler } from "@/layout/components/index.js";
 import {
-  FilterCount,
-  FilterSort,
   FilterOption,
   FilterQuery,
   FilterScroll,
@@ -38,17 +36,11 @@ export function Filter() {
         }}
       </Index>
 
-      <FilterSort />
-
       <Spoiler title={"search"}>
         <For each={getFilterOptions()} fallback={<></>}>
           {(field, index) => <FilterOption field={field} />}
         </For>
       </Spoiler>
-
-      <FilterCount />
-
-      <FilterScroll />
     </span>
   );
 }

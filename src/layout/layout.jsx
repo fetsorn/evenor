@@ -3,11 +3,15 @@ import { onMount, useContext } from "solid-js";
 import { StoreContext, store, onMindChange, onStartup } from "@/store/index.js";
 import {
   NavigationBack,
-  NavigationNew,
   NavigationRevert,
   NavigationSave,
-  NavigationLoader,
-} from "./components/index.js";
+  NavigationMenu,
+} from "./navigation/index.js";
+import {
+  BottomCount,
+  BottomLoader,
+  BottomNew
+} from "./bottom/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
 import { Filter } from "./filter/filter.jsx";
@@ -19,14 +23,20 @@ export function LayoutOverview() {
       <nav className={styles.buttonbar} title="navigationOverview">
         <NavigationBack />
 
-        <NavigationLoader />
-
-        <NavigationNew />
+        <NavigationMenu />
       </nav>
 
       <Filter />
 
       <Overview />
+
+      <footer className={styles.buttonbar}>
+        <BottomCount />
+
+        <BottomLoader />
+
+        <BottomNew />
+      </footer>
     </div>
   );
 }
@@ -41,8 +51,6 @@ export function LayoutProfile() {
           <div className={styles.sticky}>
             <nav className={styles.buttonbar} title="navigationProfile">
               <NavigationRevert />
-
-              <NavigationLoader />
 
               <NavigationSave />
             </nav>
@@ -64,7 +72,6 @@ export function App() {
 
   return (
     <StoreContext.Provider value={{ store }}>
-      {/*<h1>Hello world!</h1>*/}
       <main className={styles.main}>
         <LayoutOverview />
 

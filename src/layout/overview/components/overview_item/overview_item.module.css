@@ -1,0 +1,12 @@
+.item {
+    display: flex;
+    justify-content: space-between;
+    border-bottom-style: solid;
+    border-bottom-width: 1px;
+    border-bottom-color: lightgray;
+}
+
+.actions {
+    display: flex;
+    align-items: center;
+}

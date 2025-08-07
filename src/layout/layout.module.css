@@ -27,10 +27,16 @@
 .bottom {
   display: flex;
   justify-content: space-between;
-  width: 100vw;
+  width: 50vw;
   position: fixed;
   bottom: 0;
   background-color: white;
+}
+
+@media (max-width: 600px) {
+  .bottom {
+    width: 50vw;
+  }
 }
 
 .sidebar {

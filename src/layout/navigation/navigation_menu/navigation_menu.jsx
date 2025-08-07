@@ -1,13 +1,9 @@
 import { createSignal, createEffect } from "solid-js";
-import { useContext } from "solid-js";
-import { StoreContext } from "@/store/index.js";
 import cn from "classnames";
 import styles from "./navigation_menu.module.css";
 import { MenuSortDirection, MenuSortQuery, MenuBaseQuery } from "./components/index.js";
 
 export function NavigationMenu() {
-  const { store } = useContext(StoreContext);
-
   const [isOpen, setIsOpen] = createSignal(false)
 
   function close(e) {
@@ -17,7 +13,7 @@ export function NavigationMenu() {
       // Clicked in box
     } else {
       // Clicked outside the box
-      setIsOpen(false);
+      //setIsOpen(false);
     }
   }
 
@@ -43,10 +39,10 @@ export function NavigationMenu() {
         <MenuSortDirection />
 
         {/*sort query dropdown*/}
-        <MenuSortQuery field={".sortBy"} value={new URLSearchParams(store.searchParams).get(".sortBy")} />
+        <MenuSortQuery />
 
         {/*base query dropdown*/}
-        <MenuBaseQuery field={"_"} value={new URLSearchParams(store.searchParams).get("_")} />
+        <MenuBaseQuery />
       </div>
     </div>
   );

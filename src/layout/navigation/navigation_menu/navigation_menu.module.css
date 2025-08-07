@@ -8,6 +8,12 @@
   display: none;
 }
 
+@media (max-width: 600px) {
+  .menu {
+    right: 0;
+  }
+}
+
 .menu.opened {
   display: grid;
 }

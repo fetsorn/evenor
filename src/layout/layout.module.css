@@ -8,6 +8,17 @@
   width: 50vw;
 }
 
+@media (max-width: 600px) {
+  .overview {
+    width: 100vw;
+    z-index: 999998;
+  }
+
+  .overview.closed {
+    display: none;
+  }
+}
+
 .buttonbar {
   display: flex;
   justify-content: space-between;

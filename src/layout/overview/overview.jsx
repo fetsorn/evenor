@@ -9,9 +9,11 @@ export function Overview() {
 
   let parentRef;
 
+  function capitalize(str) {return str[0].toUpperCase() + str.slice(1)};
+
   return (
     <div ref={parentRef} className={styles.overview}>
-      <h1>Entries</h1>
+      <h1>{capitalize(store.mind.name) ?? "Entries"}</h1>
 
       <div className={styles.foo}>
         <For

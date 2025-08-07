@@ -14,7 +14,7 @@ import schemaRoot from "@/store/default_root_schema.json";
 export async function find(mind, name) {
   if (mind === "root")
     return {
-      mind: { _: "mind", mind: "root" },
+      mind: { _: "mind", mind: "root", name: "minds" },
       schema: schemaRoot,
     };
 

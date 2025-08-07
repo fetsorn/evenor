@@ -52,7 +52,7 @@ describe("find", () => {
 
     expect(result).toStrictEqual({
       schema: schemaRoot,
-      mind: { _: "mind", mind: "root" },
+      mind: { _: "mind", mind: "root", name: "minds" },
     });
   });
 

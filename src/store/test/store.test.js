@@ -68,7 +68,7 @@ describe("store", () => {
     setStore({
       abortPreviousStream: () => {},
       searchParams: new URLSearchParams("_=mind"),
-      mind: { _: "mind", mind: "root" },
+      mind: { _: "mind", mind: "root", name: "minds" },
       schema: schemaRoot,
       record: undefined,
       records: [],

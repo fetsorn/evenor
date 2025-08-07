@@ -13,7 +13,7 @@ export const StoreContext = createContext();
 export const [store, setStore] = createStore({
   abortPreviousStream: async () => {},
   searchParams: "_=mind",
-  mind: { _: "mind", mind: "root" },
+  mind: { _: "mind", mind: "root", name: "minds" },
   schema: schemaRoot,
   record: undefined,
   records: [],

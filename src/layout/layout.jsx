@@ -14,7 +14,6 @@ import {
 } from "./bottom/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
-import { Filter } from "./filter/filter.jsx";
 import styles from "./layout.module.css";
 
 export function LayoutOverview() {
@@ -25,8 +24,6 @@ export function LayoutOverview() {
 
         <NavigationMenu />
       </nav>
-
-      <Filter />
 
       <Overview />
 

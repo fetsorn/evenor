@@ -4,7 +4,6 @@ import {
   onRecordEdit,
   onRecordWipe,
   onMindChange,
-  onFoo,
   onZip,
 } from "@/store/index.js";
 import { Confirmation, Spoiler } from "@/layout/components/index.js";
@@ -59,7 +58,7 @@ export function OverviewItem(props) {
               <button
                 className={"open"}
                 onClick={() => {
-                  //onFoo(props.item.mind);
+                  //onSearchError(props.item.mind);
                   onMindChange(`/${props.item.mind}`, `_=${item["branch"]}`);
                 }}
               >

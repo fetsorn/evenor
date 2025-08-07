@@ -1,4 +1,6 @@
 import { createContext } from "solid-js";
+import parser from "search-query-parser";
+import diff from "microdiff";
 import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
@@ -192,54 +194,37 @@ export function appendRecord(record) {
   setStore("records", store.records.length, record);
 }
 
+export async function onSort(field, value) {
+  updateSearchParams(field, value);
+
+  setStore(
+    produce((state) => {
+      state.records = getSortedRecords();
+    }),
+  );
+}
+
+export async function onBase(value) {
+  updateSearchParams("_", value);
+
+  await onSearch()
+}
+
 /**
  * This
  * @name onSearch
  * @export function
- * @param {String} field -
- * @param {String} value -
  */
-export async function onSearch(field, value) {
+export async function onSearch() {
   setStore("loading", true);
 
+  // TODO: reset loading on the end of the stream
   try {
-    // update searchParams
-    const searchParams = changeSearchParams(
-      new URLSearchParams(store.searchParams),
-      field,
-      value,
-    );
-
-    const url = makeURL(searchParams, store.mind.mind);
-
-    window.history.replaceState(null, null, url);
-
-    // do not reset searchParams here to preserve focus on filter
-
-    setStore(
-      produce((state) => {
-        state.searchParams = searchParams.toString();
-      }),
-    );
-
-    if (field.startsWith(".")) {
-      if (field === ".sortDirection") {
-        setStore(
-          produce((state) => {
-            state.records = getSortedRecords();
-          }),
-        );
-      }
-      setStore("loading", false);
-
-      return undefined;
-    }
-
     const { abortPreviousStream, startStream } = await selectStream(
       store.schema,
       store.mind.mind,
       appendRecord,
-      searchParams,
+      new URLSearchParams(store.searchParams),
     );
 
     // stop previous stream
@@ -273,7 +258,7 @@ export async function onSearch(field, value) {
 }
 
 // here to reproduce the ev.error heisenbug
-export async function onFoo(m) {
+export async function onSearchError(m) {
   setStore("loading", true);
 
   const { findMind } = await import("@/api/browser/io.js");
@@ -523,7 +508,6 @@ export async function warp(branch, value, cognate) {
  * This
  * @name onStartup
  * @export function
- * @param {object} record -
  */
 export async function onStartup() {
   setStore("loading", true);
@@ -531,4 +515,122 @@ export async function onStartup() {
   createRoot();
 
   setStore("loading", false);
+}
+
+function updateSearchParams(field, value) {
+  // NOTE freeform text is not supported by csvs yet
+  if (field !== "text") {
+    const searchParams = changeSearchParams(
+      new URLSearchParams(store.searchParams),
+      field,
+      value,
+    );
+
+    const url = makeURL(searchParams, store.mind.mind);
+
+    window.history.replaceState(null, null, url);
+
+    // do not reset searchParams here to preserve focus on filter
+    setStore(
+      produce((state) => {
+        state.searchParams = searchParams.toString();
+      }),
+    );
+
+    return true;
+  }
+
+  return false;
+}
+
+// diff changes to store.searchParams
+function batchUpdateSearchParams(changes) {
+  // only search if some field was updated
+  // don't search on freeform text
+  let doSearch = false;
+
+  changes.filter(
+    (c) => c.path[0] !== "exclude" && c.path[0] !== "offsets"
+  ).forEach((change) => {
+    switch (change.type) {
+      case "REMOVE": {
+        const field = change.path[0];
+
+        doSearch = doSearch
+          ? doSearch
+          : updateSearchParams(field, undefined);
+
+        break;
+      }
+      case "CREATE": {
+        const field = change.path[0];
+
+        doSearch = doSearch
+          ? doSearch
+          : updateSearchParams(field, change.value);
+
+        break;
+      }
+      case "CHANGE": {
+        const field = change.path[0];
+
+        doSearch = doSearch
+          ? doSearch
+          : updateSearchParams(field, change.value);
+
+        break;
+      }
+    }
+  })
+
+  return doSearch
+}
+
+export function getSearchBar() {
+  const searchParams = new URLSearchParams(store.searchParams);
+
+  const options = {
+    keywords: Object.keys(store.schema),
+  };
+
+  const searchBar = searchParams.entries().filter(
+    ([field, value]) => !field.startsWith(".") && field !== "_"
+  ).reduce((withEntry, [field, value]) => {
+    return { ...withEntry, [field]: value };
+  }, {});
+
+  return parser.stringify(searchBar, options);
+}
+
+export async function onSearchBar(searchBar) {
+  const options = {
+    keywords: Object.keys(store.schema),
+  };
+
+  function objectize(q) {
+    return typeof q === "string" ? { text: q } : q;
+  }
+
+  const searchBarOld = objectize(parser.parse(getSearchBar(), options));
+
+  const searchBarNew = objectize(parser.parse(searchBar, options));
+
+  // TODO: rename text to .text in fetsorn/search-query-parser
+  const changes = diff(
+    searchBarOld,
+    searchBarNew,
+    { cyclesFix: false, offsets: false }
+  );
+
+  // what if no change?
+  // can there be no change on input? no, always returns field and value
+  // can there be many changes? yes
+  // in the most naive case we input a letter, and get that letter's
+  // field and value
+  // but what if the letter is plain text and must match multiple fields?
+  const doSearch = batchUpdateSearchParams(changes);
+
+  if (doSearch) {
+    await onSearch()
+  }
 }

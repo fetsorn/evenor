@@ -5,13 +5,12 @@ import { Spoiler } from "@/layout/components/index.js";
 export function OverviewValue(props) {
   const { store } = useContext(StoreContext);
 
-  const [isValue, setIsValue] = createSignal(true);
+  const isBase = props.branch === new URLSearchParams(store.searchParams).get("_");
+
+  const [isValue, setIsValue] = createSignal(!isBase);
 
   // TODO: add schema[base].cognate from branch-cognate.csv
-  const basePartial =
-    props.branch === new URLSearchParams(store.searchParams).get("_")
-      ? []
-      : [props.branch];
+  const basePartial = isBase ? [] : [props.branch];
 
   //const foo = store.schema[props.branch].trunks.some((t) =>
   //  store.schema[cognate].trunks.includes(t),

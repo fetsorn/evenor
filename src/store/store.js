@@ -4,7 +4,7 @@ import diff from "microdiff";
 import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { push, pull, createRoot } from "@/store/record.js";
+import { push, pull, createRoot, readSchema } from "@/store/record.js";
 import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
@@ -217,6 +217,10 @@ export async function onBase(value) {
  */
 export async function onSearch() {
   setStore("loading", true);
+
+  const url = makeURL(new URLSearchParams(store.searchParams), store.mind.mind);
+
+  window.history.replaceState(null, null, url);
 
   // TODO: reset loading on the end of the stream
   try {
@@ -633,4 +637,26 @@ export async function onSearchBar(searchBar) {
   if (doSearch) {
     await onSearch()
   }
+}
+
+export async function getDefaultBase(mind) {
+  // read schema
+  const schema = await readSchema(mind);
+
+  console.log(schema)
+
+  // return some branch of schema
+  const roots = Object.keys(schema).filter(
+    (b) => b !== "branch" && schema[b].trunks.length == 0
+  );
+
+  const base = roots.reduce((withRoot, root) => {
+    if (schema[root].leaves.length > schema[withRoot].leaves.length) {
+      return root
+    } else {
+      return withRoot
+    }
+  }, roots[0]);
+
+  return base;
 }

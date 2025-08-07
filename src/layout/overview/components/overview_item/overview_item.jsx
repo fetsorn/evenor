@@ -4,6 +4,7 @@ import {
   onRecordEdit,
   onRecordWipe,
   onMindChange,
+  getDefaultBase,
   onZip,
 } from "@/store/index.js";
 import { Confirmation, Spoiler } from "@/layout/components/index.js";
@@ -48,21 +49,16 @@ export function OverviewItem(props) {
       </Show>
 
       <Show when={canOpenMind} fallback={<></>}>
-        <Spoiler index={props.index + "open"} title={"open"}>
-          <For each={props.item["branch"]} fallback={<span>no items</span>}>
-            {(item, index) => (
-              <button
-                className={"open"}
-                onClick={() => {
-                  //onSearchError(props.item.mind);
-                  onMindChange(`/${props.item.mind}`, `_=${item["branch"]}`);
-                }}
-              >
-                {item["branch"]}{" "}
-              </button>
-            )}
-          </For>
-        </Spoiler>
+        <button
+          title="open"
+          onClick={async () => {
+            const base = await getDefaultBase(props.item.mind);
+
+            await onMindChange(`/${props.item.mind}`, `_=${base}`)
+          }}
+        >
+          Open{" "}
+        </button>
       </Show>
     </>
   );

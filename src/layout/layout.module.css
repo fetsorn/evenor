@@ -24,6 +24,15 @@
   justify-content: space-between;
 }
 
+.bottom {
+  display: flex;
+  justify-content: space-between;
+  width: 100vw;
+  position: fixed;
+  bottom: 0;
+  background-color: white;
+}
+
 .sidebar {
   box-sizing: border-box;
   width: 50vw;

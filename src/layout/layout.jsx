@@ -28,7 +28,7 @@ export function LayoutOverview() {
 
       <Overview />
 
-      <footer className={styles.buttonbar}>
+      <footer className={styles.bottom}>
         <BottomCount />
 
         <BottomLoader />

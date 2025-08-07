@@ -1,13 +1,4 @@
 .overview {
-  /*margin-left: auto;*/
-  /*margin-right: auto;*/
-  /*width: calc(var(--col) * 16);*/
-  /*flex-grow: 0;*/
-  /*flex-shrink: 0;*/
-  /*display: flex;*/
-  /*flex-direction: column;*/
-  height: 70vh;
-  overflow: auto;
 }
 
 @media (max-width: 600px) {
@@ -17,13 +8,9 @@
 }
 
 .foo {
-  width: "100%";
-  position: "relative";
+  height: 70vh;
+  overflow: auto;
 }
 
 .bar {
-  position: "absolute";
-  top: 0;
-  left: 0;
-  width: "100%";
 }

@@ -643,8 +643,6 @@ export async function getDefaultBase(mind) {
   // read schema
   const schema = await readSchema(mind);
 
-  console.log(schema)
-
   // return some branch of schema
   const roots = Object.keys(schema).filter(
     (b) => b !== "branch" && schema[b].trunks.length == 0

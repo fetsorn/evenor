@@ -1480,7 +1480,7 @@ dependencies = [
 
 [[package]]
 name = "evenor"
-version = "2.5.0"
+version = "2.5.3"
 dependencies = [
  "assert-json-diff",
  "async-stream",

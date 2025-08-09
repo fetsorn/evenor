@@ -597,7 +597,7 @@ export function getSearchBar() {
     keywords: Object.keys(store.schema),
   };
 
-  const searchBar = searchParams.entries().filter(
+  const searchBar = Array.from(searchParams.entries()).filter(
     ([field, value]) => !field.startsWith(".") && field !== "_"
   ).reduce((withEntry, [field, value]) => {
     return { ...withEntry, [field]: value };

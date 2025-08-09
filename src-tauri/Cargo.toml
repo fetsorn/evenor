@@ -1,6 +1,6 @@
 [package]
 name = "evenor"
-version = "2.5.0"
+version = "2.5.4"
 description = "tell the story of your own data"
 authors = ["fetsorn"]
 license = "GPLv3"

@@ -1,0 +1,10 @@
+
+* Structure of the repo
+[[src/][src]] - a SolidJS app
+
+[[src-tauri][src-tauri]] - a Tauri app
+
+* Thanks
+[[https://github.com/isomorphic-git/isomorphic-git][isomorphic-git]] - A pure JavaScript implementation of git for node and browsers.
+
+[[https://codeberg.org/fetsorn/genea][genea]] - Completely serverless solution for consuming and authoring GEDCOM genealogy data - for inspiring to use isomorphic git.

@@ -31,7 +31,11 @@ export function Confirmation(props) {
 
         <button
           className={"confirmationNo"}
-          onClick={() => setConfirmation(false)}
+          onClick={async () => {
+            await props.onCancel();
+
+            setConfirmation(false)
+          }}
         >
           No{" "}
         </button>

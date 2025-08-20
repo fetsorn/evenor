@@ -50,6 +50,7 @@ export function OverviewItem(props) {
             action={`delete`}
             question={"really delete?"}
             onAction={() => onRecordWipe(props.item)}
+            onCancel={() => setShowActions(false)}
           />
 
           <Show when={canOpenMind} fallback={<></>}>

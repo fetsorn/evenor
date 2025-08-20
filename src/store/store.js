@@ -127,7 +127,7 @@ export async function onRecordCreate() {
  * @param {String[]} path -
  * @param {String} value -
  */
-export async function onRecordEdit(path, value) {
+export function onRecordEdit(path, value) {
   setStore(...path, value);
 }
 

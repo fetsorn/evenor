@@ -8,11 +8,16 @@ export function OverviewFilter() {
   const { store } = useContext(StoreContext);
 
   return (
-    <input
-      value={getSearchBar(store.searchParams)}
-      onInput={async (event) => {
-        await onSearchBar(event.currentTarget.value)
-      }}
-    />
+    <>
+      <input value={getSearchBar(store.searchParams)} />
+
+      <button
+        onClick={async (event) => {
+          await onSearchBar(event.currentTarget.value);
+        }}
+      >
+        search
+      </button>
+    </>
   );
 }

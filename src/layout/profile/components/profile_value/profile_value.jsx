@@ -1,18 +1,24 @@
 import { onRecordEdit } from "@/store/index.js";
 import styles from "./profile_value.module.css";
 
-function calcWidth(value, textarea) {
+// https://css-tricks.com/auto-growing-inputs-textareas/
+function calcSize(value, textarea) {
   const defaultWidth = 50;
+
+  const defaultHeight = 14;
+
+  const defaultCalc = {
+    height: `${defaultHeight}px`,
+    width: `${defaultWidth}px`,
+  };
 
   // we will need parent's width later
   const noParent = textarea === undefined || textarea.parentElement === null;
 
-  // if no value or parent, return default height
-  if (value === undefined || noParent) return defaultWidth;
+  // if no value or parent, return default size
+  if (value === undefined || noParent) return defaultCalc;
 
-  let lines = value.split(/[\n\r]/).map((s) => s.length);
-
-  const longestLine = Math.max(...lines) + 1;
+  const parentWidth = textarea.parentElement.getBoundingClientRect().width;
 
   const style = window.getComputedStyle(textarea, null).getPropertyValue('font-size');
 
@@ -21,60 +27,39 @@ function calcWidth(value, textarea) {
   // a letter is thinner than its font size
   const characterWidth = Math.round(fontSize * 0.65);
 
-  // number-of-characters x character-width
-  const lineWidth = longestLine * characterWidth;
-
-  console.log(lineWidth);
-
-  return Math.max(lineWidth, defaultWidth);
-}
-
-// https://css-tricks.com/auto-growing-inputs-textareas/
-function calcHeight(value, textarea) {
-  // 14 is default input height
-  const defaultHeight = 14;
-
-  // we will need parent's width later
-  const noParent = textarea === undefined || textarea.parentElement === null;
-
-  // if no value or parent, return default height
-  if (value === undefined || noParent) return defaultHeight;
-
-  const parentWidth = textarea.parentElement.getBoundingClientRect().width;
+  // approximate how many characters can parent element fit
+  const parentLength = Math.round(parentWidth / characterWidth);
 
   // for some reason first newline is \\n and all subsequent are \n
   // probably broken until newline escape in csvs is fixed
   const lines = value.split(/[\n\r]/);
 
+  // find max length
   // if any single line is longer than parent width,
   // divide line length by parent width
   // and add height to contain wrapped text
-  const numberOfWrapBreaks = lines.reduce((withLine, line) => {
-    const lineWidth = calcWidth(line, textarea);
+  const { longest, breaks } = lines.reduce((withLine, line) => {
+    const longest = Math.max(line.length, withLine.longest);
 
-    console.log(line, lineWidth, lineWidth / parentWidth)
+    const wrap = Math.floor(longest / parentLength);
 
-    const wrap = Math.floor(lineWidth / parentWidth);
+    const breaks = withLine.breaks + 1 + wrap;
 
-    return withLine + wrap;
-  }, 0);
+    return { longest, breaks };
+  }, { longest: 0, breaks: 0 });
 
-  const numberOfLineBreaks = lines.length;
+  // number-of-characters x character-width
+  const lineWidth = longest * characterWidth;
 
-  const numberOfLines = numberOfLineBreaks + numberOfWrapBreaks;
+  const textareaWidth = Math.max(lineWidth, defaultWidth);
 
-  const lineHeight = 20;
+  const textareaHeight = breaks * fontSize;
 
-  // lines x line-height
-  const rawHeight = numberOfLines * lineHeight;
-
-  // min-height + padding + border
-  const newHeight = 0 + rawHeight + 12 + 2;
-
-  return newHeight;
+  return {
+    height: `${textareaHeight}px`,
+    width: `${textareaWidth}px`,
+  }
 }
-
-// TODO write a common calc function
 
 export function ProfileValue(props) {
   let textarea;
@@ -108,10 +93,7 @@ export function ProfileValue(props) {
         }}
         className={styles.input}
         ref={textarea}
-        style={{
-          height: `${calcHeight(props.value, textarea)}px`,
-          width: `${calcWidth(props.value, textarea)}px`,
-        }}
+        style={calcSize(props.value, textarea)}
       >
         {props.value.replace("\\n", "\n")}
         {/* TODO remove this unescape after csvs if fixed */}

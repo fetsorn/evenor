@@ -330,6 +330,9 @@ export async function onSearchError(m) {
 export async function onMindChange(pathname, searchString) {
   let result;
 
+  // try to stop the stream before changing minds
+  await store.abortPreviousStream();
+
   // in case of error fallback to root
   try {
     result = await changeMind(pathname, searchString);

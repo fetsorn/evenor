@@ -1,0 +1,10 @@
+.input {
+    max-width: 45vw;
+    margin: 0px 5px 0px 5px;
+}
+
+@media (max-width: 600px) {
+  .input {
+    max-width: 95vw;
+  }
+}

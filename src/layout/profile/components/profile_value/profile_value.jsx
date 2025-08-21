@@ -1,33 +1,84 @@
 import { onRecordEdit } from "@/store/index.js";
+import styles from "./profile_value.module.css";
+
+function calcWidth(value, textarea) {
+  const defaultWidth = 50;
+
+  // we will need parent's width later
+  const noParent = textarea === undefined || textarea.parentElement === null;
+
+  // if no value or parent, return default height
+  if (value === undefined || noParent) return defaultWidth;
+
+  let lines = value.split(/[\n\r]/).map((s) => s.length);
+
+  const longestLine = Math.max(...lines) + 1;
+
+  const style = window.getComputedStyle(textarea, null).getPropertyValue('font-size');
+
+  const fontSize = parseFloat(style);
+
+  // a letter is thinner than its font size
+  const characterWidth = Math.round(fontSize * 0.65);
+
+  // number-of-characters x character-width
+  const lineWidth = longestLine * characterWidth;
+
+  console.log(lineWidth);
+
+  return Math.max(lineWidth, defaultWidth);
+}
 
 // https://css-tricks.com/auto-growing-inputs-textareas/
-function calcHeight(value) {
-  if (value === undefined) return 14;
+function calcHeight(value, textarea) {
+  // 14 is default input height
+  const defaultHeight = 14;
 
-  let numberOfLineBreaks = (value.match(/\n/g) || []).length;
+  // we will need parent's width later
+  const noParent = textarea === undefined || textarea.parentElement === null;
 
-  // min-height + lines x line-height + padding + border
-  let newHeight = 0 + numberOfLineBreaks * 20 + 12 + 2;
+  // if no value or parent, return default height
+  if (value === undefined || noParent) return defaultHeight;
+
+  const parentWidth = textarea.parentElement.getBoundingClientRect().width;
+
+  // for some reason first newline is \\n and all subsequent are \n
+  // probably broken until newline escape in csvs is fixed
+  const lines = value.split(/[\n\r]/);
+
+  // if any single line is longer than parent width,
+  // divide line length by parent width
+  // and add height to contain wrapped text
+  const numberOfWrapBreaks = lines.reduce((withLine, line) => {
+    const lineWidth = calcWidth(line, textarea);
+
+    console.log(line, lineWidth, lineWidth / parentWidth)
+
+    const wrap = Math.floor(lineWidth / parentWidth);
+
+    return withLine + wrap;
+  }, 0);
+
+  const numberOfLineBreaks = lines.length;
+
+  const numberOfLines = numberOfLineBreaks + numberOfWrapBreaks;
+
+  const lineHeight = 20;
+
+  // lines x line-height
+  const rawHeight = numberOfLines * lineHeight;
+
+  // min-height + padding + border
+  const newHeight = 0 + rawHeight + 12 + 2;
 
   return newHeight;
 }
 
-function calcWidth(value) {
-  if (value === undefined) return 14;
-
-  let lines = value.split(/\n?\r/).map((s) => s.length);
-
-  let length = Math.max(...lines);
-
-  let maxWidth = 40;
-
-  // min-width + lines x character-width + padding + border
-  let newWidth = 0 + Math.min(maxWidth, length) * 0.75 + 2 + 1;
-
-  return newWidth;
-}
+// TODO write a common calc function
 
 export function ProfileValue(props) {
+  let textarea;
+
   return (
     <>
       <label for={`profile-${props.branch}`}>{props.branch} - </label>
@@ -38,12 +89,12 @@ export function ProfileValue(props) {
           const { selectionStart, selectionEnd, selectionDirection } =
             event.currentTarget;
 
-          /* TODO remove this escape after csvs if fixed */
+          /* TODO remove this escape after csvs is fixed */
           const escaped = event.target.value.replace("\n", "\\n");
 
           await onRecordEdit(props.path, escaped);
 
-          /* TODO remove this unescape after csvs if fixed */
+          /* TODO remove this unescape after csvs is fixed */
           const raw = props.value.replace("\\n", "\n");
 
           event.currentTarget.value = raw;
@@ -55,9 +106,11 @@ export function ProfileValue(props) {
           //  selectionDirection || "none",
           //);
         }}
+        className={styles.input}
+        ref={textarea}
         style={{
-          height: `${calcHeight(props.value)}px`,
-          width: `${calcWidth(props.value)}rem`,
+          height: `${calcHeight(props.value, textarea)}px`,
+          width: `${calcWidth(props.value, textarea)}px`,
         }}
       >
         {props.value.replace("\\n", "\n")}

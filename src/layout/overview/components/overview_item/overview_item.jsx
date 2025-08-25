@@ -1,4 +1,5 @@
-import { useContext, createSignal } from "solid-js";
+import { createElementSize } from "@solid-primitives/resize-observer";
+import { useContext, createSignal, createEffect } from "solid-js";
 import {
   StoreContext,
   onRecordEdit,
@@ -14,7 +15,15 @@ import styles from "./overview_item.module.css";
 export function OverviewItem(props) {
   const { store } = useContext(StoreContext);
 
+  const [content, setContent] = createSignal();
+
+  const size = createElementSize(content);
+
   const [showActions, setShowActions] = createSignal(false);
+
+  const [isBigItem, setIsBigItem] = createSignal(false);
+
+  const [isFold, setIsFold] = createSignal(true);
 
   const isHomeScreen = store.mind.mind === "root";
 
@@ -24,11 +33,26 @@ export function OverviewItem(props) {
 
   return (
     <div className={styles.item}>
-      <OverviewRecord
-        index={props.index}
-        record={props.item}
-        isOpenDefault={true}
-      />
+      <div
+        className={isFold() ? styles.fold : styles.unfold}
+      >
+        <div className={styles.content} ref={setContent}>
+          <OverviewRecord
+            index={props.index}
+            record={props.item}
+            isOpenDefault={true}
+          />
+        </div>
+      </div>
+
+      <Show when={size.height > 40}>
+        <Show
+          when={isFold()}
+          fallback={<button onClick={() => setIsFold(true)}>less...</button>}
+          >
+          <button onClick={() => setIsFold(false)}>more...</button>
+        </Show>
+      </Show>
 
       <Show
         when={showActions()}

@@ -1,5 +1,4 @@
 .item {
-    display: flex;
     border-bottom-style: solid;
     border-bottom-width: 1px;
     border-bottom-color: lightgray;
@@ -8,4 +7,19 @@
 .actions {
     display: flex;
     align-items: center;
+}
+
+.fold {
+    display: inline-block;
+    max-height: 23px;
+    max-width: 60%;
+    overflow: hidden;
+}
+
+.unfold {
+    display: inline-block;
+}
+
+.content {
+    display: inline-block;
 }

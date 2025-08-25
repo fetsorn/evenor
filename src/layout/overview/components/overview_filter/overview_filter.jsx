@@ -1,6 +1,6 @@
 import { getFilterQueries, getFilterOptions } from "@/store/index.js";
 import { useContext } from "solid-js";
-import { StoreContext, onSearchBar, getSearchBar } from "@/store/index.js";
+import { StoreContext, onSearchBar, getSearchBar, onSearch } from "@/store/index.js";
 import { Spoiler } from "@/layout/components/index.js";
 import styles from "./overview_filter.module.css";
 
@@ -9,11 +9,16 @@ export function OverviewFilter() {
 
   return (
     <>
-      <input value={getSearchBar(store.searchParams)} />
+      <input
+        value={getSearchBar(store.searchParams)}
+        onInput={async (event) => {
+          await onSearchBar(event.currentTarget.value);
+        }}
+      />
 
       <button
         onClick={async (event) => {
-          await onSearchBar(event.currentTarget.value);
+          await onSearch();
         }}
       >
         search

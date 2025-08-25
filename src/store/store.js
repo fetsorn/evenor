@@ -207,7 +207,7 @@ export async function onSort(field, value) {
 export async function onBase(value) {
   updateSearchParams("_", value);
 
-  await onSearch()
+  //await onSearch()
 }
 
 /**
@@ -328,19 +328,8 @@ export async function onSearchError(m) {
  * @param {String} searchString -
  */
 export async function onMindChange(pathname, searchString) {
-  let result;
-
   // try to stop the stream before changing minds
   await store.abortPreviousStream();
-
-  // in case of error fallback to root
-  try {
-    result = await changeMind(pathname, searchString);
-  } catch (e) {
-    console.error(e);
-
-    result = await changeMind("/", "_=mind");
-  }
 
   // TODO somewhere here in case of error doesn't change url to root
   setStore(
@@ -354,6 +343,17 @@ export async function onMindChange(pathname, searchString) {
     }),
   );
 
+  let result;
+
+  // in case of error fallback to root
+  try {
+    result = await changeMind(pathname, searchString);
+  } catch (e) {
+    console.error(e);
+
+    result = await changeMind("/", "_=mind");
+  }
+
   const { mind, schema, searchParams } = result;
 
   setStore(
@@ -364,8 +364,11 @@ export async function onMindChange(pathname, searchString) {
     }),
   );
 
-  // start a search stream
-  await onSearch("", undefined);
+  // only search by default in the root mind
+  if (mind.mind === "root") {
+    // start a search stream
+    await onSearch();
+  }
 }
 
 /**
@@ -637,9 +640,10 @@ export async function onSearchBar(searchBar) {
   // but what if the letter is plain text and must match multiple fields?
   const doSearch = batchUpdateSearchParams(changes);
 
-  if (doSearch) {
-    await onSearch()
-  }
+  // no longer do search on change of search bar
+  //if (doSearch) {
+  //  await onSearch()
+  //}
 }
 
 export async function getDefaultBase(mind) {

@@ -1,4 +1,6 @@
 .item {
+    display: flex;
+    flex-wrap: wrap;
     border-bottom-style: solid;
     border-bottom-width: 1px;
     border-bottom-color: lightgray;
@@ -11,8 +13,8 @@
 
 .fold {
     display: inline-block;
-    max-height: 23px;
-    max-width: 60%;
+    max-height: 40px;
+    max-width: 85%;
     overflow: hidden;
 }
 

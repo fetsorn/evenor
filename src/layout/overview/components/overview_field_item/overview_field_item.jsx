@@ -24,7 +24,13 @@ export function OverviewFieldItem(props) {
       }
     >
       <Match when={baseIsTwig()}>
-        <OverviewValue branch={props.branch} value={props.item} />
+          <For
+            each={Array.isArray(props.item) ? props.item : [props.item]}
+          >
+            {(value, index) => {
+              <OverviewValue branch={props.branch} value={value} />
+            }}
+          </For>
       </Match>
     </Switch>
   );

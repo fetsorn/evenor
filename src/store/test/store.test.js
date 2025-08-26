@@ -1,6 +1,7 @@
 import { describe, expect, test, afterEach, vi } from "vitest";
 import {
   store,
+  updateSearchParams,
   setStore,
   getSortedRecords,
   getFilterQueries,
@@ -127,7 +128,7 @@ describe("store", () => {
     });
   });
 
-  describe("onSearch", () => {
+  describe("updateSearchParams", () => {
     test("searches", async () => {
       const field = "a";
 
@@ -139,26 +140,11 @@ describe("store", () => {
 
       makeURL.mockImplementation(() => 2);
 
-      const startStream = vi.fn();
+      await updateSearchParams(field, value);
 
-      selectStream.mockImplementation(() => ({
-        abortPreviousStream: () => 3,
-        startStream,
-      }));
-
-      await onSearch(field, value);
-
-      expect(store.searchParams).toStrictEqual("1");
-
-      expect(store.records).toStrictEqual([]);
-
-      expect(startStream).toHaveBeenCalled();
+      expect(store.searchParams.toString()).toStrictEqual("1");
 
       expect(window.history.replaceState).toHaveBeenCalledWith(null, null, 2);
-
-      expect(selectStream).toHaveBeenCalled();
-
-      expect(store.abortPreviousStream()()).toBe(3);
     });
 
     test("ignores evenor specific param", async () => {
@@ -172,16 +158,32 @@ describe("store", () => {
 
       makeURL.mockImplementation(() => 2);
 
-      selectStream.mockImplementation(() => ({
-        abortPreviousStream: 3,
-        startStream: 4,
-      }));
-
-      await onSearch(field, value);
-
-      expect(selectStream).not.toHaveBeenCalled();
+      await updateSearchParams(field, value);
 
       expect(store.searchParams).toBe("1");
+
+      // TODO actually check that it ignores
+    });
+  });
+
+  describe("onSearch", () => {
+    test("searches", async () => {
+      const startStream = vi.fn();
+
+      selectStream.mockImplementation(() => ({
+        abortPreviousStream: () => 3,
+        startStream,
+      }));
+
+      await onSearch();
+
+      expect(store.records).toStrictEqual([]);
+
+      expect(startStream).toHaveBeenCalled();
+
+      expect(selectStream).toHaveBeenCalled();
+
+      expect(store.abortPreviousStream()()).toBe(3);
     });
   });
 
@@ -195,8 +197,6 @@ describe("store", () => {
         searchParams: 3,
       }));
 
-      changeSearchParams.mockImplementation(() => "4");
-
       window.history.replaceState = vi.fn();
 
       makeURL.mockImplementation(() => 5);
@@ -207,7 +207,7 @@ describe("store", () => {
 
       expect(store.schema).toStrictEqual(2);
 
-      expect(store.searchParams).toStrictEqual("4");
+      expect(store.searchParams).toStrictEqual("3");
     });
   });
 

@@ -23,6 +23,6 @@ describe("NavigationBack", () => {
 
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    expect(store.mind).toEqual({ _: "mind", mind: "root" });
+    expect(store.mind).toEqual({ _: "mind", mind: "root", name: "minds" });
   });
 });

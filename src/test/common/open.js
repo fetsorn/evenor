@@ -2,30 +2,23 @@ import { click } from "./actions.js";
 import { createMind } from "./create.js";
 
 async function spoiler() {
+  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/."));
+
+  await (await $("aria/open")).waitForExist({ timeout: 5000 });
+
   await click(await $("aria/open"));
 
   try {
-    await (await $("aria/event")).waitForExist({ timeout: 5000 });
+    await (await $("aria/Foobar")).waitForExist({ timeout: 5000 });
   } catch {
     await spoiler();
   }
 }
 
-export async function query() {
-  // click button "open event"
-  await click(await $("aria/event"));
-
-  try {
-    await (await $("aria/back")).waitForExist({ timeout: 5000 });
-  } catch {
-    await query();
-  }
-}
-
 export async function open() {
   await spoiler();
-
-  await query();
 }
 
 export async function back() {

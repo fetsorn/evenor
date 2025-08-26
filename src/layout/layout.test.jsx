@@ -16,7 +16,6 @@ import {
 } from "./bottom/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
-import { Filter } from "./filter/filter.jsx";
 import { App, LayoutOverview, LayoutProfile } from "./layout.jsx";
 
 vi.mock("@/store/index.js", async (importOriginal) => {
@@ -49,10 +48,6 @@ vi.mock("./profile/profile.jsx", () => ({
   Profile: vi.fn(),
 }));
 
-vi.mock("./filter/filter.jsx", () => ({
-  Filter: vi.fn(),
-}));
-
 describe("LayoutOverview", () => {
   test("", async () => {
     render(() => <LayoutOverview />);
@@ -60,8 +55,6 @@ describe("LayoutOverview", () => {
     expect(NavigationBack).toHaveBeenCalledWith({});
 
     expect(NavigationMenu).toHaveBeenCalledWith({});
-
-    expect(Filter).toHaveBeenCalledWith({});
 
     expect(Overview).toHaveBeenCalledWith({});
 

@@ -11,8 +11,10 @@ describe("Confirmation", () => {
 
     const onAction = vi.fn();
 
+    const onCancel = vi.fn();
+
     const { getByText } = render(() => (
-      <Confirmation action={action} question={question} onAction={onAction} />
+      <Confirmation action={action} question={question} onAction={onAction} onCancel={onCancel} />
     ));
 
     // find remove
@@ -29,6 +31,8 @@ describe("Confirmation", () => {
 
     // check that action did not work
     expect(onAction).not.toHaveBeenCalled();
+
+    expect(onCancel).toHaveBeenCalled();
 
     // check that action shows again
     expect(() => getByText(action)).not.toThrowError();

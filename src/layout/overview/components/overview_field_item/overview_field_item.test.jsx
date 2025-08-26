@@ -8,9 +8,9 @@ describe("OverviewFieldItem", () => {
   test("value", async () => {
     const index = "";
 
-    const item = "a";
-
     const branch = "name";
+
+    const item = "a";
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

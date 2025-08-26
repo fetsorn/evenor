@@ -40,23 +40,32 @@ export function testCreateMind() {
   });
 }
 
+export async function createEvent() {
+  // check that no records in the overview
+  await draft();
+
+  await (await $("aria/add")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/add"));
+
+  await (await $("button=datum")).waitForExist({ timeout: 5000 });
+
+  // disambiguate add/datum button from menu/base/datum option
+  await click(await $("button=datum"));
+
+  // input name in profile
+  await setValue(await $("aria/datum -"), "baz");
+
+  await save();
+}
+
 export function testCreateEvent() {
   it("should create an event", async () => {
     await createMind();
 
     await open();
 
-    // check that no records in the overview
-    await draft();
-
-    await click(await $("aria/add"));
-
-    await click(await $("aria/datum"));
-
-    // input name in profile
-    await setValue(await $("aria/datum -"), "baz");
-
-    await save();
+    await createEvent();
 
     // check that one record in the overview
     const element = await $("aria/baz");

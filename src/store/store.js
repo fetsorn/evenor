@@ -364,6 +364,10 @@ export async function onMindChange(pathname, searchString) {
     }),
   );
 
+  const url = makeURL(searchParams, store.mind.mind);
+
+  window.history.replaceState(null, null, url);
+
   // only search by default in the root mind
   if (mind.mind === "root") {
     // start a search stream
@@ -527,7 +531,7 @@ export async function onStartup() {
   setStore("loading", false);
 }
 
-function updateSearchParams(field, value) {
+export function updateSearchParams(field, value) {
   // NOTE freeform text is not supported by csvs yet
   if (field !== "text") {
     const searchParams = changeSearchParams(

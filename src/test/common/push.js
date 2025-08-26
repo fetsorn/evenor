@@ -4,6 +4,10 @@ import { clone } from "./clone.js";
 import { save } from "./create.js";
 
 export async function push(url) {
+  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/."));
+
   // edit
   await click(await $("aria/edit"));
 

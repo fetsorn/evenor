@@ -4,6 +4,7 @@ import { testDelete } from "./delete.js";
 import { testOpen } from "./open.js";
 import { testPull } from "./pull.js";
 import { testPush } from "./push.js";
+import { testSearch } from "./search.js";
 
 export {
   testClone,
@@ -13,4 +14,5 @@ export {
   testOpen,
   testPull,
   testPush,
+  testSearch,
 };

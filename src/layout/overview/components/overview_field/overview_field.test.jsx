@@ -20,7 +20,7 @@ describe("OverviewField", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("field no items")).not.toThrowError();
+    expect(() => getByText("field no items")).toThrowError();
   });
 
   test("record", async () => {

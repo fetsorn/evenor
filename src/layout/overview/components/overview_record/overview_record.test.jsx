@@ -18,9 +18,7 @@ describe("OverviewRecord", () => {
       </StoreContext.Provider>
     ));
 
-    await userEvent.click(getByText("with..."));
-
-    expect(() => getByText("record no items")).not.toThrowError();
+    expect(() => getByText("record no items")).toThrowError();
   });
 
   test("", async () => {

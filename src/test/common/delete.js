@@ -2,6 +2,10 @@ import { click } from "./actions.js";
 import { createMind } from "./create.js";
 
 export async function wipe() {
+  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/."));
+
   await (await $("aria/delete")).waitForExist({ timeout: 5000 });
 
   await click(await $("aria/delete"));

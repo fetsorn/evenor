@@ -15,9 +15,9 @@ describe("MenuSortQuery", () => {
       </StoreContext.Provider>
     ));
 
-    expect(getByRole('option', { name: 'name' }).selected).toBe(true)
+    expect(getByRole('option', { name: 'name' }).selected).toBe(false)
 
-    expect(getAllByRole('option').length).toBe(5)
+    expect(getAllByRole('option').length).toBe(7)
 
     await userEvent.selectOptions(
       getByRole('combobox'),

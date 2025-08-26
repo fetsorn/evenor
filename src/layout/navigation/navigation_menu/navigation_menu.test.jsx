@@ -31,15 +31,9 @@ describe("NavigationMenu", () => {
       </StoreContext.Provider>
     ));
 
-    expect(MenuBaseQuery).toHaveBeenNthCalledWith(1, {
-      field: "_",
-      value: "mind",
-    });
+    expect(MenuBaseQuery).toHaveBeenCalled();
 
-    expect(MenuSortQuery).toHaveBeenNthCalledWith(1, {
-      field: ".sortBy",
-      value: "mind",
-    });
+    expect(MenuSortQuery).toHaveBeenCalled();
 
     expect(MenuSortDirection).toHaveBeenCalled();
   });

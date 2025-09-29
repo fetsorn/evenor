@@ -356,6 +356,8 @@ export async function onMindChange(pathname, searchString) {
 
   const { mind, schema, searchParams } = result;
 
+  console.log(mind);
+
   setStore(
     produce((state) => {
       state.mind = mind;
@@ -563,41 +565,39 @@ function batchUpdateSearchParams(changes) {
   // don't search on freeform text
   let doSearch = false;
 
-  changes.filter(
-    (c) => c.path[0] !== "exclude" && c.path[0] !== "offsets"
-  ).forEach((change) => {
-    switch (change.type) {
-      case "REMOVE": {
-        const field = change.path[0];
+  changes
+    .filter((c) => c.path[0] !== "exclude" && c.path[0] !== "offsets")
+    .forEach((change) => {
+      switch (change.type) {
+        case "REMOVE": {
+          const field = change.path[0];
 
-        doSearch = doSearch
-          ? doSearch
-          : updateSearchParams(field, undefined);
+          doSearch = doSearch ? doSearch : updateSearchParams(field, undefined);
 
-        break;
+          break;
+        }
+        case "CREATE": {
+          const field = change.path[0];
+
+          doSearch = doSearch
+            ? doSearch
+            : updateSearchParams(field, change.value);
+
+          break;
+        }
+        case "CHANGE": {
+          const field = change.path[0];
+
+          doSearch = doSearch
+            ? doSearch
+            : updateSearchParams(field, change.value);
+
+          break;
+        }
       }
-      case "CREATE": {
-        const field = change.path[0];
+    });
 
-        doSearch = doSearch
-          ? doSearch
-          : updateSearchParams(field, change.value);
-
-        break;
-      }
-      case "CHANGE": {
-        const field = change.path[0];
-
-        doSearch = doSearch
-          ? doSearch
-          : updateSearchParams(field, change.value);
-
-        break;
-      }
-    }
-  })
-
-  return doSearch
+  return doSearch;
 }
 
 export function getSearchBar() {
@@ -607,11 +607,11 @@ export function getSearchBar() {
     keywords: Object.keys(store.schema),
   };
 
-  const searchBar = Array.from(searchParams.entries()).filter(
-    ([field, value]) => !field.startsWith(".") && field !== "_"
-  ).reduce((withEntry, [field, value]) => {
-    return { ...withEntry, [field]: value };
-  }, {});
+  const searchBar = Array.from(searchParams.entries())
+    .filter(([field, value]) => !field.startsWith(".") && field !== "_")
+    .reduce((withEntry, [field, value]) => {
+      return { ...withEntry, [field]: value };
+    }, {});
 
   return parser.stringify(searchBar, options);
 }
@@ -630,11 +630,10 @@ export async function onSearchBar(searchBar) {
   const searchBarNew = objectize(parser.parse(searchBar, options));
 
   // TODO: rename text to .text in fetsorn/search-query-parser
-  const changes = diff(
-    searchBarOld,
-    searchBarNew,
-    { cyclesFix: false, offsets: false }
-  );
+  const changes = diff(searchBarOld, searchBarNew, {
+    cyclesFix: false,
+    offsets: false,
+  });
 
   // what if no change?
   // can there be no change on input? no, always returns field and value
@@ -656,14 +655,14 @@ export async function getDefaultBase(mind) {
 
   // return some branch of schema
   const roots = Object.keys(schema).filter(
-    (b) => b !== "branch" && schema[b].trunks.length == 0
+    (b) => b !== "branch" && schema[b].trunks.length == 0,
   );
 
   const base = roots.reduce((withRoot, root) => {
     if (schema[root].leaves.length > schema[withRoot].leaves.length) {
-      return root
+      return root;
     } else {
-      return withRoot
+      return withRoot;
     }
   }, roots[0]);
 

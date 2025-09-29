@@ -415,6 +415,7 @@ export function changeSearchParams(searchParams, field, value) {
  * @returns {String}
  */
 export function makeURL(searchParams, mind) {
+  console.log(searchParams, mind);
   const pathname = mind === "root" ? "#" : `#/${mind}`;
 
   const queryString = searchParams.toString();

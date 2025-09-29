@@ -58,7 +58,7 @@ export async function clone(mind, name, url, token) {
   // and mind name is uri-encoded remote
   const encoded = new TextEncoder().encode(url);
 
-  const mindRemote = mind ?? crypto.subtle.digest("SHA-256", encoded);
+  const mindRemote = mind ?? (await crypto.subtle.digest("SHA-256", encoded));
 
   await api.clone(mindRemote, name, { url, token });
 

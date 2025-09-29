@@ -356,8 +356,6 @@ export async function onMindChange(pathname, searchString) {
 
   const { mind, schema, searchParams } = result;
 
-  console.log(mind);
-
   setStore(
     produce((state) => {
       state.mind = mind;

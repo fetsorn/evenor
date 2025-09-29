@@ -34,6 +34,8 @@ export default defineConfig({
   build: {
     outDir: "dist",
     target: "safari13",
+    minify: false,
+    terserOptions: { compress: false, mangle: false },
   },
   envPrefix: ["VITE_", "TAURI_"],
   server: {

@@ -38,6 +38,16 @@ export async function find(mind, name) {
   return { mind: mindRecord, schema };
 }
 
+async function digestMessage(message) {
+  const msgUint8 = new TextEncoder().encode(message); // encode as (utf-8) Uint8Array
+  const hashBuffer = await window.crypto.subtle.digest("SHA-256", msgUint8); // hash the message
+  const hashArray = Array.from(new Uint8Array(hashBuffer)); // convert buffer to byte array
+  const hashHex = hashArray
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join(""); // convert bytes to hex string
+  return hashHex;
+}
+
 /**
  * This
  * @name clone
@@ -56,9 +66,7 @@ export async function clone(mind, name, url, token) {
   // try to clone remote
   // where mind string is a digest of remote
   // and mind name is uri-encoded remote
-  const encoded = new TextEncoder().encode(url);
-
-  const mindRemote = mind ?? (await crypto.subtle.digest("SHA-256", encoded));
+  const mindRemote = mind ?? (await digestMessage(url));
 
   await api.clone(mindRemote, name, { url, token });
 

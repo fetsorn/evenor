@@ -102,7 +102,7 @@ export function searchParamsToQuery(schema, searchParams) {
     baseValue === null ? { _: base } : { _: base, [base]: baseValue };
 
   const entries = Array.from(searchParams.entries()).filter(
-    ([key]) => key !== "_",
+    ([key]) => key !== "_" && key !== "~" && key !== "-",
   );
 
   // sort so that trunks come first

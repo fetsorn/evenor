@@ -1,4 +1,4 @@
-import { useContext } from "solid-js";
+import { useContext, useState } from "solid-js";
 import {
   StoreContext,
   onRecordEdit,
@@ -8,6 +8,32 @@ import {
 } from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
+
+export function LearnDropdown(props) {
+  const { store } = useContext(StoreContext);
+
+  const { chosen, setChosen } = useState("");
+
+  return (
+    <>
+      <select
+        id="learnDropdown"
+        value={chosen}
+        onChange={({ target: { value } }) => setChosen(value)}
+      >
+        <For
+          each={store.records
+            .map((mindRecord) => mindRecord.mind)
+            .filter((mind) => mind !== store.record.mind)}
+        >
+          {(field) => <option value={field}>{field}</option>}
+        </For>
+      </select>
+
+      <button onClick={() => onLearn()}>learn </button>
+    </>
+  );
+}
 
 export function ProfileRecord(props) {
   const { store } = useContext(StoreContext);
@@ -20,6 +46,12 @@ export function ProfileRecord(props) {
       return [];
 
     return store.schema[props.record._].leaves;
+  };
+
+  const isMind = () => {
+    if (store.mind === undefined) return false;
+
+    return store.mind.mind === "root" && store.record._ === "mind";
   };
 
   const isRemote = () => {
@@ -35,6 +67,10 @@ export function ProfileRecord(props) {
         branch={props.record._}
         path={[...props.path, props.record._]}
       />
+
+      <Show when={isMind()}>
+        <LearnDropdown />
+      </Show>
 
       <Show when={isRemote()}>
         <Confirmation

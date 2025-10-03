@@ -86,3 +86,42 @@ export async function deleteRecord(mind, record) {
     query: record,
   });
 }
+
+/**
+ * This
+ * @name learn
+ * @function
+ * @param {object} source -
+ * @param {object} query -
+ * @param {object} target -
+ * @returns {object}
+ */
+export async function learn(source, query, target) {
+  const queryStream = new ReadableStream({
+    start(controller) {
+      controller.enqueue(query);
+
+      controller.close();
+    },
+  });
+
+  const dirSource = await findMind(source);
+
+  const selectStream = csvs.selectRecordStream({
+    fs,
+    dir: dirSource,
+  });
+
+  const dirTarget = await findMind(target);
+
+  const updateStream = await csvs.updateRecordStream({
+    fs,
+    dir: dirTarget,
+  });
+
+  const strm = queryStream.pipeThrough(selectStream).pipeThrough(updateStream);
+
+  let closeHandler = () => strm.cancel();
+
+  return { strm, closeHandler };
+}

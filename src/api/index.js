@@ -8,6 +8,7 @@ const api = __BUILD_MODE__ === "tauri" ? tauri : browser;
 // destructure and reexport each method
 // to make sure public API is safe and uniform
 export const {
+  learn,
   zip,
   uploadFile,
   uploadBlobsLFS,
@@ -32,6 +33,7 @@ export const {
 } = api;
 
 export default {
+  learn,
   zip,
   uploadFile,
   uploadBlobsLFS,

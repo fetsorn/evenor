@@ -3,7 +3,7 @@ import parser from "search-query-parser";
 import diff from "microdiff";
 import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
-import { createRecord, selectStream } from "@/store/impure.js";
+import { createRecord, selectStream, learn } from "@/store/impure.js";
 import { push, pull, createRoot, readSchema } from "@/store/record.js";
 import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
@@ -665,4 +665,12 @@ export async function getDefaultBase(mind) {
   }, roots[0]);
 
   return base;
+}
+
+export async function onLearn(source, query, target) {
+  setStore("loading", true);
+
+  await learn(source, query, target);
+
+  setStore("loading", false);
 }

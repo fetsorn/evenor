@@ -138,12 +138,7 @@ export async function downloadUrlFromPointer(url, token, pointerInfo) {
   });
 }
 
-export async function learn(source, query, target) {
-  return invoke("learn", { source, query, target });
-}
-
 export default {
-  learn,
   zip,
   putAsset,
   uploadFile,

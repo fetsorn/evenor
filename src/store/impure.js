@@ -149,32 +149,3 @@ export async function onMergeMind(schema, mind, name, searchString) {
 
   await api.commit(mind);
 }
-
-/**
- * This
- * @name learn
- * @function
- * @param {object} source -
- * @param {object} query -
- * @param {object} target -
- * @returns {undefined}
- */
-export async function learn(source, query, target) {
-  // do not call api from layout, only call store
-  const { strm: fromStrm, closeHandler } = await api.learn(
-    source,
-    query,
-    target,
-  );
-
-  // TODO track progress
-  const toStrm = new WritableStream({
-    async write() {},
-  });
-
-  await fromStrm.pipeTo(toStrm);
-
-  await api.commit(target);
-
-  return undefined;
-}

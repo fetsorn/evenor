@@ -1,11 +1,5 @@
 import { zip } from "./zip.js";
-import {
-  select,
-  selectStream,
-  updateRecord,
-  deleteRecord,
-  learn,
-} from "./csvs.js";
+import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
 import {
   init,
   clone,

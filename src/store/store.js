@@ -4,7 +4,7 @@ import diff from "microdiff";
 import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { push, pull, createRoot, readSchema } from "@/store/record.js";
+import { sync, createRoot, readSchema } from "@/store/record.js";
 import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
@@ -21,6 +21,7 @@ export const [store, setStore] = createStore({
   records: [],
   spoilerMap: {},
   loading: false,
+  mergeConflict: false,
 });
 
 /**
@@ -149,10 +150,13 @@ export async function onRecordSave(recordOld, recordNew) {
     recordNew,
   );
 
+  const syncResult = await sync(store.mind.mind);
+
   setStore(
     produce((state) => {
       state.records = records;
       state.record = undefined;
+      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -175,9 +179,12 @@ export async function onRecordWipe(record) {
     record,
   );
 
+  const syncResult = await sync(store.mind.mind);
+
   setStore(
     produce((state) => {
       state.records = records;
+      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -343,6 +350,8 @@ export async function onMindChange(pathname, searchString) {
     }),
   );
 
+  const syncResult = await sync(store.mind.mind);
+
   let result;
 
   // in case of error fallback to root
@@ -361,6 +370,7 @@ export async function onMindChange(pathname, searchString) {
       state.mind = mind;
       state.schema = schema;
       state.searchParams = searchParams.toString();
+      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -403,46 +413,6 @@ export async function onClone(mind, name, remoteUrl, remoteToken) {
   } catch (e) {
     console.log("clone failed", e);
     // do nothing
-  }
-
-  setStore("loading", false);
-}
-
-/**
- * This
- * @name onPull
- * @export function
- * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
- */
-export async function onPull(mind, remoteUrl, remoteToken) {
-  setStore("loading", true);
-
-  try {
-    await pull(mind, remoteUrl, remoteToken);
-  } catch (e) {
-    console.log(e);
-  }
-
-  setStore("loading", false);
-}
-
-/**
- * This
- * @name onPush
- * @export function
- * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
- */
-export async function onPush(mind, remoteUrl, remoteToken) {
-  setStore("loading", true);
-
-  try {
-    await push(mind, remoteUrl, remoteToken);
-  } catch (e) {
-    console.log(e);
   }
 
   setStore("loading", false);

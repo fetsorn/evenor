@@ -12,7 +12,8 @@ import {
 import {
   BottomCount,
   BottomLoader,
-  BottomNew
+  BottomNew,
+  BottomSync,
 } from "./bottom/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
@@ -20,7 +21,12 @@ import styles from "./layout.module.css";
 
 export function LayoutOverview() {
   return (
-    <div className={cn(styles.overview, store.record !== undefined ? styles.closed : styles.opened )}>
+    <div
+      className={cn(
+        styles.overview,
+        store.record !== undefined ? styles.closed : styles.opened,
+      )}
+    >
       <nav className={styles.buttonbar} title="navigationOverview">
         <NavigationBack />
 
@@ -31,6 +37,8 @@ export function LayoutOverview() {
 
       <footer className={styles.bottom}>
         <BottomCount />
+
+        <BottomSync />
 
         <BottomLoader />
 

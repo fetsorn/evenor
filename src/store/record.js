@@ -211,34 +211,25 @@ export async function onZip(mind) {
 
 /**
  * This
- * @name pull
+ * @name sync
  * @export function
  * @param {String} mind
  * @param {String} remoteUrl
  * @param {String} remoteToken
  */
-export async function pull(mind, remoteUrl, remoteToken) {
-  await api.commit(mind);
+export async function sync(mind) {
+  const tagsRemote = await readRemoteTags(mind);
 
-  await api.pull(mind, { url: remoteUrl, token: remoteToken });
-}
+  let syncResult = { ok: true };
 
-/**
- * This
- * @name push
- * @export function
- * @param {String} mind
- * @param {String} remoteUrl
- * @param {String} remoteToken
- */
-export async function push(mind, remoteUrl, remoteToken) {
-  await api.commit(mind);
+  for (const tagRemote of tagsRemote) {
+    const syncResultPartial = await api.sync(mind, {
+      url: tagRemote.origin_url,
+      token: tagRemote.origin_token,
+    });
 
-  try {
-    await api.uploadBlobsLFS(mind, { url: remoteUrl, token: remoteToken });
-  } catch {
-    // do nothing
+    syncResult.ok = syncResult.ok && syncResultPartial;
   }
 
-  await api.push(mind, { url: remoteUrl, token: remoteToken });
+  return syncResult;
 }

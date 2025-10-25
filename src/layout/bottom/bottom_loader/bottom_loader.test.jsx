@@ -6,7 +6,7 @@ import { setStore } from "@/store/store.js";
 import { BottomLoader } from "./bottom_loader.jsx";
 
 describe("BottomLoader", () => {
-  test("first to last", async () => {
+  test("", async () => {
     setStore("loading", true);
 
     const { getByText } = render(() => (
@@ -15,6 +15,6 @@ describe("BottomLoader", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("Loading...")).not.toThrowError();
+    expect(() => getByText("Conflict")).not.toThrowError();
   });
 });

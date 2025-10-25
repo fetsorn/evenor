@@ -8,6 +8,7 @@ import {
   push,
   setOrigin,
   getOrigin,
+  sync,
 } from "./git.js";
 import {
   createLFS,
@@ -43,6 +44,7 @@ export {
   fetchAsset,
   setOrigin,
   getOrigin,
+  sync,
 };
 
 export default {
@@ -67,4 +69,5 @@ export default {
   fetchAsset,
   setOrigin,
   getOrigin,
+  sync,
 };

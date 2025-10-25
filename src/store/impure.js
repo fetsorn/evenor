@@ -119,33 +119,3 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
 
   return { abortPreviousStream, startStream };
 }
-
-/**
- * This
- * @name onMergeMind
- * @function
- * @param {object} schema -
- * @param {object} mind -
- * @param {String} name -
- * @param {String} searchString -
- */
-export async function onMergeMind(schema, mind, name, searchString) {
-  const query = { _: "name", name };
-
-  const [{ mind: subsetMind }] = await api.select("root", query);
-
-  const subsetQuery = searchParamsToQuery(
-    schema,
-    new URLSearchParams(searchString),
-  );
-
-  // find entries to sync from subset
-  const entries = await api.select(subsetMind, subsetQuery);
-
-  // sync entries to superset
-  for (const record of entries) {
-    await api.updateRecord(mind, record);
-  }
-
-  await api.commit(mind);
-}

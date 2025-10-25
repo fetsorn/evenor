@@ -1,4 +1,5 @@
 import http from "isomorphic-git/http/web";
+import diff3Merge from "diff3";
 import git from "isomorphic-git";
 import { addLFS } from "@/api/browser/lfs.js";
 import { fs } from "@/api/browser/lightningfs.js";
@@ -322,4 +323,113 @@ export async function push(mind, remote) {
     remote: "origin",
     ...tokenPartial,
   });
+}
+
+const LINEBREAKS = /^.*(\r?\n|$)/gm;
+
+function mergeDriverFactory(conflicts, resolutions) {
+  return ({ branches, contents }) => {
+    const ourName = branches[1];
+    const theirName = branches[2];
+
+    const baseContent = contents[0];
+    const ourContent = contents[1];
+    const theirContent = contents[2];
+
+    const ours = ourContent.match(LINEBREAKS);
+    const base = baseContent.match(LINEBREAKS);
+    const theirs = theirContent.match(LINEBREAKS);
+
+    // Here we let the diff3 library do the heavy lifting.
+    const result = diff3Merge(ours, base, theirs);
+
+    const markerSize = 7;
+
+    // Here we note whether there are conflicts and format the results
+    let mergedText = "";
+    let cleanMerge = true;
+
+    for (const item of result) {
+      if (item.ok) {
+        mergedText += item.ok.join("");
+      }
+
+      if (item.conflict) {
+        const resolution = resolutions[item.conflict.oIndex];
+
+        if (resolution === undefined) {
+          cleanMerge = false;
+
+          conflicts[item.conflict.oIndex] = item.conflict;
+        } else {
+          mergedText += item.conflict[resolution].join("");
+        }
+      }
+    }
+
+    return { cleanMerge, mergedText };
+  };
+}
+
+/**
+ * This
+ * @name sync
+ * @function
+ * @param {String} mind -
+ * @param {String} remoteUrl -
+ * @param {String} remoteToken -
+ */
+export async function sync(mind, remote, resolutions) {
+  const dir = await findMind(mind);
+
+  const { url: remoteUrl, token: remoteToken } = remote;
+
+  const tokenPartial = remoteToken
+    ? {
+        onAuth: () => ({
+          username: remoteToken,
+        }),
+      }
+    : {};
+
+  await git.addRemote({
+    fs,
+    dir,
+    remote: "origin",
+    url: remote.url,
+  });
+
+  await git.fetch({
+    fs,
+    http,
+    dir,
+    url: remote.url,
+    ref: "HEAD",
+    ...tokenPartial,
+  });
+
+  let conflicts;
+
+  try {
+    // throws if can't merge
+    await git.merge({
+      fs,
+      dir,
+      theirs: "origin",
+      mergeDriver: mergeDriverFactory(conflicts, resolutions),
+    });
+  } catch {
+    return { ok: false, conflicts };
+  }
+
+  await git.push({
+    fs,
+    http,
+    dir,
+    url: remoteUrl,
+    remote: "origin",
+    ...tokenPartial,
+  });
+
+  return { ok: true };
 }

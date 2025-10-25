@@ -15,6 +15,6 @@ describe("BottomSync", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("Loading...")).not.toThrowError();
+    expect(() => getByText("Conflict")).not.toThrowError();
   });
 });

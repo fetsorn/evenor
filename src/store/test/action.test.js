@@ -143,12 +143,7 @@ describe("changeMind", () => {
       `~=${testCase.url}&-=${testCase.token}&_=b`,
     );
 
-    expect(clone).toHaveBeenCalledWith(
-      undefined,
-      undefined,
-      testCase.url,
-      testCase.token,
-    );
+    expect(clone).toHaveBeenCalledWith(testCase.url, testCase.token);
 
     expect(mind).toStrictEqual(1);
 

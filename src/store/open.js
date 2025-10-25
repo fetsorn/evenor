@@ -55,11 +55,9 @@ async function findMind(mind) {
   };
 
   // find mind in root folder
-  const [mindRecord] = await api.select("root", query);
+  const mindRecords = await api.select("root", query);
 
-  return mindRecord !== undefined
-    ? { ok: true, res: mindRecord }
-    : { ok: false };
+  return mindRecords !== undefined && mindRecords.length > 0;
 }
 
 /**
@@ -85,12 +83,11 @@ export async function clone(url, token) {
   await api.clone(mindRemote, { url, token });
 
   // TODO validate and sanitize cloned dataset, get uuid
-
   // TODO if repo has no uuid, create new mind
   const mind = await newUUID();
 
   // search root for mind
-  const { ok: mindExists, res: mindRecord } = await findMind(mind);
+  const mindExists = await findMind(mind);
 
   // if there is no such mind
   if (mindExists === false) {
@@ -102,13 +99,11 @@ export async function clone(url, token) {
     // TODO if user rejects, do nothing
     // TODO if user approves write new remote to mind
   }
-
   // TODO remove mindRemote
-
   const pathname = new URL(url).pathname;
 
   // get mind name from remote
-  const nameClone = name ?? pathname.substring(pathname.lastIndexOf("/") + 1);
+  const nameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
 
   const schemaClone = await readSchema(mind);
 

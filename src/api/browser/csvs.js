@@ -19,7 +19,7 @@ export async function select(mind, query) {
     query,
   });
 
-  return records;
+  return records ?? [];
 }
 
 /**

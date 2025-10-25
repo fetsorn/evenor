@@ -1,8 +1,8 @@
 export const mind = "a";
 
-export const name = "e";
+export const name = "name";
 
-export const dir = "a-e";
+export const dir = "a-name";
 
 export const dirpath = `/${dir}`;
 
@@ -12,7 +12,7 @@ export const entry = { c: "d" };
 
 export const records = [entry];
 
-export const url = "e";
+export const url = "https://example.com/name";
 
 export const token = "f";
 

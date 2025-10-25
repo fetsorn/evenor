@@ -12,7 +12,8 @@ import {
 import {
   BottomCount,
   BottomLoader,
-  BottomNew
+  BottomNew,
+  BottomSync,
 } from "./bottom/index.js";
 import { Overview } from "./overview/overview.jsx";
 import { Profile } from "./profile/profile.jsx";
@@ -38,6 +39,7 @@ vi.mock("./bottom/index.js", () => ({
   BottomCount: vi.fn(),
   BottomLoader: vi.fn(),
   BottomNew: vi.fn(),
+  BottomSync: vi.fn(),
 }));
 
 vi.mock("./overview/overview.jsx", () => ({
@@ -63,6 +65,8 @@ describe("LayoutOverview", () => {
     expect(BottomLoader).toHaveBeenCalledWith({});
 
     expect(BottomNew).toHaveBeenCalledWith({});
+
+    expect(BottomSync).toHaveBeenCalledWith({});
   });
 });
 

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import api from "@/api/index.js";
-import { readSchema, createRoot } from "@/store/record.js";
+import { newUUID, readSchema, createRoot } from "@/store/record.js";
 import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -33,6 +33,7 @@ vi.mock("@/store/record.js", async (importOriginal) => {
 
   return {
     ...mod,
+    newUUID: vi.fn(),
     readSchema: vi.fn(),
     createRoot: vi.fn(),
   };
@@ -81,9 +82,9 @@ describe("clone", () => {
   test("throws on error", async () => {
     const testCase = stub.cases.tags;
 
-    crypto.subtle.digest = vi.fn(() => {
-      throw Error("");
-    });
+    //crypto.subtle.digest = vi.fn(() => {
+    //  throw Error("");
+    //});
 
     await expect(() =>
       clone(testCase.url, testCase.token),
@@ -93,7 +94,9 @@ describe("clone", () => {
   test("clones a mind", async () => {
     const testCase = stub.cases.tags;
 
-    crypto.subtle.digest = vi.fn(() => stub.id);
+    api.select.mockImplementation(() => [testCase.record]);
+
+    newUUID.mockImplementation(() => stub.id);
 
     readSchema.mockImplementation(() => testCase.schema);
 
@@ -108,7 +111,7 @@ describe("clone", () => {
 
     expect(createRoot).toHaveBeenCalled();
 
-    expect(api.clone).toHaveBeenCalledWith(stub.id, undefined, {
+    expect(api.clone).toHaveBeenCalledWith(testCase.hash, {
       url: testCase.url,
       token: testCase.token,
     });
@@ -117,6 +120,8 @@ describe("clone", () => {
 
     const c = {
       _: "mind",
+      mind: "id",
+      name: "name",
       branch: [
         {
           _: "branch",
@@ -137,10 +142,10 @@ describe("clone", () => {
         origin_url: "https://example.com/name",
         origin_token: "token",
       },
-      mind: "id",
-      name: "name",
     };
 
-    expect(result).toStrictEqual({ schema: testCase.schema, mind: c });
+    expect(result.schema).toStrictEqual(testCase.schema);
+
+    expect(result.mind).toStrictEqual(c);
   });
 });

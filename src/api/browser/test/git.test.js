@@ -165,11 +165,11 @@ describe("clone", () => {
     await fs.promises.mkdir(stub.dirpath);
 
     // try to clone
-    await clone(stub.mind, stub.name, { url: stub.url, token: stub.token });
+    await clone(stub.mind, { url: stub.url, token: stub.token });
   });
 
   test("calls git.clone", async () => {
-    await clone(stub.mind, stub.name, { url: stub.url, token: stub.token });
+    await clone(stub.mind, { url: stub.url, token: stub.token });
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({

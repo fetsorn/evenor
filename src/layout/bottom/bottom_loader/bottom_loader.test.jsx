@@ -15,6 +15,6 @@ describe("BottomLoader", () => {
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("Conflict")).not.toThrowError();
+    expect(() => getByText("Loading...")).not.toThrowError();
   });
 });

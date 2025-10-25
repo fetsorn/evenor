@@ -5,7 +5,6 @@ import { searchParamsToQuery } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
 import { sync, createRoot, readSchema } from "@/store/record.js";
-import { clone } from "@/store/open.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -21,6 +20,7 @@ export const [store, setStore] = createStore({
   records: [],
   spoilerMap: {},
   loading: false,
+  searchBar: "",
   mergeConflict: false,
 });
 
@@ -223,6 +223,22 @@ export async function onBase(value) {
  * @export function
  */
 export async function onSearch() {
+  if (URL.canParse(store.searchBar)) {
+    const url = URL.parse(store.searchBar);
+
+    const searchString = url.hash.replace("#", "");
+
+    setStore(
+      produce((state) => {
+        state.searchBar = "";
+      }),
+    );
+
+    await onMindChange("/", searchString);
+
+    return undefined;
+  }
+
   setStore("loading", true);
 
   const url = makeURL(new URLSearchParams(store.searchParams), store.mind.mind);
@@ -552,6 +568,12 @@ export function getSearchBar() {
 }
 
 export async function onSearchBar(searchBar) {
+  setStore(
+    produce((state) => {
+      state.searchBar = searchBar;
+    }),
+  );
+
   const options = {
     keywords: Object.keys(store.schema),
   };

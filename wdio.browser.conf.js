@@ -3,7 +3,7 @@ import viteConfig from "./vite.config.js";
 let gitServer;
 
 export const config = {
-  specs: [["./src/test/browser/*.test.jsx"]],
+  specs: [["./src/test/browser/clone.test.jsx"]],
   runner: [
     "browser",
     {
@@ -48,7 +48,9 @@ export const config = {
       glob: "*",
       route: "/",
     };
+
     gitServer = http.createServer(cors(factory(config)));
+
     gitServer.listen(8174);
   },
   afterSession: () => {

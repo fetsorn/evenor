@@ -155,6 +155,8 @@ export async function clone(mind, remote) {
   if (remote.mind !== undefined) {
     const existingMind = await findMind(remote.mind);
 
+    const dir = nameMind(mind);
+
     await fs.promises.rename(existingMind, dir);
 
     return undefined;

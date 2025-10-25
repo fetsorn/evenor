@@ -91,7 +91,7 @@ export async function clone(url, token) {
 
   // if there is no such mind
   if (mindExists === false) {
-    // TODO clone mindRemote to mind and write to root
+    // clone mindRemote to mind and write to root
     await api.clone(mind, { mind: mindRemote });
   } else {
     // TODO if there is such remote, do nothing

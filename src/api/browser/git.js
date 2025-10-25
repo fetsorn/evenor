@@ -43,7 +43,7 @@ export async function init(mind, name) {
       const existingMind = await findMind(mind);
 
       if (existingMind !== dir) {
-        await fs.promises.rename(`/${existingMind}`, dir);
+        await fs.promises.rename(existingMind, dir);
       }
     } catch {
       await fs.promises.mkdir(dir);
@@ -148,7 +148,7 @@ export async function commit(mind) {
  * @param {String} name -
  * @param {String} remote -
  */
-export async function clone(mind, name, remote) {
+export async function clone(mind, remote) {
   const dir = nameMind(mind, name);
 
   try {
@@ -158,6 +158,15 @@ export async function clone(mind, name, remote) {
     await rimraf(dir);
   } catch {
     // do nothing
+  }
+
+  // if remote is local, rename source to target
+  // should be a recursive copy,
+  // but don't want to implement it
+  if (remote.mind !== undefined) {
+    const existingMind = await findMind(remote.mind);
+
+    await fs.promises.rename(existingMind, dir);
   }
 
   const options = {

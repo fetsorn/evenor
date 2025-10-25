@@ -1,5 +1,5 @@
 import { useContext } from "solid-js";
-import { StoreContext, onRecordEdit, onClone } from "@/store/index.js";
+import { StoreContext, onRecordEdit } from "@/store/index.js";
 import { Spoiler, Confirmation } from "@/layout/components/index.js";
 import { ProfileField, ProfileValue } from "../index.js";
 
@@ -29,25 +29,6 @@ export function ProfileRecord(props) {
         branch={props.record._}
         path={[...props.path, props.record._]}
       />
-
-      <Show when={isRemote()}>
-        <Confirmation
-          action={`clone...`}
-          question={"really overwrite?"}
-          onAction={() =>
-            onClone(
-              store.record.mind,
-              store.record.name[0],
-              Array.isArray(props.record.origin_url)
-                ? props.record.origin_url[0]
-                : props.record.origin_url,
-              props.record.origin_token === undefined
-                ? undefined
-                : props.record.origin_token[0],
-            )
-          }
-        />
-      </Show>
 
       <Spoiler
         index={`${props.index}-spoilerfield`}

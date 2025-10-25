@@ -19,7 +19,6 @@ import {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
-  onClone,
 } from "./store.js";
 
 export {
@@ -43,7 +42,6 @@ export {
   getFilterOptions,
   getSortedRecords,
   onZip,
-  onClone,
 };
 
 export default {
@@ -67,5 +65,4 @@ export default {
   getFilterOptions,
   getSortedRecords,
   onZip,
-  onClone,
 };

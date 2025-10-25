@@ -86,7 +86,7 @@ describe("clone", () => {
     });
 
     await expect(() =>
-      clone(undefined, undefined, testCase.url, testCase.token),
+      clone(testCase.url, testCase.token),
     ).rejects.toThrowError();
   });
 
@@ -104,12 +104,7 @@ describe("clone", () => {
 
     enrichBranchRecords.mockImplementation(() => testCase.branchRecords);
 
-    const result = await clone(
-      undefined,
-      undefined,
-      testCase.url,
-      testCase.token,
-    );
+    const result = await clone(testCase.url, testCase.token);
 
     expect(createRoot).toHaveBeenCalled();
 

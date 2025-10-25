@@ -63,7 +63,7 @@ export async function changeMind(pathname, searchString) {
   const token = searchParams.get("-") ?? "";
 
   const { mind: mindRecord, schema } = searchParams.has("~")
-    ? await clone(undefined, undefined, remoteUrl, token)
+    ? await clone(remoteUrl, token)
     : await find(mind, undefined);
 
   if (!searchParams.has("_")) {

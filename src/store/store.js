@@ -386,39 +386,6 @@ export async function onMindChange(pathname, searchString) {
 }
 
 /**
- * This
- * @name onClone
- * @export function
- * @param {String} mind -
- * @param {String} name -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
- */
-export async function onClone(mind, name, remoteUrl, remoteToken) {
-  setStore("loading", true);
-
-  try {
-    const { mind: mindRecord } = await clone(
-      mind,
-      name,
-      remoteUrl,
-      remoteToken,
-    );
-
-    setStore(
-      produce((state) => {
-        state.record = mindRecord;
-      }),
-    );
-  } catch (e) {
-    console.log("clone failed", e);
-    // do nothing
-  }
-
-  setStore("loading", false);
-}
-
-/**
  * This lateral jumps
  * @name leapfrog
  * @export function

@@ -92,12 +92,8 @@ export async function clone(mind, name, remote) {
   });
 }
 
-export async function push(mind, remote) {
-  return invoke("push", { mind, remote });
-}
-
-export async function pull(mind, remote) {
-  return invoke("pull", { mind, remote });
+export async function sync(mind, remote, resolutions) {
+  return invoke("sync", { mind, remote, resolutions });
 }
 
 export async function uploadBlobsLFS(mind, remote, files) {
@@ -155,8 +151,7 @@ export default {
   createLFS,
   clone,
   commit,
-  push,
-  pull,
+  sync,
   fetchAsset,
   setOrigin,
   getOrigin,

@@ -275,65 +275,6 @@ export async function getOrigin(mind) {
   return { url, token };
 }
 
-/**
- * This
- * @name pull
- * @function
- * @param {String} mind -
- * @param {Object} remote -
- */
-export async function pull(mind, remote) {
-  const dir = await findMind(mind);
-
-  const tokenPartial = remote.token
-    ? {
-        onAuth: () => ({
-          username: remote.token,
-        }),
-      }
-    : {};
-
-  // fastForward instead of pull
-  // https://github.com/isomorphic-git/isomorphic-git/issues/1073
-  await git.fastForward({
-    fs,
-    http,
-    dir,
-    url: remote.url,
-    remote: "origin",
-    ...tokenPartial,
-  });
-}
-
-/**
- * This
- * @name push
- * @function
- * @param {String} mind -
- * @param {Object} remote -
- */
-export async function push(mind, remote) {
-  const dir = await findMind(mind);
-
-  const tokenPartial = remote.token
-    ? {
-        onAuth: () => ({
-          username: remote.token,
-        }),
-      }
-    : {};
-
-  await git.push({
-    fs,
-    http,
-    force: true,
-    dir,
-    url: remote.url,
-    remote: "origin",
-    ...tokenPartial,
-  });
-}
-
 const LINEBREAKS = /^.*(\r?\n|$)/gm;
 
 function mergeDriverFactory(conflicts, resolutions) {
@@ -394,7 +335,9 @@ export async function sync(mind, remote, resolutions) {
   const tokenPartial = remote.token
     ? {
         onAuth: () => ({
-          username: remote.token,
+          headers: {
+            Authorization: `Token ${remote.token}`,
+          },
         }),
       }
     : {};
@@ -432,10 +375,10 @@ export async function sync(mind, remote, resolutions) {
       },
     });
 
-    // TODO checkout after merge
     if (r.alreadyMerged === true) {
       //do nothing
     } else if (r.fastForward === true) {
+      // checkout main after fastForward
       await git.checkout({
         fs,
         dir,

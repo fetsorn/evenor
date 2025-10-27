@@ -3,7 +3,7 @@ import viteConfig from "./vite.config.js";
 let gitServer;
 
 export const config = {
-  specs: [["./src/test/browser/clone.test.jsx"]],
+  specs: [["./src/test/browser/*.test.jsx"]],
   runner: [
     "browser",
     {

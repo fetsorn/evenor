@@ -1,18 +1,18 @@
 import { setValue } from "./actions.js";
 import { search } from "./search.js";
 
+export async function clone(url) {
+  await setValue(await $("aria/query"), `http://localhost:1420/#?~=${url}`);
+
+  await search();
+}
+
 export function testClone() {
   it("should clone a mind", async () => {
     // NOTE can't test the url clone
     // because webdriverio also uses
     // search string and ignores url
-
-    await setValue(
-      await $("aria/query"),
-      "http://localhost:1420/#?~=http://localhost:8174/test-mind1.git",
-    );
-
-    await search();
+    await clone("http://localhost:8174/test-mind1.git");
 
     await (await $("aria/back")).waitForExist({ timeout: 5000 });
 

@@ -1,32 +1,40 @@
-//import { click, setValue } from "./actions.js";
+import { setValue } from "./actions.js";
+import { open, back } from "./open.js";
 import { clone } from "./clone.js";
-import { open } from "./open.js";
-//import { save } from "./create.js";
+import { edit } from "./edit.js";
+import { createEvent, save } from "./create.js";
 import { search } from "./search.js";
 
-// clone
-// edit
-// check
+export async function setRemote(url) {
+  await edit();
 
-export function testSync() {
-  it("should push a mind", async () => {
+  await setValue(await $("aria/origin_url -"), url);
+
+  await save();
+}
+
+export function testSyncSave() {
+  it("should sync on commit", async () => {
+    // clone
     await clone("http://localhost:8174/test-mind1.git");
 
-    // TODO add remote
-    // await pull("http://localhost:8174/test-mind2.git");
+    await (await $("aria/back")).waitForExist({ timeout: 5000 });
 
-    // TODO add remote
-    // await push("http://localhost:8174/test-mind1.git");
+    // TODO schema doesn't change from root for some reason
 
+    await createEvent();
     // NOTE: git-http-mock-server calls fixturez which calls tempy
     // which creates a temp directory on push, check /tmp or /private
   });
+}
 
-  it("should pull a mind", async () => {
+export function testSyncOpen() {
+  it("should sync on open", async () => {
     await clone("http://localhost:8174/test-mind1.git");
 
-    // set remote
-    // await pull("http://localhost:8174/test-mind2.git");
+    await back();
+
+    await setRemote("http://localhost:8174/test-mind2.git");
 
     await open();
 

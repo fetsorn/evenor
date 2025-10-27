@@ -389,7 +389,6 @@ function mergeDriverFactory(conflicts, resolutions) {
  * @param {Object} resolutions -
  */
 export async function sync(mind, remote, resolutions) {
-  console.log("sync", mind, remote);
   const dir = await findMind(mind);
 
   const tokenPartial = remote.token
@@ -457,8 +456,6 @@ export async function sync(mind, remote, resolutions) {
         parent: ["main", "origin/main"], // Be sure to specify the parents when creating a merge commit
       });
     }
-
-    console.log(r);
   } catch (e) {
     console.log("merge", e);
 

@@ -229,8 +229,6 @@ export async function sync(mind) {
     });
 
     syncResult.ok = syncResult.ok && syncResultPartial.ok;
-
-    console.log(syncResultPartial, syncResult);
   }
 
   return syncResult;

@@ -224,27 +224,26 @@ export async function clone(mind, remote) {
  * @name setOrigin
  * @function
  * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
+ * @param {Object} remote -
  */
 export async function setOrigin(mind, remote) {
   const dir = await findMind(mind);
-
-  const { url: remoteUrl, token: remoteToken } = remote;
 
   await git.addRemote({
     fs,
     dir,
     remote: "origin",
-    url: remoteUrl,
+    url: remote.url,
+    force: true, // overwrite existing origin
   });
 
-  if (remoteToken !== undefined) {
+  if (remote.token !== undefined) {
     await git.setConfig({
       fs,
       dir,
       path: `remote.origin.token`,
-      value: remoteToken,
+      value: remote.token,
+      force: true,
     });
   }
 }
@@ -259,21 +258,21 @@ export async function setOrigin(mind, remote) {
 export async function getOrigin(mind) {
   const dir = await findMind(mind);
 
-  const remoteUrl = await git.getConfig({
+  const url = await git.getConfig({
     fs,
     dir,
     path: `remote.origin.url`,
   });
 
-  if (remoteUrl === undefined) throw Error("no remote");
+  if (url === undefined) throw Error("no remote");
 
-  const remoteToken = await git.getConfig({
+  const token = await git.getConfig({
     fs,
     dir,
     path: `remote.origin.token`,
   });
 
-  return { url: remoteUrl, token: remoteToken };
+  return { url, token };
 }
 
 /**
@@ -281,18 +280,15 @@ export async function getOrigin(mind) {
  * @name pull
  * @function
  * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
+ * @param {Object} remote -
  */
 export async function pull(mind, remote) {
   const dir = await findMind(mind);
 
-  const { url: remoteUrl, token: remoteToken } = remote;
-
-  const tokenPartial = remoteToken
+  const tokenPartial = remote.token
     ? {
         onAuth: () => ({
-          username: remoteToken,
+          username: remote.token,
         }),
       }
     : {};
@@ -303,7 +299,7 @@ export async function pull(mind, remote) {
     fs,
     http,
     dir,
-    url: remoteUrl,
+    url: remote.url,
     remote: "origin",
     ...tokenPartial,
   });
@@ -314,18 +310,15 @@ export async function pull(mind, remote) {
  * @name push
  * @function
  * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
+ * @param {Object} remote -
  */
 export async function push(mind, remote) {
   const dir = await findMind(mind);
 
-  const { url: remoteUrl, token: remoteToken } = remote;
-
-  const tokenPartial = remoteToken
+  const tokenPartial = remote.token
     ? {
         onAuth: () => ({
-          username: remoteToken,
+          username: remote.token,
         }),
       }
     : {};
@@ -335,7 +328,7 @@ export async function push(mind, remote) {
     http,
     force: true,
     dir,
-    url: remoteUrl,
+    url: remote.url,
     remote: "origin",
     ...tokenPartial,
   });
@@ -392,18 +385,17 @@ function mergeDriverFactory(conflicts, resolutions) {
  * @name sync
  * @function
  * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
+ * @param {Object} remote -
+ * @param {Object} resolutions -
  */
 export async function sync(mind, remote, resolutions) {
+  console.log("sync", mind, remote);
   const dir = await findMind(mind);
 
-  const { url: remoteUrl, token: remoteToken } = remote;
-
-  const tokenPartial = remoteToken
+  const tokenPartial = remote.token
     ? {
         onAuth: () => ({
-          username: remoteToken,
+          username: remote.token,
         }),
       }
     : {};
@@ -413,6 +405,7 @@ export async function sync(mind, remote, resolutions) {
     dir,
     remote: "origin",
     url: remote.url,
+    force: true,
   });
 
   await git.fetch({
@@ -427,25 +420,48 @@ export async function sync(mind, remote, resolutions) {
   let conflicts;
 
   try {
+    // TODO collect hunks to conflicts
     // throws if can't merge
-    await git.merge({
+    const r = await git.merge({
       fs,
       dir,
-      theirs: "origin",
-      mergeDriver: mergeDriverFactory(conflicts, resolutions),
+      theirs: "origin/main",
+      //mergeDriver: mergeDriverFactory(conflicts, resolutions),
+      author: {
+        name: "evenor",
+        email: "evenor@norcivilianlabs.org",
+      },
     });
-  } catch {
+
+    // TODO checkout after merge
+
+    console.log(r);
+  } catch (e) {
+    console.log("merge", e);
+
     return { ok: false, conflicts };
   }
 
-  await git.push({
+  await git.checkout({
     fs,
-    http,
     dir,
-    url: remoteUrl,
-    remote: "origin",
-    ...tokenPartial,
+    force: true,
   });
+
+  //try {
+  //  await git.push({
+  //    fs,
+  //    http,
+  //    dir,
+  //    url: remoteUrl,
+  //    remote: "origin",
+  //    ...tokenPartial,
+  //  });
+  //} catch (e) {
+  //  console.log("push", e);
+
+  //  return { ok: false, conflicts };
+  //}
 
   return { ok: true };
 }

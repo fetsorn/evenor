@@ -228,7 +228,9 @@ export async function sync(mind) {
       token: tagRemote.origin_token,
     });
 
-    syncResult.ok = syncResult.ok && syncResultPartial;
+    syncResult.ok = syncResult.ok && syncResultPartial.ok;
+
+    console.log(syncResultPartial, syncResult);
   }
 
   return syncResult;

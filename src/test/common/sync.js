@@ -30,11 +30,11 @@ export function testSyncSave() {
 
 export function testSyncOpen() {
   it("should sync on open", async () => {
-    await clone("http://localhost:8174/test-mind1.git");
+    await clone("http://localhost:8174/test-mind1.git"); // has 7
 
     await back();
 
-    await setRemote("http://localhost:8174/test-mind2.git");
+    await setRemote("http://localhost:8174/test-mind2.git"); // has 6
 
     await open();
 

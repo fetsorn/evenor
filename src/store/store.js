@@ -21,7 +21,7 @@ export const [store, setStore] = createStore({
   spoilerMap: {},
   loading: false,
   searchBar: "", // remembers the last state of search bar
-  mergeConflict: false,
+  mergeResult: false,
 });
 
 /**
@@ -370,8 +370,6 @@ export async function onMindChange(pathname, searchString) {
     }),
   );
 
-  const syncResult = await sync(store.mind.mind);
-
   let result;
 
   // in case of error fallback to root
@@ -384,6 +382,8 @@ export async function onMindChange(pathname, searchString) {
   }
 
   const { mind, schema, searchParams } = result;
+
+  const syncResult = await sync(mind.mind);
 
   setStore(
     produce((state) => {

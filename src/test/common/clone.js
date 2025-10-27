@@ -5,6 +5,8 @@ export async function clone(url) {
   await setValue(await $("aria/query"), `http://localhost:1420/#?~=${url}`);
 
   await search();
+
+  await (await $("aria/back")).waitForExist({ timeout: 5000 });
 }
 
 export function testClone() {

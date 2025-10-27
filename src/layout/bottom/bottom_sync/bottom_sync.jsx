@@ -5,7 +5,7 @@ export function BottomSync() {
   const { store } = useContext(StoreContext);
 
   return (
-    <Show when={store.mergeConflict} fallback={<></>}>
+    <Show when={!store.mergeResult} fallback={<></>}>
       <span>Conflict</span>
     </Show>
   );

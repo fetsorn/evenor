@@ -332,11 +332,14 @@ function mergeDriverFactory(conflicts, resolutions) {
 export async function sync(mind, remote, resolutions) {
   const dir = await findMind(mind);
 
+  const base64Pass = Buffer.from(`${""}:${remote.token}`).toString("base64");
+
   const tokenPartial = remote.token
     ? {
         onAuth: () => ({
           headers: {
-            Authorization: `Token ${remote.token}`,
+            //Authorization: `Basic ${base64Pass}`,
+            Authorization: `token ${remote.token}`, // soft-serve
           },
         }),
       }

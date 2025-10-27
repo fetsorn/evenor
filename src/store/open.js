@@ -1,6 +1,11 @@
 import api from "@/api/index.js";
 import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
-import { newUUID, readSchema, createRoot } from "@/store/record.js";
+import {
+  newUUID,
+  readSchema,
+  updateMind,
+  saveMindRecord,
+} from "@/store/record.js";
 import schemaRoot from "@/store/default_root_schema.json";
 
 /**
@@ -71,9 +76,6 @@ async function findMind(mind) {
  * @returns {object}
  */
 export async function clone(url, token) {
-  // if no root here try to create
-  await createRoot();
-
   // if uri specifies a remote
   // try to clone remote
   // where mind string is a digest of remote
@@ -83,29 +85,13 @@ export async function clone(url, token) {
   await api.clone(mindRemote, { url, token });
 
   // TODO validate and sanitize cloned dataset, get uuid
-  // TODO if repo has no uuid, create new mind
-  const mind = await newUUID();
 
-  // search root for mind
-  const mindExists = await findMind(mind);
-
-  // if there is no such mind
-  if (mindExists === false) {
-    // clone mindRemote to mind and write to root
-    await api.clone(mind, { mind: mindRemote });
-  } else {
-    // TODO if there is such remote, do nothing
-    // TODO if this is a new remote, ask user
-    // TODO if user rejects, do nothing
-    // TODO if user approves write new remote to mind
-  }
-  // TODO remove mindRemote
   const pathname = new URL(url).pathname;
 
   // get mind name from remote
   const nameClone = pathname.substring(pathname.lastIndexOf("/") + 1);
 
-  const schemaClone = await readSchema(mind);
+  const schemaClone = await readSchema(mindRemote);
 
   const [schemaRecordClone, ...metaRecordsClone] =
     schemaToBranchRecords(schemaClone);
@@ -114,6 +100,12 @@ export async function clone(url, token) {
     schemaRecordClone,
     metaRecordsClone,
   );
+
+  // if repo has no uuid, create new mind
+  const mind = await newUUID();
+
+  // search root for mind
+  const mindExists = await findMind(mind);
 
   const recordClone = {
     _: "mind",
@@ -126,6 +118,23 @@ export async function clone(url, token) {
       origin_token: token,
     },
   };
+
+  // if there is no such mind
+  if (mindExists === false) {
+    // clone mindRemote to mind and write to root
+    await api.clone(mind, { mind: mindRemote });
+
+    await updateMind(recordClone);
+
+    await saveMindRecord(recordClone);
+  } else {
+    // TODO if there is such remote, do nothing
+    // TODO if this is a new remote, ask user
+    // TODO if user rejects, do nothing
+    // TODO if user approves write new remote to mind
+  }
+
+  // TODO remove mindRemote
 
   return { schema: schemaClone, mind: recordClone };
 }

@@ -1,7 +1,7 @@
 import { createContext } from "solid-js";
 import parser from "search-query-parser";
 import diff from "microdiff";
-import { searchParamsToQuery } from "@/store/pure.js";
+import { searchParamsToQuery, getDefaultBase } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
 import { sync, createRoot, readSchema } from "@/store/record.js";
@@ -13,14 +13,14 @@ export const StoreContext = createContext();
 
 export const [store, setStore] = createStore({
   abortPreviousStream: async () => {},
-  searchParams: "_=mind",
+  searchParams: "_=mind", // sets the state of search bar
   mind: { _: "mind", mind: "root", name: "minds" },
   schema: schemaRoot,
   record: undefined,
   records: [],
   spoilerMap: {},
   loading: false,
-  searchBar: "",
+  searchBar: "", // remembers the last state of search bar
   mergeConflict: false,
 });
 
@@ -223,11 +223,15 @@ export async function onBase(value) {
  * @export function
  */
 export async function onSearch() {
+  setStore("loading", true);
+
   if (URL.canParse(store.searchBar)) {
     const url = URL.parse(store.searchBar);
 
     const searchString = url.hash.replace("#", "");
 
+    // reset searchbar to avoid a loop
+    // after onChangeMind calls onSearch
     setStore(
       produce((state) => {
         state.searchBar = "";
@@ -236,10 +240,10 @@ export async function onSearch() {
 
     await onMindChange("/", searchString);
 
+    setStore("loading", false);
+
     return undefined;
   }
-
-  setStore("loading", true);
 
   const url = makeURL(new URLSearchParams(store.searchParams), store.mind.mind);
 
@@ -606,22 +610,10 @@ export async function onSearchBar(searchBar) {
   //}
 }
 
-export async function getDefaultBase(mind) {
-  // read schema
+export async function onMindOpen(mind) {
   const schema = await readSchema(mind);
 
-  // return some branch of schema
-  const roots = Object.keys(schema).filter(
-    (b) => b !== "branch" && schema[b].trunks.length == 0,
-  );
+  const base = await getDefaultBase(schema);
 
-  const base = roots.reduce((withRoot, root) => {
-    if (schema[root].leaves.length > schema[withRoot].leaves.length) {
-      return root;
-    } else {
-      return withRoot;
-    }
-  }, roots[0]);
-
-  return base;
+  await onMindChange(`/${mind}`, `_=${base}`);
 }

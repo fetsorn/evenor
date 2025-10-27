@@ -434,6 +434,29 @@ export async function sync(mind, remote, resolutions) {
     });
 
     // TODO checkout after merge
+    if (r.alreadyMerged === true) {
+      //do nothing
+    } else if (r.fastForward === true) {
+      await git.checkout({
+        fs,
+        dir,
+        force: true,
+      });
+    } else {
+      await git.add({
+        fs,
+        dir,
+        filepath: ".",
+      });
+
+      await git.commit({
+        fs,
+        dir,
+        ref: "main",
+        message: "Merge origin into main",
+        parent: ["main", "origin/main"], // Be sure to specify the parents when creating a merge commit
+      });
+    }
 
     console.log(r);
   } catch (e) {
@@ -442,26 +465,20 @@ export async function sync(mind, remote, resolutions) {
     return { ok: false, conflicts };
   }
 
-  await git.checkout({
-    fs,
-    dir,
-    force: true,
-  });
+  try {
+    await git.push({
+      fs,
+      http,
+      dir,
+      url: remote.url,
+      remote: "origin",
+      ...tokenPartial,
+    });
+  } catch (e) {
+    console.log("push", e);
 
-  //try {
-  //  await git.push({
-  //    fs,
-  //    http,
-  //    dir,
-  //    url: remoteUrl,
-  //    remote: "origin",
-  //    ...tokenPartial,
-  //  });
-  //} catch (e) {
-  //  console.log("push", e);
-
-  //  return { ok: false, conflicts };
-  //}
+    return { ok: false, conflicts };
+  }
 
   return { ok: true };
 }

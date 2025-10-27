@@ -13,7 +13,7 @@ describe("sync open", () => {
   testSyncOpen();
 
   afterEach(async () => {
-    await browser.debug();
+    //await browser.debug();
 
     await cleanup();
   });

@@ -332,14 +332,13 @@ function mergeDriverFactory(conflicts, resolutions) {
 export async function sync(mind, remote, resolutions) {
   const dir = await findMind(mind);
 
-  const base64Pass = Buffer.from(`${""}:${remote.token}`).toString("base64");
-
+  // soft-serve uses "token ${remote.token}". first word CAN be Token
+  // gitea uses "token ${remote.token}". first word MUST be lower-case "token"
   const tokenPartial = remote.token
     ? {
         onAuth: () => ({
           headers: {
-            //Authorization: `Basic ${base64Pass}`,
-            Authorization: `token ${remote.token}`, // soft-serve
+            Authorization: `token ${remote.token}`,
           },
         }),
       }

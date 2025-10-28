@@ -12,7 +12,7 @@ export async function edit() {
 }
 
 export function testEdit() {
-  it("should sync on commit", async () => {
+  it("should edit", async () => {
     await createMind();
 
     await edit();

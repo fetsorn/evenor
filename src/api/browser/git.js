@@ -330,7 +330,7 @@ function mergeDriverFactory(conflicts, resolutions) {
  * @param {Object} remote -
  * @param {Object} resolutions -
  */
-export async function sync(mind, remote, resolutions) {
+export async function resolve(mind, remote, resolutions) {
   const dir = await findMind(mind);
 
   // soft-serve uses "token ${remote.token}". first word CAN be Token

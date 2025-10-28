@@ -92,8 +92,12 @@ export async function clone(mind, name, remote) {
   });
 }
 
-export async function sync(mind, remote, resolutions) {
-  return invoke("sync", { mind, remote, resolutions });
+export async function rename(mind, source) {
+  return invoke("rename", { mind, source });
+}
+
+export async function resolve(mind, remote, resolutions) {
+  return invoke("resolve", { mind, remote, resolutions });
 }
 
 export async function uploadBlobsLFS(mind, remote, files) {
@@ -151,7 +155,8 @@ export default {
   createLFS,
   clone,
   commit,
-  sync,
+  resolve,
+  rename,
   fetchAsset,
   setOrigin,
   getOrigin,

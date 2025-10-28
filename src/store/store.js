@@ -4,7 +4,7 @@ import diff from "microdiff";
 import { searchParamsToQuery, getDefaultBase } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { sync, createRoot, readSchema } from "@/store/record.js";
+import { resolve, createRoot, readSchema } from "@/store/record.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -150,7 +150,7 @@ export async function onRecordSave(recordOld, recordNew) {
     recordNew,
   );
 
-  const syncResult = await sync(store.mind.mind);
+  const syncResult = await resolve(store.mind.mind);
 
   setStore(
     produce((state) => {
@@ -179,7 +179,7 @@ export async function onRecordWipe(record) {
     record,
   );
 
-  const syncResult = await sync(store.mind.mind);
+  const syncResult = await resolve(store.mind.mind);
 
   setStore(
     produce((state) => {
@@ -383,7 +383,7 @@ export async function onMindChange(pathname, searchString) {
 
   const { mind, schema, searchParams } = result;
 
-  const syncResult = await sync(mind.mind);
+  const syncResult = await resolve(mind.mind);
 
   setStore(
     produce((state) => {

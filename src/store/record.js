@@ -217,19 +217,19 @@ export async function onZip(mind) {
  * @param {String} remoteUrl
  * @param {String} remoteToken
  */
-export async function sync(mind) {
+export async function resolve(mind) {
   const tagsRemote = await readRemoteTags(mind);
 
-  let syncResult = { ok: true };
+  let resolveResult = { ok: true };
 
   for (const tagRemote of tagsRemote) {
-    const syncResultPartial = await api.sync(mind, {
+    const resolvePartial = await api.resolve(mind, {
       url: tagRemote.origin_url,
       token: tagRemote.origin_token,
     });
 
-    syncResult.ok = syncResult.ok && syncResultPartial.ok;
+    resolveResult.ok = resolveResult.ok && resolvePartial.ok;
   }
 
-  return syncResult;
+  return resolveResult;
 }

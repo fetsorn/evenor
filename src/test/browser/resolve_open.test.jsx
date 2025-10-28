@@ -1,16 +1,16 @@
 import { render } from "@solidjs/testing-library";
 import "../setup.js";
 import App from "../../layout/layout.jsx";
-import { testSyncOpen } from "../common/index.js";
+import { testResolveOpen } from "../common/index.js";
 import { cleanup } from "./cleanup.js";
 
 // NOTE separate test file for each case to isolate state
-describe("sync open", () => {
+describe("resolve open", () => {
   beforeEach(() => {
     render(() => <App />);
   });
 
-  testSyncOpen();
+  testResolveOpen();
 
   afterEach(async () => {
     //await browser.debug();

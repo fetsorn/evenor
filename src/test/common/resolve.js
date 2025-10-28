@@ -13,8 +13,8 @@ export async function setRemote(url) {
   await save();
 }
 
-export function testSyncSave() {
-  it("should sync on commit", async () => {
+export function testResolveSave() {
+  it("should resolve on commit", async () => {
     // clone
     await clone("http://localhost:8174/test-mind1.git");
 
@@ -28,8 +28,8 @@ export function testSyncSave() {
   });
 }
 
-export function testSyncOpen() {
-  it("should sync on open", async () => {
+export function testResolveOpen() {
+  it("should resolve on open", async () => {
     await clone("http://localhost:8174/test-mind1.git"); // has 7
 
     await back();

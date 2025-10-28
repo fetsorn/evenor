@@ -3,7 +3,7 @@ import { testCreateMind, testCreateEvent } from "./create.js";
 import { testDelete } from "./delete.js";
 import { testOpen } from "./open.js";
 import { testSearch } from "./search.js";
-import { testSyncSave, testSyncOpen } from "./sync.js";
+import { testResolveSave, testResolveOpen } from "./resolve.js";
 import { testEdit } from "./edit.js";
 
 export {
@@ -13,7 +13,7 @@ export {
   testDelete,
   testOpen,
   testSearch,
-  testSyncSave,
-  testSyncOpen,
+  testResolveSave,
+  testResolveOpen,
   testEdit,
 };

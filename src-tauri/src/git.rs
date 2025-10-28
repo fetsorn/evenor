@@ -23,15 +23,15 @@ where
 #[tauri::command]
 pub async fn rename<R>(
     app: AppHandle<R>,
+    mind: &str,
     source: &str,
-    target: &str,
 ) -> Result<()>
 where
     R: Runtime,
 {
-    let target = Mind::new(app, target);
+    let target = Mind::new(app, mind);
 
-    let target_dir = target.name_mind(None)?;
+    let target_dir = mind.name_mind(None)?;
 
     let source = Mind::new(app, source);
 

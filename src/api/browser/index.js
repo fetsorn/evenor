@@ -6,7 +6,7 @@ import {
   commit,
   setOrigin,
   getOrigin,
-  sync,
+  resolve,
   rename,
 } from "./git.js";
 import {
@@ -41,7 +41,7 @@ export {
   fetchAsset,
   setOrigin,
   getOrigin,
-  sync,
+  resolve,
   rename,
 };
 
@@ -65,6 +65,6 @@ export default {
   fetchAsset,
   setOrigin,
   getOrigin,
-  sync,
+  resolve,
   rename,
 };

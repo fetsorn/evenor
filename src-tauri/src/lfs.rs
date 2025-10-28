@@ -1,5 +1,6 @@
 use crate::Result;
 use tauri::{ipc::Channel, AppHandle, Runtime};
+use git2kit::Origin;
 
 #[tauri::command]
 pub fn create_lfs<R>(app: AppHandle<R>, mind: &str) -> Result<()>
@@ -37,8 +38,7 @@ where
 pub async fn upload_blobs_lfs<R>(
     app: AppHandle<R>,
     mind: &str,
-    url: &str,
-    token: &str,
+    remote: Origin,
     files: &str,
 ) -> Result<()>
 where
@@ -64,8 +64,7 @@ where
 pub async fn download_url_from_pointer<R>(
     app: AppHandle<R>,
     mind: &str,
-    url: &str,
-    token: &str,
+    remote: Origin
     pointer_info: &str,
 ) -> Result<()>
 where

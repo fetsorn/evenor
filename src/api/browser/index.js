@@ -1,6 +1,14 @@
 import { zip } from "./zip.js";
 import { select, selectStream, updateRecord, deleteRecord } from "./csvs.js";
-import { init, clone, commit, setOrigin, getOrigin, sync } from "./git.js";
+import {
+  init,
+  clone,
+  commit,
+  setOrigin,
+  getOrigin,
+  sync,
+  rename,
+} from "./git.js";
 import {
   createLFS,
   fetchAsset,
@@ -34,6 +42,7 @@ export {
   setOrigin,
   getOrigin,
   sync,
+  rename,
 };
 
 export default {
@@ -57,4 +66,5 @@ export default {
   setOrigin,
   getOrigin,
   sync,
+  rename,
 };

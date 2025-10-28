@@ -22,12 +22,16 @@ export function ProfileRecord(props) {
     return store.mind.mind === "root" && props.record._ === "origin_url";
   };
 
+  function access(field) {
+    return props.record !== undefined ? props.record[field] : undefined;
+  }
+
   return (
     <>
       <ProfileValue
-        value={props.record[props.record._]}
-        branch={props.record._}
-        path={[...props.path, props.record._]}
+        value={access(access("_"))}
+        branch={access("_")}
+        path={[...props.path, access("_")]}
       />
 
       <Spoiler
@@ -50,13 +54,10 @@ export function ProfileRecord(props) {
                 );
 
               const addAnother = () =>
-                onRecordEdit(
-                  [...props.path, leaf(), props.record[leaf()].length],
-                  {
-                    _: leaf(),
-                    [leaf()]: "",
-                  },
-                );
+                onRecordEdit([...props.path, leaf(), access(leaf()).length], {
+                  _: leaf(),
+                  [leaf()]: "",
+                });
 
               return (
                 <button
@@ -82,7 +83,7 @@ export function ProfileRecord(props) {
             <ProfileField
               index={`${props.index}-${leaf()}`}
               branch={leaf()}
-              items={props.record[leaf()] ?? []}
+              items={access(leaf()) ?? []}
               path={[...props.path, leaf()]}
             />
           )}

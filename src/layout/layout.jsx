@@ -21,7 +21,11 @@ import styles from "./layout.module.css";
 export function LayoutOverview() {
   return (
     <div
-      className={styles.overview + ' ' + store.record !== undefined ? styles.closed : styles.opened}
+      className={
+        styles.overview +
+        " " +
+        (store.record !== undefined ? styles.closed : styles.opened)
+      }
     >
       <nav className={styles.buttonbar} title="navigationOverview">
         <NavigationBack />

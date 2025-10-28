@@ -10,9 +10,9 @@ where
     
     crate::log(&app, "zip");
 
-    //let mind = Mind::new(app, mind);
+    let mind = Mind::new(app, mind);
 
-    //mind.zip().await?;
+    mind.zip().await?;
 
     Ok(())
 }

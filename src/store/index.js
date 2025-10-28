@@ -1,4 +1,3 @@
-import { onZip } from "./record.js";
 import {
   StoreContext,
   store,
@@ -19,6 +18,7 @@ import {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  onZip,
 } from "./store.js";
 
 export {

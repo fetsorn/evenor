@@ -201,11 +201,11 @@ export async function loadMindRecord(record) {
 
 /**
  * This
- * @name onZip
+ * @name zip
  * @export function
  * @param {String} mind
  */
-export async function onZip(mind) {
+export async function zip(mind) {
   await api.zip(mind);
 }
 

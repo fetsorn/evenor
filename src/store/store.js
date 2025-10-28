@@ -4,7 +4,7 @@ import diff from "microdiff";
 import { searchParamsToQuery, getDefaultBase } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { resolve, createRoot, readSchema } from "@/store/record.js";
+import { resolve, createRoot, readSchema, zip } from "@/store/record.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -616,4 +616,12 @@ export async function onMindOpen(mind) {
   const base = await getDefaultBase(schema);
 
   await onMindChange(`/${mind}`, `_=${base}`);
+}
+
+export async function onZip(mind) {
+  setStore("loading", true);
+
+  await zip(mind);
+
+  setStore("loading", false);
 }

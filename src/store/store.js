@@ -225,7 +225,10 @@ export async function onBase(value) {
 export async function onSearch() {
   setStore("loading", true);
 
-  if (URL.canParse(store.searchBar)) {
+  try {
+    // if search bar can be parsed as url, clone
+    new URL(store.searchBar);
+
     const url = URL.parse(store.searchBar);
 
     const searchString = url.hash.replace("#", "");
@@ -243,6 +246,8 @@ export async function onSearch() {
     setStore("loading", false);
 
     return undefined;
+  } catch {
+    // do nothing
   }
 
   const url = makeURL(new URLSearchParams(store.searchParams), store.mind.mind);

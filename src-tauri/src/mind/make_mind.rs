@@ -119,8 +119,6 @@ mod test {
         // must error when root already exists
         let result = mind.make_mind(None);
 
-        print!("{:#?}", result);
-
         assert!(result.is_err());
 
         Ok(())

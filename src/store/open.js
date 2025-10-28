@@ -122,7 +122,7 @@ export async function clone(url, token) {
   // if there is no such mind
   if (mindExists === false) {
     // clone mindRemote to mind and write to root
-    await api.rename(mindRemote, mind);
+    await api.rename(mind, mindRemote);
 
     await updateMind(recordClone);
 

@@ -9,6 +9,7 @@ const api = __BUILD_MODE__ === "tauri" ? tauri : browser;
 // to make sure public API is safe and uniform
 export const {
   resolve,
+  rename,
   zip,
   uploadFile,
   uploadBlobsLFS,
@@ -24,8 +25,6 @@ export const {
   createLFS,
   clone,
   commit,
-  push,
-  pull,
   fetchAsset,
   putAsset,
   setOrigin,
@@ -34,6 +33,7 @@ export const {
 
 export default {
   resolve,
+  rename,
   zip,
   uploadFile,
   uploadBlobsLFS,
@@ -49,8 +49,6 @@ export default {
   createLFS,
   clone,
   commit,
-  push,
-  pull,
   fetchAsset,
   putAsset,
   setOrigin,

@@ -84,10 +84,9 @@ export async function commit(mind) {
 }
 
 // fresh clone from url to mind dir, symlink to name
-export async function clone(mind, name, remote) {
+export async function clone(mind, remote) {
   return invoke("clone", {
     mind,
-    name,
     remote,
   });
 }
@@ -108,13 +107,10 @@ export async function zip(mind) {
   return invoke("zip", { mind });
 }
 
-export async function setOrigin(mind, remoteUrl, remoteToken) {
+export async function setOrigin(mind, remote) {
   return invoke("set_origin", {
     mind,
-    remote: {
-      url: remoteUrl,
-      token: remoteToken,
-    },
+    remote,
   });
 }
 

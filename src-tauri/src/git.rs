@@ -1,5 +1,5 @@
 use crate::{Mind, Result, Error};
-use git2kit::{Origin, Repository, Settings};
+use git2kit::{Origin, Repository, Settings, Resolve};
 use std::fs;
 use tauri::{ipc::Channel, AppHandle, Runtime};
 use crate::{log};
@@ -134,7 +134,7 @@ where
 }
 
 #[tauri::command]
-pub async fn resolve<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
+pub async fn resolve<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<Resolve>
 where
     R: Runtime,
 {
@@ -148,7 +148,7 @@ where
 
     let repository = Repository::open(&mind_dir)?;
 
-    repository.resolve(&remote)?;
+    let resolve = repository.resolve(&remote)?;
 
-    Ok(())
+    Ok(resolve)
 }

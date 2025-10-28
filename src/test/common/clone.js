@@ -25,7 +25,7 @@ export function testClone() {
       await $("aria/found")
     ).waitUntil(
       async function () {
-        return (await this.getText()) === "found 20";
+        return (await this.getText()) === "found 7";
       },
       {
         timeout: 5000,

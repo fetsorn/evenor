@@ -1930,7 +1930,7 @@ dependencies = [
 [[package]]
 name = "git2kit"
 version = "0.1.1"
-source = "git+https://codeberg.org/fetsorn/git2kit#8768e170d9d45a90ac05dc4ca08e6730e44c6707"
+source = "git+https://codeberg.org/fetsorn/git2kit#5989d487eb7e508bb5c2f7658f4da3f9d6e6e3c0"
 dependencies = [
  "backtrace",
  "bstr",

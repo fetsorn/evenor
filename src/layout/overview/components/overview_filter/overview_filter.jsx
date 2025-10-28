@@ -15,7 +15,7 @@ export function OverviewFilter() {
   return (
     <>
       <input
-        id={`query`}
+        id="query"
         aria-label="query"
         value={getSearchBar(store.searchParams)}
         onInput={async (event) => {

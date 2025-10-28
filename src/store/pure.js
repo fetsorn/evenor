@@ -8,7 +8,7 @@ import { sow, mow, sortNestingDescending } from "@fetsorn/csvs-js";
  * @returns {URLSearchParams} urlSearchParams - search params from a query string.
  */
 export function queryToSearchParams(query) {
-  if (!Object.hasOwnProperty(query, "_")) throw Error("no base in query");
+  if (!query.hasOwnProperty("_")) throw Error("no base in query");
 
   const searchParams = Object.entries(query).reduce(
     (withField, [key, value]) => {
@@ -40,7 +40,7 @@ export function queryToSearchParams(query) {
  * @returns {object}
  */
 export function ensureTrunk(schema, record, trunk, leaf) {
-  if (!Object.hasOwnProperty(record, "_")) throw Error("record has no base");
+  if (!record.hasOwnProperty("_")) throw Error("record has no base");
 
   // if query has branch, return query
   const hasTrunk = mow(record, trunk, leaf).length > 0;
@@ -459,7 +459,7 @@ export function getDefaultBase(schema) {
  * @returns {String}
  */
 export function pickDefaultSortBy(schema, base) {
-  if (!Object.hasOwnProperty(schema, base)) throw Error("schema does not have base");
+  if (!schema.hasOwnProperty(base)) throw Error("schema does not have base");
 
   const date = schema[base].leaves.find((leaf) => schema[leaf].task === "date");
 

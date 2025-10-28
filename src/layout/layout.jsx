@@ -1,5 +1,4 @@
 import history from "history/hash";
-import cn from "classnames";
 import { onMount, useContext } from "solid-js";
 import { MetaProvider, Title } from "@solidjs/meta";
 import { StoreContext, store, onMindChange, onStartup } from "@/store/index.js";
@@ -22,10 +21,7 @@ import styles from "./layout.module.css";
 export function LayoutOverview() {
   return (
     <div
-      className={cn(
-        styles.overview,
-        store.record !== undefined ? styles.closed : styles.opened,
-      )}
+      className={styles.overview + ' ' + store.record !== undefined ? styles.closed : styles.opened}
     >
       <nav className={styles.buttonbar} title="navigationOverview">
         <NavigationBack />

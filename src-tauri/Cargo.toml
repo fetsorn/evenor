@@ -1,6 +1,6 @@
 [package]
 name = "evenor"
-version = "2.5.5"
+version = "2.5.6"
 description = "tell the story of your own data"
 authors = ["fetsorn"]
 license = "GPLv3"
@@ -34,7 +34,6 @@ zip = "2.2.2"
 walkdir = "2.5.0"
 tokio = "1.45.0"
 temp-dir = "0.1.16"
-sha256 = "1.6.0"
 clap = "4.5.42"
 env = "1.0.1"
 dirs = "6.0.0"

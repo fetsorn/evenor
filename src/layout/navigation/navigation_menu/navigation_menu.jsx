@@ -1,5 +1,4 @@
 import { createSignal, createEffect } from "solid-js";
-import cn from "classnames";
 import { MenuSortDirection, MenuSortQuery, MenuBaseQuery } from "./components/index.js";
 import styles from "./navigation_menu.module.css";
 
@@ -42,7 +41,7 @@ export function NavigationMenu() {
     <div className="container">
       <button onClick={() => setIsOpen(!isOpen())}>...</button>
 
-      <div id="menu" className={cn(styles.menu, { [styles.opened]: isOpen() })}>
+      <div id="menu" className={styles.menu + ' ' + (isOpen() ? styles.opened : '')}>
         {/*sort direction toggle*/}
         <MenuSortDirection />
 

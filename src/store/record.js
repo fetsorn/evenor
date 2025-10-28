@@ -1,5 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { sha256 } from "js-sha256";
+import shajs from "sha.js";
 import api from "@/api/index.js";
 import {
   extractSchemaRecords,
@@ -22,7 +22,7 @@ import schemaRoot from "@/store/default_root_schema.json";
  * @returns {String}
  */
 export function newUUID() {
-  return sha256(uuidv4());
+  return shajs('sha256').update(uuidv4()).digest('hex');
 }
 
 /**

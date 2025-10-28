@@ -7,7 +7,7 @@ export function OverviewRecord(props) {
   const { store } = useContext(StoreContext);
 
   function recordHasLeaf(leaf) {
-    return Object.hasOwnProperty(props.record, leaf);
+    return props.record.hasOwnProperty(leaf);
   }
 
   return (

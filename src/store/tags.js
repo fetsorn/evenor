@@ -9,14 +9,16 @@ import api from "@/api/index.js";
  */
 export async function readRemoteTags(mind) {
   try {
-    const { url: originUrl, token: originToken } = await api.getOrigin(mind);
+    const origin = await api.getOrigin(mind);
 
-    const partialToken = originToken ? { origin_token: originToken } : {};
+    if (origin === undefined || origin === null) return [];
+
+    const partialToken = origin.token ? { origin_token: origin.token } : {};
 
     return [
       {
         _: "origin_url",
-        origin_url: originUrl,
+        origin_url: origin.url,
         ...partialToken,
       },
     ];

@@ -1,6 +1,6 @@
-use crate::{Mind, Result};
+use crate::{Mind, Result, Error};
 use git2kit::{Origin, Repository, Settings};
-use std::fs::{remove_dir_all, rename};
+use std::fs;
 use tauri::{ipc::Channel, AppHandle, Runtime};
 use crate::{log};
 
@@ -15,7 +15,7 @@ where
     
     let mind = Mind::new(app, mind);
 
-    mind.make_mind(name).await?;
+    mind.make_mind(name)?;
 
     Ok(())
 }
@@ -29,18 +29,18 @@ pub async fn rename<R>(
 where
     R: Runtime,
 {
-    let target = Mind::new(app, mind);
+    let target = Mind::new(app.clone(), mind);
 
-    let target_dir = mind.name_mind(None)?;
+    let target_dir = target.name_mind(None)?;
 
     let source = Mind::new(app, source);
 
     let source_dir = source.find_mind()?;
 
     // NOTE rename won't work with mount points
-    match target_dir {
+    match source_dir {
         None => Err(Error::from_message("no mind found")),
-        Some(dir) => rename(dir, target_dir)
+        Some(dir) => Ok(fs::rename(dir, target_dir)?)
     }
 }
 
@@ -61,16 +61,16 @@ where
 
     let mind_dir = mind.name_mind(None)?;
 
-    let existing_mind = source.find_mind()?;
+    let existing_mind = mind.find_mind()?;
 
     match existing_mind {
-        None() => (),
-        Some(dir) => remove_dir_all(dir)?
+        None => (),
+        Some(dir) => fs::remove_dir_all(dir)?
     };
 
     let repo = Repository::clone(mind_dir, &remote)?;
 
-    mind.set_origin(remote).await?;
+    repo.set_origin(remote)?;
 
     Ok(())
 }
@@ -134,7 +134,7 @@ where
 }
 
 #[tauri::command]
-pub async fn sync<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
+pub async fn resolve<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
 where
     R: Runtime,
 {
@@ -148,7 +148,7 @@ where
 
     let repository = Repository::open(&mind_dir)?;
 
-    repository.sync(remote).await?;
+    repository.resolve(&remote)?;
 
     Ok(())
 }

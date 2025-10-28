@@ -64,7 +64,7 @@ where
 pub async fn download_url_from_pointer<R>(
     app: AppHandle<R>,
     mind: &str,
-    remote: Origin
+    remote: Origin,
     pointer_info: &str,
 ) -> Result<()>
 where

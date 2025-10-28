@@ -1,23 +1,30 @@
-use crate::{Mind, Result};
+use crate::{Mind, Result, Error};
 use git2kit::Repository;
 use std::fs::{create_dir_all, rename, write};
 use tauri::Runtime;
 
-pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
+pub fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
     let mind_dir = mind.name_mind(name)?;
-    
+
     crate::log(&mind.app, "make");
-    
+
     crate::log(&mind.app, &mind.mind);
-        
-    crate::log(&mind.app, mind_dir.clone().into_os_string().to_str().unwrap());
+
+    crate::log(
+        &mind.app,
+        mind_dir.clone().into_os_string().to_str().unwrap(),
+    );
+
+    let existing_mind = mind.find_mind()?;
 
     if mind.mind == "root" {
+        if (existing_mind.is_some()) { return Err(Error::from_message("already exists")) }
+
         match create_dir_all(&mind_dir) {
             Ok(_) => (),
-            Err(e) => crate::log(&mind.app, &e.to_string())?
+            Err(e) => crate::log(&mind.app, &e.to_string())?,
         };
-        
+
         crate::log(&mind.app, "created dir");
 
         let repository = Repository::init(&mind_dir)?;
@@ -36,8 +43,6 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
         return Ok(());
     }
-
-    let existing_mind = mind.find_mind()?;
 
     match existing_mind {
         Some(s) => {
@@ -96,7 +101,7 @@ mod test {
 
         let mind = Mind::new(app.handle().clone(), &mind);
 
-        mind.make_mind(None).await?;
+        mind.make_mind(None)?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -112,7 +117,9 @@ mod test {
         });
 
         // must error when root already exists
-        let result = mind.make_mind(None).await;
+        let result = mind.make_mind(None);
+
+        print!("{:#?}", result);
 
         assert!(result.is_err());
 
@@ -139,7 +146,7 @@ mod test {
 
         let mind = Mind::new(app.handle().clone(), &mind);
 
-        mind.make_mind(Some(name)).await?;
+        mind.make_mind(Some(name))?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -157,7 +164,7 @@ mod test {
         let name = "etest1";
 
         // must rename when root already exists
-        let result = mind.make_mind(Some(name)).await;
+        let result = mind.make_mind(Some(name));
 
         read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();

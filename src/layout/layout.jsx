@@ -35,7 +35,11 @@ export function LayoutOverview() {
 
       <Overview />
 
-      <footer className={styles.bottom}>
+      <footer
+        className={
+          __BUILD_MODE__ === "android" ? styles.bigbottom : styles.bottom
+        }
+      >
         <BottomCount />
 
         <BottomSync />

@@ -31,9 +31,12 @@ function getBuildMode() {
 export default defineConfig({
   plugins: [solidPlugin()],
   publicDir: "public",
+  optimizeDeps: {
+    exclude: ['classnames', 'js-sha256'],
+  },
   build: {
     outDir: "dist",
-    target: "safari13",
+    target: "chrome83",
   },
   envPrefix: ["VITE_", "TAURI_"],
   server: {

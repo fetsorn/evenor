@@ -1,7 +1,7 @@
 {
   "name": "evenor",
   "productName": "evenor",
-  "version": "2.5.4",
+  "version": "2.5.5",
   "private": true,
   "description": "Tell the story of your data.",
   "type": "module",

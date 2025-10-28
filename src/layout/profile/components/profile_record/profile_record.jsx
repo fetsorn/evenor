@@ -119,7 +119,7 @@ export function ProfileRecord(props) {
                 <button
                   className={"profileAddNew"}
                   onClick={() =>
-                    Object.hasOwn(props.record, leaf())
+                    Object.hasOwnProperty(props.record, leaf())
                       ? addAnother()
                       : addNew()
                   }

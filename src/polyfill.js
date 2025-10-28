@@ -25,6 +25,12 @@ export function polyfill() {
 
   File.prototype.arrayBuffer = File.prototype.arrayBuffer || myArrayBuffer;
   Blob.prototype.arrayBuffer = Blob.prototype.arrayBuffer || myArrayBuffer;
+
+    if (!Object.hasOwn) {
+      Object.hasOwn = function(obj, prop) {
+        return Object.prototype.hasOwnProperty.call(obj, prop);
+      };
+    }
 }
 
 export default { polyfill };

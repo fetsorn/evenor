@@ -8,3 +8,33 @@
 [[https://github.com/isomorphic-git/isomorphic-git][isomorphic-git]] - A pure JavaScript implementation of git for node and browsers.
 
 [[https://codeberg.org/fetsorn/genea][genea]] - Completely serverless solution for consuming and authoring GEDCOM genealogy data - for inspiring to use isomorphic git.
+
+
+* macos
+
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+yarn
+cargo install tauri-cli
+rustup target add aarch64-apple-ios
+yarn tauri ios build --export-method app-store-connect
+xcrun altool --upload-app --type ios --file "src-tauri/gen/apple/build/arm64/evenor.ipa" --apiKey "" --apiIssuer ""
+
+* android
+
+rustup target add aarch64-linux-android armv7-linux-androideabi i686-linux-android x86_64-linux-android
+export JAVA_HOME="/Applications/Android Studio.app/Contents/jbr/Contents/Home"
+export ANDROID_HOME="$HOME/Library/Android/sdk"
+export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
+yarn tauri android init
+brew install binutils
+export TOOLCHAIN=$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64
+export AR=$TOOLCHAIN/bin/aarch64-linux-android-ar
+export AS=$TOOLCHAIN/bin/aarch64-linux-android-as
+export CC=$TOOLCHAIN/bin/aarch64-linux-android21-clang
+export CXX=$TOOLCHAIN/bin/aarch64-linux-android21-clang++
+export LD=$TOOLCHAIN/bin/aarch64-linux-android-ld
+export STRIP=$TOOLCHAIN/bin/aarch64-linux-android-strip
+export OPENSSL_DIR=$(brew --prefix openssl@3)
+export OPENSSL_ROOT_DIR=$(brew --prefix openssl@3)
+export RANLIB=$TOOLCHAIN/bin/llvm-ranlib
+yarn tauri android build

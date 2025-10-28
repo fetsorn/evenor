@@ -5,7 +5,7 @@ import {
   onRecordEdit,
   onRecordWipe,
   onMindChange,
-  getDefaultBase,
+  onMindOpen,
   onZip,
 } from "@/store/index.js";
 import { Confirmation, Spoiler } from "@/layout/components/index.js";
@@ -33,9 +33,7 @@ export function OverviewItem(props) {
 
   return (
     <div className={styles.item}>
-      <div
-        className={isFold() ? styles.fold : styles.unfold}
-      >
+      <div className={isFold() ? styles.fold : styles.unfold}>
         <div className={styles.content} ref={setContent}>
           <OverviewRecord
             index={props.index}
@@ -49,7 +47,7 @@ export function OverviewItem(props) {
         <Show
           when={isFold()}
           fallback={<button onClick={() => setIsFold(true)}>less...</button>}
-          >
+        >
           <button onClick={() => setIsFold(false)}>more...</button>
         </Show>
       </Show>
@@ -62,7 +60,7 @@ export function OverviewItem(props) {
           <button
             className={"edit"}
             onClick={() => {
-              onRecordEdit(["record"], JSON.parse(JSON.stringify(props.item)))
+              onRecordEdit(["record"], JSON.parse(JSON.stringify(props.item)));
 
               setShowActions(false);
             }}
@@ -84,14 +82,7 @@ export function OverviewItem(props) {
           </Show>
 
           <Show when={canOpenMind} fallback={<></>}>
-            <button
-              title="open"
-              onClick={async () => {
-                const base = await getDefaultBase(props.item.mind);
-
-                await onMindChange(`/${props.item.mind}`, `_=${base}`);
-              }}
-            >
+            <button title="open" onClick={() => onMindOpen(props.item.mind)}>
               Open{" "}
             </button>
           </Show>

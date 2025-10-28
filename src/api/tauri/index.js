@@ -84,20 +84,19 @@ export async function commit(mind) {
 }
 
 // fresh clone from url to mind dir, symlink to name
-export async function clone(mind, name, remote) {
+export async function clone(mind, remote) {
   return invoke("clone", {
     mind,
-    name,
     remote,
   });
 }
 
-export async function push(mind, remote) {
-  return invoke("push", { mind, remote });
+export async function rename(mind, source) {
+  return invoke("rename", { mind, source });
 }
 
-export async function pull(mind, remote) {
-  return invoke("pull", { mind, remote });
+export async function resolve(mind, remote, resolutions) {
+  return invoke("resolve", { mind, remote, resolutions });
 }
 
 export async function uploadBlobsLFS(mind, remote, files) {
@@ -108,13 +107,10 @@ export async function zip(mind) {
   return invoke("zip", { mind });
 }
 
-export async function setOrigin(mind, remoteUrl, remoteToken) {
+export async function setOrigin(mind, remote) {
   return invoke("set_origin", {
     mind,
-    remote: {
-      url: remoteUrl,
-      token: remoteToken,
-    },
+    remote,
   });
 }
 
@@ -155,8 +151,8 @@ export default {
   createLFS,
   clone,
   commit,
-  push,
-  pull,
+  resolve,
+  rename,
   fetchAsset,
   setOrigin,
   getOrigin,

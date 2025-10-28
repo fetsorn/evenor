@@ -20,7 +20,9 @@ export async function readRemoteTags(mind) {
         ...partialToken,
       },
     ];
-  } catch {
+  } catch (e) {
+    if (e.message !== "no remote") console.log(e);
+
     return [];
   }
 }
@@ -69,9 +71,9 @@ export async function writeRemoteTags(mind, originUrls) {
     : originUrl.origin_token;
 
   try {
-    await api.setOrigin(mind, url, token);
+    await api.setOrigin(mind, { url, token });
   } catch (e) {
-    //console.error(e);
+    console.error(e);
     // do nothing
   }
 }

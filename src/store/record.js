@@ -201,44 +201,35 @@ export async function loadMindRecord(record) {
 
 /**
  * This
- * @name onZip
+ * @name zip
  * @export function
  * @param {String} mind
  */
-export async function onZip(mind) {
+export async function zip(mind) {
   await api.zip(mind);
 }
 
 /**
  * This
- * @name pull
+ * @name sync
  * @export function
  * @param {String} mind
  * @param {String} remoteUrl
  * @param {String} remoteToken
  */
-export async function pull(mind, remoteUrl, remoteToken) {
-  await api.commit(mind);
+export async function resolve(mind) {
+  const tagsRemote = await readRemoteTags(mind);
 
-  await api.pull(mind, { url: remoteUrl, token: remoteToken });
-}
+  let resolveResult = { ok: true };
 
-/**
- * This
- * @name push
- * @export function
- * @param {String} mind
- * @param {String} remoteUrl
- * @param {String} remoteToken
- */
-export async function push(mind, remoteUrl, remoteToken) {
-  await api.commit(mind);
+  for (const tagRemote of tagsRemote) {
+    const resolvePartial = await api.resolve(mind, {
+      url: tagRemote.origin_url,
+      token: tagRemote.origin_token,
+    });
 
-  try {
-    await api.uploadBlobsLFS(mind, { url: remoteUrl, token: remoteToken });
-  } catch {
-    // do nothing
+    resolveResult.ok = resolveResult.ok && resolvePartial.ok;
   }
 
-  await api.push(mind, { url: remoteUrl, token: remoteToken });
+  return resolveResult;
 }

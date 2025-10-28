@@ -6,8 +6,7 @@ import {
   init,
   commit,
   clone,
-  pull,
-  push,
+  resolve,
   setOrigin,
   getOrigin,
 } from "@/api/browser/git.js";
@@ -165,11 +164,11 @@ describe("clone", () => {
     await fs.promises.mkdir(stub.dirpath);
 
     // try to clone
-    await clone(stub.mind, stub.name, { url: stub.url, token: stub.token });
+    await clone(stub.mind, { url: stub.url, token: stub.token });
   });
 
   test("calls git.clone", async () => {
-    await clone(stub.mind, stub.name, { url: stub.url, token: stub.token });
+    await clone(stub.mind, { url: stub.url, token: stub.token });
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -327,7 +326,7 @@ describe("setOrigin", () => {
   });
 });
 
-describe("pull", () => {
+describe("resolve", () => {
   beforeEach(() => {
     fs.init("test", { wipe: true });
   });
@@ -339,7 +338,7 @@ describe("pull", () => {
 
   test("throws if no mind", async () => {
     await expect(
-      pull(stub.mind, { url: stub.url, token: stub.token }),
+      resolve(stub.mind, { url: stub.url, token: stub.token }),
     ).rejects.toThrowError();
   });
 
@@ -350,45 +349,9 @@ describe("pull", () => {
 
     await setOrigin(stub.mind, { url: stub.url, token: stub.token });
 
-    await pull(stub.mind, { url: stub.url, token: stub.token });
+    await resolve(stub.mind, { url: stub.url, token: stub.token });
 
     expect(git.fastForward).toHaveBeenCalledWith(
-      expect.objectContaining({
-        dir: stub.dirpath,
-        url: stub.url,
-        remote: "origin",
-        onAuth: expect.any(Function),
-      }),
-    );
-  });
-});
-
-describe("push", () => {
-  beforeEach(() => {
-    fs.init("test", { wipe: true });
-  });
-
-  afterEach(async () => {
-    // for lightning fs to release mutex on indexedDB
-    await new Promise((resolve) => setTimeout(resolve, 500));
-  });
-
-  test("throws if no mind", async () => {
-    await expect(
-      push(stub.mind, { url: stub.url, token: stub.token }),
-    ).rejects.toThrowError();
-  });
-
-  test("calls git", async () => {
-    await init(stub.mind, stub.name);
-
-    await commit(stub.mind);
-
-    await setOrigin(stub.mind, { url: stub.url, token: stub.token });
-
-    await push(stub.mind, { url: stub.url, token: stub.token });
-
-    expect(git.push).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
         url: stub.url,

@@ -102,7 +102,7 @@ export function searchParamsToQuery(schema, searchParams) {
     baseValue === null ? { _: base } : { _: base, [base]: baseValue };
 
   const entries = Array.from(searchParams.entries()).filter(
-    ([key]) => key !== "_",
+    ([key]) => key !== "_" && key !== "~" && key !== "-",
   );
 
   // sort so that trunks come first
@@ -426,19 +426,26 @@ export function makeURL(searchParams, mind) {
 
 /**
  * This picks default base from a root branch of schema
- * @name pickDefaultBase
+ * @name getDefaultBase
  * @function
  * @param {object} schema -
  * @returns {String}
  */
-export function pickDefaultBase(schema) {
+export function getDefaultBase(schema) {
   if (Object.keys(schema) === 0) throw Error("schema empty");
 
-  const [root] = Object.entries(schema).find(
-    ([, { trunks }]) => trunks.length === 0,
+  // return some branch of schema
+  const roots = Object.keys(schema).filter(
+    (b) => b !== "branch" && schema[b].trunks.length == 0,
   );
 
-  const base = root ?? Object.keys(schema)[0];
+  const base = roots.reduce((withRoot, root) => {
+    if (schema[root].leaves.length > schema[withRoot].leaves.length) {
+      return root;
+    } else {
+      return withRoot;
+    }
+  }, roots[0]);
 
   return base;
 }

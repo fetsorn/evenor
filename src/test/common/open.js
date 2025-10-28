@@ -11,7 +11,7 @@ async function spoiler() {
   await click(await $("aria/open"));
 
   try {
-    await (await $("aria/Foobar")).waitForExist({ timeout: 5000 });
+    await (await $("aria/back")).waitForExist({ timeout: 5000 });
   } catch {
     await spoiler();
   }

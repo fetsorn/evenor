@@ -48,7 +48,9 @@ export const config = {
       glob: "*",
       route: "/",
     };
+
     gitServer = http.createServer(cors(factory(config)));
+
     gitServer.listen(8174);
   },
   afterSession: () => {

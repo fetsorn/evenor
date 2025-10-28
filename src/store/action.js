@@ -1,6 +1,6 @@
 import { updateRecord } from "@/store/impure.js";
-import { createRoot, deleteRecord } from "@/store/record.js";
-import { pickDefaultBase, pickDefaultSortBy } from "@/store/pure.js";
+import { deleteRecord } from "@/store/record.js";
+import { getDefaultBase, pickDefaultSortBy } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 
 /**
@@ -15,9 +15,6 @@ import { find, clone } from "@/store/open.js";
  * @returns {object[]}
  */
 export async function saveRecord(mind, base, records, recordOld, recordNew) {
-  // if no root here try to create
-  await createRoot();
-
   await updateRecord(mind, base, recordNew);
 
   const recordsNew = records
@@ -63,11 +60,11 @@ export async function changeMind(pathname, searchString) {
   const token = searchParams.get("-") ?? "";
 
   const { mind: mindRecord, schema } = searchParams.has("~")
-    ? await clone(undefined, undefined, remoteUrl, token)
+    ? await clone(remoteUrl, token)
     : await find(mind, undefined);
 
   if (!searchParams.has("_")) {
-    searchParams.set("_", pickDefaultBase(schema));
+    searchParams.set("_", getDefaultBase(schema));
   }
 
   if (!searchParams.has(".sortBy")) {

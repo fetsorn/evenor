@@ -4,10 +4,10 @@ import {
   init,
   clone,
   commit,
-  pull,
-  push,
   setOrigin,
   getOrigin,
+  resolve,
+  rename,
 } from "./git.js";
 import {
   createLFS,
@@ -38,11 +38,11 @@ export {
   createLFS,
   clone,
   commit,
-  push,
-  pull,
   fetchAsset,
   setOrigin,
   getOrigin,
+  resolve,
+  rename,
 };
 
 export default {
@@ -62,9 +62,9 @@ export default {
   createLFS,
   clone,
   commit,
-  push,
-  pull,
   fetchAsset,
   setOrigin,
   getOrigin,
+  resolve,
+  rename,
 };

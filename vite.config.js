@@ -19,13 +19,9 @@ function getBuildMode() {
     return env.BUILD_MODE;
   }
 
-  const isTauri = env.TAURI_ENV_ARCH != undefined;
+  const platform = env.TAURI_ENV_PLATFORM ?? "browser";
 
-  if (isTauri) {
-    return "tauri";
-  }
-
-  return "browser";
+  return platform;
 }
 
 export default defineConfig({
@@ -37,6 +33,8 @@ export default defineConfig({
   build: {
     outDir: "dist",
     target: "chrome83",
+    minify: false,
+    terserOptions: { compress: false, mangle: false },
   },
   envPrefix: ["VITE_", "TAURI_"],
   server: {

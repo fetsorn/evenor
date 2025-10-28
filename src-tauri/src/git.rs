@@ -1,6 +1,6 @@
-use crate::{Mind, Result};
-use git2kit::{Origin, Repository, Settings};
-use std::fs::remove_dir_all;
+use crate::{Mind, Result, Error};
+use git2kit::{Origin, Repository, Settings, Resolve};
+use std::fs;
 use tauri::{ipc::Channel, AppHandle, Runtime};
 use crate::{log};
 
@@ -13,80 +13,64 @@ where
         
     log(&app, "git init");
     
-    let mind = Mind::new(app.clone(), mind);
+    let mind = Mind::new(app, mind);
 
-    mind.make_mind(name).await?;
+    mind.make_mind(name)?;
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn rename<R>(
+    app: AppHandle<R>,
+    mind: &str,
+    source: &str,
+) -> Result<()>
+where
+    R: Runtime,
+{
+    let target = Mind::new(app.clone(), mind);
+
+    let target_dir = target.name_mind(None)?;
+
+    let source = Mind::new(app, source);
+
+    let source_dir = source.find_mind()?;
+
+    // NOTE rename won't work with mount points
+    match source_dir {
+        None => Err(Error::from_message("no mind found")),
+        Some(dir) => Ok(fs::rename(dir, target_dir)?)
+    }
 }
 
 #[tauri::command]
 pub async fn clone<R>(
     app: AppHandle<R>,
     mind: &str,
-    name: Option<String>,
     remote: Origin,
 ) -> Result<()>
 where
     R: Runtime,
 {
     log::info!("git clone");
-    
+
     crate::log(&app, "clone");
 
     let mind = Mind::new(app, mind);
 
-    match mind.find_mind() {
-        Err(_) => (),
-        Ok(p) => match p {
-            None => (),
-            Some(d) => remove_dir_all(d)?,
-        },
+    let mind_dir = mind.name_mind(None)?;
+
+    let existing_mind = mind.find_mind()?;
+
+    match existing_mind {
+        None => (),
+        Some(dir) => fs::remove_dir_all(dir)?
     };
 
-    let mind_dir = mind.name_mind(name.as_deref())?;
+    let repo = Repository::clone(mind_dir, &remote)?;
 
-    let repo = Repository::clone(mind_dir, &remote).await?;
-
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn pull<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
-where
-    R: Runtime,
-{
-    log::info!("git pull");
-    
-    crate::log(&app, "pull");
-
-    let mind = Mind::new(app, mind);
-
-    let mind_dir = mind.find_mind()?.unwrap();
-
-    let repo = Repository::open(&mind_dir)?;
-
-    repo.pull(&remote)?;
-
-    Ok(())
-}
-
-#[tauri::command]
-pub async fn push<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
-where
-    R: Runtime,
-{
-    log::info!("git push");
-    
-    crate::log(&app, "push");
-
-    let mind = Mind::new(app, mind);
-
-    let mind_dir = mind.find_mind()?.unwrap();
-
-    let repository = Repository::open(&mind_dir)?;
-
-    repository.push(&remote)?;
+    repo.set_origin(remote)?;
 
     Ok(())
 }
@@ -147,4 +131,24 @@ where
     repo.commit();
 
     Ok(())
+}
+
+#[tauri::command]
+pub async fn resolve<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<Resolve>
+where
+    R: Runtime,
+{
+    log::info!("git init");
+
+    log(&app, "git init");
+
+    let mind = Mind::new(app, mind);
+
+    let mind_dir = mind.find_mind()?.unwrap();
+
+    let repository = Repository::open(&mind_dir)?;
+
+    let resolve = repository.resolve(&remote)?;
+
+    Ok(resolve)
 }

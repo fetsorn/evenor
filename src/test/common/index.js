@@ -2,9 +2,9 @@ import { testClone } from "./clone.js";
 import { testCreateMind, testCreateEvent } from "./create.js";
 import { testDelete } from "./delete.js";
 import { testOpen } from "./open.js";
-import { testPull } from "./pull.js";
-import { testPush } from "./push.js";
 import { testSearch } from "./search.js";
+import { testResolveSave, testResolveOpen } from "./resolve.js";
+import { testEdit } from "./edit.js";
 
 export {
   testClone,
@@ -12,7 +12,8 @@ export {
   testCreateMind,
   testDelete,
   testOpen,
-  testPull,
-  testPush,
   testSearch,
+  testResolveSave,
+  testResolveOpen,
+  testEdit,
 };

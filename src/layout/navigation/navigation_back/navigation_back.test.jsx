@@ -9,7 +9,7 @@ describe("NavigationBack", () => {
   test("", async () => {
     await onStartup();
 
-    setStore("mind", { _: "mind", mind: "mind" });
+    setStore("mind", { _: "mind", mind: "somemind" });
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

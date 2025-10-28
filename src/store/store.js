@@ -1,11 +1,10 @@
 import { createContext } from "solid-js";
 import parser from "search-query-parser";
 import diff from "microdiff";
-import { searchParamsToQuery } from "@/store/pure.js";
+import { searchParamsToQuery, getDefaultBase } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
-import { push, pull, createRoot, readSchema } from "@/store/record.js";
-import { clone } from "@/store/open.js";
+import { resolve, createRoot, readSchema, zip } from "@/store/record.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -14,13 +13,15 @@ export const StoreContext = createContext();
 
 export const [store, setStore] = createStore({
   abortPreviousStream: async () => {},
-  searchParams: "_=mind",
+  searchParams: "_=mind", // sets the state of search bar
   mind: { _: "mind", mind: "root", name: "minds" },
   schema: schemaRoot,
   record: undefined,
   records: [],
   spoilerMap: {},
   loading: false,
+  searchBar: "", // remembers the last state of search bar
+  mergeResult: false,
 });
 
 /**
@@ -149,10 +150,13 @@ export async function onRecordSave(recordOld, recordNew) {
     recordNew,
   );
 
+  const syncResult = await resolve(store.mind.mind);
+
   setStore(
     produce((state) => {
       state.records = records;
       state.record = undefined;
+      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -175,9 +179,12 @@ export async function onRecordWipe(record) {
     record,
   );
 
+  const syncResult = await resolve(store.mind.mind);
+
   setStore(
     produce((state) => {
       state.records = records;
+      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -217,6 +224,26 @@ export async function onBase(value) {
  */
 export async function onSearch() {
   setStore("loading", true);
+
+  if (URL.canParse(store.searchBar)) {
+    const url = URL.parse(store.searchBar);
+
+    const searchString = url.hash.replace("#", "");
+
+    // reset searchbar to avoid a loop
+    // after onChangeMind calls onSearch
+    setStore(
+      produce((state) => {
+        state.searchBar = "";
+      }),
+    );
+
+    await onMindChange("/", searchString);
+
+    setStore("loading", false);
+
+    return undefined;
+  }
 
   const url = makeURL(new URLSearchParams(store.searchParams), store.mind.mind);
 
@@ -356,11 +383,14 @@ export async function onMindChange(pathname, searchString) {
 
   const { mind, schema, searchParams } = result;
 
+  const syncResult = await resolve(mind.mind);
+
   setStore(
     produce((state) => {
       state.mind = mind;
       state.schema = schema;
       state.searchParams = searchParams.toString();
+      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -373,79 +403,6 @@ export async function onMindChange(pathname, searchString) {
     // start a search stream
     await onSearch();
   }
-}
-
-/**
- * This
- * @name onClone
- * @export function
- * @param {String} mind -
- * @param {String} name -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
- */
-export async function onClone(mind, name, remoteUrl, remoteToken) {
-  setStore("loading", true);
-
-  try {
-    const { mind: mindRecord } = await clone(
-      mind,
-      name,
-      remoteUrl,
-      remoteToken,
-    );
-
-    setStore(
-      produce((state) => {
-        state.record = mindRecord;
-      }),
-    );
-  } catch (e) {
-    console.log("clone failed", e);
-    // do nothing
-  }
-
-  setStore("loading", false);
-}
-
-/**
- * This
- * @name onPull
- * @export function
- * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
- */
-export async function onPull(mind, remoteUrl, remoteToken) {
-  setStore("loading", true);
-
-  try {
-    await pull(mind, remoteUrl, remoteToken);
-  } catch (e) {
-    console.log(e);
-  }
-
-  setStore("loading", false);
-}
-
-/**
- * This
- * @name onPush
- * @export function
- * @param {String} mind -
- * @param {String} remoteUrl -
- * @param {String} remoteToken -
- */
-export async function onPush(mind, remoteUrl, remoteToken) {
-  setStore("loading", true);
-
-  try {
-    await push(mind, remoteUrl, remoteToken);
-  } catch (e) {
-    console.log(e);
-  }
-
-  setStore("loading", false);
 }
 
 /**
@@ -563,41 +520,39 @@ function batchUpdateSearchParams(changes) {
   // don't search on freeform text
   let doSearch = false;
 
-  changes.filter(
-    (c) => c.path[0] !== "exclude" && c.path[0] !== "offsets"
-  ).forEach((change) => {
-    switch (change.type) {
-      case "REMOVE": {
-        const field = change.path[0];
+  changes
+    .filter((c) => c.path[0] !== "exclude" && c.path[0] !== "offsets")
+    .forEach((change) => {
+      switch (change.type) {
+        case "REMOVE": {
+          const field = change.path[0];
 
-        doSearch = doSearch
-          ? doSearch
-          : updateSearchParams(field, undefined);
+          doSearch = doSearch ? doSearch : updateSearchParams(field, undefined);
 
-        break;
+          break;
+        }
+        case "CREATE": {
+          const field = change.path[0];
+
+          doSearch = doSearch
+            ? doSearch
+            : updateSearchParams(field, change.value);
+
+          break;
+        }
+        case "CHANGE": {
+          const field = change.path[0];
+
+          doSearch = doSearch
+            ? doSearch
+            : updateSearchParams(field, change.value);
+
+          break;
+        }
       }
-      case "CREATE": {
-        const field = change.path[0];
+    });
 
-        doSearch = doSearch
-          ? doSearch
-          : updateSearchParams(field, change.value);
-
-        break;
-      }
-      case "CHANGE": {
-        const field = change.path[0];
-
-        doSearch = doSearch
-          ? doSearch
-          : updateSearchParams(field, change.value);
-
-        break;
-      }
-    }
-  })
-
-  return doSearch
+  return doSearch;
 }
 
 export function getSearchBar() {
@@ -607,16 +562,22 @@ export function getSearchBar() {
     keywords: Object.keys(store.schema),
   };
 
-  const searchBar = Array.from(searchParams.entries()).filter(
-    ([field, value]) => !field.startsWith(".") && field !== "_"
-  ).reduce((withEntry, [field, value]) => {
-    return { ...withEntry, [field]: value };
-  }, {});
+  const searchBar = Array.from(searchParams.entries())
+    .filter(([field, value]) => !field.startsWith(".") && field !== "_")
+    .reduce((withEntry, [field, value]) => {
+      return { ...withEntry, [field]: value };
+    }, {});
 
   return parser.stringify(searchBar, options);
 }
 
 export async function onSearchBar(searchBar) {
+  setStore(
+    produce((state) => {
+      state.searchBar = searchBar;
+    }),
+  );
+
   const options = {
     keywords: Object.keys(store.schema),
   };
@@ -630,11 +591,10 @@ export async function onSearchBar(searchBar) {
   const searchBarNew = objectize(parser.parse(searchBar, options));
 
   // TODO: rename text to .text in fetsorn/search-query-parser
-  const changes = diff(
-    searchBarOld,
-    searchBarNew,
-    { cyclesFix: false, offsets: false }
-  );
+  const changes = diff(searchBarOld, searchBarNew, {
+    cyclesFix: false,
+    offsets: false,
+  });
 
   // what if no change?
   // can there be no change on input? no, always returns field and value
@@ -650,22 +610,18 @@ export async function onSearchBar(searchBar) {
   //}
 }
 
-export async function getDefaultBase(mind) {
-  // read schema
+export async function onMindOpen(mind) {
   const schema = await readSchema(mind);
 
-  // return some branch of schema
-  const roots = Object.keys(schema).filter(
-    (b) => b !== "branch" && schema[b].trunks.length == 0
-  );
+  const base = await getDefaultBase(schema);
 
-  const base = roots.reduce((withRoot, root) => {
-    if (schema[root].leaves.length > schema[withRoot].leaves.length) {
-      return root
-    } else {
-      return withRoot
-    }
-  }, roots[0]);
+  await onMindChange(`/${mind}`, `_=${base}`);
+}
 
-  return base;
+export async function onZip(mind) {
+  setStore("loading", true);
+
+  await zip(mind);
+
+  setStore("loading", false);
 }

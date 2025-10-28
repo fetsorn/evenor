@@ -24,6 +24,15 @@
   justify-content: space-between;
 }
 
+.bigbottom {
+  display: flex;
+  justify-content: space-between;
+  width: 50vw;
+  position: fixed;
+  bottom: 20;
+  background-color: white;
+}
+
 .bottom {
   display: flex;
   justify-content: space-between;

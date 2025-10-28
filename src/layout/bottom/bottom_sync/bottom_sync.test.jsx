@@ -3,18 +3,18 @@ import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
-import { BottomLoader } from "./bottom_loader.jsx";
+import { BottomSync } from "./bottom_sync.jsx";
 
-describe("BottomLoader", () => {
+describe("BottomSync", () => {
   test("", async () => {
-    setStore("loading", true);
+    setStore("mergeResult", true);
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <BottomLoader />
+        <BottomSync />
       </StoreContext.Provider>
     ));
 
-    expect(() => getByText("Loading...")).not.toThrowError();
+    expect(() => getByText("Conflict")).not.toThrowError();
   });
 });

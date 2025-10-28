@@ -104,6 +104,7 @@ export const cases = {
     ],
     remote: "remote",
     url: "https://example.com/name",
+    hash: "6d5f2f8d8c58a6d3857d6c90ac753f9d2449831186240c5270cfd95f9c5ba33d",
     token: "token",
     originUrl: {
       _: "origin_url",

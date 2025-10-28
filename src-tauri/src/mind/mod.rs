@@ -46,8 +46,8 @@ where
         find_mind::find_mind(self)
     }
 
-    pub async fn make_mind(&self, name: Option<&str>) -> Result<()> {
-        make_mind::make_mind(self, name).await
+    pub fn make_mind(&self, name: Option<&str>) -> Result<()> {
+        make_mind::make_mind(self, name)
     }
 
     pub async fn zip(&self) -> Result<()> {

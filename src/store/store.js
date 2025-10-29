@@ -227,14 +227,12 @@ export async function onSearch() {
 
   try {
     // if search bar can be parsed as url, clone
-    new URL(store.searchBar);
-
-    const url = URL.parse(store.searchBar);
+    const url = new URL(store.searchBar);
 
     const searchString = url.hash.replace("#", "");
 
     // reset searchbar to avoid a loop
-    // after onChangeMind calls onSearch
+    // after onMindChange calls onSearch
     setStore(
       produce((state) => {
         state.searchBar = "";
@@ -246,7 +244,8 @@ export async function onSearch() {
     setStore("loading", false);
 
     return undefined;
-  } catch {
+  } catch(e) {
+    console.log(e)
     // do nothing
   }
 

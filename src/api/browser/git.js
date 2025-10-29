@@ -194,14 +194,13 @@ export async function clone(mind, remote) {
 
   try {
     await git.clone(options);
-  } catch (e) {
+  } catch(e) {
     try {
       // if clone failed, remove directory
       await rimraf(dir);
-    } catch {
+    } catch(e1) {
       // do nothing
     }
-    console.log(e);
     throw e;
   }
 

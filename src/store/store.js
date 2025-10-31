@@ -229,21 +229,23 @@ export async function onSearch() {
     // if search bar can be parsed as url, clone
     const url = new URL(store.searchBar);
 
-    const searchString = url.hash.replace("#", "");
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      const searchString = url.hash.replace("#", "");
 
-    // reset searchbar to avoid a loop
-    // after onMindChange calls onSearch
-    setStore(
-      produce((state) => {
-        state.searchBar = "";
-      }),
-    );
+      // reset searchbar to avoid a loop
+      // after onMindChange calls onSearch
+      setStore(
+        produce((state) => {
+          state.searchBar = "";
+        }),
+      );
 
-    await onMindChange("/", searchString);
+      await onMindChange("/", searchString);
 
-    setStore("loading", false);
+      setStore("loading", false);
 
-    return undefined;
+      return undefined;
+    }
   } catch(e) {
     console.log(e)
     // do nothing

@@ -332,6 +332,14 @@ function mergeDriverFactory(conflicts, resolutions) {
 export async function resolve(mind, remote, resolutions) {
   const dir = await findMind(mind);
 
+  await git.addRemote({
+    fs,
+    dir,
+    remote: "origin",
+    url: remote.url,
+    force: true,
+  });
+
   // soft-serve uses "token ${remote.token}". first word CAN be Token
   // gitea uses "token ${remote.token}". first word MUST be lower-case "token"
   const tokenPartial = remote.token
@@ -343,14 +351,6 @@ export async function resolve(mind, remote, resolutions) {
         }),
       }
     : {};
-
-  await git.addRemote({
-    fs,
-    dir,
-    remote: "origin",
-    url: remote.url,
-    force: true,
-  });
 
   await git.fetch({
     fs,

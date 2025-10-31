@@ -27,7 +27,12 @@ export function LayoutOverview() {
         (store.record !== undefined ? styles.closed : styles.opened)
       }
     >
-      <nav className={styles.buttonbar} title="navigationOverview">
+      <nav
+        className={
+          __BUILD_MODE__ === "android" ? styles.buttonbarbig : styles.buttonbar
+        }
+        title="navigationOverview"
+      >
         <NavigationBack />
 
         <NavigationMenu />
@@ -37,7 +42,7 @@ export function LayoutOverview() {
 
       <footer
         className={
-          __BUILD_MODE__ === "android" ? styles.bigbottom : styles.bottom
+          __BUILD_MODE__ === "android" ? styles.bottombig : styles.bottom
         }
       >
         <BottomCount />

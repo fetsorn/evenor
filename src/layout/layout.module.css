@@ -24,12 +24,19 @@
   justify-content: space-between;
 }
 
-.bigbottom {
+.buttonbarbig {
+  padding-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.bottombig {
+  padding-bottom: 20px;
   display: flex;
   justify-content: space-between;
   width: 50vw;
   position: fixed;
-  bottom: 20;
+  bottom: 0;
   background-color: white;
 }
 

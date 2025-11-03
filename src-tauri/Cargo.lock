@@ -1488,6 +1488,7 @@ dependencies = [
  "futures-core",
  "futures-util",
  "git2kit",
+ "libz-sys",
  "log",
  "openssl-sys",
  "regex",

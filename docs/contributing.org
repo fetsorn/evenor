@@ -31,8 +31,8 @@ export NDK_HOME="$ANDROID_HOME/ndk/$(ls -1 $ANDROID_HOME/ndk)"
 yarn tauri android init
 brew install binutils
 export TOOLCHAIN=$NDK_HOME/toolchains/llvm/prebuilt/darwin-x86_64
-export AR=$TOOLCHAIN/bin/aarch64-linux-android-ar
-export AS=$TOOLCHAIN/bin/aarch64-linux-android-as
+export AR=$TOOLCHAIN/bin/llvm-ar
+export AS=$TOOLCHAIN/bin/llvm-as
 export CC=$TOOLCHAIN/bin/aarch64-linux-android21-clang
 export CXX=$TOOLCHAIN/bin/aarch64-linux-android21-clang++
 export LD=$TOOLCHAIN/bin/aarch64-linux-android-ld

@@ -12,11 +12,16 @@ use tauri::Manager;
 
 // TODO no webview found after 2.7->2.9
 pub fn log<R: tauri::Runtime>(app: &tauri::AppHandle<R>, message: &str) -> Result<()> {
-    //let webview = app.get_webview_window("main").unwrap();
+    #[cfg(dev)]
+    {
+       println!("Message from Rust: {}", message);
+    }
 
-    //let code = format!("console.log('{message}')");
+    let webview = app.get_webview_window("main").unwrap();
 
-    //webview.eval(code)?;
+    let code = format!("console.log('{message}')");
+
+    webview.eval(code)?;
 
     Ok(())
 }
@@ -32,7 +37,9 @@ fn greet(name: &str) -> Result<String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     create_app(tauri::Builder::default().setup(|app| {
-        log(&app.handle(), "hello from Rust");
+        let a = app.handle();
+
+        log(&a, "hello from Rust");
 
         let data_dir = app
             .path()

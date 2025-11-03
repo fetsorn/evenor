@@ -4,6 +4,8 @@ export const name = "name";
 
 export const dir = "a-name";
 
+export const clonepath = `/${mind}`;
+
 export const dirpath = `/${dir}`;
 
 export const query = { a: "b" };
@@ -40,6 +42,7 @@ export default {
   name,
   dir,
   dirpath,
+  clonepath,
   query,
   entry,
   records,

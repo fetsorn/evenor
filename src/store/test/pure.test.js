@@ -9,7 +9,7 @@ import {
   recordsToSchema,
   changeSearchParams,
   makeURL,
-  pickDefaultBase,
+  getDefaultBase,
   pickDefaultSortBy,
   findFirstSortBy,
 } from "@/store/pure.js";
@@ -238,9 +238,9 @@ describe("makeURL", () => {
   });
 });
 
-describe("pickDefaultBase", () => {
+describe("getDefaultBase", () => {
   test("", () => {
-    expect(pickDefaultBase(stub.schema)).toBe("a");
+    expect(getDefaultBase(stub.schema)).toBe("a");
   });
 });
 

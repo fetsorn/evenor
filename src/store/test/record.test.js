@@ -1,5 +1,5 @@
 import { describe, expect, test, vi } from "vitest";
-import { sha256 } from "js-sha256";
+import { v4 as uuidv4 } from "uuid";
 import api from "@/api/index.js";
 import {
   newUUID,
@@ -59,21 +59,23 @@ vi.mock("@/store/tags.js", async (importOriginal) => {
 });
 
 describe("newUUID", () => {
-  vi.mock("js-sha256", async (importOriginal) => {
+  vi.mock("uuid", async (importOriginal) => {
     const mod = await importOriginal();
 
     return {
       ...mod,
-      sha256: vi.fn(() => 1),
+      v4: vi.fn(() => "1"),
     };
   });
 
-  test("generates a id", () => {
+  test("generates an id", () => {
     const uuid = newUUID();
 
-    expect(sha256).toHaveBeenCalled();
+    expect(uuidv4).toHaveBeenCalled();
 
-    expect(uuid).toBe(1);
+    expect(uuid).toBe(
+      "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b", // sha256 of "1"
+    );
   });
 });
 

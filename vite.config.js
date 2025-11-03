@@ -1,6 +1,7 @@
 import solidPlugin from "vite-plugin-solid";
 import { defineConfig } from "vite";
 import { dirname, resolve } from "path";
+import { webdriverio } from "@vitest/browser-webdriverio";
 import { env } from "process";
 import { execSync } from "child_process";
 import { fileURLToPath } from "url";
@@ -28,7 +29,7 @@ export default defineConfig({
   plugins: [solidPlugin()],
   publicDir: "public",
   optimizeDeps: {
-    exclude: ['classnames', 'js-sha256'],
+    exclude: ["classnames", "js-sha256"],
   },
   build: {
     outDir: "dist",
@@ -76,7 +77,7 @@ export default defineConfig({
       },
     },
     browser: {
-      provider: "webdriverio",
+      provider: webdriverio(),
       enabled: true,
       instances: [
         {

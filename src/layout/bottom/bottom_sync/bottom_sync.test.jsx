@@ -7,7 +7,7 @@ import { BottomSync } from "./bottom_sync.jsx";
 
 describe("BottomSync", () => {
   test("", async () => {
-    setStore("mergeResult", true);
+    setStore("mergeResult", false);
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

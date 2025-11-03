@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from "vitest";
 import api from "@/api/index.js";
-import { newUUID, readSchema, createRoot } from "@/store/record.js";
+import { newUUID, readSchema } from "@/store/record.js";
 import { enrichBranchRecords, schemaToBranchRecords } from "@/store/pure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -35,7 +35,6 @@ vi.mock("@/store/record.js", async (importOriginal) => {
     ...mod,
     newUUID: vi.fn(),
     readSchema: vi.fn(),
-    createRoot: vi.fn(),
   };
 });
 
@@ -108,8 +107,6 @@ describe("clone", () => {
     enrichBranchRecords.mockImplementation(() => testCase.branchRecords);
 
     const result = await clone(testCase.url, testCase.token);
-
-    expect(createRoot).toHaveBeenCalled();
 
     expect(api.clone).toHaveBeenCalledWith(testCase.hash, {
       url: testCase.url,

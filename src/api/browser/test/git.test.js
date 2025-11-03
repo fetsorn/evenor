@@ -1,6 +1,7 @@
 import { expect, test, describe, beforeEach, afterEach, vi } from "vitest";
 import git from "isomorphic-git";
 import { fs } from "@/api/browser/lightningfs.js";
+import { rimraf } from "@/api/browser/io.js";
 import {
   nameMind,
   init,
@@ -12,12 +13,23 @@ import {
 } from "@/api/browser/git.js";
 import stub from "./stub.js";
 
+vi.mock("@/api/browser/io.js", async (importOriginal) => {
+  const mod = await importOriginal();
+
+  return {
+    ...mod,
+    rimraf: vi.fn(),
+  };
+});
+
 vi.mock("isomorphic-git", async (importOriginal) => {
   const mod = await importOriginal();
 
   return {
     ...mod,
     init: vi.fn(mod.init),
+    fetch: vi.fn(),
+    merge: vi.fn(),
     clone: vi.fn(),
     statusMatrix: vi.fn(mod.statusMatrix),
     resetIndex: vi.fn(mod.resetIndex),
@@ -172,7 +184,7 @@ describe("clone", () => {
 
     expect(git.clone).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: stub.dirpath,
+        dir: stub.clonepath,
         url: stub.url,
         singleBranch: true,
         onAuth: expect.any(Function),
@@ -181,7 +193,7 @@ describe("clone", () => {
 
     expect(git.setConfig).toHaveBeenCalledWith(
       expect.objectContaining({
-        dir: stub.dirpath,
+        dir: stub.clonepath,
         path: "remote.origin.token",
         value: stub.token,
       }),
@@ -351,11 +363,11 @@ describe("resolve", () => {
 
     await resolve(stub.mind, { url: stub.url, token: stub.token });
 
-    expect(git.fastForward).toHaveBeenCalledWith(
+    expect(git.fetch).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
         url: stub.url,
-        remote: "origin",
+        ref: "HEAD",
         onAuth: expect.any(Function),
       }),
     );

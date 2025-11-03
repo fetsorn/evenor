@@ -59,11 +59,10 @@ describe("writeRemoteTags", () => {
 
     await writeRemoteTags(stub.id, [testCase.originUrl]);
 
-    expect(api.setOrigin).toHaveBeenCalledWith(
-      stub.id,
-      testCase.url,
-      testCase.token,
-    );
+    expect(api.setOrigin).toHaveBeenCalledWith(stub.id, {
+      url: testCase.url,
+      token: testCase.token,
+    });
   });
 });
 

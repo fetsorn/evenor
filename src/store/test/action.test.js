@@ -1,6 +1,6 @@
 import { describe, expect, beforeEach, test, vi } from "vitest";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
-import { createRoot, deleteRecord } from "@/store/record.js";
+import { deleteRecord } from "@/store/record.js";
 import { updateRecord } from "@/store/impure.js";
 import { find, clone } from "@/store/open.js";
 import schemaRoot from "@/store/default_root_schema.json";
@@ -31,7 +31,6 @@ vi.mock("@/store/record.js", async (importOriginal) => {
 
   return {
     ...mod,
-    createRoot: vi.fn(),
     deleteRecord: vi.fn(),
   };
 });
@@ -65,8 +64,6 @@ describe("saveRecord", () => {
       recordOld,
       recordNew,
     );
-
-    expect(createRoot).toHaveBeenCalled();
 
     expect(updateRecord).toHaveBeenCalledWith(mind, base, recordNew);
 

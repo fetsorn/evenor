@@ -1,0 +1,9 @@
+.dropdown {
+  display: flex;
+  align-items: center;
+  padding: 5px 4px 0px 0px;
+}
+
+.select {
+  width: 100%;
+}

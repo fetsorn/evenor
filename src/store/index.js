@@ -18,7 +18,7 @@ import {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
-  onZip,
+  onExport,
 } from "./store.js";
 
 export {
@@ -41,7 +41,7 @@ export {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
-  onZip,
+  onExport,
 };
 
 export default {
@@ -64,5 +64,5 @@ export default {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
-  onZip,
+  onExport,
 };

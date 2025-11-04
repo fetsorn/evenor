@@ -4,22 +4,23 @@ import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
 import { setStore } from "@/store/store.js";
 import {
-  MenuSortDirection,
   MenuSortQuery,
-  MenuBaseQuery
+  MenuBaseQuery,
 } from "@/layout/navigation/navigation_menu/components/index.js";
 import { NavigationMenu } from "./navigation_menu.jsx";
 
-vi.mock("@/layout/navigation/navigation_menu/components/index.js", async (importOriginal) => {
-  const mod = await importOriginal();
+vi.mock(
+  "@/layout/navigation/navigation_menu/components/index.js",
+  async (importOriginal) => {
+    const mod = await importOriginal();
 
-  return {
-    ...mod,
-    MenuSortDirection: vi.fn(),
-    MenuSortQuery: vi.fn(),
-    MenuBaseQuery: vi.fn(),
-  };
-});
+    return {
+      ...mod,
+      MenuSortQuery: vi.fn(),
+      MenuBaseQuery: vi.fn(),
+    };
+  },
+);
 
 describe("NavigationMenu", () => {
   test("", async () => {
@@ -34,7 +35,5 @@ describe("NavigationMenu", () => {
     expect(MenuBaseQuery).toHaveBeenCalled();
 
     expect(MenuSortQuery).toHaveBeenCalled();
-
-    expect(MenuSortDirection).toHaveBeenCalled();
   });
 });

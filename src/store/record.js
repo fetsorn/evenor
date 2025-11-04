@@ -22,7 +22,7 @@ import schemaRoot from "@/store/default_root_schema.json";
  * @returns {String}
  */
 export function newUUID() {
-  return shajs('sha256').update(uuidv4()).digest('hex');
+  return shajs("sha256").update(uuidv4()).digest("hex");
 }
 
 /**
@@ -201,11 +201,11 @@ export async function loadMindRecord(record) {
 
 /**
  * This
- * @name zip
+ * @name exportMind
  * @export function
  * @param {String} mind
  */
-export async function zip(mind) {
+export async function exportMind(mind) {
   await api.zip(mind);
 }
 

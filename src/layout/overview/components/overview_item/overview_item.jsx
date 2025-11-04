@@ -6,7 +6,7 @@ import {
   onRecordWipe,
   onMindChange,
   onMindOpen,
-  onZip,
+  onExport,
 } from "@/store/index.js";
 import { Confirmation, Spoiler } from "@/layout/components/index.js";
 import { OverviewRecord } from "../index.js";
@@ -76,14 +76,14 @@ export function OverviewItem(props) {
           />
 
           <Show when={canOpenMind} fallback={<></>}>
-            <button title="zip" onClick={() => onZip(props.item.mind)}>
-              Zip{" "}
+            <button title="zip" onClick={() => onExport(props.item.mind)}>
+              export{" "}
             </button>
           </Show>
 
           <Show when={canOpenMind} fallback={<></>}>
             <button title="open" onClick={() => onMindOpen(props.item.mind)}>
-              Open{" "}
+              open{" "}
             </button>
           </Show>
         </>

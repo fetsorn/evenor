@@ -147,12 +147,12 @@ export async function commit(mind) {
  * @param {String} source -
  * @param {String} target -
  */
-export async function rename(source, target) {
+export async function rename(mind, source) {
   // should be a recursive copy,
   // but don't want to implement it
   const existingMind = await findMind(source);
 
-  const dir = nameMind(target);
+  const dir = nameMind(mind);
 
   await fs.promises.rename(existingMind, dir);
 
@@ -194,11 +194,11 @@ export async function clone(mind, remote) {
 
   try {
     await git.clone(options);
-  } catch(e) {
+  } catch (e) {
     try {
       // if clone failed, remove directory
       await rimraf(dir);
-    } catch(e1) {
+    } catch (e1) {
       // do nothing
     }
     throw e;

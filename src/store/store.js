@@ -246,8 +246,8 @@ export async function onSearch() {
 
       return undefined;
     }
-  } catch(e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
     // do nothing
   }
 
@@ -289,6 +289,14 @@ export async function onSearch() {
         state.records = [];
       }),
     );
+  }
+
+  const scroll = new URLSearchParams(store.searchParams).get(".scroll");
+
+  if (scroll !== null) {
+    const element = document.getElementById(scroll);
+
+    element.scrollIntoView();
   }
 
   setStore("loading", false);

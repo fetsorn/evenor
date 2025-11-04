@@ -32,7 +32,7 @@ export function OverviewItem(props) {
   const canOpenMind = isHomeScreen && isMind;
 
   return (
-    <div className={styles.item}>
+    <div id={props.item[props.item._]} className={styles.item}>
       <div className={isFold() ? styles.fold : styles.unfold}>
         <div className={styles.content} ref={setContent}>
           <OverviewRecord

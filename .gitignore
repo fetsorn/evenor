@@ -89,7 +89,6 @@ out/
 # add .idea to .gitignore
 .idea
 
-/src-tauri/gen/
 /.vite/
 /public/
 __screenshots__

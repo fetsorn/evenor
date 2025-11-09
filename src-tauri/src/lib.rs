@@ -17,11 +17,11 @@ pub fn log<R: tauri::Runtime>(app: &tauri::AppHandle<R>, message: &str) -> Resul
        println!("Message from Rust: {}", message);
     }
 
-    let webview = app.get_webview_window("main").unwrap();
+    //let webview = app.get_webview_window("main").unwrap();
 
-    let code = format!("console.log('{message}')");
+    //let code = format!("console.log('{message}')");
 
-    webview.eval(code)?;
+    //webview.eval(code)?;
 
     Ok(())
 }

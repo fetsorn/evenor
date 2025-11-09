@@ -8,6 +8,7 @@ mod get_store_dir;
 mod make_mind;
 mod name_mind;
 
+#[derive(Debug)]
 pub struct Mind<R>
 where
     R: Runtime,

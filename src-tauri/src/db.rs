@@ -112,10 +112,6 @@ pub async fn select_stream<R: Runtime>(
 
 #[tauri::command]
 pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
-    log::info!("update record");
-    
-    crate::log(&app, "update record");
-
     let mind = Mind::new(app.clone(), mind);
 
     let mind_dir = mind.find_mind()?.unwrap();
@@ -124,9 +120,7 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
     
     let record = record.try_into()?;
 
-    dataset.update_record(vec![record]).await?;
-        
-    crate::log(&app, "di");
+    let a = dataset.update_record(vec![record]).await?;
 
     Ok(())
 }

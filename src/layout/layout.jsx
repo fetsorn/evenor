@@ -65,7 +65,7 @@ export function LayoutProfile() {
       <div className={styles.sidebar}>
         <div className={styles.container}>
           <div className={styles.sticky}>
-            <nav className={styles.buttonbar} title="navigationProfile">
+            <nav className={__BUILD_MODE__ === "android" ? styles.buttonbarbig : styles.buttonbar} title="navigationProfile">
               <NavigationRevert />
 
               <NavigationSave />

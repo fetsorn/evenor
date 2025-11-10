@@ -2,6 +2,9 @@ use crate::{Mind, Result};
 use tauri::Runtime;
 use tauri_plugin_dialog::DialogExt;
 
+use tauri::Manager;
+use temp_dir::TempDir;
+use tauri_plugin_fs::{Fs, FilePath, OpenOptions, FsExt};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
@@ -57,6 +60,26 @@ pub fn add_to_zip(mind_dir_path: PathBuf, file_path: &Path) -> Result<()> {
 pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
     let mind_dir = mind.find_mind()?.expect("no directory");
 
+    // must assign a variable to create the directory
+    // must assign inside the stream scope to keep the directory
+    let temp_d = TempDir::new();
+
+    // on android <13 std::env::temp_dir() returns /data/local/tmp
+    // which is inaccessible on some android systems
+    let temp_d = match temp_d {
+       Err(e) if e.kind() == std::io::ErrorKind::PermissionDenied => {
+          TempDir::from_path(mind_dir.clone())
+       }
+       Err(e) => Err(e),
+       Ok(td) => Ok(td)
+    };
+
+    let temp_d = temp_d?;
+
+    let temp_path = temp_d.as_ref().join("archive.zip");
+
+    add_to_zip(mind_dir, &temp_path)?;
+
     let file_path = mind
         .app
         .dialog()
@@ -64,11 +87,22 @@ pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
         .add_filter("My Filter", &["zip"])
         .blocking_save_file();
 
-    let file_path = file_path.unwrap();
+    match file_path {
+        None => (),
+        Some(p) => {
+            println!("{:#?}", p);
 
-    let file_path = file_path.as_path().unwrap();
+            let buf = std::fs::read(temp_path)?;
 
-    add_to_zip(mind_dir, &file_path)?;
+            let mut opts = OpenOptions::new();
+
+            opts.write(true);
+
+            let mut f = mind.app.fs().open(p, opts.clone())?;
+
+            f.write_all(&buf)?;
+        }
+    };
 
     Ok(())
 }

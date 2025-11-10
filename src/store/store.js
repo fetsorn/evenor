@@ -635,7 +635,11 @@ export async function onMindOpen(mind) {
 export async function onExport(mind) {
   setStore("loading", true);
 
-  await exportMind(mind);
+  try {
+    await exportMind(mind);
+  } catch(e) {
+    console.log(e)
+  }
 
   setStore("loading", false);
 }

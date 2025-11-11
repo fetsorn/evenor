@@ -1,6 +1,3 @@
 xcuserdata/
 build/
 Externals/
-*.xcodeproj
-*.xcassets
-Sources

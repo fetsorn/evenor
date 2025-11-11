@@ -1,4 +1,4 @@
-use crate::{Mind, Result, Error};
+use crate::{Error, Mind, Result};
 use git2kit::Repository;
 use std::fs::{create_dir_all, rename, write};
 use tauri::Runtime;
@@ -18,7 +18,9 @@ pub fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
     let existing_mind = mind.find_mind()?;
 
     if mind.mind == "root" {
-        if (existing_mind.is_some()) { return Err(Error::from_message("already exists")) }
+        if (existing_mind.is_some()) {
+            return Err(Error::from_message("already exists"));
+        }
 
         match create_dir_all(&mind_dir) {
             Ok(_) => (),

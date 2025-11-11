@@ -5,12 +5,10 @@ use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::{ipc::Channel, AppHandle, Manager, Runtime, Listener};
+use tauri::{ipc::Channel, AppHandle, Listener, Manager, Runtime};
 
 #[tauri::command]
 pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
-    log::info!("select");
-            
     crate::log(&app, "select");
 
     let mind = Mind::new(app, mind);
@@ -18,7 +16,7 @@ pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> 
     let mind_dir = mind.find_mind()?.unwrap();
 
     let dataset = Dataset::new(&mind_dir);
-    
+
     let query = query.try_into()?;
 
     let entries = dataset.select_record(vec![query]).await?;
@@ -46,8 +44,6 @@ pub async fn select_stream<R: Runtime>(
     query: Value,
     on_event: Channel<SelectEvent>,
 ) -> Result<()> {
-    log::info!("select stream");
-    
     crate::log(&app, "select stream");
 
     let mind = Mind::new(app.clone(), mind);
@@ -55,7 +51,7 @@ pub async fn select_stream<R: Runtime>(
     let mind_dir = mind.find_mind()?.unwrap();
 
     let dataset = Dataset::new(&mind_dir);
-        
+
     let query: Entry = query.try_into()?;
 
     let query_for_stream = query.clone();
@@ -79,19 +75,22 @@ pub async fn select_stream<R: Runtime>(
 
     app_for_event.manage(false);
 
+    let value = app.clone();
     app.once("stop-stream", move |event| {
-        log::info!("stopped");
+        crate::log(&value, "stopped");
         app_for_event.manage(true);
     });
 
     while let Some(entry) = s.next().await {
         let is_stopped: bool = *app.state();
 
-        if is_stopped { break };
+        if is_stopped {
+            break;
+        };
 
         let entry = entry?;
 
-        //log::info!("{:#?}", serde_json::to_string(&entry.clone().into_value()).unwrap());
+        //crate::log(format!("{:#?}", serde_json::to_string(&entry.clone().into_value()).unwrap()));
 
         on_event
             .send(SelectEvent::Progress {
@@ -117,7 +116,7 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
     let mind_dir = mind.find_mind()?.unwrap();
 
     let dataset = Dataset::new(&mind_dir);
-    
+
     let record = record.try_into()?;
 
     let a = dataset.update_record(vec![record]).await?;
@@ -127,8 +126,6 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 
 #[tauri::command]
 pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
-    log::info!("delete record");
-    
     crate::log(&app, "delete record");
 
     let record = record.try_into()?;

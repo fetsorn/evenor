@@ -1,17 +1,17 @@
 use crate::{Mind, Result};
-use tauri::Runtime;
+use tauri::{Runtime, AppHandle};
 use tauri_plugin_dialog::DialogExt;
 
-use tauri::Manager;
-use temp_dir::TempDir;
-use tauri_plugin_fs::{Fs, FilePath, OpenOptions, FsExt};
 use std::fs::File;
 use std::io::{Read, Write};
 use std::path::{Path, PathBuf};
+use tauri::Manager;
+use tauri_plugin_fs::{FilePath, Fs, FsExt, OpenOptions};
+use temp_dir::TempDir;
 use walkdir::WalkDir;
 use zip::{write::SimpleFileOptions, CompressionMethod, ZipWriter};
 
-pub fn add_to_zip(mind_dir_path: PathBuf, file_path: &Path) -> Result<()> {
+pub fn add_to_zip<R: Runtime>(mind_dir_path: PathBuf, file_path: &Path, app: AppHandle<R>) -> Result<()> {
     let writer = File::create(file_path).unwrap();
 
     let walkdir = WalkDir::new(&mind_dir_path);
@@ -37,7 +37,7 @@ pub fn add_to_zip(mind_dir_path: PathBuf, file_path: &Path) -> Result<()> {
         // Write file or directory explicitly
         // Some unzip tools unzip files with directory paths correctly, some do not!
         if path.is_file() {
-            println!("adding file {path:?} as {name:?} ...");
+            crate::log(&app, format!("adding file {path:?} as {name:?} ...").as_ref());
             zip.start_file(path_as_string, options)?;
             let mut f = File::open(path)?;
 
@@ -47,7 +47,7 @@ pub fn add_to_zip(mind_dir_path: PathBuf, file_path: &Path) -> Result<()> {
         } else if !name.as_os_str().is_empty() {
             // Only if not root! Avoids path spec / warning
             // and mapname conversion failed error on unzip
-            println!("adding dir {path_as_string:?} as {name:?} ...");
+            crate::log(&app, format!("adding dir {path_as_string:?} as {name:?} ...").as_ref());
             zip.add_directory(path_as_string, options)?;
         }
     }
@@ -78,7 +78,9 @@ pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
 
     let temp_path = temp_d.as_ref().join("archive.zip");
 
-    add_to_zip(mind_dir, &temp_path)?;
+    crate::log(&mind.app, format!("{:?}", temp_path).as_ref());
+
+    add_to_zip(mind_dir, &temp_path, mind.app.clone())?;
 
     let file_path = mind
         .app
@@ -87,18 +89,32 @@ pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
         .add_filter("My Filter", &["zip"])
         .blocking_save_file();
 
+    crate::log(&mind.app, format!("{:?}", file_path).as_ref());
+
     match file_path {
         None => (),
         Some(p) => {
-            println!("{:#?}", p);
+            crate::log(&mind.app, format!("{:?}", p).as_ref());
 
             let buf = std::fs::read(temp_path)?;
+
+            // try to create the file on desktop
+            // file already exists on mobile
+            if let Ok(a) = p.clone().into_path() {
+                _ = std::fs::File::create_new(a);
+            };
 
             let mut opts = OpenOptions::new();
 
             opts.write(true);
 
-            let mut f = mind.app.fs().open(p, opts.clone())?;
+            let r = mind.app.fs().open(p, opts.clone());
+
+            crate::log(&mind.app, format!("{:?}", r).as_ref());
+
+            let mut f = r?;
+
+            crate::log(&mind.app, format!("{:?}", f).as_ref());
 
             f.write_all(&buf)?;
         }

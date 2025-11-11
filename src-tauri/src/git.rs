@@ -1,18 +1,16 @@
-use crate::{Mind, Result, Error};
-use git2kit::{Origin, Repository, Settings, Resolve};
+use crate::log;
+use crate::{Error, Mind, Result};
+use git2kit::{Origin, Repository, Resolve, Settings};
 use std::fs;
 use tauri::{ipc::Channel, AppHandle, Runtime};
-use crate::{log};
 
 #[tauri::command]
 pub async fn init<R>(app: AppHandle<R>, mind: &str, name: Option<&str>) -> Result<()>
 where
     R: Runtime,
 {
-    log::info!("git init");
-        
     log(&app, "git init");
-    
+
     let mind = Mind::new(app, mind);
 
     mind.make_mind(name)?;
@@ -21,11 +19,7 @@ where
 }
 
 #[tauri::command]
-pub async fn rename<R>(
-    app: AppHandle<R>,
-    mind: &str,
-    source: &str,
-) -> Result<()>
+pub async fn rename<R>(app: AppHandle<R>, mind: &str, source: &str) -> Result<()>
 where
     R: Runtime,
 {
@@ -40,21 +34,15 @@ where
     // NOTE rename won't work with mount points
     match source_dir {
         None => Err(Error::from_message("no mind found")),
-        Some(dir) => Ok(fs::rename(dir, target_dir)?)
+        Some(dir) => Ok(fs::rename(dir, target_dir)?),
     }
 }
 
 #[tauri::command]
-pub async fn clone<R>(
-    app: AppHandle<R>,
-    mind: &str,
-    remote: Origin,
-) -> Result<()>
+pub async fn clone<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<()>
 where
     R: Runtime,
 {
-    log::info!("git clone");
-
     crate::log(&app, "clone");
 
     let mind = Mind::new(app, mind);
@@ -65,7 +53,7 @@ where
 
     match existing_mind {
         None => (),
-        Some(dir) => fs::remove_dir_all(dir)?
+        Some(dir) => fs::remove_dir_all(dir)?,
     };
 
     let repo = Repository::clone(mind_dir, &remote)?;
@@ -80,8 +68,6 @@ pub async fn set_origin<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Res
 where
     R: Runtime,
 {
-    log::info!("git set origin");
-    
     crate::log(&app, "set origin");
 
     let mind = Mind::new(app, mind);
@@ -100,8 +86,6 @@ pub async fn get_origin<R>(app: AppHandle<R>, mind: &str) -> Result<Option<Origi
 where
     R: Runtime,
 {
-    log::info!("git get origin");
-    
     crate::log(&app, "get origin");
 
     let mind = Mind::new(app, mind);
@@ -118,8 +102,6 @@ pub fn commit<R>(app: AppHandle<R>, mind: &str) -> Result<()>
 where
     R: Runtime,
 {
-    log::info!("git commit");
-    
     crate::log(&app, "commit");
 
     let mind = Mind::new(app, mind);
@@ -138,8 +120,6 @@ pub async fn resolve<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result
 where
     R: Runtime,
 {
-    log::info!("git init");
-
     log(&app, "git init");
 
     let mind = Mind::new(app, mind);

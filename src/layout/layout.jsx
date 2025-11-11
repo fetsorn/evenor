@@ -22,14 +22,16 @@ export function LayoutOverview() {
   return (
     <div
       className={
-        styles.overview +
+        styles.window +
         " " +
-        (store.record !== undefined ? styles.closed : styles.opened)
+        (store.record !== undefined ? styles.closed : "")
       }
     >
       <nav
         className={
-          __BUILD_MODE__ === "android" ? styles.buttonbarbig : styles.buttonbar
+          styles.buttonbar +
+          " " +
+          (__BUILD_MODE__ === "android" ? styles.buttonbarbig : "")
         }
         title="navigationOverview"
       >
@@ -42,7 +44,9 @@ export function LayoutOverview() {
 
       <footer
         className={
-          __BUILD_MODE__ === "android" ? styles.bottombig : styles.bottom
+          styles.bottom +
+          " " +
+          (__BUILD_MODE__ === "android" ? styles.bottombig : "")
         }
       >
         <BottomCount />
@@ -62,18 +66,18 @@ export function LayoutProfile() {
 
   return (
     <Show when={store.record !== undefined} fallback={<></>}>
-      <div className={styles.sidebar}>
-        <div className={styles.container}>
-          <div className={styles.sticky}>
-            <nav className={__BUILD_MODE__ === "android" ? styles.buttonbarbig : styles.buttonbar} title="navigationProfile">
+      <div className={
+        styles.window +
+        " " +
+        (store.record === undefined ? styles.closed : "")
+      }>
+            <nav className={styles.buttonbar + " " + (__BUILD_MODE__ === "android" ? styles.buttonbarbig : "")} title="navigationProfile">
               <NavigationRevert />
 
               <NavigationSave />
             </nav>
 
             <Profile />
-          </div>
-        </div>
       </div>
     </Show>
   );

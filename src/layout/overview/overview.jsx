@@ -7,15 +7,14 @@ import styles from "./overview.module.css";
 export function Overview() {
   const { store } = useContext(StoreContext);
 
-  let parentRef;
-
   return (
-    <div ref={parentRef} className={styles.overview}>
+    <>
       <OverviewHeader />
 
       <OverviewFilter />
 
-      <div className={styles.foo}>
+      <div className={styles.container}>
+        <div className={styles.items}>
         <For
           each={store.records}
           fallback={
@@ -23,12 +22,13 @@ export function Overview() {
           }
         >
           {(item, index) => (
-            <div className={styles.bar}>
+            <div className={styles.item}>
               <OverviewItem index={`overview_item_${index}`} item={item} />
             </div>
           )}
         </For>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

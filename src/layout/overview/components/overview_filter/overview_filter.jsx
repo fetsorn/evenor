@@ -13,7 +13,7 @@ export function OverviewFilter() {
   const { store } = useContext(StoreContext);
 
   return (
-    <>
+    <div>
       <input
         id="query"
         aria-label="query"
@@ -30,6 +30,6 @@ export function OverviewFilter() {
       >
         search
       </button>
-    </>
+    </div>
   );
 }

@@ -1,20 +1,28 @@
 .main {
-  display: flex;
-  justify-content: center;
+  height: 100%;
   font-family: monospace;
+  display: flex;
 }
 
-.overview {
+.window {
+  height: 100%;
+  display: grid;
+  grid: auto auto auto 1fr auto / auto;
+  padding: 0px 15px 0px 15px;
+  z-index: 999998;
   width: 50vw;
 }
 
+.window.closed {
+}
+
 @media (max-width: 600px) {
-  .overview {
+  .window {
     width: 100vw;
     z-index: 999998;
   }
 
-  .overview.closed {
+  .window.closed {
     display: none;
   }
 }
@@ -22,74 +30,22 @@
 .buttonbar {
   display: flex;
   justify-content: space-between;
+  align-items: center;
 }
 
 .buttonbarbig {
-  padding-top: 20px;
-  display: flex;
-  justify-content: space-between;
-}
-
-.bottombig {
-  padding-bottom: 20px;
-  display: flex;
-  justify-content: space-between;
-  width: 50vw;
-  position: fixed;
-  bottom: 0;
-  background-color: white;
+  padding-top: 40px;
 }
 
 .bottom {
   display: flex;
   justify-content: space-between;
-  width: 50vw;
-  position: fixed;
-  bottom: 0;
+  align-items: center;
   background-color: white;
 }
 
-@media (max-width: 600px) {
-  .bottom {
-    width: 100vw;
-  }
-}
-
-.sidebar {
-  box-sizing: border-box;
-  width: 50vw;
-  height: 100vh;
-
-  flex-grow: 0;
-  flex-shrink: 0;
-
-  transition: width 0.3s ease;
-
-  white-space: pre-wrap;
-
-  background-color: white;
-  z-index: 999998;
-}
-
-.sidebar.invisible {
-  width: 0;
-
-  transition: width 0.3s ease;
-}
-
-@media (max-width: 600px) {
-  .sidebar {
-    width: 100vw;
-    z-index: 999998;
-  }
-
-  .sidebar.invisible {
-    display: none;
-  }
-}
-
-.container {
-  height: 100%;
+.bottombig {
+  padding-bottom: 40px;
 }
 
 .sticky {

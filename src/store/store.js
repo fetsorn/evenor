@@ -150,13 +150,23 @@ export async function onRecordSave(recordOld, recordNew) {
     recordNew,
   );
 
-  const syncResult = await resolve(store.mind.mind);
+  try {
+    const syncResult = await resolve(store.mind.mind);
+
+    setStore(
+      produce((state) => {
+        state.mergeResult = syncResult.ok;
+      }),
+    );
+  } catch(e) {
+    // do nothing
+    console.log(e)
+  }
 
   setStore(
     produce((state) => {
       state.records = records;
       state.record = undefined;
-      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -179,12 +189,22 @@ export async function onRecordWipe(record) {
     record,
   );
 
-  const syncResult = await resolve(store.mind.mind);
+  try {
+    const syncResult = await resolve(store.mind.mind);
+
+    setStore(
+      produce((state) => {
+        state.mergeResult = syncResult.ok;
+      }),
+    );
+  } catch(e) {
+    // do nothing
+    console.log(e)
+  }
 
   setStore(
     produce((state) => {
       state.records = records;
-      state.mergeResult = syncResult.ok;
     }),
   );
 
@@ -397,14 +417,24 @@ export async function onMindChange(pathname, searchString) {
 
   const { mind, schema, searchParams } = result;
 
-  const syncResult = await resolve(mind.mind);
+  try {
+    const syncResult = await resolve(mind.mind);
+
+    setStore(
+      produce((state) => {
+        state.mergeResult = syncResult.ok;
+      }),
+    );
+  } catch(e) {
+    // do nothing
+    console.log(e)
+  }
 
   setStore(
     produce((state) => {
       state.mind = mind;
       state.schema = schema;
       state.searchParams = searchParams.toString();
-      state.mergeResult = syncResult.ok;
     }),
   );
 

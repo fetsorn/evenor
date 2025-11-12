@@ -35,8 +35,11 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": {
+      "infoplist/**": "./"
+    },
     "macOS": {
-      "entitlements": "./entitlements.plist"
+      "entitlements": "./Entitlements.plist"
     },
     "iOS": {
       "developmentTeam": "PU6CTXHGJ5"

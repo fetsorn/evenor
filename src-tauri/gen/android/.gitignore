@@ -1,5 +1,6 @@
 *.iml
 .gradle
+keystore.properties
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -17,7 +18,4 @@ key.properties
 
 /.tauri
 /tauri.settings.gradle
-
 gradle
-buildSrc
-gradlew

@@ -1200,10 +1200,8 @@
     "@eslint/core" "^0.17.0"
     levn "^0.4.1"
 
-"@fetsorn/csvs-js@0.21.2":
-  version "0.21.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.21.2.tgz#2b68e10c0cd104a350101065e6afdf4da164bc79"
-  integrity sha512-CjZUD5dyeHNci/qqsuG5dCS7YCH/UJzy61Wssi5k3BvTCzMOdXuvYJRDZPa8Vvl1lAKEdRfc1bDGowBTp8guXw==
+"@fetsorn/csvs-js@../csvs-js":
+  version "0.24.0"
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"

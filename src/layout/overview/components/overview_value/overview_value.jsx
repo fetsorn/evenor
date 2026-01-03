@@ -5,7 +5,8 @@ import { Spoiler } from "@/layout/components/index.js";
 export function OverviewValue(props) {
   const { store } = useContext(StoreContext);
 
-  const isBase = props.branch === new URLSearchParams(store.searchParams).get("_");
+  const isBase =
+    props.branch === new URLSearchParams(store.searchParams).get("_");
 
   const [isValue, setIsValue] = createSignal(!isBase);
 
@@ -33,7 +34,7 @@ export function OverviewValue(props) {
 
   const laterals = [];
 
-  const valueEscaped = props.value.replace("\\n", "\n");
+  //const valueEscaped = props.value.replace("\\n", "\n");
 
   return (
     <>
@@ -54,7 +55,7 @@ export function OverviewValue(props) {
           onClick={() => setIsValue(false)}
           style={{ borderBottom: "thin solid" }}
         >
-          {valueEscaped} {/* TODO remove this unescape after csvs if fixed */}
+          {props.value}
         </button>
       </Show>
 

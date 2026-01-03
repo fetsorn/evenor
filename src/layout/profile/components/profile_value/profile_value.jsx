@@ -20,7 +20,9 @@ function calcSize(value, textarea) {
 
   const parentWidth = textarea.parentElement.getBoundingClientRect().width;
 
-  const style = window.getComputedStyle(textarea, null).getPropertyValue('font-size');
+  const style = window
+    .getComputedStyle(textarea, null)
+    .getPropertyValue("font-size");
 
   const fontSize = parseFloat(style);
 
@@ -38,15 +40,18 @@ function calcSize(value, textarea) {
   // if any single line is longer than parent width,
   // divide line length by parent width
   // and add height to contain wrapped text
-  const { longest, breaks } = lines.reduce((withLine, line) => {
-    const longest = Math.max(line.length, withLine.longest);
+  const { longest, breaks } = lines.reduce(
+    (withLine, line) => {
+      const longest = Math.max(line.length, withLine.longest);
 
-    const wrap = Math.floor(longest / parentLength);
+      const wrap = Math.floor(longest / parentLength);
 
-    const breaks = withLine.breaks + 1 + wrap;
+      const breaks = withLine.breaks + 1 + wrap;
 
-    return { longest, breaks };
-  }, { longest: 0, breaks: 0 });
+      return { longest, breaks };
+    },
+    { longest: 0, breaks: 0 },
+  );
 
   // number-of-characters x character-width
   const lineWidth = longest * characterWidth;
@@ -58,7 +63,7 @@ function calcSize(value, textarea) {
   return {
     height: `${textareaHeight}px`,
     width: `${textareaWidth}px`,
-  }
+  };
 }
 
 export function ProfileValue(props) {
@@ -74,15 +79,9 @@ export function ProfileValue(props) {
           const { selectionStart, selectionEnd, selectionDirection } =
             event.currentTarget;
 
-          /* TODO remove this escape after csvs is fixed */
-          const escaped = event.target.value.replace("\n", "\\n");
+          await onRecordEdit(props.path, event.target.value);
 
-          await onRecordEdit(props.path, escaped);
-
-          /* TODO remove this unescape after csvs is fixed */
-          const raw = props.value.replace("\\n", "\n");
-
-          event.currentTarget.value = raw;
+          event.currentTarget.value = props.value;
 
           // https://github.com/solidjs/solid/discussions/416#discussioncomment-6833805
           //event.currentTarget.setSelectionRange(
@@ -95,8 +94,7 @@ export function ProfileValue(props) {
         ref={textarea}
         style={calcSize(props.value, textarea)}
       >
-        {props.value.replace("\\n", "\n")}
-        {/* TODO remove this unescape after csvs if fixed */}
+        {props.value}
       </textarea>
     </>
   );

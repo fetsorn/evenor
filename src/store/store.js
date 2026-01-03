@@ -1,3 +1,4 @@
+/* try to keep store interactions only in this file */
 import { createContext } from "solid-js";
 import parser from "search-query-parser";
 import diff from "microdiff";
@@ -158,9 +159,9 @@ export async function onRecordSave(recordOld, recordNew) {
         state.mergeResult = syncResult.ok;
       }),
     );
-  } catch(e) {
+  } catch (e) {
     // do nothing
-    console.log(e)
+    console.log(e);
   }
 
   setStore(
@@ -197,9 +198,9 @@ export async function onRecordWipe(record) {
         state.mergeResult = syncResult.ok;
       }),
     );
-  } catch(e) {
+  } catch (e) {
     // do nothing
-    console.log(e)
+    console.log(e);
   }
 
   setStore(
@@ -425,9 +426,9 @@ export async function onMindChange(pathname, searchString) {
         state.mergeResult = syncResult.ok;
       }),
     );
-  } catch(e) {
+  } catch (e) {
     // do nothing
-    console.log(e)
+    console.log(e);
   }
 
   setStore(
@@ -667,8 +668,8 @@ export async function onExport(mind) {
 
   try {
     await exportMind(mind);
-  } catch(e) {
-    console.log(e)
+  } catch (e) {
+    console.log(e);
   }
 
   setStore("loading", false);

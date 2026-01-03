@@ -20,7 +20,7 @@
     "name": "fetsorn",
     "email": "fetsorn@gmail.com"
   },
-  "license": "MIT",
+  "license": "AGPL-3.0-or-later",
   "devDependencies": {
     "@babel/eslint-parser": "^7.28.5",
     "@babel/preset-env": "^7.28.5",

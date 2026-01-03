@@ -42,6 +42,20 @@ export async function mkdtemp(filepath) {
   return tmpdir;
 }
 
+export function mkdtempSync(filepath) {
+  const randomString = Math.floor(Math.random() * 10000).toString();
+
+  const tmpdir = filepath + randomString;
+
+  try {
+    fs.mkdir(tmpdir);
+  } catch {
+    // do nothing
+  }
+
+  return tmpdir;
+}
+
 export async function appendFile(filepath, tail) {
   try {
     const contents = await fs.promises.readFile(filepath, "utf8");
@@ -57,4 +71,5 @@ export async function appendFile(filepath, tail) {
 fs.createReadStream = createReadStream;
 fs.createWriteStream = createWriteStream;
 fs.promises.mkdtemp = mkdtemp;
+fs.mkdtempSync = mkdtempSync;
 fs.promises.appendFile = appendFile;

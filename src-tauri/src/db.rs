@@ -1,11 +1,15 @@
 use crate::{Mind, Result};
 use async_stream::try_stream;
 use csvs::{Dataset, Entry, IntoValue};
+use futures_core::stream::{BoxStream, Stream};
+use std::pin::{Pin, pin};
+use tokio::sync::Mutex;
+use std::collections::HashMap;
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::{ipc::Channel, AppHandle, Listener, Manager, Runtime};
+use tauri::{ipc::Channel, AppHandle, Listener, Manager, Runtime, State};
 
 #[tauri::command]
 pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
@@ -26,25 +30,30 @@ pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> 
     Ok(records)
 }
 
-#[derive(Clone, Serialize)]
-#[serde(rename_all = "camelCase", tag = "event", content = "data")]
-pub enum SelectEvent {
-    #[serde(rename_all = "camelCase")]
-    Started { query: Value },
-    #[serde(rename_all = "camelCase")]
-    Progress { query: Value, entry: Value },
-    #[serde(rename_all = "camelCase")]
-    Finished { query: Value },
+#[derive(Debug, Clone, Serialize)]
+pub struct SelectNext {
+    pub done: bool,
+    pub value: Option<Value>,
+}
+
+pub struct StreamMap {
+    pub stream_map: Mutex<HashMap<String, Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>>>>
 }
 
 #[tauri::command]
 pub async fn select_stream<R: Runtime>(
     app: AppHandle<R>,
     mind: &str,
+    streamid: &str,
     query: Value,
-    on_event: Channel<SelectEvent>,
-) -> Result<()> {
+    stream_map: State<'_, StreamMap>,
+) -> Result<SelectNext> {
     crate::log(&app, "select stream");
+
+    // will set on first run, and return false on others
+    app.manage(StreamMap {
+        stream_map: Default::default(),
+    });
 
     let mind = Mind::new(app.clone(), mind);
 
@@ -54,59 +63,34 @@ pub async fn select_stream<R: Runtime>(
 
     let query: Entry = query.try_into()?;
 
-    let query_for_stream = query.clone();
-
-    let readable_stream = try_stream! {
-       yield query_for_stream;
-    };
-
-    let s = dataset.select_record_stream(readable_stream);
-
-    pin_mut!(s); // needed for iteration
-
-    on_event
-        .send(SelectEvent::Started {
-            query: query.clone().into_value(),
-        })
-        .unwrap();
-
-    // clone handle here to move into the closure
-    let app_for_event = app.clone();
-
-    app_for_event.manage(false);
-
-    let value = app.clone();
-    app.once("stop-stream", move |event| {
-        crate::log(&value, "stopped");
-        app_for_event.manage(true);
-    });
-
-    while let Some(entry) = s.next().await {
-        let is_stopped: bool = *app.state();
-
-        if is_stopped {
-            break;
+    // if not started, start the pull stream
+    if (stream_map.stream_map.lock().await.get(streamid).is_none()) {
+        let readable_stream = try_stream! {
+            yield query;
         };
 
-        let entry = entry?;
+        let s = dataset.select_record_stream(readable_stream);
 
-        //crate::log(format!("{:#?}", serde_json::to_string(&entry.clone().into_value()).unwrap()));
-
-        on_event
-            .send(SelectEvent::Progress {
-                query: query.clone().into_value(),
-                entry: entry.into_value(),
-            })
-            .unwrap();
+        stream_map.stream_map.lock().await.insert(streamid.to_string(), s.boxed());
     }
 
-    on_event
-        .send(SelectEvent::Finished {
-            query: query.into_value(),
-        })
-        .unwrap();
+    let mut foo = stream_map.stream_map.lock().await;
 
-    Ok(())
+    let stream: &mut Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>> = foo.get_mut(streamid).unwrap();
+
+    pin_mut!(stream); // needed for iteration
+
+    let a = stream.next().await;
+
+    if let Some(entry) = a {
+        let entry = entry?;
+
+        // if started, return a window of results
+        return Ok(SelectNext { done: false, value: Some(entry.into_value()) })
+    }
+
+    // if stream ended, return undefined
+    Ok(SelectNext { done: true, value: None })
 }
 
 #[tauri::command]

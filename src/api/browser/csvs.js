@@ -52,7 +52,7 @@ export async function selectStream(mind, streamid, query) {
   // if started, return a window of results
   const { done, value } = await selectMap[streamid].next();
 
-  // if stream ended, return undefined
+  // if stream ended, return done: true
   if (done) {
     selectMap[streamid] = undefined;
 

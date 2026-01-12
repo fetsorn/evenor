@@ -323,65 +323,6 @@ export async function onSearch() {
   setStore("loading", false);
 }
 
-// here to reproduce the ev.error heisenbug
-export async function onSearchError(m) {
-  setStore("loading", true);
-
-  const { findMind } = await import("@/api/browser/io.js");
-  const csvs = await import("@fetsorn/csvs-js");
-  const { fs } = await import("@/api/browser/lightningfs.js");
-
-  //onMindChange(`/${props.item.mind}`, `_=${item["branch"]}`)
-  const { mind, schema, searchParams } = await changeMind(`/${m}`, "_=event");
-
-  setStore(
-    produce((state) => {
-      state.mind = mind;
-      state.schema = schema;
-      state.searchParams = searchParams.toString();
-    }),
-  );
-
-  // remove all evenor-specific searchParams before passing to csvs
-  const searchParamsWithoutCustom = new URLSearchParams(
-    Array.from(searchParams.entries()).filter(([key]) => !key.startsWith(".")),
-  );
-
-  const query = searchParamsToQuery(store.schema, searchParamsWithoutCustom);
-
-  const queryStream = new ReadableStream({
-    start(controller) {
-      controller.enqueue(query);
-
-      controller.close();
-    },
-  });
-
-  const dir = await findMind(store.mind.mind);
-
-  const selectStream = csvs.selectRecordStream({
-    fs,
-    dir,
-  });
-
-  const fromStrm = queryStream.pipeThrough(selectStream);
-
-  // create a stream that appends to records
-  const toStrm = new WritableStream({
-    async write(chunk) {
-      appendRecord(chunk);
-    },
-  });
-
-  try {
-    await fromStrm.pipeTo(toStrm);
-  } catch (e) {
-    console.error(e);
-  }
-
-  setStore("loading", false);
-}
-
 /**
  * This
  * @name onMindChange

@@ -2,6 +2,8 @@ import csvs from "@fetsorn/csvs-js";
 import { fs } from "@/api/browser/lightningfs.js";
 import { findMind } from "@/api/browser/io.js";
 
+let selectMap = {};
+
 /**
  * This
  * @name select
@@ -30,27 +32,34 @@ export async function select(mind, query) {
  * @param {object} query -
  * @returns {object}
  */
-export async function selectStream(mind, query) {
+export async function selectStream(mind, streamid, query) {
   const dir = await findMind(mind);
 
-  const selectStream = csvs.selectRecordStream({
-    fs,
-    dir,
-  });
+  // if not started, start the pull stream
+  if (selectMap[streamid] === undefined) {
+    const selectStream = await csvs.selectRecordStreamPull({
+      fs,
+      dir,
+      query,
+      light: false,
+    });
 
-  const queryStream = new ReadableStream({
-    start(controller) {
-      controller.enqueue(query);
+    console.log(selectStream);
 
-      controller.close();
-    },
-  });
+    selectMap[streamid] = selectStream[Symbol.asyncIterator]();
+  }
 
-  const strm = queryStream.pipeThrough(selectStream);
+  // if started, return a window of results
+  const { done, value } = await selectMap[streamid].next();
 
-  let closeHandler = () => strm.cancel();
+  // if stream ended, return undefined
+  if (done) {
+    selectMap[streamid] = undefined;
 
-  return { strm, closeHandler };
+    return { done: true };
+  }
+
+  return { done, value };
 }
 
 /**

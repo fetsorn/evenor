@@ -26,41 +26,7 @@ export async function select(mind, query) {
 }
 
 export async function selectStream(mind, query) {
-  let closeHandler;
-
-  return {
-    strm: new ReadableStream({
-      async start(controller) {
-        const onEvent = new Channel();
-
-        onEvent.onmessage = (message) => {
-          if (message.event === "progress") {
-            controller.enqueue(message.data.entry);
-          } else if (message.event === "finished") {
-            controller.close();
-          }
-        };
-
-        closeHandler = () => {
-          try {
-            // ask tauri to stop streaming
-            emit("stop-stream");
-
-            controller.close();
-          } catch {
-            // do nothing
-          }
-        };
-
-        return invoke("select_stream", {
-          mind,
-          query,
-          onEvent,
-        });
-      },
-    }),
-    closeHandler,
-  };
+  return invoke("selectStream", { mind, query });
 }
 
 export async function updateRecord(mind, record) {
@@ -85,10 +51,7 @@ export async function commit(mind) {
 
 // fresh clone from url to mind dir, symlink to name
 export async function clone(mind, remote) {
-  return invoke("clone", {
-    mind,
-    remote,
-  });
+  return invoke("clone", { mind, remote });
 }
 
 export async function rename(mind, source) {

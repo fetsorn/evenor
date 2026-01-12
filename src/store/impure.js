@@ -88,8 +88,23 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
 
   const query = searchParamsToQuery(schema, searchParamsWithoutCustom);
 
-  // prepare a new stream
-  const { strm: fromStrm, closeHandler } = await api.selectStream(mind, query);
+  const streamid = "";
+
+  // construct a new readable stream which calls api.selectStream many times
+  const fromStrm = new ReadableStream({
+    async pull(controller) {
+      const { done, value } = await api.selectStream(mind, streamid, query);
+
+      console.log(1, done, value);
+      if (done) {
+        controller.close();
+
+        return;
+      }
+
+      controller.enqueue(value);
+    },
+  });
 
   const isHomeScreen = mind === "root";
 
@@ -109,7 +124,7 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
     abort() {
       // stream interrupted
       // no need to await on the promise, closing api stream for cleanup
-      closeHandler();
+      //closeHandler();
     },
   });
 

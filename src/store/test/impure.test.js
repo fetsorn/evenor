@@ -117,10 +117,14 @@ describe("selectStream", () => {
 
     const appendRecord = vi.fn();
 
-    api.selectStream.mockImplementation(() => ({
-      strm: ReadableStream.from([{}]),
-      closeHandler: vi.fn(),
-    }));
+    api.selectStream
+      .mockImplementationOnce(() => ({
+        done: false,
+        value: {},
+      }))
+      .mockImplementationOnce(() => ({
+        done: true,
+      }));
 
     loadMindRecord.mockReset();
 
@@ -148,10 +152,14 @@ describe("selectStream", () => {
 
     const appendRecord = vi.fn();
 
-    api.selectStream.mockImplementation(() => ({
-      strm: ReadableStream.from([{}]),
-      closeHandler: vi.fn(),
-    }));
+    api.selectStream
+      .mockImplementationOnce(() => ({
+        done: false,
+        value: {},
+      }))
+      .mockImplementationOnce(() => ({
+        done: true,
+      }));
 
     loadMindRecord.mockReset();
 

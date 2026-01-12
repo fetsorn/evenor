@@ -35,14 +35,10 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
     return stub.records;
   });
 
-  const selectRecordStream = vi.fn(
+  const selectRecordStreamPull = vi.fn(
     ({ dir }) =>
-      new TransformStream({
-        transform(query, controller) {
-          expect(dir).toBe(stub.dir);
-
-          expect(query).toEqual(stub.query);
-
+      new ReadableStream({
+        start(controller) {
           controller.enqueue(stub.entry);
         },
       }),
@@ -65,7 +61,7 @@ vi.mock("@fetsorn/csvs-js", async (importOriginal) => {
     default: {
       ...mod,
       selectRecord,
-      selectRecordStream,
+      selectRecordStreamPull,
       updateRecord,
       deleteRecord,
     },
@@ -84,25 +80,21 @@ describe("csvs", () => {
   });
 
   test("selectStream", async () => {
-    const { strm } = await selectStream(stub.mind, stub.query);
+    const { done, value } = await selectStream(
+      stub.mind,
+      "streamid",
+      stub.query,
+    );
 
-    let records = [];
+    expect(done).toEqual(false);
 
-    const outputStream = new WritableStream({
-      write(entry) {
-        records.push(entry);
-      },
-    });
-
-    await strm.pipeTo(outputStream);
+    expect(value).toEqual(stub.entry);
 
     expect(findMind).toHaveBeenCalled();
 
-    expect(csvs.selectRecordStream).toHaveBeenCalled();
+    expect(csvs.selectRecordStreamPull).toHaveBeenCalled();
 
     // TODO: test that previous stream is interrupted
-
-    expect(records).toEqual(stub.records);
   });
 
   test("updateRecord", async () => {

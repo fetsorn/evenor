@@ -46,7 +46,6 @@ pub async fn select_stream<R: Runtime>(
     mind: &str,
     streamid: &str,
     query: Value,
-    stream_map: State<'_, StreamMap>,
 ) -> Result<SelectNext> {
     crate::log(&app, "select stream");
 
@@ -54,6 +53,8 @@ pub async fn select_stream<R: Runtime>(
     app.manage(StreamMap {
         stream_map: Default::default(),
     });
+
+    let stream_map: State<'_, StreamMap> = app.state();
 
     let mind = Mind::new(app.clone(), mind);
 

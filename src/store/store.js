@@ -2,7 +2,7 @@
 import { createContext } from "solid-js";
 import parser from "search-query-parser";
 import diff from "microdiff";
-import { searchParamsToQuery, getDefaultBase } from "@/store/pure.js";
+import { getDefaultBase } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
 import { createRecord, selectStream } from "@/store/impure.js";
 import { resolve, createRoot, readSchema, exportMind } from "@/store/record.js";

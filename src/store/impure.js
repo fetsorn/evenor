@@ -95,7 +95,6 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
     async pull(controller) {
       const { done, value } = await api.selectStream(mind, streamid, query);
 
-      console.log(1, done, value);
       if (done) {
         controller.close();
 

@@ -26,7 +26,7 @@ export async function select(mind, query) {
 }
 
 export async function selectStream(mind, streamid, query) {
-  return invoke("selectStream", { mind, streamid, query });
+  return invoke("select_stream", { mind, streamid, query });
 }
 
 export async function updateRecord(mind, record) {

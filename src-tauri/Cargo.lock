@@ -725,6 +725,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c6e6ff9dcd79cff5cd969a17a545d79e84ab086e444102a591e288a8aa3ce394"
 dependencies = [
  "clap_builder",
+ "clap_derive",
 ]
 
 [[package]]
@@ -737,6 +738,18 @@ dependencies = [
  "anstyle",
  "clap_lex",
  "strsim",
+]
+
+[[package]]
+name = "clap_derive"
+version = "4.5.49"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2a0b5487afeab2deb2ff4e03a807ad1a03ac532ff5a2cee5d86884440c7f7671"
+dependencies = [
+ "heck 0.5.0",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.114",
 ]
 
 [[package]]
@@ -1054,7 +1067,7 @@ dependencies = [
 [[package]]
 name = "csvs"
 version = "0.2.1"
-source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#96c408515c0b3ae3b14528130d44044666845679"
+source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#c90b4a5a4e1dd3a19793fd801f0041ef6704259b"
 dependencies = [
  "async-stream",
  "backtrace",

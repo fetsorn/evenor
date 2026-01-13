@@ -18,6 +18,7 @@ import {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  getBase,
   getRecord,
   onCancel,
   onExport,
@@ -43,6 +44,7 @@ export {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  getBase,
   getRecord,
   onCancel,
   onExport,
@@ -69,6 +71,7 @@ export default {
   getFilterOptions,
   getSortedRecords,
   getRecord,
+  getBase,
   onCancel,
   onExport,
 };

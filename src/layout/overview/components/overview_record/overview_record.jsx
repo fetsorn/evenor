@@ -17,7 +17,12 @@ export function OverviewRecord(props) {
         value={props.record[props.record._]}
       />
 
-      <Show when={store.schema[props.record._].leaves.filter(recordHasLeaf).length > 0} fallback={<></>}>
+      <Show
+        when={
+          store.schema[props.record._].leaves.filter(recordHasLeaf).length > 0
+        }
+        fallback={<></>}
+      >
         <Spoiler
           index={props.index}
           title={"with"}

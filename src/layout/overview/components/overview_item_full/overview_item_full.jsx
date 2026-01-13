@@ -43,11 +43,13 @@ export function OverviewItemFull(props) {
         </div>
       </div>
 
-      <Show
-        when={isFold()}
-        fallback={<button onClick={() => setIsFold(true)}>less...</button>}
-      >
-        <button onClick={() => setIsFold(false)}>more...</button>
+      <Show when={size.height > 40}>
+        <Show
+          when={isFold()}
+          fallback={<button onClick={() => setIsFold(true)}>less...</button>}
+        >
+          <button onClick={() => setIsFold(false)}>more...</button>
+        </Show>
       </Show>
 
       <Show
@@ -58,6 +60,8 @@ export function OverviewItemFull(props) {
           <button
             className={"edit"}
             onClick={() => {
+              console.log(content().innerText);
+
               onRecordEdit(["record"], JSON.parse(JSON.stringify(props.item)));
 
               setShowActions(false);

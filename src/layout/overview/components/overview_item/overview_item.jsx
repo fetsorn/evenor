@@ -1,20 +1,24 @@
 import { useContext } from "solid-js";
-import { StoreContext } from "@/store/index.js";
+import { StoreContext, getBase } from "@/store/index.js";
 import { OverviewItemLight, OverviewItemFull } from "../index.js";
 import styles from "./overview_item.module.css";
 
 export function OverviewItem(props) {
   const { store } = useContext(StoreContext);
 
+  const base = getBase();
+
+  const grain = { _: base, [base]: props.item };
+
   return (
-    <div id={props.item[props.item._]} className={styles.item}>
+    <div id={props.item} className={styles.item}>
       <Show
-        when={store.recordMap[props.item[props.item._]]}
-        fallback={<OverviewItemLight index={props.index} item={props.item} />}
+        when={store.recordMap[props.item]}
+        fallback={<OverviewItemLight index={props.index} item={grain} />}
       >
         <OverviewItemFull
           index={props.index}
-          item={store.recordMap[props.item[props.item._]]}
+          item={store.recordMap[props.item]}
         />
       </Show>
     </div>

@@ -1,27 +1,28 @@
 .item {
-    display: flex;
-    flex-wrap: wrap;
-    border-bottom-style: solid;
-    border-bottom-width: 1px;
-    border-bottom-color: lightgray;
+  display: flex;
+  flex-wrap: wrap;
+  width: 100%;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  border-bottom-color: lightgray;
 }
 
 .actions {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .fold {
-    display: inline-block;
-    max-height: 40px;
-    max-width: 85%;
-    overflow: hidden;
+  display: inline-block;
+  max-height: 40px;
+  max-width: 85%;
+  overflow: hidden;
 }
 
 .unfold {
-    display: inline-block;
+  display: inline-block;
 }
 
 .content {
-    display: inline-block;
+  display: inline-block;
 }

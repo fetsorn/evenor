@@ -111,8 +111,6 @@ export async function selectStream(
     },
   });
 
-  const isHomeScreen = mind === "root";
-
   // create a stream that appends to records
   const toStrm = new WritableStream({
     async write(chunk) {
@@ -120,10 +118,9 @@ export async function selectStream(
         return;
       }
 
-      // when selecting a mind, load git state and schema from folder into the record
-      //const record = isHomeScreen ? await loadMindRecord(chunk) : chunk;
+      const key = chunk[chunk._];
 
-      appendRecord(chunk);
+      appendRecord(key);
     },
 
     abort() {

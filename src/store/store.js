@@ -28,15 +28,17 @@ export const [store, setStore] = createStore({
 });
 
 export async function getRecord(record) {
-  const key = record[record._];
+  const base = getBase();
 
-  if (store.recordMap[key] === undefined) {
-    const recordNew = await buildRecord(store.mind.mind, record);
+  const grain = { _: base, [base]: record };
 
-    setStore("recordMap", { [key]: recordNew });
+  if (store.recordMap[record] === undefined) {
+    const recordNew = await buildRecord(store.mind.mind, grain);
+
+    setStore("recordMap", { [record]: recordNew });
   }
 
-  const recordNew = store.recordMap[key];
+  const recordNew = store.recordMap[record];
 
   return recordNew;
 }
@@ -180,6 +182,10 @@ export async function onRecordSave(recordOld, recordNew) {
     console.log(e);
   }
 
+  const keyNew = recordNew[recordNew._];
+
+  setStore("recordMap", { [keyNew]: recordNew });
+
   setStore(
     produce((state) => {
       state.recordSet = records;
@@ -222,6 +228,7 @@ export async function onRecordWipe(record) {
   setStore(
     produce((state) => {
       state.recordSet = records;
+      state.recordMap[record] = undefined;
     }),
   );
 
@@ -246,6 +253,10 @@ export async function onSort(field, value) {
       state.recordSet = getSortedRecords();
     }),
   );
+}
+
+export function getBase() {
+  return new URLSearchParams(store.searchParams).get("_");
 }
 
 export async function onBase(value) {

@@ -17,9 +17,11 @@ import { find, clone } from "@/store/open.js";
 export async function saveRecord(mind, base, records, recordOld, recordNew) {
   await updateRecord(mind, base, recordNew);
 
-  const recordsNew = records
-    .filter((r) => r[base] !== recordOld[base])
-    .concat([recordNew]);
+  const keyOld = recordOld[base];
+
+  const keyNew = recordNew[base];
+
+  const recordsNew = records.filter((r) => r[base] !== keyOld).concat([keyNew]);
 
   return recordsNew;
 }
@@ -37,7 +39,9 @@ export async function saveRecord(mind, base, records, recordOld, recordNew) {
 export async function wipeRecord(mind, base, records, record) {
   await deleteRecord(mind, record);
 
-  const recordsNew = records.filter((r) => r[base] !== record[base]);
+  const key = record[base];
+
+  const recordsNew = records.filter((r) => r[base] !== key);
 
   return recordsNew;
 }

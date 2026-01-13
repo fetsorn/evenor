@@ -69,7 +69,13 @@ export async function createRecord(mind, base) {
  * @param {SearchParams} searchParams -
  * @returns {object}
  */
-export async function selectStream(schema, mind, appendRecord, searchParams) {
+export async function selectStream(
+  schema,
+  mind,
+  appendRecord,
+  searchParams,
+  streamCounter,
+) {
   // prepare a controller to stop the new stream
   let isAborted = false;
 
@@ -88,7 +94,7 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
 
   const query = searchParamsToQuery(schema, searchParamsWithoutCustom);
 
-  const streamid = "";
+  const streamid = streamCounter.toString();
 
   // construct a new readable stream which calls api.selectStream many times
   const fromStrm = new ReadableStream({
@@ -115,9 +121,9 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
       }
 
       // when selecting a mind, load git state and schema from folder into the record
-      const record = isHomeScreen ? await loadMindRecord(chunk) : chunk;
+      //const record = isHomeScreen ? await loadMindRecord(chunk) : chunk;
 
-      appendRecord(record);
+      appendRecord(chunk);
     },
 
     abort() {
@@ -132,4 +138,14 @@ export async function selectStream(schema, mind, appendRecord, searchParams) {
   }
 
   return { abortPreviousStream, startStream };
+}
+
+export async function buildRecord(mind, record) {
+  const fetched = await api.buildRecord(mind, record);
+
+  const isHomeScreen = mind === "root";
+
+  const recordNew = isHomeScreen ? await loadMindRecord(fetched) : fetched;
+
+  return recordNew;
 }

@@ -24,6 +24,12 @@ export async function select(mind, query) {
   return records ?? [];
 }
 
+export async function buildRecord(mind, record) {
+  const dir = await findMind(mind);
+
+  return csvs.buildRecord({ fs, dir, query: [record] });
+}
+
 /**
  * This
  * @name selectStream
@@ -41,10 +47,8 @@ export async function selectStream(mind, streamid, query) {
       fs,
       dir,
       query,
-      light: false,
+      light: true,
     });
-
-    console.log(selectStream);
 
     selectMap[streamid] = selectStream[Symbol.asyncIterator]();
   }

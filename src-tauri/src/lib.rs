@@ -83,6 +83,7 @@ pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R
             db::select_stream,
             db::update_record,
             db::delete_record,
+            db::build_record,
             git::init,
             git::commit,
             git::clone,

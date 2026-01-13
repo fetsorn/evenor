@@ -4,7 +4,7 @@ import parser from "search-query-parser";
 import diff from "microdiff";
 import { getDefaultBase } from "@/store/pure.js";
 import { createStore, produce } from "solid-js/store";
-import { createRecord, selectStream } from "@/store/impure.js";
+import { createRecord, selectStream, buildRecord } from "@/store/impure.js";
 import { resolve, createRoot, readSchema, exportMind } from "@/store/record.js";
 import { saveRecord, wipeRecord, changeMind } from "@/store/action.js";
 import { sortCallback, changeSearchParams, makeURL } from "@/store/pure.js";
@@ -18,12 +18,28 @@ export const [store, setStore] = createStore({
   mind: { _: "mind", mind: "root", name: "minds" },
   schema: schemaRoot,
   record: undefined,
-  records: [],
+  recordSet: [],
+  recordMap: {},
   spoilerMap: {},
   loading: false,
   searchBar: "", // remembers the last state of search bar
   mergeResult: false,
+  streamCounter: 0,
 });
+
+export async function getRecord(record) {
+  const key = record[record._];
+
+  if (store.recordMap[key] === undefined) {
+    const recordNew = await buildRecord(store.mind.mind, record);
+
+    setStore("recordMap", { [key]: recordNew });
+  }
+
+  const recordNew = store.recordMap[key];
+
+  return recordNew;
+}
 
 /**
  * This
@@ -38,7 +54,7 @@ export function getSortedRecords() {
     ".sortDirection",
   );
 
-  const records = store.records.toSorted(sortCallback(sortBy, sortDirection));
+  const records = store.recordSet.toSorted(sortCallback(sortBy, sortDirection));
 
   return records;
 }
@@ -146,7 +162,7 @@ export async function onRecordSave(recordOld, recordNew) {
   const records = await saveRecord(
     store.mind.mind,
     new URLSearchParams(store.searchParams).get("_"),
-    store.records,
+    store.recordSet,
     recordOld,
     recordNew,
   );
@@ -166,7 +182,7 @@ export async function onRecordSave(recordOld, recordNew) {
 
   setStore(
     produce((state) => {
-      state.records = records;
+      state.recordSet = records;
       state.record = undefined;
     }),
   );
@@ -186,7 +202,7 @@ export async function onRecordWipe(record) {
   const records = await wipeRecord(
     store.mind.mind,
     new URLSearchParams(store.searchParams).get("_"),
-    store.records,
+    store.recordSet,
     record,
   );
 
@@ -205,7 +221,7 @@ export async function onRecordWipe(record) {
 
   setStore(
     produce((state) => {
-      state.records = records;
+      state.recordSet = records;
     }),
   );
 
@@ -219,7 +235,7 @@ export async function onRecordWipe(record) {
  * @param {object} record -
  */
 export function appendRecord(record) {
-  setStore("records", store.records.length, record);
+  setStore("recordSet", store.recordSet.length, record);
 }
 
 export async function onSort(field, value) {
@@ -227,7 +243,7 @@ export async function onSort(field, value) {
 
   setStore(
     produce((state) => {
-      state.records = getSortedRecords();
+      state.recordSet = getSortedRecords();
     }),
   );
 }
@@ -238,6 +254,12 @@ export async function onBase(value) {
   //await onSearch()
 }
 
+export async function onCancel() {
+  await store.abortPreviousStream();
+
+  setStore("loading", false);
+}
+
 /**
  * This
  * @name onSearch
@@ -245,6 +267,8 @@ export async function onBase(value) {
  */
 export async function onSearch() {
   setStore("loading", true);
+
+  setStore("streamCounter", store.streamCounter + 1);
 
   try {
     // if search bar can be parsed as url, clone
@@ -283,6 +307,7 @@ export async function onSearch() {
       store.mind.mind,
       appendRecord,
       new URLSearchParams(store.searchParams),
+      store.streamCounter,
     );
 
     // stop previous stream
@@ -295,19 +320,24 @@ export async function onSearch() {
           return abortPreviousStream();
         };
         // erase existing records
-        state.records = [];
+        state.recordSet = [];
       }),
     );
 
     // start appending records
     await startStream();
+
+    // TODO does it stop main?
+    for (const record of store.recordSet) {
+      await getRecord(record);
+    }
   } catch (e) {
     console.error(e);
 
     setStore(
       produce((state) => {
         // erase existing records
-        state.records = [];
+        state.recordSet = [];
       }),
     );
   }
@@ -342,7 +372,7 @@ export async function onMindChange(pathname, searchString) {
       // erase searchParams to re-render the filter index
       state.searchParams = "";
       // erase records to re-render the overview
-      state.records = [];
+      state.recordSet = [];
     }),
   );
 

@@ -30,6 +30,25 @@ pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> 
     Ok(records)
 }
 
+#[tauri::command]
+pub async fn build_record<R: Runtime>(
+    app: AppHandle<R>,
+    mind: &str,
+    query: Value,
+) -> Result<Value> {
+    let mind = Mind::new(app.clone(), mind);
+
+    let mind_dir = mind.find_mind()?.unwrap();
+
+    let dataset = Dataset::new(&mind_dir);
+
+    let query: Entry = query.try_into()?;
+
+    let record = dataset.build_record(query).await?;
+
+    Ok(record.into_value())
+}
+
 #[derive(Debug, Clone, Serialize)]
 pub struct SelectNext {
     pub done: bool,
@@ -70,7 +89,7 @@ pub async fn select_stream<R: Runtime>(
             yield query;
         };
 
-        let s = dataset.select_record_stream(readable_stream);
+        let s = dataset.select_record_stream(readable_stream, true);
 
         stream_map.stream_map.lock().await.insert(streamid.to_string(), s.boxed());
     }

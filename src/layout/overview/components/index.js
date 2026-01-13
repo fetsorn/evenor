@@ -1,4 +1,6 @@
 export { OverviewItem } from "./overview_item/overview_item.jsx";
+export { OverviewItemLight } from "./overview_item_light/overview_item_light.jsx";
+export { OverviewItemFull } from "./overview_item_full/overview_item_full.jsx";
 export { OverviewRecord } from "./overview_record/overview_record.jsx";
 export { OverviewField } from "./overview_field/overview_field.jsx";
 export { OverviewFieldItem } from "./overview_field_item/overview_field_item.jsx";

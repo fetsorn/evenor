@@ -25,6 +25,10 @@ export async function select(mind, query) {
   return invoke("select", { mind, query });
 }
 
+export async function buildRecord(mind, query) {
+  return invoke("build_record", { mind, query });
+}
+
 export async function selectStream(mind, streamid, query) {
   return invoke("select_stream", { mind, streamid, query });
 }
@@ -110,6 +114,7 @@ export default {
   selectStream,
   updateRecord,
   deleteRecord,
+  buildRecord,
   init,
   createLFS,
   clone,

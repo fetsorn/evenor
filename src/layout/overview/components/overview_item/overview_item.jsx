@@ -1,92 +1,21 @@
-import { createElementSize } from "@solid-primitives/resize-observer";
-import { useContext, createSignal, createEffect } from "solid-js";
-import {
-  StoreContext,
-  onRecordEdit,
-  onRecordWipe,
-  onMindChange,
-  onMindOpen,
-  onExport,
-} from "@/store/index.js";
-import { Confirmation, Spoiler } from "@/layout/components/index.js";
-import { OverviewRecord } from "../index.js";
+import { useContext } from "solid-js";
+import { StoreContext } from "@/store/index.js";
+import { OverviewItemLight, OverviewItemFull } from "../index.js";
 import styles from "./overview_item.module.css";
 
 export function OverviewItem(props) {
   const { store } = useContext(StoreContext);
 
-  const [content, setContent] = createSignal();
-
-  const size = createElementSize(content);
-
-  const [showActions, setShowActions] = createSignal(false);
-
-  const [isBigItem, setIsBigItem] = createSignal(false);
-
-  const [isFold, setIsFold] = createSignal(true);
-
-  const isHomeScreen = store.mind.mind === "root";
-
-  const isMind = new URLSearchParams(store.searchParams).get("_") === "mind";
-
-  const canOpenMind = isHomeScreen && isMind;
-
   return (
     <div id={props.item[props.item._]} className={styles.item}>
-      <div className={isFold() ? styles.fold : styles.unfold}>
-        <div className={styles.content} ref={setContent}>
-          <OverviewRecord
-            index={props.index}
-            record={props.item}
-            isOpenDefault={true}
-          />
-        </div>
-      </div>
-
-      <Show when={size.height > 40}>
-        <Show
-          when={isFold()}
-          fallback={<button onClick={() => setIsFold(true)}>less...</button>}
-        >
-          <button onClick={() => setIsFold(false)}>more...</button>
-        </Show>
-      </Show>
-
       <Show
-        when={showActions()}
-        fallback={<button onClick={() => setShowActions(true)}>.</button>}
+        when={store.recordMap[props.item[props.item._]]}
+        fallback={<OverviewItemLight index={props.index} item={props.item} />}
       >
-        <>
-          <button
-            className={"edit"}
-            onClick={() => {
-              onRecordEdit(["record"], JSON.parse(JSON.stringify(props.item)));
-
-              setShowActions(false);
-            }}
-          >
-            edit{" "}
-          </button>
-
-          <Confirmation
-            action={`delete`}
-            question={"really delete?"}
-            onAction={() => onRecordWipe(props.item)}
-            onCancel={() => setShowActions(false)}
-          />
-
-          <Show when={canOpenMind} fallback={<></>}>
-            <button title="zip" onClick={() => onExport(props.item.mind)}>
-              export{" "}
-            </button>
-          </Show>
-
-          <Show when={canOpenMind} fallback={<></>}>
-            <button title="open" onClick={() => onMindOpen(props.item.mind)}>
-              open{" "}
-            </button>
-          </Show>
-        </>
+        <OverviewItemFull
+          index={props.index}
+          item={store.recordMap[props.item[props.item._]]}
+        />
       </Show>
     </div>
   );

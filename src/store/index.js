@@ -18,6 +18,8 @@ import {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  getRecord,
+  onCancel,
   onExport,
 } from "./store.js";
 
@@ -41,6 +43,8 @@ export {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  getRecord,
+  onCancel,
   onExport,
 };
 
@@ -64,5 +68,7 @@ export default {
   getFilterQueries,
   getFilterOptions,
   getSortedRecords,
+  getRecord,
+  onCancel,
   onExport,
 };

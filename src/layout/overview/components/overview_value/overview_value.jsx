@@ -8,7 +8,9 @@ export function OverviewValue(props) {
   const isBase =
     props.branch === new URLSearchParams(store.searchParams).get("_");
 
-  const [isValue, setIsValue] = createSignal(!isBase);
+  const defaultIsValue = props.defaultShow ? props.defaultShow : !isBase;
+
+  const [isValue, setIsValue] = createSignal(defaultIsValue);
 
   // TODO: add schema[base].cognate from branch-cognate.csv
   const basePartial = isBase ? [] : [props.branch];

@@ -13,7 +13,7 @@ where
 
     let mind = Mind::new(app, mind);
 
-    mind.make_mind(name)?;
+    mind.make_mind(name).await?;
 
     Ok(())
 }

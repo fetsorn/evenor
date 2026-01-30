@@ -19,6 +19,7 @@ export async function select(mind, query) {
     fs,
     dir,
     query,
+    bare: true,
   });
 
   return records ?? [];
@@ -27,7 +28,7 @@ export async function select(mind, query) {
 export async function buildRecord(mind, record) {
   const dir = await findMind(mind);
 
-  return csvs.buildRecord({ fs, dir, query: [record] });
+  return csvs.buildRecord({ fs, dir, query: [record], bare: true });
 }
 
 /**
@@ -48,6 +49,7 @@ export async function selectStream(mind, streamid, query) {
       dir,
       query,
       light: true,
+      bare: true,
     });
 
     selectMap[streamid] = selectStream[Symbol.asyncIterator]();
@@ -80,6 +82,7 @@ export async function updateRecord(mind, record) {
     fs,
     dir,
     query: record,
+    bare: true,
   });
 }
 
@@ -97,5 +100,6 @@ export async function deleteRecord(mind, record) {
     fs,
     dir,
     query: record,
+    bare: true,
   });
 }

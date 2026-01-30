@@ -19,7 +19,7 @@ pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> 
 
     let mind_dir = mind.find_mind()?.unwrap();
 
-    let dataset = Dataset::new(&mind_dir);
+    let dataset = Dataset::open(&mind_dir).await?;
 
     let query = query.try_into()?;
 
@@ -40,7 +40,7 @@ pub async fn build_record<R: Runtime>(
 
     let mind_dir = mind.find_mind()?.unwrap();
 
-    let dataset = Dataset::new(&mind_dir);
+    let dataset = Dataset::open(&mind_dir).await?;
 
     let query: Entry = query.try_into()?;
 
@@ -79,7 +79,7 @@ pub async fn select_stream<R: Runtime>(
 
     let mind_dir = mind.find_mind()?.unwrap();
 
-    let dataset = Dataset::new(&mind_dir);
+    let dataset = Dataset::open(&mind_dir).await?;
 
     let query: Entry = query.try_into()?;
 
@@ -119,7 +119,7 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 
     let mind_dir = mind.find_mind()?.unwrap();
 
-    let dataset = Dataset::new(&mind_dir);
+    let dataset = Dataset::open(&mind_dir).await?;
 
     let record = record.try_into()?;
 
@@ -138,7 +138,7 @@ pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 
     let mind_dir = mind.find_mind()?.unwrap();
 
-    let dataset = Dataset::new(&mind_dir);
+    let dataset = Dataset::open(&mind_dir).await?;
 
     dataset.delete_record(vec![record]).await?;
 

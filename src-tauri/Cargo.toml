@@ -21,7 +21,8 @@ tauri-plugin-fs = "2"
 time = "0.3.36" # to fix a rust version error in dependency tree https://github.com/time-rs/time/issues/693
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-csvs = { version = "0.2.0", git = "https://codeberg.org/norcivilianlabs/csvs-rs" }
+csvs = { version = "0.3.0", path = "../../csvs-rs" }
+#csvs = { version = "0.2.0", git = "https://codeberg.org/norcivilianlabs/csvs-rs" }
 regex = "1.11.1"
 futures-util = "0.3.31"
 futures-core = "0.3.31"

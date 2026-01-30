@@ -1205,10 +1205,10 @@
   resolved "https://registry.yarnpkg.com/@exodus/bytes/-/bytes-1.8.0.tgz#8382835f71db8377cf634a4ef5a71806e86ba9c7"
   integrity sha512-8JPn18Bcp8Uo1T82gR8lh2guEOa5KKU/IEKvvdp0sgmi7coPBWf1Doi1EXsGZb2ehc8ym/StJCjffYV+ne7sXQ==
 
-"@fetsorn/csvs-js@0.25.0":
-  version "0.25.0"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.25.0.tgz#959728bf7e85579ec0075461504578945e089886"
-  integrity sha512-FDHrnpFCbJLSGe0xUr8iwncOJc73B+4O3mbHSv4GKlmaRwQJGGvS4GJrBw+D4Qg64vaUgBa6CwEolSmK+/e5Xw==
+"@fetsorn/csvs-js@^0.27.0":
+  version "0.27.0"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.27.0.tgz#7279cc44cc932d1c16ce3761eb48cebdf58db657"
+  integrity sha512-2DnmyOcPW5CkzqRui4F5Vr65+DgTsVERKfW6VFBwLPsqcM0CEcFwrynOGnNNltIhjM4oRUqgKztaEpsMhbg5cw==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"

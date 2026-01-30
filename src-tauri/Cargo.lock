@@ -1066,8 +1066,7 @@ dependencies = [
 
 [[package]]
 name = "csvs"
-version = "0.2.1"
-source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#c90b4a5a4e1dd3a19793fd801f0041ef6704259b"
+version = "0.3.0"
 dependencies = [
  "async-stream",
  "backtrace",

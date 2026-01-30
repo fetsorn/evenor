@@ -1,6 +1,7 @@
 import http from "isomorphic-git/http/web";
 import diff3Merge from "diff3";
 import git from "isomorphic-git";
+import csvs from "@fetsorn/csvs-js";
 import { addLFS } from "@/api/browser/lfs.js";
 import { fs } from "@/api/browser/lightningfs.js";
 import { findMind, rimraf } from "@/api/browser/io.js";
@@ -29,32 +30,25 @@ export function nameMind(mind, name) {
 export async function init(mind, name) {
   const dir = nameMind(mind, name);
 
-  if (mind === "root") {
-    // should fail if root exists
-    await fs.promises.mkdir(dir);
-
-    await git.init({ fs, dir, defaultBranch: "main" });
-
-    await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
-
-    await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
-  } else {
+  if (mind !== "root") {
     try {
       const existingMind = await findMind(mind);
 
       if (existingMind !== dir) {
         await fs.promises.rename(existingMind, dir);
       }
+
+      return;
     } catch {
-      await fs.promises.mkdir(dir);
-
-      await git.init({ fs, dir, defaultBranch: "main" });
-
-      await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
-
-      await fs.promises.writeFile(`${dir}/.csvs.csv`, "csvs,0.0.2", "utf8");
+      // if no mind found, proceed to create it
     }
   }
+
+  await csvs.init({ fs, dir, bare: true });
+
+  await git.init({ fs, dir, defaultBranch: "main" });
+
+  await fs.promises.writeFile(`${dir}/.gitignore`, `.DS_Store`, "utf8");
 }
 
 /**

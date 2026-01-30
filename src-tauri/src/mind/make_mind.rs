@@ -1,9 +1,10 @@
 use crate::{Error, Mind, Result};
+use csvs::Dataset;
 use git2kit::Repository;
 use std::fs::{create_dir_all, rename, write};
 use tauri::Runtime;
 
-pub fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
+pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
     let mind_dir = mind.name_mind(name)?;
 
     crate::log(&mind.app, "make");
@@ -37,9 +38,7 @@ pub fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
 
         write(&gitignore_path, ".DS_Store")?;
 
-        let csvscsv_path = mind_dir.join(".csvs.csv");
-
-        write(&csvscsv_path, "csvs,0.0.2")?;
+        Dataset::create(&mind_dir, false).await?;
 
         repository.commit();
 

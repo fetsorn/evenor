@@ -51,7 +51,7 @@
     "vitest": "^4.0.8"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "0.25.0",
+    "@fetsorn/csvs-js": "^0.27.0",
     "@fetsorn/isogit-lfs": "^0.5.3",
     "@isomorphic-git/lightning-fs": "4.6.2",
     "@solid-primitives/resize-observer": "^2.1.3",

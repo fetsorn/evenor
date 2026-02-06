@@ -94,3 +94,5 @@ out/
 __screenshots__
 /src-tauri/.cargo/config.toml
 /pages/
+/distribution/
+/src-tauri/capabilities-bk/

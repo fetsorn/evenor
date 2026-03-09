@@ -64,9 +64,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
             write(&gitignore_path, ".DS_Store")?;
 
-            let csvscsv_path = mind_dir.join(".csvs.csv");
-
-            write(&csvscsv_path, "csvs,0.0.2")?;
+            Dataset::create(&mind_dir, false).await?;
 
             repository.commit();
         }
@@ -102,7 +100,7 @@ mod test {
 
         let mind = Mind::new(app.handle().clone(), &mind);
 
-        mind.make_mind(None)?;
+        mind.make_mind(None).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -118,7 +116,7 @@ mod test {
         });
 
         // must error when root already exists
-        let result = mind.make_mind(None);
+        let result = mind.make_mind(None).await;
 
         assert!(result.is_err());
 
@@ -145,7 +143,7 @@ mod test {
 
         let mind = Mind::new(app.handle().clone(), &mind);
 
-        mind.make_mind(Some(name))?;
+        mind.make_mind(Some(name)).await?;
 
         // check that repo is created
         read_dir(&temp_path)?.for_each(|entry| {
@@ -163,7 +161,7 @@ mod test {
         let name = "etest1";
 
         // must rename when root already exists
-        let result = mind.make_mind(Some(name));
+        let result = mind.make_mind(Some(name)).await;
 
         read_dir(&temp_path)?.for_each(|entry| {
             let entry = entry.unwrap();

@@ -44,7 +44,7 @@ export async function init(mind, name) {
     }
   }
 
-  await csvs.init({ fs, dir, bare: true });
+  await csvs.init({ fs, dir });
 
   await git.init({ fs, dir, defaultBranch: "main" });
 

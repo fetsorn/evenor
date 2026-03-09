@@ -100,7 +100,7 @@ describe("init", () => {
     expect(gitignore).toBe(".DS_Store");
 
     const dotcsvs = await fs.promises.readFile(
-      `${stub.dirpath}/.csvs.csv`,
+      `${stub.dirpath}/csvs/.csvs.csv`,
       "utf8",
     );
 
@@ -125,7 +125,7 @@ describe("init", () => {
 
     expect(gitignore).toBe(".DS_Store");
 
-    const dotcsvs = await fs.promises.readFile(`/root/.csvs.csv`, "utf8");
+    const dotcsvs = await fs.promises.readFile(`/root/csvs/.csvs.csv`, "utf8");
 
     expect(dotcsvs).toBe("csvs,0.0.2");
 
@@ -229,7 +229,7 @@ describe("commit", () => {
     expect(git.add).toHaveBeenCalledWith(
       expect.objectContaining({
         dir: stub.dirpath,
-        filepath: ".csvs.csv",
+        filepath: "csvs/.csvs.csv",
       }),
     );
 
@@ -240,7 +240,7 @@ describe("commit", () => {
           name: "name",
           email: "name@mail.com",
         },
-        message: ".csvs.csv added,.gitignore added",
+        message: "csvs/.csvs.csv added,.gitignore added",
       }),
     );
   });

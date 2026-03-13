@@ -104,7 +104,7 @@ describe("init", () => {
       "utf8",
     );
 
-    expect(dotcsvs).toBe("csvs,0.0.2");
+    expect(dotcsvs).toBe("csvs,0.0.2\n");
 
     expect(git.init).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -127,7 +127,7 @@ describe("init", () => {
 
     const dotcsvs = await fs.promises.readFile(`/root/csvs/.csvs.csv`, "utf8");
 
-    expect(dotcsvs).toBe("csvs,0.0.2");
+    expect(dotcsvs).toBe("csvs,0.0.2\n");
 
     expect(git.init).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -240,7 +240,7 @@ describe("commit", () => {
           name: "name",
           email: "name@mail.com",
         },
-        message: "csvs/.csvs.csv added,.gitignore added",
+        message: ".gitignore added,csvs/.csvs.csv added",
       }),
     );
   });

@@ -72,7 +72,7 @@ describe("store", () => {
       mind: { _: "mind", mind: "root", name: "minds" },
       schema: schemaRoot,
       record: undefined,
-      records: [],
+      recordSet: [],
     });
   });
 
@@ -104,7 +104,7 @@ describe("store", () => {
 
       expect(saveRecord).toHaveBeenCalledWith("root", "mind", [], {}, {});
 
-      expect(store.records).toStrictEqual(1);
+      expect(store.recordSet).toStrictEqual(1);
     });
   });
 
@@ -116,7 +116,7 @@ describe("store", () => {
 
       expect(wipeRecord).toHaveBeenCalledWith("root", "mind", [], {});
 
-      expect(store.records).toStrictEqual(1);
+      expect(store.recordSet).toStrictEqual(1);
     });
   });
 
@@ -124,7 +124,7 @@ describe("store", () => {
     test("", async () => {
       appendRecord({});
 
-      expect(store.records).toStrictEqual([{}]);
+      expect(store.recordSet).toStrictEqual([{}]);
     });
   });
 
@@ -177,7 +177,7 @@ describe("store", () => {
 
       await onSearch();
 
-      expect(store.records).toStrictEqual([]);
+      expect(store.recordSet).toStrictEqual([]);
 
       expect(startStream).toHaveBeenCalled();
 
@@ -239,7 +239,7 @@ describe("store", () => {
 
       const record2 = { _: "mind", mind: "id2" };
 
-      setStore("records", [record1, record2]);
+      setStore("recordSet", [record1, record2]);
 
       setStore(
         "searchParams",
@@ -254,7 +254,7 @@ describe("store", () => {
 
       const record2 = { _: "mind", mind: "id2" };
 
-      setStore("records", [record1, record2]);
+      setStore("recordSet", [record1, record2]);
 
       setStore(
         "searchParams",

@@ -28,7 +28,7 @@ describe("Overview", () => {
 
     const items = [item];
 
-    setStore("records", items);
+    setStore("recordSet", items);
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

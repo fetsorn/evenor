@@ -60,8 +60,6 @@ export function OverviewItemFull(props) {
           <button
             className={"edit"}
             onClick={() => {
-              console.log(content().innerText);
-
               onRecordEdit(["record"], JSON.parse(JSON.stringify(props.item)));
 
               setShowActions(false);

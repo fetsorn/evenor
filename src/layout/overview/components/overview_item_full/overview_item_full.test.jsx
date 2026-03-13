@@ -2,9 +2,9 @@ import { describe, test, expect } from "vitest";
 import { userEvent } from "@vitest/browser/context";
 import { render } from "@solidjs/testing-library";
 import { StoreContext, store } from "@/store/index.js";
-import { OverviewItem } from "./overview_item.jsx";
+import { OverviewItemFull } from "./overview_item_full.jsx";
 
-describe("OverviewItem", () => {
+describe("OverviewItemFull", () => {
   test("", async () => {
     const index = "";
 
@@ -19,7 +19,7 @@ describe("OverviewItem", () => {
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>
-        <OverviewItem item={record} index={index} />
+        <OverviewItemFull item={record} index={index} />
       </StoreContext.Provider>
     ));
 

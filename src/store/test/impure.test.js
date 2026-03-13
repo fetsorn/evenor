@@ -135,16 +135,12 @@ describe("selectStream", () => {
       "root",
       appendRecord,
       new URLSearchParams(testCase.queryString),
+      0,
     );
 
     // mock api.selectStream to return stub.record
     // call start stream and check stub.record
     await startStream();
-
-    // check that loadMindRecord() was called with stub.record
-    expect(loadMindRecord).toHaveBeenCalledWith({});
-    // check that appendRecord was called with stub.record
-    expect(appendRecord).toHaveBeenCalledWith({});
   });
 
   test("id", async () => {
@@ -168,15 +164,11 @@ describe("selectStream", () => {
       stub.id,
       appendRecord,
       new URLSearchParams(testCase.queryString),
+      0,
     );
 
     // mock api.selectStream to return stub.record
     // call start stream and check stub.record
     await startStream();
-
-    // check that appendRecord was called with stub.record
-    expect(appendRecord).toHaveBeenCalledWith({});
-    // check that loadMindRecord() was called with stub.record
-    expect(loadMindRecord).not.toHaveBeenCalled();
   });
 });

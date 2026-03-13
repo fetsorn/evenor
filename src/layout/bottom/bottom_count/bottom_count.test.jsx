@@ -17,7 +17,7 @@ describe("BottomCount", () => {
   });
 
   test("1", async () => {
-    setStore("records", [1]);
+    setStore("recordSet", [1]);
 
     const { getByText } = render(() => (
       <StoreContext.Provider value={{ store }}>

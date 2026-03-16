@@ -163,7 +163,7 @@ mod test {
 
         let file_path = temp_path.join("a.zip");
 
-        add_to_zip(mind_dir, &file_path)?;
+        add_to_zip(mind_dir, &file_path, mind.app.clone())?;
 
         let mut reader = File::open(&file_path)?;
 

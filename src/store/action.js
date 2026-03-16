@@ -19,9 +19,9 @@ export async function saveRecord(mind, base, records, recordOld, recordNew) {
 
   const keyOld = recordOld[base];
 
-  const recordsNew = records
-    .filter((r) => r[base] !== keyOld)
-    .concat([recordNew]);
+  const keyNew = recordNew[base];
+
+  const recordsNew = records.filter((r) => r[base] !== keyOld).concat([keyNew]);
 
   return recordsNew;
 }
@@ -41,7 +41,7 @@ export async function wipeRecord(mind, base, records, record) {
 
   const key = record[base];
 
-  const recordsNew = records.filter((r) => r[base] !== key);
+  const recordsNew = records.filter((r) => r !== key);
 
   return recordsNew;
 }

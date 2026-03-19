@@ -94,22 +94,25 @@ pub async fn select_stream<R: Runtime>(
         stream_map.stream_map.lock().await.insert(streamid.to_string(), s.boxed());
     }
 
-    let mut foo = stream_map.stream_map.lock().await;
+    let mut guard = stream_map.stream_map.lock().await;
 
-    let stream: &mut Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>> = foo.get_mut(streamid).unwrap();
+    let stream: &mut Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>> = guard.get_mut(streamid).unwrap();
 
     pin_mut!(stream); // needed for iteration
 
-    let a = stream.next().await;
+    let next = stream.next().await;
 
-    if let Some(entry) = a {
+    if let Some(entry) = next {
         let entry = entry?;
 
         // if started, return a window of results
         return Ok(SelectNext { done: false, value: Some(entry.into_value()) })
     }
 
-    // if stream ended, return undefined
+    // stream ended, remove it from the map to avoid memory leak
+    drop(guard);
+    stream_map.stream_map.lock().await.remove(streamid);
+
     Ok(SelectNext { done: true, value: None })
 }
 

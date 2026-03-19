@@ -103,6 +103,12 @@ impl From<csvs::error::Error> for Error {
     }
 }
 
+impl From<git2::Error> for Error {
+    fn from(ctx: git2::Error) -> Error {
+        Error { inner: ctx.into() }
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.inner.fmt(f)

@@ -1,15 +1,15 @@
 use crate::log;
 use crate::{Error, Mind, Result};
-use git2kit::{Origin, Repository, Resolve, Settings};
+use git2kit::{Origin, Repository, Resolve};
 use std::fs;
-use tauri::{ipc::Channel, AppHandle, Runtime};
+use tauri::{AppHandle, Runtime};
 
 #[tauri::command]
 pub async fn init<R>(app: AppHandle<R>, mind: &str, name: Option<&str>) -> Result<()>
 where
     R: Runtime,
 {
-    log(&app, "git init");
+    let _ = log(&app, "git init");
 
     let mind = Mind::new(app, mind);
 
@@ -43,7 +43,7 @@ pub async fn clone<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result<(
 where
     R: Runtime,
 {
-    crate::log(&app, "clone");
+    let _ = crate::log(&app, "clone");
 
     let mind = Mind::new(app, mind);
 
@@ -68,7 +68,7 @@ pub async fn set_origin<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Res
 where
     R: Runtime,
 {
-    crate::log(&app, "set origin");
+    let _ = crate::log(&app, "set origin");
 
     let mind = Mind::new(app, mind);
 
@@ -86,7 +86,7 @@ pub async fn get_origin<R>(app: AppHandle<R>, mind: &str) -> Result<Option<Origi
 where
     R: Runtime,
 {
-    crate::log(&app, "get origin");
+    let _ = crate::log(&app, "get origin");
 
     let mind = Mind::new(app, mind);
 
@@ -102,7 +102,7 @@ pub fn commit<R>(app: AppHandle<R>, mind: &str) -> Result<()>
 where
     R: Runtime,
 {
-    crate::log(&app, "commit");
+    let _ = crate::log(&app, "commit");
 
     let mind = Mind::new(app, mind);
 
@@ -110,7 +110,7 @@ where
 
     let repo = Repository::open(&mind_dir_path)?;
 
-    repo.commit();
+    let _ = repo.commit();
 
     Ok(())
 }
@@ -120,7 +120,7 @@ pub async fn resolve<R>(app: AppHandle<R>, mind: &str, remote: Origin) -> Result
 where
     R: Runtime,
 {
-    log(&app, "git init");
+    let _ = log(&app, "git init");
 
     let mind = Mind::new(app, mind);
 

@@ -1,4 +1,3 @@
-use backtrace::Backtrace;
 use crossterm::style::{Attribute, Color, ResetColor, SetAttribute, SetForegroundColor};
 use serde::{Serialize, Serializer};
 use std::io::Write;

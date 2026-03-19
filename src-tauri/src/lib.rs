@@ -1,4 +1,3 @@
-#![allow(warnings)]
 mod db;
 mod error;
 mod git;
@@ -41,20 +40,20 @@ pub fn run() {
     create_app(tauri::Builder::default().setup(|app| {
         let a = app.handle();
 
-        log(&a, "hello from Rust");
+        let _ = log(&a, "hello from Rust");
 
         let data_dir = app
             .path()
             .app_data_dir()
             .expect("App Data Directory is required to run this application.");
 
-        log(
+        let _ = log(
             &app.handle(),
             data_dir.clone().into_os_string().to_str().unwrap(),
         );
 
         if !data_dir.exists() {
-            log(&app.handle(), "does not exist");
+            let _ = log(&app.handle(), "does not exist");
 
             match std::fs::create_dir_all(&data_dir) {
                 Ok(_) => (),

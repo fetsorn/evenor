@@ -1,19 +1,19 @@
 use crate::{Mind, Result};
 use async_stream::try_stream;
 use csvs::{Dataset, Entry, IntoValue};
-use futures_core::stream::{BoxStream, Stream};
-use std::pin::{Pin, pin};
+use futures_core::stream::Stream;
+use std::pin::Pin;
 use tokio::sync::Mutex;
 use std::collections::HashMap;
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use serde_json::Value;
-use tauri::{ipc::Channel, AppHandle, Listener, Manager, Runtime, State};
+use tauri::{AppHandle, Manager, Runtime, State};
 
 #[tauri::command]
 pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
-    crate::log(&app, "select");
+    let _ = crate::log(&app, "select");
 
     let mind = Mind::new(app, mind);
 
@@ -66,7 +66,7 @@ pub async fn select_stream<R: Runtime>(
     streamid: &str,
     query: Value,
 ) -> Result<SelectNext> {
-    crate::log(&app, "select stream");
+    let _ = crate::log(&app, "select stream");
 
     // will set on first run, and return false on others
     app.manage(StreamMap {
@@ -84,7 +84,7 @@ pub async fn select_stream<R: Runtime>(
     let query: Entry = query.try_into()?;
 
     // if not started, start the pull stream
-    if (stream_map.stream_map.lock().await.get(streamid).is_none()) {
+    if stream_map.stream_map.lock().await.get(streamid).is_none()  {
         let readable_stream = try_stream! {
             yield query;
         };
@@ -126,14 +126,14 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 
     let record = record.try_into()?;
 
-    let a = dataset.update_record(vec![record]).await?;
+    let _a = dataset.update_record(vec![record]).await?;
 
     Ok(())
 }
 
 #[tauri::command]
 pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
-    crate::log(&app, "delete record");
+    let _ = crate::log(&app, "delete record");
 
     let record = record.try_into()?;
 

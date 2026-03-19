@@ -2,7 +2,7 @@ use crate::{Error, Mind, Result};
 use git2kit::Origin;
 use sha2::{Digest, Sha256};
 use std::path::PathBuf;
-use tauri::{ipc::Channel, AppHandle, Runtime};
+use tauri::{AppHandle, Runtime};
 use tauri_plugin_dialog::DialogExt;
 
 const LFS_DIR: &str = "lfs";
@@ -160,10 +160,10 @@ where
 /// Upload LFS blobs to remote — stub for now, requires HTTP LFS batch API.
 #[tauri::command]
 pub async fn upload_blobs_lfs<R>(
-    app: AppHandle<R>,
-    mind: &str,
-    remote: Origin,
-    files: &str,
+    _app: AppHandle<R>,
+    _mind: &str,
+    _remote: Origin,
+    _files: &str,
 ) -> Result<()>
 where
     R: Runtime,
@@ -179,7 +179,7 @@ where
 #[tauri::command]
 pub async fn download_asset<R>(
     app: AppHandle<R>,
-    mind: &str,
+    _mind: &str,
     content: Vec<u8>,
     filename: &str,
 ) -> Result<()>
@@ -204,10 +204,10 @@ where
 /// Get download URL from LFS pointer — stub, requires HTTP LFS batch API.
 #[tauri::command]
 pub async fn download_url_from_pointer<R>(
-    app: AppHandle<R>,
-    mind: &str,
-    remote: Origin,
-    pointer_info: &str,
+    _app: AppHandle<R>,
+    _mind: &str,
+    _remote: Origin,
+    _pointer_info: &str,
 ) -> Result<Option<String>>
 where
     R: Runtime,

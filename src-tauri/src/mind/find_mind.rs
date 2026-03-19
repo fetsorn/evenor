@@ -1,6 +1,6 @@
 use crate::{Mind, Result};
 use regex::Regex;
-use std::fs::{create_dir_all, read_dir};
+use std::fs::read_dir;
 use std::path::PathBuf;
 use tauri::Runtime;
 
@@ -36,7 +36,7 @@ pub fn find_mind<R: Runtime>(mind: &Mind<R>) -> Result<Option<PathBuf>> {
     let existing_mind: Option<PathBuf> = match existing_entry {
         None => None,
         Some(res) => match res {
-            Err(e) => None,
+            Err(_e) => None,
             Ok(p) => Some(p),
         },
     };
@@ -45,12 +45,12 @@ pub fn find_mind<R: Runtime>(mind: &Mind<R>) -> Result<Option<PathBuf>> {
 }
 
 mod test {
-    use crate::create_app;
-    use crate::{Mind, Result};
-    use std::fs::create_dir_all;
-    use tauri::test::{mock_builder, mock_context, noop_assets};
-    use tauri::Manager;
-    use temp_dir::TempDir;
+    
+    
+    
+    
+    
+    
 
     #[tokio::test]
     async fn find_mind_test() -> Result<()> {

@@ -7,11 +7,11 @@ use tauri::Runtime;
 pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result<()> {
     let mind_dir = mind.name_mind(name)?;
 
-    crate::log(&mind.app, "make");
+    let _ = crate::log(&mind.app, "make");
 
-    crate::log(&mind.app, &mind.mind);
+    let _ = crate::log(&mind.app, &mind.mind);
 
-    crate::log(
+    let _ = crate::log(
         &mind.app,
         mind_dir.clone().into_os_string().to_str().unwrap(),
     );
@@ -19,7 +19,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
     let existing_mind = mind.find_mind()?;
 
     if mind.mind == "root" {
-        if (existing_mind.is_some()) {
+        if existing_mind.is_some()  {
             return Err(Error::from_message("already exists"));
         }
 
@@ -28,11 +28,11 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
             Err(e) => crate::log(&mind.app, &e.to_string())?,
         };
 
-        crate::log(&mind.app, "created dir");
+        let _ = crate::log(&mind.app, "created dir");
 
         let repository = Repository::init(&mind_dir)?;
 
-        repository.commit();
+        let _ = repository.commit();
 
         let gitignore_path = mind_dir.join(".gitignore");
 
@@ -40,7 +40,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
         Dataset::create(&mind_dir, false).await?;
 
-        repository.commit();
+        let _ = repository.commit();
 
         return Ok(());
     }
@@ -58,7 +58,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
             let repository = Repository::init(&mind_dir)?;
 
-            repository.commit();
+            let _ = repository.commit();
 
             let gitignore_path = mind_dir.join(".gitignore");
 
@@ -66,7 +66,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
             Dataset::create(&mind_dir, false).await?;
 
-            repository.commit();
+            let _ = repository.commit();
         }
     }
 
@@ -74,11 +74,11 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 }
 
 mod test {
-    use crate::{create_app, Mind, Result};
-    use std::fs::read_dir;
-    use tauri::test::{mock_builder, mock_context, noop_assets};
-    use tauri::{Manager, State};
-    use temp_dir::TempDir;
+    
+    
+    
+    
+    
 
     #[tokio::test]
     async fn make_mind_root() -> Result<()> {

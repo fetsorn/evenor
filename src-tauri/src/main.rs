@@ -1,8 +1,7 @@
-#![allow(warnings)]
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
-use clap::{Parser, Subcommand};
-use tauri::{Manager, State};
+use clap::Parser;
+use tauri::Manager;
 
 /// A command-line utility for comma separated value store datasets
 #[derive(Parser)]

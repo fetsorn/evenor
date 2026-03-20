@@ -17,7 +17,7 @@ pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> 
 
     let mind = Mind::new(app, mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
     let dataset = Dataset::open(&mind_dir).await?;
 
@@ -38,7 +38,7 @@ pub async fn build_record<R: Runtime>(
 ) -> Result<Value> {
     let mind = Mind::new(app.clone(), mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
     let dataset = Dataset::open(&mind_dir).await?;
 
@@ -77,7 +77,7 @@ pub async fn select_stream<R: Runtime>(
 
     let mind = Mind::new(app.clone(), mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
     let dataset = Dataset::open(&mind_dir).await?;
 
@@ -120,7 +120,7 @@ pub async fn select_stream<R: Runtime>(
 pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
     let mind = Mind::new(app.clone(), mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
     let dataset = Dataset::open(&mind_dir).await?;
 
@@ -139,7 +139,7 @@ pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 
     let mind = Mind::new(app, mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
     let dataset = Dataset::open(&mind_dir).await?;
 

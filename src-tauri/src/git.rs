@@ -72,7 +72,7 @@ where
 
     let mind = Mind::new(app, mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| Error::from_message("mind not found"))?;
 
     let repository = Repository::open(&mind_dir)?;
 
@@ -90,7 +90,7 @@ where
 
     let mind = Mind::new(app, mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| Error::from_message("mind not found"))?;
 
     let repository = Repository::open(&mind_dir)?;
 
@@ -106,7 +106,7 @@ where
 
     let mind = Mind::new(app, mind);
 
-    let mind_dir_path = mind.find_mind()?.unwrap();
+    let mind_dir_path = mind.find_mind()?.ok_or_else(|| Error::from_message("mind not found"))?;
 
     let repo = Repository::open(&mind_dir_path)?;
 
@@ -124,7 +124,7 @@ where
 
     let mind = Mind::new(app, mind);
 
-    let mind_dir = mind.find_mind()?.unwrap();
+    let mind_dir = mind.find_mind()?.ok_or_else(|| Error::from_message("mind not found"))?;
 
     let repository = Repository::open(&mind_dir)?;
 

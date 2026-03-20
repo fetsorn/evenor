@@ -24,6 +24,7 @@ export const [store, setStore] = createStore({
   loading: false,
   searchBar: "", // remembers the last state of search bar
   mergeResult: false,
+  syncError: undefined,
   streamCounter: 0,
 });
 
@@ -175,11 +176,13 @@ export async function onRecordSave(recordOld, recordNew) {
     setStore(
       produce((state) => {
         state.mergeResult = syncResult.ok;
+        state.syncError = undefined;
       }),
     );
   } catch (e) {
-    // do nothing
-    console.log(e);
+    // sync is best-effort after local save — surface but don't fail
+    console.error("sync after save failed:", e);
+    setStore("syncError", e?.message ?? String(e));
   }
 
   const keyNew = recordNew[recordNew._];
@@ -218,11 +221,13 @@ export async function onRecordWipe(record) {
     setStore(
       produce((state) => {
         state.mergeResult = syncResult.ok;
+        state.syncError = undefined;
       }),
     );
   } catch (e) {
-    // do nothing
-    console.log(e);
+    // sync is best-effort after local delete — surface but don't fail
+    console.error("sync after delete failed:", e);
+    setStore("syncError", e?.message ?? String(e));
   }
 
   setStore(
@@ -406,11 +411,13 @@ export async function onMindChange(pathname, searchString) {
     setStore(
       produce((state) => {
         state.mergeResult = syncResult.ok;
+        state.syncError = undefined;
       }),
     );
   } catch (e) {
-    // do nothing
-    console.log(e);
+    // sync is best-effort on navigation — surface but don't fail
+    console.error("sync on mind change failed:", e);
+    setStore("syncError", e?.message ?? String(e));
   }
 
   setStore(
@@ -650,8 +657,10 @@ export async function onExport(mind) {
 
   try {
     await exportMind(mind);
+    setStore("syncError", undefined);
   } catch (e) {
-    console.log(e);
+    console.error("export failed:", e);
+    setStore("syncError", e?.message ?? String(e));
   }
 
   setStore("loading", false);

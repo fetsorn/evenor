@@ -72,12 +72,7 @@ export async function writeRemoteTags(mind, originUrls) {
     ? originUrl.origin_token[0]
     : originUrl.origin_token;
 
-  try {
-    await api.setOrigin(mind, { url, token });
-  } catch (e) {
-    console.error(e);
-    // do nothing
-  }
+  await api.setOrigin(mind, { url, token });
 }
 
 /**

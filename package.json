@@ -78,6 +78,5 @@
     "tempy": "^3.2.0",
     "uuid": "^13.0.0",
     "web-streams-polyfill": "^4.2.0",
-    "yarn": "1.22.22"
   }
 }

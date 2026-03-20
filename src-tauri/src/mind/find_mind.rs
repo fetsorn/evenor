@@ -1,5 +1,4 @@
 use crate::{Mind, Result};
-use regex::Regex;
 use std::fs::read_dir;
 use std::path::PathBuf;
 use tauri::Runtime;
@@ -30,7 +29,7 @@ pub fn find_mind<R: Runtime>(mind: &Mind<R>) -> Result<Option<PathBuf>> {
                 Some(s) => s,
             };
 
-            Regex::new(&format!("^{}", mind.mind)).unwrap().is_match(s)
+            s.starts_with(&mind.mind)
         });
 
     let existing_mind: Option<PathBuf> = match existing_entry {

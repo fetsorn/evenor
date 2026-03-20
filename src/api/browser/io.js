@@ -9,7 +9,7 @@ import { fs } from "@/api/browser/lightningfs.js";
  */
 export async function findMind(mind) {
   const existingMind = (await fs.promises.readdir("/")).find((m) =>
-    new RegExp(`^${mind}`).test(m),
+    m.startsWith(mind),
   );
 
   if (existingMind === undefined) {

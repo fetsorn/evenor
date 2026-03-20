@@ -110,7 +110,7 @@ where
 
     let repo = Repository::open(&mind_dir_path)?;
 
-    let _ = repo.commit();
+    repo.commit()?;
 
     Ok(())
 }

@@ -204,5 +204,12 @@ export async function pickFile() {
     input.onchange = async (e) => {
       res(e.target.files);
     };
+
+    // resolve with empty list if user cancels the file picker
+    input.addEventListener("cancel", () => {
+      res([]);
+    });
+
+    input.click();
   });
 }

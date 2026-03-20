@@ -57,7 +57,7 @@ pub fn add_to_zip<R: Runtime>(mind_dir_path: PathBuf, file_path: &Path, app: App
 }
 
 pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
-    let mind_dir = mind.find_mind()?.expect("no directory");
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
     // must assign a variable to create the directory
     // must assign inside the stream scope to keep the directory
@@ -99,8 +99,10 @@ pub async fn zip<R: Runtime>(mind: &Mind<R>) -> Result<()> {
 
             // try to create the file on desktop
             // file already exists on mobile
+            // create the file on desktop; on mobile it already exists
             if let Ok(a) = p.clone().into_path() {
-                _ = std::fs::File::create_new(a);
+                let _ = std::fs::File::create_new(&a);
+                // create_new fails if file exists — that's expected on mobile
             };
 
             let mut opts = OpenOptions::new();

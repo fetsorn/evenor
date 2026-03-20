@@ -32,7 +32,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
         let repository = Repository::init(&mind_dir)?;
 
-        let _ = repository.commit();
+        repository.commit()?;
 
         let gitignore_path = mind_dir.join(".gitignore");
 
@@ -40,17 +40,17 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
         Dataset::create(&mind_dir, false).await?;
 
-        let _ = repository.commit();
+        repository.commit()?;
 
         return Ok(());
     }
 
     match existing_mind {
         Some(s) => {
-            let foo = s;
+            let existing_dir = s;
 
-            if foo != mind_dir {
-                rename(foo, &mind_dir)?;
+            if existing_dir != mind_dir {
+                rename(existing_dir, &mind_dir)?;
             }
         }
         None => {
@@ -58,7 +58,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
             let repository = Repository::init(&mind_dir)?;
 
-            let _ = repository.commit();
+            repository.commit()?;
 
             let gitignore_path = mind_dir.join(".gitignore");
 
@@ -66,7 +66,7 @@ pub async fn make_mind<R: Runtime>(mind: &Mind<R>, name: Option<&str>) -> Result
 
             Dataset::create(&mind_dir, false).await?;
 
-            let _ = repository.commit();
+            repository.commit()?;
         }
     }
 

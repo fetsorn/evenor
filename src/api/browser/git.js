@@ -170,8 +170,9 @@ export async function clone(mind, remote) {
 
     // remove existing directory
     await rimraf(dir);
-  } catch {
-    // do nothing
+  } catch (e) {
+    // directory may not exist yet — safe to ignore
+    console.warn("rimraf before clone:", e);
   }
 
   const options = {
@@ -195,7 +196,7 @@ export async function clone(mind, remote) {
       // if clone failed, remove directory
       await rimraf(dir);
     } catch (e1) {
-      // do nothing
+      console.error("cleanup after failed clone:", e1);
     }
     throw e;
   }
@@ -210,8 +211,8 @@ export async function clone(mind, remote) {
         value: remote.token,
       });
     }
-  } catch {
-    // do nothing
+  } catch (e) {
+    console.error("failed to save auth token to git config:", e);
   }
 }
 

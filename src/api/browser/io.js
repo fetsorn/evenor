@@ -8,8 +8,9 @@ import { fs } from "@/api/browser/lightningfs.js";
  * @returns {String}
  */
 export async function findMind(mind) {
-  const existingMind = (await fs.promises.readdir("/")).find((m) =>
-    m.startsWith(mind),
+  // SEC-07: exact match or match followed by '-' to prevent cross-mind access
+  const existingMind = (await fs.promises.readdir("/")).find(
+    (m) => m === mind || m.startsWith(mind + "-"),
   );
 
   if (existingMind === undefined) {

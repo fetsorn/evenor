@@ -7,6 +7,30 @@ use tauri_plugin_dialog::DialogExt;
 
 const LFS_DIR: &str = "lfs";
 
+/// SEC-04/05: Validate that a filename is a safe leaf name (no path traversal).
+fn sanitize_filename(filename: &str) -> Result<&str> {
+    if filename.is_empty()
+        || filename.contains('/')
+        || filename.contains('\\')
+        || filename.contains("..")
+        || filename.contains('\0')
+    {
+        return Err(Error::from_message(format!(
+            "invalid filename: {}",
+            filename
+        )));
+    }
+    // Extra check: ensure Path sees it as a leaf
+    let as_path = std::path::Path::new(filename);
+    if as_path.file_name() != Some(std::ffi::OsStr::new(filename)) {
+        return Err(Error::from_message(format!(
+            "invalid filename: {}",
+            filename
+        )));
+    }
+    Ok(filename)
+}
+
 /// Create LFS directory structure and .gitattributes for a mind.
 #[tauri::command]
 pub fn create_lfs<R>(app: AppHandle<R>, mind: &str) -> Result<()>
@@ -48,6 +72,7 @@ pub async fn fetch_asset<R>(app: AppHandle<R>, mind: &str, filename: &str) -> Re
 where
     R: Runtime,
 {
+    let filename = sanitize_filename(filename)?;
     let mind_obj = Mind::new(app, mind);
     let mind_dir = mind_obj.find_mind()?.ok_or_else(|| Error::from_message("no mind found"))?;
 
@@ -78,6 +103,7 @@ pub async fn put_asset<R>(app: AppHandle<R>, mind: &str, filename: &str, buffer:
 where
     R: Runtime,
 {
+    let filename = sanitize_filename(filename)?;
     let mind_obj = Mind::new(app, mind);
     let mind_dir = mind_obj.find_mind()?.ok_or_else(|| Error::from_message("no mind found"))?;
 
@@ -224,6 +250,15 @@ pub async fn set_asset_path<R>(app: AppHandle<R>, mind: &str, asset_path: &str) 
 where
     R: Runtime,
 {
+    // SEC-06: reject absolute paths and path traversal
+    let p = std::path::Path::new(asset_path);
+    if p.is_absolute() || asset_path.contains("..") || asset_path.contains('\0') {
+        return Err(Error::from_message(format!(
+            "invalid asset path: {}",
+            asset_path
+        )));
+    }
+
     let mind_obj = Mind::new(app, mind);
     let mind_dir = mind_obj.find_mind()?.ok_or_else(|| Error::from_message("no mind found"))?;
 

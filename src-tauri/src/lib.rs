@@ -21,7 +21,14 @@ pub fn log<R: tauri::Runtime>(app: &tauri::AppHandle<R>, message: &str) -> Resul
     if !cfg!(test) {
         let webview = app.get_webview_window("main").unwrap();
 
-        let code = format!("console.log('Message from Rust: {message}')");
+        // SEC-01: escape message to prevent JS injection via eval()
+        let escaped = message
+            .replace('\\', "\\\\")
+            .replace('\'', "\\'")
+            .replace('\n', "\\n")
+            .replace('\r', "\\r");
+
+        let code = format!("console.log('Message from Rust: {escaped}')");
 
         webview.eval(code)?;
     }

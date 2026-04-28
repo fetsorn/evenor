@@ -29,7 +29,8 @@ export function createWriteStream(filepath) {
 }
 
 export async function mkdtemp(filepath) {
-  const randomString = Math.floor(Math.random() * 10000).toString();
+  // SEC-14: use crypto for unpredictable temp dir names
+  const randomString = crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
 
   const tmpdir = filepath + randomString;
 
@@ -43,7 +44,8 @@ export async function mkdtemp(filepath) {
 }
 
 export function mkdtempSync(filepath) {
-  const randomString = Math.floor(Math.random() * 10000).toString();
+  // SEC-14: use crypto for unpredictable temp dir names
+  const randomString = crypto.getRandomValues(new Uint32Array(1))[0].toString(36);
 
   const tmpdir = filepath + randomString;
 

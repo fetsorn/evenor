@@ -63,7 +63,18 @@ export async function changeMind(pathname, searchString) {
 
   const token = searchParams.get("-") ?? "";
 
-  const { mind: mindRecord, schema } = searchParams.has("~")
+  // SEC-12: validate clone URL is http(s) before auto-cloning
+  let shouldClone = false;
+  if (searchParams.has("~") && remoteUrl) {
+    try {
+      const parsed = new URL(remoteUrl);
+      shouldClone = parsed.protocol === "http:" || parsed.protocol === "https:";
+    } catch {
+      // invalid URL — don't clone
+    }
+  }
+
+  const { mind: mindRecord, schema } = shouldClone
     ? await clone(remoteUrl, token)
     : await find(mind, undefined);
 

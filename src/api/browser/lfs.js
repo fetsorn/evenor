@@ -181,16 +181,8 @@ export async function fetchAsset(mind, filename) {
     if (assetEndpoint) {
       const assetPath = `${assetEndpoint}/${filename}`;
 
-      // if URL, try to fetch
-      try {
-        new URL(assetPath);
-
-        content = await fetch(assetPath);
-
-        return content;
-      } catch {
-        // do nothing
-      }
+      // SEC-09: skip URL-based fetch to prevent SSRF from malicious git config
+      // Only allow filesystem reads for asset paths
 
       // otherwise try to read from fs
       content = await fs.promises.readFile(assetPath);

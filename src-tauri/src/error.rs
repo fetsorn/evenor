@@ -104,20 +104,16 @@ impl Serialize for Error {
     where
         S: Serializer,
     {
+        // SEC-18: only expose top-level message to frontend, not full error chain
         #[derive(Serialize)]
         struct JsonError {
             message: String,
-            source: Option<Box<JsonError>>,
         }
 
-        fn to_json_error(err: &dyn std::error::Error) -> JsonError {
-            JsonError {
-                message: err.to_string(),
-                source: err.source().map(to_json_error).map(Box::new),
-            }
+        JsonError {
+            message: self.to_string(),
         }
-
-        to_json_error(self).serialize(serializer)
+        .serialize(serializer)
     }
 }
 

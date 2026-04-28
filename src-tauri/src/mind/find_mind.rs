@@ -29,7 +29,8 @@ pub fn find_mind<R: Runtime>(mind: &Mind<R>) -> Result<Option<PathBuf>> {
                 Some(s) => s,
             };
 
-            s.starts_with(&mind.mind)
+            // SEC-07: exact match or match followed by '-' to prevent cross-mind access
+            s == mind.mind || s.starts_with(&format!("{}-", &mind.mind))
         });
 
     let existing_mind: Option<PathBuf> = match existing_entry {

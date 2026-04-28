@@ -361,9 +361,12 @@ export async function onSearch() {
   const scroll = new URLSearchParams(store.searchParams).get(".scroll");
 
   if (scroll !== null) {
+    // SEC-16: null-check before calling scrollIntoView
     const element = document.getElementById(scroll);
 
-    element.scrollIntoView();
+    if (element) {
+      element.scrollIntoView();
+    }
   }
 
   setStore("loading", false);

@@ -1,12 +1,9 @@
 mod db;
 mod error;
-mod git;
-mod lfs;
-mod mind;
-mod zip;
+mod fs;
+mod io;
 
 pub use error::{Error, Result};
-pub use mind::Mind;
 use tauri::Manager;
 
 // TODO no webview found after 2.7->2.9
@@ -92,23 +89,24 @@ pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R
             db::update_record,
             db::delete_record,
             db::build_record,
-            git::init,
-            git::commit,
-            git::clone,
-            git::resolve,
-            git::rename,
-            git::set_origin,
-            git::get_origin,
-            lfs::create_lfs,
-            lfs::fetch_asset,
-            lfs::download_asset,
-            lfs::put_asset,
-            lfs::upload_file,
-            lfs::upload_blobs_lfs,
-            lfs::set_asset_path,
-            lfs::get_asset_path,
-            lfs::download_url_from_pointer,
-            zip::zip,
+            db::csvsinit,
+            io::gitinit,
+            io::commit,
+            io::clone,
+            io::resolve,
+            io::rename,
+            io::set_origin,
+            io::get_origin,
+            io::create_lfs,
+            io::fetch_asset,
+            io::download_asset,
+            io::put_asset,
+            io::upload_file,
+            io::upload_blobs_lfs,
+            io::set_asset_path,
+            io::get_asset_path,
+            io::download_url_from_pointer,
+            io::zip,
         ])
         .build(tauri::generate_context!())
         .expect("error while running the application")

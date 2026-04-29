@@ -1,5 +1,5 @@
 use serde::{Serialize, Serializer};
-use std::{fmt, io};
+use std::fmt;
 
 pub type Result<T> = std::result::Result<T, Error>;
 
@@ -33,26 +33,8 @@ impl Error {
     }
 }
 
-impl From<io::Error> for Error {
-    fn from(err: io::Error) -> Error {
-        Error { inner: err.into() }
-    }
-}
-
-impl From<fmt::Error> for Error {
-    fn from(err: fmt::Error) -> Error {
-        Error { inner: err.into() }
-    }
-}
-
 impl From<Context> for Error {
     fn from(ctx: Context) -> Error {
-        Error { inner: ctx.into() }
-    }
-}
-
-impl From<serde_json::Error> for Error {
-    fn from(ctx: serde_json::Error) -> Error {
         Error { inner: ctx.into() }
     }
 }
@@ -63,26 +45,14 @@ impl From<tauri::Error> for Error {
     }
 }
 
-impl From<zip::result::ZipError> for Error {
-    fn from(ctx: zip::result::ZipError) -> Error {
-        Error { inner: ctx.into() }
-    }
-}
-
-impl From<git2kit::Error> for Error {
-    fn from(ctx: git2kit::Error) -> Error {
-        Error { inner: ctx.into() }
-    }
-}
-
 impl From<csvs::error::Error> for Error {
     fn from(ctx: csvs::error::Error) -> Error {
         Error { inner: ctx.into() }
     }
 }
 
-impl From<git2::Error> for Error {
-    fn from(ctx: git2::Error) -> Error {
+impl From<mindzoo::Error> for Error {
+    fn from(ctx: mindzoo::Error) -> Error {
         Error { inner: ctx.into() }
     }
 }

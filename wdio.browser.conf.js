@@ -1,15 +1,10 @@
-import viteConfig from "./vite.config.js";
-
+import fs from "node:fs";
 let gitServer;
+let staticServer;
 
 export const config = {
-  specs: [["./src/test/browser/*.test.jsx"]],
-  runner: [
-    "browser",
-    {
-      viteConfig: viteConfig,
-    },
-  ],
+  specs: [["./test/browser/clone.test.jsx"]],
+  runner: ["browser", {}],
   capabilities: [
     {
       browserName: "firefox",
@@ -38,13 +33,12 @@ export const config = {
   beforeSession: async () => {
     const http = await import("http");
     const path = await import("path");
-    const { default: factory } = await import(
-      "git-http-mock-server/middleware.js"
-    );
+    const { default: factory } =
+      await import("git-http-mock-server/middleware.js");
     const { default: cors } = await import("git-http-mock-server/cors.js");
 
     var config = {
-      root: path.resolve(import.meta.dirname, "src/test/fixtures/bare"),
+      root: path.resolve(import.meta.dirname, "test/fixtures/bare"),
       glob: "*",
       route: "/",
     };
@@ -52,8 +46,38 @@ export const config = {
     gitServer = http.createServer(cors(factory(config)));
 
     gitServer.listen(8174);
+
+    // static server for evenor's public/
+    const publicDir = path.resolve(import.meta.dirname, "public");
+    staticServer = http.createServer((req, res) => {
+      const filePath = path.join(
+        publicDir,
+        req.url === "/" ? "index.html" : req.url,
+      );
+      const ext = path.extname(filePath);
+      const mimeTypes = {
+        ".html": "text/html",
+        ".js": "application/javascript",
+        ".css": "text/css",
+        ".png": "image/png",
+      };
+      fs.promises
+        .readFile(filePath)
+        .then((data) => {
+          res.writeHead(200, {
+            "Content-Type": mimeTypes[ext] || "application/octet-stream",
+          });
+          res.end(data);
+        })
+        .catch(() => {
+          res.writeHead(404);
+          res.end("Not found");
+        });
+    });
+    staticServer.listen(8175);
   },
   afterSession: () => {
     gitServer.close();
+    staticServer.close();
   },
 };

@@ -1,4 +1,6 @@
-use crate::{Mind, Result};
+use mindzoo::mind::Mind;
+use crate::Result;
+use crate::fs::get_app_data_dir;
 use async_stream::try_stream;
 use csvs::{Dataset, Entry, IntoValue};
 use futures_core::stream::Stream;
@@ -12,10 +14,25 @@ use serde_json::Value;
 use tauri::{AppHandle, Manager, Runtime, State};
 
 #[tauri::command]
-pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
-    let _ = crate::log(&app, "select");
+pub async fn csvsinit<R: Runtime>(app: AppHandle<R>, mind: &str) -> Result<()> {
+    let path = get_app_data_dir(app)?;
 
-    let mind = Mind::new(app, mind);
+    let mind = Mind::new(path, mind);
+
+    let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
+
+    Dataset::create(&mind_dir, false).await?;
+
+    Ok(())
+}
+
+#[tauri::command]
+pub async fn select<R: Runtime>(app: AppHandle<R>, mind: &str, query: Value) -> Result<Vec<Value>> {
+    //let _ = crate::log(&app, "select");
+
+    let path = get_app_data_dir(app)?;
+
+    let mind = Mind::new(path, mind);
 
     let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
@@ -36,7 +53,9 @@ pub async fn build_record<R: Runtime>(
     mind: &str,
     query: Value,
 ) -> Result<Value> {
-    let mind = Mind::new(app.clone(), mind);
+    let path = get_app_data_dir(app)?;
+
+    let mind = Mind::new(path, mind);
 
     let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
@@ -66,7 +85,8 @@ pub async fn select_stream<R: Runtime>(
     streamid: &str,
     query: Value,
 ) -> Result<SelectNext> {
-    let _ = crate::log(&app, "select stream");
+    //let _ = crate::log(&app, "select stream");
+    let path = get_app_data_dir(app.clone())?;
 
     // will set on first run, and return false on others
     app.manage(StreamMap {
@@ -75,7 +95,7 @@ pub async fn select_stream<R: Runtime>(
 
     let stream_map: State<'_, StreamMap> = app.state();
 
-    let mind = Mind::new(app.clone(), mind);
+    let mind = Mind::new(path, mind);
 
     let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
@@ -118,7 +138,9 @@ pub async fn select_stream<R: Runtime>(
 
 #[tauri::command]
 pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
-    let mind = Mind::new(app.clone(), mind);
+    let path = get_app_data_dir(app)?;
+
+    let mind = Mind::new(path, mind);
 
     let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 
@@ -133,11 +155,12 @@ pub async fn update_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Va
 
 #[tauri::command]
 pub async fn delete_record<R: Runtime>(app: AppHandle<R>, mind: &str, record: Value) -> Result<()> {
-    let _ = crate::log(&app, "delete record");
+    //let _ = crate::log(&app, "delete record");
+    let path = get_app_data_dir(app)?;
 
     let record = record.try_into()?;
 
-    let mind = Mind::new(app, mind);
+    let mind = Mind::new(path, mind);
 
     let mind_dir = mind.find_mind()?.ok_or_else(|| crate::Error::from_message("mind not found"))?;
 

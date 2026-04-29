@@ -10,7 +10,7 @@ export const config = {
   runner: "local",
   hostname: "localhost",
   port: 4444,
-  specs: ["./src/test/tauri/*.test.js"],
+  specs: ["./test/tauri/*.test.js"],
   maxInstances: 1,
   capabilities: [
     {
@@ -48,7 +48,7 @@ export const config = {
     const { default: cors } = await import("git-http-mock-server/cors.js");
 
     var config = {
-      root: path.resolve(import.meta.dirname, "src/test/fixtures/bare"),
+      root: path.resolve(import.meta.dirname, "test/fixtures/bare"),
       glob: "*",
       route: "/",
     };

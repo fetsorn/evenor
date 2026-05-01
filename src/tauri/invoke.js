@@ -29,8 +29,24 @@ export async function buildRecord(mind, query) {
   return invoke("build_record", { mind, query });
 }
 
-export async function selectStream(mind, streamid, query) {
-  return invoke("select_stream", { mind, streamid, query });
+export async function selectStream(mind, query) {
+  // TODO return a readable
+  return new ReadableStream({
+    async pull(controller) {
+      const { done, value } = await invoke("select_stream", {
+        mind,
+        query,
+      });
+
+      if (done) {
+        controller.close();
+
+        return;
+      }
+
+      controller.enqueue(value);
+    },
+  });
 }
 
 export async function updateRecord(mind, record) {

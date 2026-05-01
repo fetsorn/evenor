@@ -6,7 +6,6 @@ use csvs::{Dataset, Entry, IntoValue};
 use futures_core::stream::Stream;
 use std::pin::Pin;
 use tokio::sync::Mutex;
-use std::collections::HashMap;
 use futures_util::pin_mut;
 use futures_util::stream::StreamExt;
 use serde::Serialize;
@@ -74,26 +73,25 @@ pub struct SelectNext {
     pub value: Option<Value>,
 }
 
-pub struct StreamMap {
-    pub stream_map: Mutex<HashMap<String, Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>>>>
+pub struct StreamStored {
+    pub stream: Mutex<Option<Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>>>>
 }
 
 #[tauri::command]
 pub async fn select_stream<R: Runtime>(
     app: AppHandle<R>,
     mind: &str,
-    streamid: &str,
     query: Value,
 ) -> Result<SelectNext> {
     //let _ = crate::log(&app, "select stream");
     let path = get_app_data_dir(app.clone())?;
 
     // will set on first run, and return false on others
-    app.manage(StreamMap {
-        stream_map: Default::default(),
+    app.manage(StreamStored {
+        stream: Default::default(),
     });
 
-    let stream_map: State<'_, StreamMap> = app.state();
+    let stream_stored: State<'_, StreamStored> = app.state();
 
     let mind = Mind::new(path, mind);
 
@@ -104,19 +102,19 @@ pub async fn select_stream<R: Runtime>(
     let query: Entry = query.try_into()?;
 
     // if not started, start the pull stream
-    if stream_map.stream_map.lock().await.get(streamid).is_none()  {
+    if stream_stored.stream.lock().await.is_none()  {
         let readable_stream = try_stream! {
             yield query;
         };
 
         let s = dataset.select_record_stream(readable_stream, true);
 
-        stream_map.stream_map.lock().await.insert(streamid.to_string(), s.boxed());
+        *stream_stored.stream.lock().await = Some(s.boxed());
     }
 
-    let mut guard = stream_map.stream_map.lock().await;
+    let mut guard = stream_stored.stream.lock().await;
 
-    let stream: &mut Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>> = guard.get_mut(streamid).unwrap();
+    let stream: &mut Pin<Box<dyn Stream<Item = csvs::Result<Entry>> + Send>> = guard.as_mut().unwrap();
 
     pin_mut!(stream); // needed for iteration
 
@@ -131,7 +129,8 @@ pub async fn select_stream<R: Runtime>(
 
     // stream ended, remove it from the map to avoid memory leak
     drop(guard);
-    stream_map.stream_map.lock().await.remove(streamid);
+
+    *stream_stored.stream.lock().await = None;
 
     Ok(SelectNext { done: true, value: None })
 }

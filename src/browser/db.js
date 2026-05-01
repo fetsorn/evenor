@@ -25,34 +25,15 @@ export function initDB(fs, io) {
     return csvs.buildRecord({ fs, dir, query: [record] });
   }
 
-  let selectMap = {};
-
-  async function selectStream(mind, streamid, query) {
+  async function selectStream(mind, record) {
     const dir = await io.findMind(mind);
 
-    // if not started, start the pull stream
-    if (selectMap[streamid] === undefined) {
-      const stream = await csvs.selectRecordStreamPull({
-        fs,
-        dir,
-        query,
-        light: true,
-      });
-
-      selectMap[streamid] = stream[Symbol.asyncIterator]();
-    }
-
-    // if started, return a window of results
-    const { done, value } = await selectMap[streamid].next();
-
-    // if stream ended, return done: true
-    if (done) {
-      selectMap[streamid] = undefined;
-
-      return { done: true };
-    }
-
-    return { done, value };
+    return csvs.selectRecordStreamPull({
+      fs,
+      dir,
+      query: record,
+      light: true,
+    });
   }
 
   async function updateRecord(mind, record) {

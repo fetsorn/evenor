@@ -18,7 +18,7 @@ export function testResolveSave() {
     // clone
     await clone("http://localhost:8174/test-mind1.git");
 
-    // TODO schema doesn't change from root for some reason
+    await open();
 
     await createEvent();
     // NOTE: git-http-mock-server calls fixturez which calls tempy

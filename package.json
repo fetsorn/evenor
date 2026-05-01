@@ -37,7 +37,7 @@
   },
   "dependencies": {
     "@fetsorn/csvs-js": "^0.28.1",
-    "@fetsorn/mindbook": "^0.0.6",
+    "@fetsorn/mindbook": "^0.0.7",
     "@fetsorn/mindzoo": "^0.0.2",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-log": "^2",

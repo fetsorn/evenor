@@ -1,12 +1,28 @@
-import { setValue } from "./actions.js";
+import { click, setValue } from "./actions.js";
+import { open } from "./open.js";
 import { search } from "./search.js";
+import { draft, save } from "./create.js";
 
 export async function clone(url) {
-  await setValue(await $("aria/query"), `http://localhost:1420/#?~=${url}`);
+  await draft();
 
-  await search();
+  // input name in profile
+  await setValue(await $("aria/name -"), "foobar");
 
-  await (await $("aria/back")).waitForExist({ timeout: 5000 });
+  await (await $("aria/add")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/add"));
+
+  await (await $("button=origin_url")).waitForExist({ timeout: 5000 });
+
+  await click(await $("button=origin_url"));
+
+  await setValue(
+    await $("aria/origin_url -"),
+    `http://localhost:1420/#?~=${url}`,
+  );
+
+  await save();
 }
 
 export function testClone() {
@@ -16,7 +32,9 @@ export function testClone() {
     // search string and ignores url
     await clone("http://localhost:8174/test-mind1.git");
 
-    await (await $("aria/back")).waitForExist({ timeout: 5000 });
+    await open();
+
+    await (await $("aria/Foobar")).waitForExist({ timeout: 5000 });
 
     await search();
 

@@ -1,5 +1,5 @@
 import { setValue } from "./actions.js";
-import { open, back } from "./open.js";
+import { open } from "./open.js";
 import { clone } from "./clone.js";
 import { edit } from "./edit.js";
 import { createEvent, save } from "./create.js";
@@ -18,8 +18,6 @@ export function testResolveSave() {
     // clone
     await clone("http://localhost:8174/test-mind1.git");
 
-    await (await $("aria/back")).waitForExist({ timeout: 5000 });
-
     // TODO schema doesn't change from root for some reason
 
     await createEvent();
@@ -31,8 +29,6 @@ export function testResolveSave() {
 export function testResolveOpen() {
   it("should resolve on open", async () => {
     await clone("http://localhost:8174/test-mind1.git"); // has 7
-
-    await back();
 
     await setRemote("http://localhost:8174/test-mind2.git"); // has 6
 

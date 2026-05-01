@@ -9,12 +9,6 @@ async function spoiler() {
   await (await $("aria/open")).waitForExist({ timeout: 5000 });
 
   await click(await $("aria/open"));
-
-  try {
-    await (await $("aria/back")).waitForExist({ timeout: 5000 });
-  } catch {
-    await spoiler();
-  }
 }
 
 export async function open() {
@@ -23,7 +17,7 @@ export async function open() {
 
 export async function back() {
   // click button "back"
-  await click(await $("aria/back"));
+  await browser.back();
 }
 
 export function testOpen() {

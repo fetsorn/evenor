@@ -3,7 +3,7 @@ let gitServer;
 let staticServer;
 
 export const config = {
-  specs: [["./test/browser/clone.test.jsx"]],
+  specs: [["./test/browser/*.test.jsx"]],
   runner: ["browser", {}],
   capabilities: [
     {

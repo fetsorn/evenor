@@ -1,0 +1,124 @@
+{
+  "mind": {
+    "trunks": [],
+    "leaves": [
+      "name",
+      "category",
+      "branch",
+      "local_tag",
+      "origin_url",
+      "sync_tag"
+    ],
+    "description": {
+      "en": "mind",
+      "ru": "Проект"
+    }
+  },
+  "name": {
+    "trunks": ["mind"],
+    "leaves": [],
+    "description": {
+      "en": "Name of the mind",
+      "ru": "Название проекта"
+    }
+  },
+  "category": {
+    "trunks": ["mind"],
+    "leaves": [],
+    "description": {
+      "en": "Category of the mind",
+      "ru": "Категория проекта"
+    }
+  },
+  "branch": {
+    "trunks": ["mind"],
+    "leaves": ["trunk", "task", "cognate", "description_en", "description_ru"],
+    "description": {
+      "en": "Branch name",
+      "ru": "Название ветки"
+    }
+  },
+  "trunk": {
+    "trunks": ["branch"],
+    "leaves": [],
+    "description": {
+      "en": "Branch trunk",
+      "ru": "Ствол ветки"
+    }
+  },
+  "task": {
+    "trunks": ["branch"],
+    "leaves": [],
+    "description": {
+      "en": "Branch task",
+      "ru": "Предназначение ветки"
+    }
+  },
+  "cognate": {
+    "trunks": ["branch"],
+    "leaves": [],
+    "description": {
+      "en": "Branch cognate",
+      "ru": "Родственная ветка"
+    }
+  },
+  "description_en": {
+    "trunks": ["branch"],
+    "leaves": [],
+    "description": {
+      "en": "Branch description EN",
+      "ru": "Описание ветки на английском"
+    }
+  },
+  "description_ru": {
+    "trunks": ["branch"],
+    "leaves": [],
+    "description": {
+      "en": "Branch description RU",
+      "ru": "Описание ветки на русском"
+    }
+  },
+  "local_tag": {
+    "trunks": ["mind"],
+    "leaves": [],
+    "task": "directory",
+    "description": {
+      "en": "Path to asset archive",
+      "ru": "Путь к локальному архиву"
+    }
+  },
+  "origin_url": {
+    "trunks": ["mind"],
+    "leaves": ["origin_token"],
+    "task": "remote",
+    "description": {
+      "en": "URL to remote git repository",
+      "ru": "Путь к удалённому git репозиторию"
+    }
+  },
+  "origin_token": {
+    "trunks": ["origin_url"],
+    "leaves": [],
+    "description": {
+      "en": "Authentication token",
+      "ru": "Токен для синхронизации"
+    }
+  },
+  "sync_tag": {
+    "trunks": ["mind"],
+    "leaves": ["sync_tag_search"],
+    "task": "sync",
+    "description": {
+      "en": "Name of database to sync",
+      "ru": "Название базы данных для синхронизации"
+    }
+  },
+  "sync_tag_search": {
+    "trunks": ["sync_tag"],
+    "leaves": [],
+    "description": {
+      "en": "Search query",
+      "ru": "Поисковый запрос"
+    }
+  }
+}

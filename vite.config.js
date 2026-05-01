@@ -17,6 +17,20 @@ export default defineConfig({
         sourcemap: "inline",
         minify: false,
         terserOptions: { compress: false, mangle: false },
+        rollupOptions: {
+            output: {
+                inlineDynamicImports: true,
+            },
+        },
+    },
+    resolve: {
+        alias: {
+            "@": resolve(__dirname, "./src/"),
+            path: "path-browserify",
+        },
+    },
+    define: {
+        "process.env.NODE_ENV": '"production"',
     },
     test: {
         include: ["./src/test/*.test.js"],

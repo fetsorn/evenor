@@ -3,7 +3,7 @@ import csvs from "@fetsorn/csvs-js";
 import mindzoo from "@fetsorn/mindzoo";
 import mindbook from "@fetsorn/mindbook";
 import LightningFS from "@isomorphic-git/lightning-fs";
-import startEvenor from "../../src/index.js";
+import startEvenor from "../../dist/evenor.js";
 
 export async function setup() {
     window.Buffer = window.Buffer || Buffer;

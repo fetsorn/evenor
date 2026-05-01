@@ -452,10 +452,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.7":
-  version "0.0.7"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.7.tgz#9a8ec385b1d7c8602c4bfda4320369708116a450"
-  integrity sha512-QRFD6bep4RCtTA17lFmSxjvdbLxPf0f0tUi3BqdnvswXuCYq0YK2nB3F3ZQkPHz5oucVsv62gO6ZzA05pr0BtA==
+"@fetsorn/mindbook@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.8.tgz#1bcabeb323ca486c90c9e554eee1d32934330718"
+  integrity sha512-3maHt+3ImBbyXgrcXTto5WKfvjphoylj5zxJ785lS869fGa+ABuHuryhsMcP7gFfQQ/WTeHXFjYw9wkspsaabw==
   dependencies:
     "@fetsorn/csvs-js" "^0.27.2"
     "@solid-primitives/resize-observer" "^2.1.5"

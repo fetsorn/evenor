@@ -17,10 +17,7 @@ export async function clone(url) {
 
   await click(await $("button=origin_url"));
 
-  await setValue(
-    await $("aria/origin_url -"),
-    `http://localhost:1420/#?~=${url}`,
-  );
+  await setValue(await $("aria/origin_url -"), url);
 
   await save();
 }
@@ -34,7 +31,7 @@ export function testClone() {
 
     await open();
 
-    await (await $("aria/Foobar")).waitForExist({ timeout: 5000 });
+    await (await $("aria/Test-mind1.git")).waitForExist({ timeout: 5000 });
 
     await search();
 

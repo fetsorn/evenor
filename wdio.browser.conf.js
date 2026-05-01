@@ -7,13 +7,24 @@ export const config = {
   runner: ["browser", {}],
   capabilities: [
     {
-      browserName: "firefox",
-      "moz:firefoxOptions": {
-        //NOTE: headless breaks csvs.selectStream with "ev.error is undefined"
-        //args: ["-headless", "--window-size=1024,768"],
-        log: { level: "error" },
+      browserName: "chrome",
+      "goog:chromeOptions": {
+        // or 'moz:firefoxOptions' or 'wdio:chromedriverOptions'
+        binary: "/usr/bin/chromium-browser",
+      },
+      "wdio:chromedriverOptions": {
+        // or 'wdio:geckodriverOptions', 'wdio:edgedriverOptions'
+        binary: "/usr/bin/chromedriver", // or 'geckodriver', 'msedgedriver'
       },
     },
+    //{
+    //  browserName: "firefox",
+    //  "moz:firefoxOptions": {
+    //    //NOTE: headless breaks csvs.selectStream with "ev.error is undefined"
+    //    //args: ["-headless", "--window-size=1024,768"],
+    //    log: { level: "error" },
+    //  },
+    //},
   ],
   framework: "mocha",
   mochaOpts: {

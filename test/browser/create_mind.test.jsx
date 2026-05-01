@@ -5,7 +5,7 @@ import { cleanup } from "./cleanup.js";
 // NOTE separate test file for each case to isolate state
 describe("create mind", () => {
   before(async () => {
-    await setup()
+    await setup();
   });
 
   testCreateMind();

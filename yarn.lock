@@ -436,10 +436,10 @@
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
 
-"@fetsorn/csvs-js@^0.28.0":
-  version "0.28.0"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.28.0.tgz#05cd3bbe7503f6df4510d65ae76c0e15eb8125f7"
-  integrity sha512-loznnG+gvChfU1A9ESJLHkJQk6XFS+fZ2FUbP788Vkpo58LPiazIrJm7khYXyLja0iOq6hWgxwJnMjhWt49rhw==
+"@fetsorn/csvs-js@^0.28.1":
+  version "0.28.1"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.28.1.tgz#f181fb4ba069fb90e0c2292fc62f9daf2865691b"
+  integrity sha512-lclcGlJJxw9a7U2dHnk2IiyNKpokOPlrQrC7zOLnN6pzN48qiKLchvR9nP1Y5t4cmY/6rJc8HLnzb3PBlZejQg==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
@@ -452,10 +452,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.5":
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.5.tgz#85aa455faaf0ad6a533b683feb7ab9781f2c7cbf"
-  integrity sha512-t/xppd/WtUAgt2/l+G7wPhKAW5E6uSBlg6xbnWO3kozm2HoVEn/IK9T4LpSszHlcM1c9WjQOqpDCxW39dOGgUg==
+"@fetsorn/mindbook@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.6.tgz#e7ffb4d1638a6a1e35c8312aa009815dc69d9381"
+  integrity sha512-+2Z9sIrBAaD2SelQU7z/uVfCGX5hRbXGxars586+z4c6H0pxLVNsPYiL3jRtIKKy7l3c/2CZn2H8VbbBZugfIg==
   dependencies:
     "@fetsorn/csvs-js" "^0.27.2"
     "@solid-primitives/resize-observer" "^2.1.5"

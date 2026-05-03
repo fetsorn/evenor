@@ -452,10 +452,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.8.tgz#1bcabeb323ca486c90c9e554eee1d32934330718"
-  integrity sha512-3maHt+3ImBbyXgrcXTto5WKfvjphoylj5zxJ785lS869fGa+ABuHuryhsMcP7gFfQQ/WTeHXFjYw9wkspsaabw==
+"@fetsorn/mindbook@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.9.tgz#35356b73963a43547bb03f925e44489af3356cd9"
+  integrity sha512-taPUsx3vQBNmdmvmKhsprtLrzHy6dbv/RW8mApF8/wnVuqHp565/XFzDx84bbjVdC1sxudGQmzU538wWmkolRA==
   dependencies:
     "@fetsorn/csvs-js" "^0.27.2"
     "@solid-primitives/resize-observer" "^2.1.5"
@@ -478,12 +478,12 @@
     uuid "^13.0.0"
     web-streams-polyfill "^4.2.0"
 
-"@fetsorn/mindzoo@^0.0.2":
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.2.tgz#d50154e24b7e1302b39e68a1bd88e7f15844fce6"
-  integrity sha512-95vY1AayCRg6sMB5u3e2aK9ll9LXfxFuE2UXaCew05WeS9fEZvcCdHH8515/Z3VjSRcXX9mpFvPi7lQaq5CFMQ==
+"@fetsorn/mindzoo@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.3.tgz#f7107d95e80b2d1196c9dcc19c8ce3f61fe13493"
+  integrity sha512-VCqSM9XaLJ0wyOtb7XL9Zsi+dUxroFIWYdHe5l+I9vvAyTOHT06QMvgGk+1BjZUScEAG0jb0K6tGEQ11vVqAPg==
   dependencies:
-    "@fetsorn/csvs-js" "^0.27.2"
+    "@fetsorn/csvs-js" "^0.28.1"
     "@fetsorn/isogit-lfs" "^0.5.3"
     "@isomorphic-git/lightning-fs" "4.6.2"
     "@vitest/browser-webdriverio" "^4.1.0"

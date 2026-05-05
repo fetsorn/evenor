@@ -19,7 +19,7 @@ export default defineConfig({
         terserOptions: { compress: false, mangle: false },
         rollupOptions: {
             output: {
-                inlineDynamicImports: true,
+                codeSplitting: false,
             },
         },
     },

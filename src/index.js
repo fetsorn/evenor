@@ -1,9 +1,16 @@
+import history from "history/hash";
 import LightningFS from "@isomorphic-git/lightning-fs";
-import { initFS } from "@/fs.js";
-import { makeURL } from "@/pure.js";
 import mindbook from "@fetsorn/mindbook";
 import mindzoo from "@fetsorn/mindzoo";
-import history from "history/hash";
+import { initFS } from "@/fs.js";
+import {
+  makeURL,
+  recordsToSchema,
+  extractSchemaRecords,
+  pickDefaultSortBy,
+  pickDefaultBase,
+} from "@/pure.js";
+import defaultMindRecord from "@/default_mind_record.json";
 
 function getBuildMode() {
   if (window.__TAURI_INTERNALS__) return "tauri";
@@ -14,6 +21,8 @@ function getBuildMode() {
 export default async function startEvenor() {
   const fs = initFS(new LightningFS("fs"));
 
+  const zoo = await mindzoo({ fs, dir: "/" });
+
   let crud = {};
 
   let book = {};
@@ -21,38 +30,64 @@ export default async function startEvenor() {
   let mind = "root";
 
   crud = {
-    c: async (record) => {
-      if (record.action === "open") {
-        mind = record.record.mind;
+    c: async ({ action, record }) => {
+      if (action === "open") {
+        mind = record.mind;
 
-        const description = await mindzoo.open(fs, mind);
+        // find mind in root folder
+        const mindRecord = await zoo.sparql({
+          kind: "DESCRIBE",
+          graph: "root",
+          query: record,
+        });
 
-        const url = makeURL(description.searchParams, mind);
+        const [schemaRecord, ...metaRecords] = extractSchemaRecords(
+          mindRecord.branch,
+        );
+
+        const schema = recordsToSchema(schemaRecord, metaRecords);
+
+        const template = mind === "root" ? defaultMindRecord : {};
+
+        const searchParams = new URLSearchParams();
+
+        if (!searchParams.has("_")) {
+          searchParams.set("_", pickDefaultBase(schema));
+        }
+
+        if (!searchParams.has(".sortBy")) {
+          searchParams.set(
+            ".sortBy",
+            pickDefaultSortBy(schema, searchParams.get("_")),
+          );
+        }
+
+        const url = makeURL(searchParams, mind);
 
         window.history.pushState(null, null, url);
 
         const actionPartial = mind === "root" ? ["open"] : [];
 
-        book.open({ ...description, actions: actionPartial });
+        book.open({ schema, searchParams, template, actions: actionPartial });
       }
     },
     r: async (record) => {
-      return mindzoo.selectStream(fs, mind, record);
+      return zoo.selectStream(fs, mind, record);
     },
     u: async (record) => {
-      return mindzoo.updateRecord(fs, mind, record);
+      return zoo.updateRecord(fs, mind, record);
     },
     d: async (record) => {
-      return mindzoo.deleteRecord(fs, mind, record);
+      return zoo.deleteRecord(fs, mind, record);
     },
     describe: async (record) => {
-      return mindzoo.buildRecord(fs, mind, record);
+      return zoo.buildRecord(fs, mind, record);
     },
   };
 
   book = await mindbook.create(crud);
 
-  await mindzoo.createCatalog(fs);
+  await zoo.createCatalog(fs);
 
   window.addEventListener("popstate", async () => {
     const mind =

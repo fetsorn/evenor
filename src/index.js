@@ -18,29 +18,34 @@ export default async function startEvenor() {
 
   let book = {};
 
-  crud = {
-    c: async (mind, record) => {
-      if (record.action === "open") {
-        const description = await mindzoo.open(fs, record.record.mind);
+  let mind = "root";
 
-        const url = makeURL(description.searchParams, description.mind.mind);
+  crud = {
+    c: async (record) => {
+      if (record.action === "open") {
+        mind = record.record.mind;
+
+        const description = await mindzoo.open(fs, mind);
+
+        const url = makeURL(description.searchParams, mind);
 
         window.history.pushState(null, null, url);
 
-        book.open(description);
+        const actionPartial = mind === "root" ? ["open"] : [];
+
+        book.open({ ...description, actions: actionPartial });
       }
     },
-    r: async (mind, record) => {
+    r: async (record) => {
       return mindzoo.selectStream(fs, mind, record);
     },
-    u: async (mind, record) => {
+    u: async (record) => {
       return mindzoo.updateRecord(fs, mind, record);
     },
-    d: async (mind, record) => {
+    d: async (record) => {
       return mindzoo.deleteRecord(fs, mind, record);
     },
-    describe: async (mind, record) => {
-      console.log(mindzoo);
+    describe: async (record) => {
       return mindzoo.buildRecord(fs, mind, record);
     },
   };
@@ -55,8 +60,7 @@ export default async function startEvenor() {
         ? "root"
         : history.location.pathname.replace("/", "");
 
-    console.log(crud);
-    await crud.c("root", {
+    await crud.c({
       action: "open",
       record: { _: "mind", mind },
     });

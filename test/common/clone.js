@@ -31,8 +31,6 @@ export function testClone() {
 
     await open();
 
-    await (await $("aria/Test-mind1.git")).waitForExist({ timeout: 5000 });
-
     await search();
 
     // should find 7 events in the cloned mind

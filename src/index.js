@@ -21,7 +21,10 @@ function getBuildMode() {
 export default async function startEvenor() {
   const fs = initFS(new LightningFS("fs"));
 
-  const zoo = await mindzoo({ fs, dir: "/" });
+  const zoo =
+    getBuildMode() === "tauri"
+      ? await import("@/tauri.js")
+      : await mindzoo({ fs, dir: "/" });
 
   let crud = {};
 

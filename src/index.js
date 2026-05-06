@@ -41,6 +41,7 @@ export default async function startEvenor() {
           query: record,
         });
 
+        // TODO merge extractSchemaRecords and recordsToSchema
         const [schemaRecord, ...metaRecords] = extractSchemaRecords(
           mindRecord.branch,
         );

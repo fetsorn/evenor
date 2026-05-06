@@ -71,6 +71,26 @@ export function initFS(fs) {
     }
   }
 
+  async function rm(path, opts) {
+    const { type } = await fs.promises.stat(path);
+
+    if (type === "file") {
+      await fs.promises.unlink(path);
+    } else if (type === "dir") {
+      if (opts.recursive) {
+        const files = await fs.promises.readdir(path);
+
+        for (const file of files) {
+          const filepath = `${path}/${file}`;
+
+          await rm(filepath, opts);
+        }
+      }
+
+      await fs.promises.rmdir(path);
+    }
+  }
+
   return {
     createReadStream,
     createWriteStream,
@@ -79,6 +99,7 @@ export function initFS(fs) {
     promises: {
       mkdtemp,
       appendFile,
+      rm,
       ...fs.promises,
     },
   };

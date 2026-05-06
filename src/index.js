@@ -85,7 +85,7 @@ export default async function startEvenor() {
       return zoo.sparql({ kind: "SELECT", graph: mind, query: record });
     },
     u: async (record) => {
-      return zoo.updateRecord(fs, mind, record);
+      return zoo.sparql({ kind: "UPDATE", graph: mind, query: record });
     },
     d: async (record) => {
       return zoo.sparql({ kind: "DELETE", graph: mind, query: record });
@@ -96,8 +96,6 @@ export default async function startEvenor() {
   };
 
   book = await mindbook.create(crud);
-
-  await zoo.createCatalog(fs);
 
   window.addEventListener("popstate", async () => {
     const mind =

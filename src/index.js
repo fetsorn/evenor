@@ -70,6 +70,16 @@ export default async function startEvenor() {
 
         book.open({ schema, searchParams, template, actions: actionPartial });
       }
+      //should be on mind entry
+      //if (record.action === "save") {
+      //  import { saveAs } from "file-saver";
+      //  const zip = await zoo.catalog.export({ mind: record.record.mind })
+      //  saveAs(content, "archive.zip");
+      //}
+      //should be on event or file entry to add lfs asset
+      //if (record.action === "load") {
+      // const files = pickFile();
+      //}
     },
     r: async (record) => {
       return zoo.selectStream(fs, mind, record);
@@ -81,7 +91,7 @@ export default async function startEvenor() {
       return zoo.deleteRecord(fs, mind, record);
     },
     describe: async (record) => {
-      return zoo.buildRecord(fs, mind, record);
+      return zoo.sparql({ kind: "DESCRIBE", graph: mind, query: record });
     },
   };
 

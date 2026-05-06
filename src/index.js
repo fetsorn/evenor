@@ -88,7 +88,7 @@ export default async function startEvenor() {
       return zoo.updateRecord(fs, mind, record);
     },
     d: async (record) => {
-      return zoo.deleteRecord(fs, mind, record);
+      return zoo.sparql({ kind: "DELETE", graph: mind, query: record });
     },
     describe: async (record) => {
       return zoo.sparql({ kind: "DESCRIBE", graph: mind, query: record });

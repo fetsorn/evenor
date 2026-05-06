@@ -82,7 +82,7 @@ export default async function startEvenor() {
       //}
     },
     r: async (record) => {
-      return zoo.selectStream(fs, mind, record);
+      return zoo.sparql({ kind: "SELECT", graph: mind, query: record });
     },
     u: async (record) => {
       return zoo.updateRecord(fs, mind, record);

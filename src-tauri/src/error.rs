@@ -57,6 +57,12 @@ impl From<mindzoo::Error> for Error {
     }
 }
 
+impl From<std::io::Error> for Error {
+    fn from(ctx: std::io::Error) -> Error {
+        Error { inner: ctx.into() }
+    }
+}
+
 impl fmt::Display for Error {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         self.inner.fmt(f)

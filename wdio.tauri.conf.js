@@ -42,9 +42,8 @@ export const config = {
     // run git-http-mock-server
     const http = await import("http");
     const path = await import("path");
-    const { default: factory } = await import(
-      "git-http-mock-server/middleware.js"
-    );
+    const { default: factory } =
+      await import("git-http-mock-server/middleware.js");
     const { default: cors } = await import("git-http-mock-server/cors.js");
 
     var config = {
@@ -60,7 +59,11 @@ export const config = {
     const fs = await import("fs");
 
     // remove /tmp/store to reset test state
-    await fs.promises.rm(path.join(tmpdir(), "store"), { recursive: true });
+    try {
+      await fs.promises.rm(path.join(tmpdir(), "store"), { recursive: true });
+    } catch {
+      // do nothing
+    }
   },
   // clean up the `tauri-driver` process we spawned at the start of the session
   afterSession: () => {

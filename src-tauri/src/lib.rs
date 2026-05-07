@@ -59,6 +59,10 @@ async fn sparql<R: Runtime>(
 
     let dir = get_app_data_dir(&app)?.join("store");
 
+    if !dir.exists() {
+        std::fs::create_dir_all(&dir)?;
+    }
+
     let stream_state: State<'_, StreamState> = app.state();
 
     let mut guard = stream_state.stream.lock().await;

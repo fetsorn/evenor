@@ -23,7 +23,7 @@ export default async function startEvenor() {
 
   const zoo =
     getBuildMode() === "tauri"
-      ? await import("@/tauri.js")
+      ? (await import("@/tauri.js")).default
       : await mindzoo({ fs, dir: "/" });
 
   let crud = {};
@@ -37,12 +37,14 @@ export default async function startEvenor() {
       if (action === "open") {
         mind = record.mind;
 
-        // find mind in root folder
-        const mindRecord = await zoo.sparql({
-          kind: "DESCRIBE",
-          graph: "root",
-          query: record,
-        });
+        // find mind in root folder — sparql returns a stream, collect first entry
+        const [mindRecord] = await Array.fromAsync(
+          await zoo.sparql({
+            kind: "DESCRIBE",
+            graph: "root",
+            query: record,
+          }),
+        );
 
         // TODO merge extractSchemaRecords and recordsToSchema
         const [schemaRecord, ...metaRecords] = extractSchemaRecords(

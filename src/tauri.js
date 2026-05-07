@@ -1,5 +1,4 @@
-import { invoke, Channel } from "@tauri-apps/api/core";
-import { emit } from "@tauri-apps/api/event";
+import { invoke } from "@tauri-apps/api/core";
 
 async function sparql({ kind, graph, query }) {
   // TODO accept sparql string and infer kind with haydee

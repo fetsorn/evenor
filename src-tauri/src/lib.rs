@@ -16,7 +16,7 @@ pub fn get_app_data_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf> {
     Ok(data_dir.inner().clone())
 }
 
-pub fn log<R: tauri::Runtime>(app: &tauri::AppHandle<R>, message: &str) -> Result<()> {
+pub fn mylog<R: tauri::Runtime>(app: &tauri::AppHandle<R>, message: &str) -> Result<()> {
     log::info!("Message from Rust: {}", message);
 
     if !cfg!(test) {
@@ -55,7 +55,9 @@ async fn sparql<R: Runtime>(
     graph: &str,
     query: Value,
 ) -> Result<SelectNext> {
-    let dir = get_app_data_dir(&app)?;
+    log::info!("evenor::sparql kind={kind} graph={graph} query={query}");
+
+    let dir = get_app_data_dir(&app)?.join("store");
 
     let stream_state: State<'_, StreamState> = app.state();
 
@@ -63,6 +65,7 @@ async fn sparql<R: Runtime>(
 
     // If no active stream, start a new one
     if guard.is_none() {
+        log::info!("evenor::sparql starting new stream");
         let kind: Kind = kind.parse().map_err(Error::from)?;
         let entry: Entry = query.try_into().map_err(|e: csvs::Error| Error::from_message(e.to_string()))?;
 
@@ -76,16 +79,21 @@ async fn sparql<R: Runtime>(
     let stream = guard.as_mut().unwrap();
 
     match stream.as_mut().next().await {
-        Some(Ok(entry)) => Ok(SelectNext {
-            done: false,
-            value: Some(entry.into_value()),
-        }),
+        Some(Ok(entry)) => {
+            log::info!("evenor::sparql yielded entry: {}", entry.clone().into_value());
+            Ok(SelectNext {
+                done: false,
+                value: Some(entry.into_value()),
+            })
+        }
         Some(Err(e)) => {
+            log::error!("evenor::sparql stream error: {e}");
             // Stream errored — close it and return error
             *guard = None;
             Err(Error::from(e))
         }
         None => {
+            log::info!("evenor::sparql stream done");
             // Stream ended
             *guard = None;
             Ok(SelectNext {
@@ -101,32 +109,28 @@ pub fn run() {
     create_app(tauri::Builder::default().setup(|app| {
         let a = app.handle();
 
-        let _ = log(&a, "hello from Rust");
+        mylog(&a, "hello from Rust")?;
 
         let data_dir = app
             .path()
             .app_data_dir()
             .expect("App Data Directory is required to run this application.");
 
-        let _ = log(
+        mylog(
             &app.handle(),
             data_dir.clone().into_os_string().to_str().unwrap(),
-        );
+        )?;
 
         if !data_dir.exists() {
-            let _ = log(&app.handle(), "does not exist");
+            mylog(&app.handle(), "does not exist")?;
 
             match std::fs::create_dir_all(&data_dir) {
                 Ok(_) => (),
-                Err(e) => log(&app.handle(), &e.to_string())?,
+                Err(e) => mylog(&app.handle(), &e.to_string())?,
             };
         }
 
         app.manage(data_dir);
-
-        app.manage(StreamState {
-            stream: Mutex::new(None),
-        });
 
         Ok(())
     }))
@@ -140,9 +144,13 @@ pub fn run() {
 
 pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R> {
     builder
+        .plugin(tauri_plugin_log::Builder::new().build())
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_fs::init())
+        .manage(StreamState {
+            stream: Mutex::new(None),
+        })
         .invoke_handler(tauri::generate_handler![sparql])
         .build(tauri::generate_context!())
         .expect("error while running the application")

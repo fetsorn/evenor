@@ -2564,6 +2564,7 @@ dependencies = [
  "futures-util",
  "git2",
  "git2kit",
+ "log",
  "serde",
  "serde_json",
  "tokio",

@@ -42,7 +42,7 @@ export default async function startEvenor() {
           await zoo.sparql({
             kind: "DESCRIBE",
             graph: "root",
-            query: record,
+            query: { _: "mind", mind: record.mind },
           }),
         );
 

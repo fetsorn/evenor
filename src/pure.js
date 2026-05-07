@@ -124,7 +124,7 @@ export function pickDefaultBase(schema) {
 export function pickDefaultSortBy(schema, base) {
   if (!schema.hasOwnProperty(base)) throw Error("schema does not have base");
 
-  const date = schema[base].leaves.find((leaf) => schema[leaf].task === "date");
+  const date = schema[base].leaves.filter((leaf) => schema[leaf].task === "date").sort()[0];
 
   const sortBy = date ?? base;
 

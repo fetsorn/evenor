@@ -1,8 +1,12 @@
 import { invoke } from "@tauri-apps/api/core";
 
+let nextStreamId = 0;
+
 async function sparql({ kind, graph, query }) {
   // TODO accept sparql string and infer kind with haydee
   // const { kind, graph, inner } = await haydee.classify(sparql);
+
+  const streamId = String(nextStreamId++);
 
   return new ReadableStream({
     async pull(controller) {
@@ -10,6 +14,7 @@ async function sparql({ kind, graph, query }) {
         kind,
         graph,
         query,
+        streamId,
       });
 
       if (done) {

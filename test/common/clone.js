@@ -27,7 +27,7 @@ export function testClone() {
     // NOTE can't test the url clone
     // because webdriverio also uses
     // search string and ignores url
-    await clone("http://localhost:8174/test-mind1.git");
+    await clone("http://127.0.0.1:8174/test-mind1.git");
 
     await open();
 

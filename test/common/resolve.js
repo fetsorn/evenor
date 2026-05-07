@@ -16,7 +16,7 @@ export async function setRemote(url) {
 export function testResolveSave() {
   it("should resolve on commit", async () => {
     // clone
-    await clone("http://localhost:8174/test-mind1.git");
+    await clone("http://127.0.0.1:8174/test-mind1.git");
 
     await open();
 
@@ -28,9 +28,9 @@ export function testResolveSave() {
 
 export function testResolveOpen() {
   it("should resolve on open", async () => {
-    await clone("http://localhost:8174/test-mind1.git"); // has 7
+    await clone("http://127.0.0.1:8174/test-mind1.git"); // has 7
 
-    await setRemote("http://localhost:8174/test-mind2.git"); // has 6
+    await setRemote("http://127.0.0.1:8174/test-mind2.git"); // has 6
 
     await open();
 

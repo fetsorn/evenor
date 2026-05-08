@@ -3,7 +3,6 @@ import { v4 as uuidv4 } from "uuid";
 import shajs from "sha.js";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import mindbook from "@fetsorn/mindbook";
-import mindzoo from "@fetsorn/mindzoo";
 import { initFS } from "@/fs.js";
 import {
   makeURL,
@@ -27,10 +26,10 @@ export function newUUID() {
 export default async function startEvenor() {
   const fs = initFS(new LightningFS("fs"));
 
-  const zoo =
+  const api =
     getBuildMode() === "tauri"
-      ? (await import("@/tauri.js")).default
-      : await mindzoo({ fs, dir: "/" });
+      ? (await import("@/tauri/index.js")).default
+      : await (await import("@/browser/index.js")).default(fs);
 
   let crud = {};
 
@@ -45,7 +44,7 @@ export default async function startEvenor() {
 
         // find mind in root folder — sparql returns a stream, collect first entry
         const [mindRecord] = await Array.fromAsync(
-          await zoo.sparql({
+          await api.sparql({
             kind: "DESCRIBE",
             graph: "root",
             query: { _: "mind", mind: record.mind },
@@ -78,32 +77,31 @@ export default async function startEvenor() {
 
         window.history.pushState(null, null, url);
 
-        const actionPartial = mind === "root" ? { mind: ["open"] } : {};
+        const actionPartial =
+          mind === "root" ? { mind: ["open", "archive"] } : {};
 
         book.open({ schema, searchParams, template, actions: actionPartial });
       }
       //should be on mind entry
-      //if (record.action === "save") {
-      //  import { saveAs } from "file-saver";
-      //  const zip = await zoo.catalog.export({ mind: record.record.mind })
-      //  saveAs(content, "archive.zip");
-      //}
+      if (action === "archive") {
+        await api.archive(record.mind);
+      }
       //should be on event or file entry to add lfs asset
       //if (record.action === "load") {
       // const files = pickFile();
       //}
     },
     r: async (record) => {
-      return zoo.sparql({ kind: "SELECT", graph: mind, query: record });
+      return api.sparql({ kind: "SELECT", graph: mind, query: record });
     },
     u: async (record) => {
-      return zoo.sparql({ kind: "UPDATE", graph: mind, query: record });
+      return api.sparql({ kind: "UPDATE", graph: mind, query: record });
     },
     d: async (record) => {
-      return zoo.sparql({ kind: "DELETE", graph: mind, query: record });
+      return api.sparql({ kind: "DELETE", graph: mind, query: record });
     },
     describe: async (record) => {
-      return zoo.sparql({ kind: "DESCRIBE", graph: mind, query: record });
+      return api.sparql({ kind: "DESCRIBE", graph: mind, query: record });
     },
   };
 
@@ -143,7 +141,7 @@ export default async function startEvenor() {
         },
       };
 
-      await zoo.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
+      await api.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
 
       await crud.c({
         action: "open",

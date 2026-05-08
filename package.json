@@ -23,8 +23,8 @@
     "@tauri-apps/api": "^2",
     "@tauri-apps/cli": "^2",
     "@testing-library/webdriverio": "^3.2.1",
-    "@vitest/browser-webdriverio": "^4.1.0",
     "@vitest/browser": "^4.1.0",
+    "@vitest/browser-webdriverio": "^4.1.0",
     "@vitest/coverage-istanbul": "4.1.0",
     "@vitest/coverage-v8": "4.1.5",
     "@wdio/browser-runner": "^9.25.0",
@@ -39,11 +39,12 @@
   },
   "dependencies": {
     "@fetsorn/csvs-js": "^0.28.3",
-    "@fetsorn/mindbook": "^0.0.12",
+    "@fetsorn/mindbook": "^0.0.13",
     "@fetsorn/mindzoo": "^0.0.5",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-log": "^2",
     "@tauri-apps/plugin-opener": "^2",
+    "file-saver": "^2.0.5",
     "history": "^5.3.0",
     "path-browserify": "^1.0.1",
     "process": "^0.11.10"

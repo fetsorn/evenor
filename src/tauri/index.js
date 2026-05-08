@@ -2,6 +2,12 @@ import { invoke } from "@tauri-apps/api/core";
 
 let nextStreamId = 0;
 
+async function archive(mind) {
+  const { done, value } = await invoke("archive", {
+    mind,
+  });
+}
+
 async function sparql({ kind, graph, query }) {
   // TODO accept sparql string and infer kind with haydee
   // const { kind, graph, inner } = await haydee.classify(sparql);
@@ -30,4 +36,5 @@ async function sparql({ kind, graph, query }) {
 
 export default {
   sparql,
+  archive,
 };

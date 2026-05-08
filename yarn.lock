@@ -437,6 +437,15 @@
     papaparse "^5.4.1"
     path-browserify "^1.0.1"
 
+"@fetsorn/csvs-js@^0.28.3":
+  version "0.28.4"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.28.4.tgz#7589cfd4bdd41d64487e97055c5c3534bd234b3a"
+  integrity sha512-Fb/QQ2sG67Xzul6770MiY4ot6hr7GH7A85DwJlntEH+OVjZ0ag6mIWriwKZTqn9S4KigMZyOGz8C6cHlvIlUfA==
+  dependencies:
+    "@swimburger/isomorphic-streams" "^1.1.1"
+    papaparse "^5.4.1"
+    path-browserify "^1.0.1"
+
 "@fetsorn/isogit-lfs@^0.5.3":
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.3.tgz#999ad29e8fe9565b488262ae49593dcc84184634"
@@ -444,10 +453,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.10":
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.10.tgz#6a0064b82d9ed5405b4a1beb6206c9702662d4b6"
-  integrity sha512-gPaL1o/+rXOICuACUFv0y2h94QayqHFmadvi0+pViax1qGM+hbs/EcjVdTRXw3uHxbkjjA0jWGGp1Kfw6WgwOg==
+"@fetsorn/mindbook@^0.0.12":
+  version "0.0.12"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.12.tgz#953b7825849b908bf3c5d98dd9fb28237a346320"
+  integrity sha512-PO8Jq1qHju+95BwgiY2bH3arBwPPrpafAOca18pORHFqGnzTHOCPHY+RNCJmlKZCzXypuJ8zC2k5o88h/4s/ZQ==
   dependencies:
     "@fetsorn/csvs-js" "^0.28.2"
     "@solid-primitives/resize-observer" "^2.1.5"
@@ -469,12 +478,12 @@
     uuid "^13.0.0"
     web-streams-polyfill "^4.2.0"
 
-"@fetsorn/mindzoo@^0.0.4":
-  version "0.0.4"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.4.tgz#a4d1c3ebcd2be7efc3d9a5957521532e48fcafdf"
-  integrity sha512-6riq+anVesqjfn3OwnpbGIEHL1b/J0rup/Qv8UPOrfOvEN4y6QtAfFbefl5cbP6CAkmELJA2chQPSXCvhjENRw==
+"@fetsorn/mindzoo@^0.0.5":
+  version "0.0.5"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.5.tgz#f5af880d3c8134e3e5b84c2486638d7ec797e40e"
+  integrity sha512-sjdfIb+wmJlb0S/TWeeIj9fswwJ5Ey95wQ9UwlLszk1ekhR5phSozg0G3xRFtCx2f97nWn0LPQrPBhFRTjS8fg==
   dependencies:
-    "@fetsorn/csvs-js" "^0.28.2"
+    "@fetsorn/csvs-js" "^0.28.3"
     "@fetsorn/isogit-lfs" "^0.5.3"
     "@isomorphic-git/lightning-fs" "4.6.2"
     "@vitest/browser-webdriverio" "^4.1.0"

@@ -4,12 +4,15 @@ use mindzoo::{Kind, Mindzoo};
 use serde::Serialize;
 use serde_json::Value;
 use std::collections::HashMap;
+use std::io::Write;
 use std::path::PathBuf;
 use std::pin::Pin;
 use tauri::{AppHandle, Manager, Runtime, State};
+use tauri_plugin_dialog::DialogExt;
 use tokio::sync::Mutex;
 
 mod error;
+mod zip;
 pub use error::{Error, Result};
 
 pub fn get_app_data_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf> {
@@ -122,6 +125,50 @@ async fn sparql<R: Runtime>(
     }
 }
 
+#[tauri::command]
+async fn archive<R: Runtime>(
+    app: AppHandle<R>,
+    mind: &str,
+) -> Result<()> {
+    let dir = get_app_data_dir(&app)?.join("store");
+
+    let zoo_state: State<'_, ZooState> = app.state();
+
+    let mut zoo_guard = zoo_state.zoo.lock().await;
+    if zoo_guard.is_none() {
+        let zoo = Mindzoo::new(dir.clone()).await.map_err(Error::from)?;
+        *zoo_guard = Some(zoo);
+    }
+    let zoo = zoo_guard.as_ref().unwrap();
+
+    let mind_dir = zoo.locate(mind).await
+        .map_err(Error::from)?
+        .ok_or_else(|| Error::from_message(format!("mind not found: {mind}")))?;
+
+    // zip to temp file
+    let (_temp_d, temp_path) = zip::zip_to_temp(&mind_dir)?;
+
+    // show save dialog
+    let timestamp = chrono::Local::now().format("%Y-%m-%dT%H%M%S").to_string();
+    let default_name = format!("{timestamp}_{mind}.zip");
+
+    let file_path = app
+        .dialog()
+        .file()
+        .set_file_name(&default_name)
+        .add_filter("Zip archive", &["zip"])
+        .blocking_save_file();
+
+    if let Some(path) = file_path {
+        let buf = std::fs::read(&temp_path)?;
+        let dest = path.into_path()
+            .map_err(|e| Error::from_message(format!("invalid save path: {e}")))?;
+        std::fs::write(&dest, &buf)?;
+    }
+
+    Ok(())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     create_app(tauri::Builder::default().setup(|app| {
@@ -170,7 +217,7 @@ pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R
             zoo: Mutex::new(None),
             streams: Mutex::new(HashMap::new()),
         })
-        .invoke_handler(tauri::generate_handler![sparql])
+        .invoke_handler(tauri::generate_handler![sparql, archive])
         .build(tauri::generate_context!())
         .expect("error while running the application")
 }

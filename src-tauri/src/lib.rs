@@ -149,8 +149,11 @@ async fn archive<R: Runtime>(
     let (_temp_d, temp_path) = zip::zip_to_temp(&mind_dir)?;
 
     // show save dialog
+    let basename = mind_dir.file_name()
+        .unwrap_or_default()
+        .to_string_lossy();
     let timestamp = chrono::Local::now().format("%Y-%m-%dT%H%M%S").to_string();
-    let default_name = format!("{timestamp}_{mind}.zip");
+    let default_name = format!("{timestamp}_{basename}.zip");
 
     let file_path = app
         .dialog()
@@ -165,6 +168,70 @@ async fn archive<R: Runtime>(
             .map_err(|e| Error::from_message(format!("invalid save path: {e}")))?;
         std::fs::write(&dest, &buf)?;
     }
+
+    Ok(())
+}
+
+#[tauri::command]
+async fn restore<R: Runtime>(
+    app: AppHandle<R>,
+    mind: &str,
+) -> Result<()> {
+    let dir = get_app_data_dir(&app)?.join("store");
+
+    let zoo_state: State<'_, ZooState> = app.state();
+
+    let mut zoo_guard = zoo_state.zoo.lock().await;
+    if zoo_guard.is_none() {
+        let zoo = Mindzoo::new(dir.clone()).await.map_err(Error::from)?;
+        *zoo_guard = Some(zoo);
+    }
+    let zoo = zoo_guard.as_ref().unwrap();
+
+    let mind_dir = zoo.locate(mind).await
+        .map_err(Error::from)?
+        .ok_or_else(|| Error::from_message(format!("mind not found: {mind}")))?;
+
+    // show open dialog
+    let file_path = app
+        .dialog()
+        .file()
+        .add_filter("Zip archive", &["zip"])
+        .blocking_pick_file();
+
+    let file_path = match file_path {
+        Some(p) => p.into_path()
+            .map_err(|e| Error::from_message(format!("invalid path: {e}")))?,
+        None => return Ok(()),
+    };
+
+    // extract zip into mind directory
+    let file = std::fs::File::open(&file_path)?;
+    let mut archive = ::zip::ZipArchive::new(file)
+        .map_err(|e| Error::from_message(format!("invalid zip: {e}")))?;
+
+    for i in 0..archive.len() {
+        let mut entry = archive.by_index(i)
+            .map_err(|e| Error::from_message(format!("zip entry error: {e}")))?;
+
+        let entry_path = mind_dir.join(entry.name());
+
+        if entry.is_dir() {
+            std::fs::create_dir_all(&entry_path)?;
+        } else {
+            if let Some(parent) = entry_path.parent() {
+                std::fs::create_dir_all(parent)?;
+            }
+            let mut out = std::fs::File::create(&entry_path)?;
+            std::io::copy(&mut entry, &mut out)?;
+        }
+    }
+
+    // force rebuild by recreating mindzoo
+    drop(zoo_guard);
+    let mut zoo_guard = zoo_state.zoo.lock().await;
+    let zoo = Mindzoo::new(dir).await.map_err(Error::from)?;
+    *zoo_guard = Some(zoo);
 
     Ok(())
 }
@@ -217,7 +284,7 @@ pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R
             zoo: Mutex::new(None),
             streams: Mutex::new(HashMap::new()),
         })
-        .invoke_handler(tauri::generate_handler![sparql, archive])
+        .invoke_handler(tauri::generate_handler![sparql, archive, restore])
         .build(tauri::generate_context!())
         .expect("error while running the application")
 }

@@ -3,9 +3,11 @@ import { invoke } from "@tauri-apps/api/core";
 let nextStreamId = 0;
 
 async function archive(mind) {
-  const { done, value } = await invoke("archive", {
-    mind,
-  });
+  await invoke("archive", { mind });
+}
+
+async function restore(mind) {
+  await invoke("restore", { mind });
 }
 
 async function sparql({ kind, graph, query }) {
@@ -37,4 +39,5 @@ async function sparql({ kind, graph, query }) {
 export default {
   sparql,
   archive,
+  restore,
 };

@@ -77,14 +77,18 @@ export default async function startEvenor() {
 
         window.history.pushState(null, null, url);
 
-        const actionPartial =
-          mind === "root" ? { mind: ["open", "archive"] } : {};
+        const actionPartial = { mind: ["open", "archive", "restore"] };
 
         book.open({ schema, searchParams, template, actions: actionPartial });
       }
       //should be on mind entry
       if (action === "archive") {
         await api.archive(record.mind);
+      }
+      if (action === "restore") {
+        await api.restore(record.mind);
+        // reopen root to refresh catalog
+        await crud.c({ action: "open", record: { _: "mind", mind: "root" } });
       }
       //should be on event or file entry to add lfs asset
       //if (record.action === "load") {

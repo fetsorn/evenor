@@ -143,7 +143,7 @@ export default async function startEvenor() {
         },
       };
 
-      return zoo.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
+      await zoo.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
 
       await crud.c({
         action: "open",

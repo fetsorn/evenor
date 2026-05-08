@@ -104,6 +104,7 @@ export default async function startEvenor() {
   book = await mindbook.create(crud);
 
   window.addEventListener("popstate", async () => {
+    // TODO add ~ and - parsing and call zoo.federation.settle
     const mind =
       history.location.pathname === "/"
         ? "root"

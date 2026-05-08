@@ -72,7 +72,7 @@ export default async function startEvenor() {
 
         window.history.pushState(null, null, url);
 
-        const actionPartial = mind === "root" ? ["open"] : [];
+        const actionPartial = mind === "root" ? { mind: ["open"] } : {};
 
         book.open({ schema, searchParams, template, actions: actionPartial });
       }

@@ -1,4 +1,6 @@
 import history from "history/hash";
+import { v4 as uuidv4 } from "uuid";
+import shajs from "sha.js";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import mindbook from "@fetsorn/mindbook";
 import mindzoo from "@fetsorn/mindzoo";
@@ -16,6 +18,10 @@ function getBuildMode() {
   if (window.__TAURI_INTERNALS__) return "tauri";
 
   return "browser";
+}
+
+export function newUUID() {
+  return shajs("sha256").update(uuidv4()).digest("hex");
 }
 
 export default async function startEvenor() {
@@ -104,16 +110,56 @@ export default async function startEvenor() {
   book = await mindbook.create(crud);
 
   window.addEventListener("popstate", async () => {
-    // TODO add ~ and - parsing and call zoo.federation.settle
-    const mind =
-      history.location.pathname === "/"
-        ? "root"
-        : history.location.pathname.replace("/", "");
+    const searchParams = new URLSearchParams(history.location.search);
 
-    await crud.c({
-      action: "open",
-      record: { _: "mind", mind },
-    });
+    const remoteUrl = searchParams.get("~");
+
+    const token = searchParams.get("-") ?? "";
+
+    // SEC-12: validate clone URL is http(s) before auto-cloning
+    let shouldClone = false;
+    if (searchParams.has("~") && remoteUrl) {
+      try {
+        const parsed = new URL(remoteUrl);
+        shouldClone =
+          parsed.protocol === "http:" || parsed.protocol === "https:";
+      } catch {
+        // invalid URL — don't clone
+      }
+    }
+
+    if (shouldClone) {
+      // replace uuid with .csvs.csv
+      const mind = newUUID();
+
+      const mindRecord = {
+        _: "mind",
+        mind,
+        name: "cloned",
+        origin_url: {
+          _: "origin_url",
+          origin_url: remoteUrl,
+          origin_token: token,
+        },
+      };
+
+      return zoo.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
+
+      await crud.c({
+        action: "open",
+        record: { _: "mind", mind },
+      });
+    } else {
+      const mind =
+        history.location.pathname === "/"
+          ? "root"
+          : history.location.pathname.replace("/", "");
+
+      await crud.c({
+        action: "open",
+        record: { _: "mind", mind },
+      });
+    }
   });
 
   window.dispatchEvent(

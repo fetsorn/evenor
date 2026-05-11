@@ -80,7 +80,15 @@ async fn sparql<R: Runtime>(
 
             log::info!("evenor::sparql creating stream {stream_id}");
             let kind: Kind = kind.parse().map_err(Error::from)?;
-            let entry: Entry = query.try_into().map_err(|e: csvs::Error| Error::from_message(e.to_string()))?;
+            let entries: Vec<Entry> = if query.is_array() {
+                query.as_array()
+                    .unwrap()
+                    .iter()
+                    .map(|v| Entry::try_from(v.clone()).map_err(|e: csvs::Error| Error::from_message(e.to_string())))
+                    .collect::<std::result::Result<Vec<_>, _>>()?
+            } else {
+                vec![query.try_into().map_err(|e: csvs::Error| Error::from_message(e.to_string()))?]
+            };
 
             let mut zoo_guard = zoo_state.zoo.lock().await;
             if zoo_guard.is_none() {
@@ -90,7 +98,7 @@ async fn sparql<R: Runtime>(
             }
             let zoo = zoo_guard.as_ref().unwrap();
 
-            let stream = zoo.sparql(kind, graph, entry).await.map_err(Error::from)?;
+            let stream = zoo.sparql(kind, graph, entries).await.map_err(Error::from)?;
 
             zoo_state.streams.lock().await.insert(stream_id.clone(), stream);
         }

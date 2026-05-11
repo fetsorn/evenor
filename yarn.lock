@@ -428,19 +428,10 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.27.7.tgz#8fe30b3088b89b4873c3a6cc87597ae3920c0a8b"
   integrity sha512-56hiAJPhwQ1R4i+21FVF7V8kSD5zZTdHcVuRFMW0hn753vVfQN8xlx4uOPT4xoGH0Z/oVATuR82AiqSTDIpaHg==
 
-"@fetsorn/csvs-js@^0.28.2":
-  version "0.28.2"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.28.2.tgz#e4e5a4501a5d04d9b22805142df1b92962f72fc7"
-  integrity sha512-FiWNwEBafRmB5YrF6DHswN69S98+bwUteFSoHw+swyEMqu7gA2R5xyEd16N/Hh1B3yEycDnlzcRockPlcGgdyQ==
-  dependencies:
-    "@swimburger/isomorphic-streams" "^1.1.1"
-    papaparse "^5.4.1"
-    path-browserify "^1.0.1"
-
-"@fetsorn/csvs-js@^0.28.3":
-  version "0.28.4"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.28.4.tgz#7589cfd4bdd41d64487e97055c5c3534bd234b3a"
-  integrity sha512-Fb/QQ2sG67Xzul6770MiY4ot6hr7GH7A85DwJlntEH+OVjZ0ag6mIWriwKZTqn9S4KigMZyOGz8C6cHlvIlUfA==
+"@fetsorn/csvs-js@^0.28.5":
+  version "0.28.5"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.28.5.tgz#3ca573ec18c3d3914890580be175f970ab05ff49"
+  integrity sha512-8DxC7hhGZMuq8iSdkjapbMS6Rwk+Rh3kygOiAiPvm7PPRnVRepfazcxRcYqKeW35/QUy9R9HmX1NzIwPYb0kcA==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
@@ -453,12 +444,11 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.14":
-  version "0.0.14"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.14.tgz#733c17c108afeb5ff53407afb7458b90250662bf"
-  integrity sha512-jfrKZd2hUEDD1d9tTPuj6BJiA0o9191qt7WxiWhYXqcGnMPuzEx0cwkRw+fkMbrGExMVTGW4ZBvkpVaKxZjNyg==
+"@fetsorn/mindbook@^0.0.16":
+  version "0.0.16"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.16.tgz#1ac6907ead0612dace1c91d3acdce20c1ea076cf"
+  integrity sha512-azs/w94Gj8q1QtJWRH9PCP6w7ejovIxOJB56mnnk8oZMe8zf/U071h4A7DhvTZB9qhOXsQELDuaZ1LqWAMY31A==
   dependencies:
-    "@fetsorn/csvs-js" "^0.28.2"
     "@solid-primitives/resize-observer" "^2.1.5"
     "@solidjs/meta" "^0.29.4"
     buffer "^6.0.3"
@@ -478,12 +468,12 @@
     uuid "^13.0.0"
     web-streams-polyfill "^4.2.0"
 
-"@fetsorn/mindzoo@^0.0.6":
-  version "0.0.6"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.6.tgz#c465e56bb00953464c383e942a93d10fad317de4"
-  integrity sha512-kKDbO7mI+8za7RM8jhpRkd37VJ7/bK2KRmAXcahPlZOukP1ZcCwK/WgTEJOUZydcMjHzUogRALCsyeiCdjgd+w==
+"@fetsorn/mindzoo@^0.0.8":
+  version "0.0.8"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.8.tgz#8073cfdfd5400ae91b705dac66f77a82a18966ed"
+  integrity sha512-lROJyF3ILAyOfZ8a1kkrQRQyU2Lcr2sDgH6MOzB4qOX/RqKOjeq9x20z867MgFupjtpV3l6e7EaLSTmRMHzQUA==
   dependencies:
-    "@fetsorn/csvs-js" "^0.28.3"
+    "@fetsorn/csvs-js" "^0.28.5"
     "@fetsorn/isogit-lfs" "^0.5.3"
     "@isomorphic-git/lightning-fs" "4.6.2"
     "@vitest/browser-webdriverio" "^4.1.0"

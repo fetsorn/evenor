@@ -9,7 +9,7 @@ export async function search() {
 }
 
 export function testSearch() {
-  it("should open a mind", async () => {
+  it("should search", async () => {
     await createMind();
 
     // check that one record in the overview

@@ -133,7 +133,8 @@ export function queryToAlgebra(base, parsed, namespace, schema) {
   let where;
 
   if (parsed.freeform.length > 0) {
-    const regexPattern = parsed.freeform.join("|");
+    // TODO: AND per-word across branches (requires query intersection)
+    const regexPattern = parsed.freeform.join(" ");
 
     // all reachable branches from base (the "crown")
     const crown = findCrown(schema, base);

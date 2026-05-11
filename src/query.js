@@ -259,8 +259,9 @@ export function buildQuery(base, parsed, schema) {
     return query;
   }
 
-  // freeform: OR across all reachable branches
-  const regexPattern = parsed.freeform.join("|");
+  // freeform: concatenate as a single substring match
+  // TODO: AND per-word across branches (requires query intersection)
+  const regexPattern = parsed.freeform.join(" ");
   const crown = findCrown(schema, base);
 
   // skip branches already constrained by a keyword filter

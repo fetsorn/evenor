@@ -41,7 +41,7 @@ export default async function startEvenor() {
   let schema = {};
 
   crud = {
-    c: async ({ action, record }) => {
+    c: async ({ action, record, searchParams: incomingParams }) => {
       if (action === "open") {
         mind = record.mind;
 
@@ -63,26 +63,27 @@ export default async function startEvenor() {
 
         const template = mind === "root" ? defaultMindRecord : {};
 
-        const searchParams = new URLSearchParams();
+        const sp = incomingParams ?? new URLSearchParams();
 
-        if (!searchParams.has("_")) {
-          searchParams.set("_", pickDefaultBase(schema));
-        }
+        const base = sp.get("_") ?? pickDefaultBase(schema);
+        const sortBy = sp.get(".sortBy") ?? pickDefaultSortBy(schema, base);
+        const sortDirection = sp.get(".sortDirection") ?? undefined;
+        const scroll = sp.get(".scroll") ?? undefined;
+        const query = sp.get("q") ?? "";
 
-        if (!searchParams.has(".sortBy")) {
-          searchParams.set(
-            ".sortBy",
-            pickDefaultSortBy(schema, searchParams.get("_")),
-          );
-        }
+        const urlParams = new URLSearchParams();
 
-        const url = makeURL(searchParams, mind);
+        urlParams.set("_", base);
+
+        if (query) urlParams.set("q", query);
+
+        const url = makeURL(urlParams, mind);
 
         window.history.pushState(null, null, url);
 
         const actionPartial = { mind: ["open", "archive", "restore"] };
 
-        book.open({ schema, searchParams, template, actions: actionPartial });
+        book.open({ schema, base, sortBy, sortDirection, scroll, query, template, actions: actionPartial });
       }
       //should be on mind entry
       if (action === "archive") {
@@ -102,6 +103,18 @@ export default async function startEvenor() {
       const keywords = Object.keys(schema);
       const parsed = parseQueryString(queryString, keywords);
       const query = buildQuery(base, parsed, schema);
+
+      const searchParams = new URLSearchParams();
+
+      searchParams.set("_", base);
+
+      if (queryString) {
+        searchParams.set("q", queryString);
+      }
+
+      const url = makeURL(searchParams, mind);
+
+      window.history.pushState(null, null, url);
 
       return api.sparql({ kind: "SELECT", graph: mind, query });
     },
@@ -167,6 +180,7 @@ export default async function startEvenor() {
       await crud.c({
         action: "open",
         record: { _: "mind", mind },
+        searchParams,
       });
     }
   });

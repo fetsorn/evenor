@@ -1,0 +1,278 @@
+# empty: ""
+# parsed: {"filters":{},"freeform":[]}
+# qon: {
+  "_": "mind"
+}
+SELECT ?mind WHERE {
+}
+
+# keyword only: "date:2024"
+# parsed: {"filters":{"date":"2024"},"freeform":[]}
+# qon: {
+  "_": "mind",
+  "date": "2024"
+}
+SELECT ?mind WHERE {
+  ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+}
+
+# multiple keywords: "date:2024 name:john"
+# parsed: {"filters":{"date":"2024","name":"john"},"freeform":[]}
+# qon: {
+  "_": "mind",
+  "date": "2024",
+  "name": "john"
+}
+SELECT ?mind WHERE {
+  ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+  ?mind <urn:uuid:test-mind#name> "john"^^<http://www.w3.org/2001/XMLSchema#string> .
+}
+
+# freeform only: "hello"
+# parsed: {"filters":{},"freeform":["hello"]}
+# qon: [
+  {
+    "_": "mind",
+    "mind": "hello"
+  },
+  {
+    "_": "mind",
+    "date": "hello"
+  },
+  {
+    "_": "mind",
+    "name": "hello"
+  },
+  {
+    "_": "mind",
+    "location": "hello"
+  },
+  {
+    "_": "mind",
+    "location": {
+      "_": "location",
+      "coordinates": "hello"
+    }
+  }
+]
+SELECT ?mind WHERE {
+  {
+    ?mind <urn:uuid:test-mind#mind> ?mind_v .
+    FILTER ( REGEX( ?mind_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#date> ?date_v .
+    FILTER ( REGEX( ?date_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#name> ?name_v .
+    FILTER ( REGEX( ?name_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    FILTER ( REGEX( ?location_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> ?coordinates_v .
+    FILTER ( REGEX( ?coordinates_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+}
+
+# mixed freeform + keyword: "hello date:2024 world"
+# parsed: {"filters":{"date":"2024"},"freeform":["hello","world"]}
+# qon: [
+  {
+    "_": "mind",
+    "date": "2024",
+    "mind": "hello|world"
+  },
+  {
+    "_": "mind",
+    "date": "2024",
+    "name": "hello|world"
+  },
+  {
+    "_": "mind",
+    "date": "2024",
+    "location": "hello|world"
+  },
+  {
+    "_": "mind",
+    "date": "2024",
+    "location": {
+      "_": "location",
+      "coordinates": "hello|world"
+    }
+  }
+]
+SELECT ?mind WHERE {
+  {
+    ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#mind> ?mind_v .
+    FILTER ( REGEX( ?mind_v , "hello|world"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#name> ?name_v .
+    FILTER ( REGEX( ?name_v , "hello|world"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    FILTER ( REGEX( ?location_v , "hello|world"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> ?coordinates_v .
+    FILTER ( REGEX( ?coordinates_v , "hello|world"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+}
+
+# keyword empty value: "date:"
+# parsed: {"filters":{"date":""},"freeform":[]}
+# qon: {
+  "_": "mind"
+}
+SELECT ?mind WHERE {
+  ?mind <urn:uuid:test-mind#date> ?date_v .
+}
+
+# nested keyword: "coordinates:48.8"
+# parsed: {"filters":{"coordinates":"48.8"},"freeform":[]}
+# qon: {
+  "_": "mind",
+  "location": {
+    "_": "location",
+    "coordinates": "48.8"
+  }
+}
+SELECT ?mind WHERE {
+  ?mind <urn:uuid:test-mind#location> ?location_v .
+  ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+}
+
+# nested keyword + freeform: "hello coordinates:48.8"
+# parsed: {"filters":{"coordinates":"48.8"},"freeform":["hello"]}
+# qon: [
+  {
+    "_": "mind",
+    "location": {
+      "_": "location",
+      "coordinates": "48.8"
+    },
+    "mind": "hello"
+  },
+  {
+    "_": "mind",
+    "location": {
+      "_": "location",
+      "coordinates": "48.8"
+    },
+    "date": "hello"
+  },
+  {
+    "_": "mind",
+    "location": {
+      "_": "location",
+      "coordinates": "48.8"
+    },
+    "name": "hello"
+  },
+  {
+    "_": "mind",
+    "location": {
+      "_": "location",
+      "coordinates": "48.8",
+      "location": "hello"
+    }
+  }
+]
+SELECT ?mind WHERE {
+  {
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#mind> ?mind_v .
+    FILTER ( REGEX( ?mind_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#date> ?date_v .
+    FILTER ( REGEX( ?date_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#name> ?name_v .
+    FILTER ( REGEX( ?name_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    FILTER ( REGEX( ?location_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+}
+
+# sibling keywords sharing path: "location:paris coordinates:48.8"
+# parsed: {"filters":{"location":"paris","coordinates":"48.8"},"freeform":[]}
+# qon: {
+  "_": "mind",
+  "location": {
+    "_": "location",
+    "coordinates": "48.8",
+    "location": "paris"
+  }
+}
+SELECT ?mind WHERE {
+  ?mind <urn:uuid:test-mind#location> "paris"^^<http://www.w3.org/2001/XMLSchema#string> .
+  ?mind <urn:uuid:test-mind#location> ?location_v .
+  ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+}
+
+# all levels: "hello date:2024 location:paris coordinates:48.8"
+# parsed: {"filters":{"date":"2024","location":"paris","coordinates":"48.8"},"freeform":["hello"]}
+# qon: [
+  {
+    "_": "mind",
+    "date": "2024",
+    "location": {
+      "_": "location",
+      "coordinates": "48.8",
+      "location": "paris"
+    },
+    "mind": "hello"
+  },
+  {
+    "_": "mind",
+    "date": "2024",
+    "location": {
+      "_": "location",
+      "coordinates": "48.8",
+      "location": "paris"
+    },
+    "name": "hello"
+  }
+]
+SELECT ?mind WHERE {
+  {
+    ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> "paris"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#mind> ?mind_v .
+    FILTER ( REGEX( ?mind_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+  UNION {
+    ?mind <urn:uuid:test-mind#date> "2024"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> "paris"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#location> ?location_v .
+    ?location_v <urn:uuid:test-mind#coordinates> "48.8"^^<http://www.w3.org/2001/XMLSchema#string> .
+    ?mind <urn:uuid:test-mind#name> ?name_v .
+    FILTER ( REGEX( ?name_v , "hello"^^<http://www.w3.org/2001/XMLSchema#string> ) )
+  }
+}
+
+

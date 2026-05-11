@@ -124,7 +124,9 @@ export function pickDefaultBase(schema) {
 export function pickDefaultSortBy(schema, base) {
   if (!schema.hasOwnProperty(base)) throw Error("schema does not have base");
 
-  const date = schema[base].leaves.filter((leaf) => schema[leaf].task === "date").sort()[0];
+  const date = schema[base].leaves
+    .filter((leaf) => schema[leaf].task === "date")
+    .sort()[0];
 
   const sortBy = date ?? base;
 
@@ -166,4 +168,80 @@ export function extractSchemaRecords(branchRecords) {
   );
 
   return [records.schemaRecord, ...records.metaRecords];
+}
+
+/**
+ * Parse a GitHub-style query string into keyword filters and freeform terms.
+ * "hello date:2024 world" with keywords ["date","name"]
+ *   => { filters: { date: "2024" }, freeform: ["hello", "world"] }
+ *
+ * Rules:
+ *   - "key:value" where key is a known keyword => filter
+ *   - "key:" where key is a known keyword => filter with empty value
+ *   - bare word (no colon, or colon prefix not a keyword) => freeform
+ *
+ * @param {string} text - raw search bar text
+ * @param {string[]} keywords - known keyword names from schema
+ * @returns {{ filters: Object<string,string>, freeform: string[] }}
+ */
+export function parseQueryString(text, keywords) {
+  const filters = {};
+  const freeform = [];
+
+  if (!text || !text.trim()) return { filters, freeform };
+
+  // tokenize: split on whitespace, but respect quoted values
+  // e.g. name:"John Doe" stays as one token
+  const tokenRegex = /(\S+:"(?:[^"\\]|\\.)*"|\S+:'(?:[^'\\]|\\.)*'|\S+)/g;
+  let match;
+
+  while ((match = tokenRegex.exec(text)) !== null) {
+    const token = match[1];
+    const colonIndex = token.indexOf(":");
+
+    if (colonIndex !== -1) {
+      const key = token.slice(0, colonIndex);
+      let value = token.slice(colonIndex + 1);
+
+      // strip surrounding quotes from value
+      value = value.replace(/^["']|["']$/g, "");
+
+      if (keywords.includes(key)) {
+        filters[key] = value;
+      } else {
+        // colon present but not a known keyword => freeform
+        freeform.push(token);
+      }
+    } else {
+      freeform.push(token);
+    }
+  }
+
+  return { filters, freeform };
+}
+
+/**
+ * Build a URLSearchParams from parsed query + base, suitable for searchParamsToQuery.
+ * @param {string} base - the base type (e.g. "mind")
+ * @param {{ filters: Object, freeform: string[] }} parsed - from parseQueryString
+ * @returns {URLSearchParams}
+ */
+export function buildSearchParams(base, parsed) {
+  const params = new URLSearchParams();
+
+  params.set("_", base);
+
+  for (const [key, value] of Object.entries(parsed.filters)) {
+    if (key !== "_") {
+      params.set(key, value);
+    }
+  }
+
+  // freeform: search base value with OR regex across freeform terms
+  if (parsed.freeform.length > 0) {
+    const freeformRegex = parsed.freeform.join("|");
+    params.set(base, freeformRegex);
+  }
+
+  return params;
 }

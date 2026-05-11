@@ -11,6 +11,7 @@ import {
   pickDefaultSortBy,
   pickDefaultBase,
 } from "@/pure.js";
+import { parseQueryString, buildQuery } from "@/query.js";
 import defaultMindRecord from "@/default_mind_record.json";
 
 function getBuildMode() {
@@ -37,6 +38,8 @@ export default async function startEvenor() {
 
   let mind = "root";
 
+  let schema = {};
+
   crud = {
     c: async ({ action, record }) => {
       if (action === "open") {
@@ -56,7 +59,7 @@ export default async function startEvenor() {
           mindRecord.branch,
         );
 
-        const schema = recordsToSchema(schemaRecord, metaRecords);
+        schema = recordsToSchema(schemaRecord, metaRecords);
 
         const template = mind === "root" ? defaultMindRecord : {};
 
@@ -95,8 +98,12 @@ export default async function startEvenor() {
       // const files = pickFile();
       //}
     },
-    r: async (record) => {
-      return api.sparql({ kind: "SELECT", graph: mind, query: record });
+    r: async (base, queryString) => {
+      const keywords = Object.keys(schema);
+      const parsed = parseQueryString(queryString, keywords);
+      const query = buildQuery(base, parsed, schema);
+
+      return api.sparql({ kind: "SELECT", graph: mind, query });
     },
     u: async (record) => {
       return api.sparql({ kind: "UPDATE", graph: mind, query: record });

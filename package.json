@@ -38,7 +38,7 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "^0.28.5",
+    "@fetsorn/csvs-js": "^0.29.0",
     "@fetsorn/mindbook": "^0.0.17",
     "@fetsorn/mindzoo": "^0.0.8",
     "@tauri-apps/api": "^2",

@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { queryToAlgebra } from "@/store/algebra.js";
-import { parseQueryString } from "@/store/pure.js";
+import { queryToAlgebra } from "@/algebra.js";
+import { parseQueryString } from "@/pure.js";
 import { toAst } from "@traqula/algebra-sparql-1-1";
 import { Generator } from "@traqula/generator-sparql-1-1";
 
@@ -86,12 +86,12 @@ describe("queryToAlgebra", () => {
     expect(sparql).toContain("?date_v");
   });
 
-  test("multiple freeform words — joined with | in regex", () => {
+  test("multiple freeform words — joined with space in regex", () => {
     const parsed = parseQueryString("hello world", keywords);
     const algebra = queryToAlgebra("mind", parsed, NS, schema);
 
     const sparql = toSparql(algebra);
-    expect(sparql).toContain("hello|world");
+    expect(sparql).toContain("hello world");
   });
 
   test("nested keyword + freeform — path patterns in UNION arms", () => {

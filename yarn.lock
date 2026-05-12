@@ -437,6 +437,15 @@
     papaparse "^5.4.1"
     path-browserify "^1.0.1"
 
+"@fetsorn/csvs-js@^0.29.0":
+  version "0.29.0"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.29.0.tgz#1e9836e1380377441ef02d07ddd33ba7961e40f7"
+  integrity sha512-pZd1LhOopt2a5N8PJCfi40cXBrwXOvTQa2HpbZYz/VfgPjjFXzR7VKA7h1ofClvMI0kt6RjKmoEB/2bzUm/yUg==
+  dependencies:
+    "@swimburger/isomorphic-streams" "^1.1.1"
+    papaparse "^5.4.1"
+    path-browserify "^1.0.1"
+
 "@fetsorn/isogit-lfs@^0.5.3":
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/@fetsorn/isogit-lfs/-/isogit-lfs-0.5.3.tgz#999ad29e8fe9565b488262ae49593dcc84184634"
@@ -444,10 +453,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.16":
-  version "0.0.16"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.16.tgz#1ac6907ead0612dace1c91d3acdce20c1ea076cf"
-  integrity sha512-azs/w94Gj8q1QtJWRH9PCP6w7ejovIxOJB56mnnk8oZMe8zf/U071h4A7DhvTZB9qhOXsQELDuaZ1LqWAMY31A==
+"@fetsorn/mindbook@^0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.17.tgz#df4cdb4eae1f5071745707340e084f5787bc08f4"
+  integrity sha512-wlf5M0mludVrPVhV7+QuTNkr5VlrzNDGxGzmTkuwfSp1J20rWIuXudbA0H+KHjQ39h3UkwKDFSZQHsnbqbezJA==
   dependencies:
     "@solid-primitives/resize-observer" "^2.1.5"
     "@solidjs/meta" "^0.29.4"

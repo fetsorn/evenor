@@ -71,19 +71,18 @@ export default async function startEvenor() {
         const scroll = sp.get(".scroll") ?? undefined;
         const query = sp.get("q") ?? "";
 
-        const urlParams = new URLSearchParams();
-
-        urlParams.set("_", base);
-
-        if (query) urlParams.set("q", query);
-
-        const url = makeURL(urlParams, mind);
-
-        window.history.pushState(null, null, url);
-
         const actionPartial = { mind: ["open", "archive", "restore"] };
 
-        book.open({ schema, base, sortBy, sortDirection, scroll, query, template, actions: actionPartial });
+        book.open({
+          schema,
+          base,
+          sortBy,
+          sortDirection,
+          scroll,
+          query,
+          template,
+          actions: actionPartial,
+        });
       }
       //should be on mind entry
       if (action === "archive") {

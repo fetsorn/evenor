@@ -55,17 +55,34 @@ export function recordsToSchema(schemaRecord, metaRecords) {
     const metaRecord =
       metaRecords.find((record) => record.branch === branch) ?? {};
 
-    const { task, cognate, description_en, description_ru } = metaRecord;
+    const taskRaw = metaRecord.task;
+
+    const cognateRaw = metaRecord.cognate;
+
+    // withProse may promote leaf values to objects; extract the string
+    const task =
+      typeof taskRaw === "object" && taskRaw !== null
+        ? taskRaw[taskRaw._]
+        : taskRaw;
+
+    const cognate =
+      typeof cognateRaw === "object" && cognateRaw !== null
+        ? cognateRaw[cognateRaw._]
+        : cognateRaw;
+
+    const commatEn = metaRecord["@en"];
+
+    const commatRu = metaRecord["@ru"];
 
     const taskPartial = task !== undefined ? { task } : {};
 
     const cognatePartial = cognate !== undefined ? { cognate } : {};
 
     const enPartial =
-      description_en !== undefined ? { en: description_en } : undefined;
+      commatEn !== undefined ? { en: commatEn } : undefined;
 
     const ruPartial =
-      description_ru !== undefined ? { ru: description_ru } : undefined;
+      commatRu !== undefined ? { ru: commatRu } : undefined;
 
     const descriptionPartial =
       enPartial || ruPartial
@@ -145,7 +162,12 @@ export function extractSchemaRecords(branchRecords) {
     (withBranch, branchRecord) => {
       const { trunk, leaf: omit, ...branchRecordOmitted } = branchRecord;
 
-      const trunks = Array.isArray(trunk) ? trunk : [trunk];
+      const trunksRaw = Array.isArray(trunk) ? trunk : [trunk];
+
+      // withProse may promote trunk values to objects; extract strings
+      const trunks = trunksRaw.map((t) =>
+        typeof t === "object" && t !== null ? t[t._] : t,
+      );
 
       const schemaRecord = trunks
         .filter((t) => t !== undefined)

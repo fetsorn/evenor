@@ -437,7 +437,7 @@
     papaparse "^5.4.1"
     path-browserify "^1.0.1"
 
-"@fetsorn/csvs-js@^0.29.0":
+"@fetsorn/csvs-js@^0.29.2":
   version "0.29.0"
   resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.29.0.tgz#1e9836e1380377441ef02d07ddd33ba7961e40f7"
   integrity sha512-pZd1LhOopt2a5N8PJCfi40cXBrwXOvTQa2HpbZYz/VfgPjjFXzR7VKA7h1ofClvMI0kt6RjKmoEB/2bzUm/yUg==
@@ -453,10 +453,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.17":
-  version "0.0.17"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.17.tgz#df4cdb4eae1f5071745707340e084f5787bc08f4"
-  integrity sha512-wlf5M0mludVrPVhV7+QuTNkr5VlrzNDGxGzmTkuwfSp1J20rWIuXudbA0H+KHjQ39h3UkwKDFSZQHsnbqbezJA==
+"@fetsorn/mindbook@^0.0.18":
+  version "0.0.18"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.18.tgz#0b7cfc4ca5abe364592357938202dddec885985a"
+  integrity sha512-OfeH20AzFPWu36KSTqcMnG+6Ekewup0WicvNq/JxxPyf7p87EKrcXehVWSsyqf1WJSx7VXif/pDT31LwG+dooQ==
   dependencies:
     "@solid-primitives/resize-observer" "^2.1.5"
     "@solidjs/meta" "^0.29.4"
@@ -477,7 +477,7 @@
     uuid "^13.0.0"
     web-streams-polyfill "^4.2.0"
 
-"@fetsorn/mindzoo@^0.0.8":
+"@fetsorn/mindzoo@^0.0.12":
   version "0.0.8"
   resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.8.tgz#8073cfdfd5400ae91b705dac66f77a82a18966ed"
   integrity sha512-lROJyF3ILAyOfZ8a1kkrQRQyU2Lcr2sDgH6MOzB4qOX/RqKOjeq9x20z867MgFupjtpV3l6e7EaLSTmRMHzQUA==

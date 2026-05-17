@@ -15,8 +15,9 @@ mod error;
 mod zip;
 pub use error::{Error, Result};
 
-pub fn get_app_data_dir<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf> {
+pub fn get_store<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf> {
     let data_dir: State<PathBuf> = app.state();
+
     Ok(data_dir.inner().clone())
 }
 
@@ -64,11 +65,7 @@ async fn sparql<R: Runtime>(
 ) -> Result<SelectNext> {
     log::info!("evenor::sparql kind={kind} graph={graph} stream_id={stream_id}");
 
-    let dir = get_app_data_dir(&app)?.join("store");
-
-    if !dir.exists() {
-        std::fs::create_dir_all(&dir)?;
-    }
+    let dir = get_store(&app)?;
 
     let zoo_state: State<'_, ZooState> = app.state();
 
@@ -138,7 +135,7 @@ async fn archive<R: Runtime>(
     app: AppHandle<R>,
     mind: &str,
 ) -> Result<()> {
-    let dir = get_app_data_dir(&app)?.join("store");
+    let dir = get_store(&app)?;
 
     let zoo_state: State<'_, ZooState> = app.state();
 
@@ -185,7 +182,7 @@ async fn restore<R: Runtime>(
     app: AppHandle<R>,
     mind: &str,
 ) -> Result<()> {
-    let dir = get_app_data_dir(&app)?.join("store");
+    let dir = get_store(&app)?;
 
     let zoo_state: State<'_, ZooState> = app.state();
 
@@ -244,6 +241,46 @@ async fn restore<R: Runtime>(
     Ok(())
 }
 
+#[tauri::command]
+async fn merge<R: Runtime>(
+    app: AppHandle<R>,
+    mind: &str,
+    strategy: &str,
+) -> Result<()> {
+    let dir = get_store(&app)?;
+
+    let zoo_state: State<'_, ZooState> = app.state();
+
+    let mut zoo_guard = zoo_state.zoo.lock().await;
+    if zoo_guard.is_none() {
+        let zoo = Mindzoo::new(dir).await.map_err(Error::from)?;
+        *zoo_guard = Some(zoo);
+    }
+    let zoo = zoo_guard.as_ref().unwrap();
+
+    zoo.merge(mind, strategy).await.map_err(|e| Error::from(e))?;
+
+    Ok(())
+}
+
+pub fn create_store<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf> {
+    let data_dir = app
+        .path()
+        .app_data_dir()
+        .expect("App Data Directory is required to run this application.");
+
+    let store_dir = data_dir.join("store");
+
+    if !store_dir.exists() {
+        match std::fs::create_dir_all(&store_dir) {
+            Ok(_) => (),
+            Err(e) => mylog(&app.app_handle(), &e.to_string())?,
+        };
+    }
+
+    Ok(store_dir)
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     create_app(tauri::Builder::default().setup(|app| {
@@ -251,26 +288,9 @@ pub fn run() {
 
         mylog(&a, "hello from Rust")?;
 
-        let data_dir = app
-            .path()
-            .app_data_dir()
-            .expect("App Data Directory is required to run this application.");
+        let store_dir = create_store(app.app_handle())?;
 
-        mylog(
-            &app.handle(),
-            data_dir.clone().into_os_string().to_str().unwrap(),
-        )?;
-
-        if !data_dir.exists() {
-            mylog(&app.handle(), "does not exist")?;
-
-            match std::fs::create_dir_all(&data_dir) {
-                Ok(_) => (),
-                Err(e) => mylog(&app.handle(), &e.to_string())?,
-            };
-        }
-
-        app.manage(data_dir);
+        app.manage(store_dir);
 
         Ok(())
     }))
@@ -292,7 +312,7 @@ pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R
             zoo: Mutex::new(None),
             streams: Mutex::new(HashMap::new()),
         })
-        .invoke_handler(tauri::generate_handler![sparql, archive, restore])
+        .invoke_handler(tauri::generate_handler![sparql, archive, restore, merge])
         .build(tauri::generate_context!())
         .expect("error while running the application")
 }

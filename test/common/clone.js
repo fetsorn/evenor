@@ -3,6 +3,25 @@ import { open } from "./open.js";
 import { search } from "./search.js";
 import { draft, save } from "./create.js";
 
+export async function pull() {
+  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/."));
+
+  await (await $("aria/pull")).waitForExist({ timeout: 5000 });
+
+  await click(await $("aria/pull"));
+
+  await (await $("aria/pull")).waitForExist({ timeout: 5000 });
+
+  // wait for fetch
+  // TODO: replace with wait for Success
+  await browser.pause(3000);
+
+  // search to reload new uuid
+  await search();
+}
+
 export async function clone(url) {
   await draft();
 
@@ -19,7 +38,11 @@ export async function clone(url) {
 
   await setValue(await $("aria/origin_url -"), url);
 
+  // save remote
   await save();
+
+  // pull to get uuid from remote
+  await pull();
 }
 
 export function testClone() {

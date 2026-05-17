@@ -11,7 +11,7 @@ describe("clone", () => {
   testClone();
 
   afterEach(async () => {
-    //await browser.debug();
+    // await browser.debug();
 
     await cleanup();
   });

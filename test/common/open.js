@@ -1,5 +1,6 @@
 import { click } from "./actions.js";
 import { createMind } from "./create.js";
+import { search } from "./search.js";
 
 async function spoiler() {
   await (await $("aria/.")).waitForExist({ timeout: 5000 });
@@ -22,24 +23,21 @@ export async function back() {
 
 export function testOpen() {
   it("should open a mind", async () => {
-    await expect(browser).toHaveUrl(
-      expect.stringContaining("#?_=mind&.sortBy=mind"),
-    );
+    await expect(browser).toHaveUrl(expect.stringContaining("#?_=mind"));
 
     await createMind();
 
     // check that one record in the overview
     await open();
 
+    // url is updated on search
+    await search();
+
     // check that url changed
-    await expect(browser).toHaveUrl(
-      expect.stringContaining("_=event&.sortBy=actdate"),
-    );
+    await expect(browser).toHaveUrl(expect.stringContaining("_=event"));
 
     await back();
 
-    await expect(browser).toHaveUrl(
-      expect.stringContaining("#?_=mind&.sortBy=mind"),
-    );
+    await expect(browser).toHaveUrl(expect.stringContaining("#?_=mind"));
   });
 }

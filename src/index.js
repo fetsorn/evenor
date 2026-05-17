@@ -71,7 +71,10 @@ export default async function startEvenor() {
         const scroll = sp.get(".scroll") ?? undefined;
         const query = sp.get("q") ?? "";
 
-        const actionPartial = { mind: ["open", "archive", "restore"] };
+        const actionPartial =
+          mind === "root"
+            ? { mind: ["open", "archive", "restore", "pull", "push"] }
+            : {};
 
         book.open({
           schema,
@@ -93,6 +96,12 @@ export default async function startEvenor() {
         // reopen root to refresh catalog
         await crud.c({ action: "open", record: { _: "mind", mind: "root" } });
       }
+      if (action === "pull") {
+        await api.merge(record.mind, "theirs");
+      }
+      if (action === "push") {
+        await api.merge(record.mind, "ours");
+      }
       //should be on event or file entry to add lfs asset
       //if (record.action === "load") {
       // const files = pickFile();
@@ -100,7 +109,9 @@ export default async function startEvenor() {
     },
     r: async (base, queryString) => {
       const keywords = Object.keys(schema);
+
       const parsed = parseQueryString(queryString, keywords);
+
       const query = buildQuery(base, parsed, schema);
 
       const searchParams = new URLSearchParams();
@@ -150,26 +161,48 @@ export default async function startEvenor() {
     }
 
     if (shouldClone) {
-      // replace uuid with .csvs.csv
-      const mind = newUUID();
+      // check if a mind with this origin already exists
+      const existing = await Array.fromAsync(
+        await api.sparql({
+          kind: "SELECT",
+          graph: "root",
+          query: { _: "mind" },
+        }),
+      );
 
-      const mindRecord = {
-        _: "mind",
-        mind,
-        name: "cloned",
-        origin_url: {
-          _: "origin_url",
-          origin_url: remoteUrl,
-          origin_token: token,
-        },
-      };
-
-      await api.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
-
-      await crud.c({
-        action: "open",
-        record: { _: "mind", mind },
+      const found = existing.find((r) => {
+        const url = r.origin_url;
+        return url && (typeof url === "string" ? url === remoteUrl : url.origin_url === remoteUrl);
       });
+
+      if (found) {
+        await crud.c({
+          action: "open",
+          record: { _: "mind", mind: found.mind },
+        });
+      } else {
+        const mind = newUUID();
+
+        const mindRecord = {
+          _: "mind",
+          mind,
+          name: "cloned",
+          origin_url: {
+            _: "origin_url",
+            origin_url: remoteUrl,
+            origin_token: token,
+          },
+        };
+
+        await api.sparql({ kind: "UPDATE", graph: "root", query: mindRecord });
+
+        await api.merge(mind, "theirs");
+
+        await crud.c({
+          action: "open",
+          record: { _: "mind", mind },
+        });
+      }
     } else {
       const mind =
         history.location.pathname === "/"
@@ -181,6 +214,8 @@ export default async function startEvenor() {
         record: { _: "mind", mind },
         searchParams,
       });
+
+      await book.find("mind", "");
     }
   });
 

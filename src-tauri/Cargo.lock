@@ -114,7 +114,7 @@ version = "1.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "40c48f72fd53cd289104fc64099abca73db4166ad86ea0b4341abe65af83dadc"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -125,7 +125,7 @@ checksum = "291e6a250ff86cd4a820112fb8898808a366d8f9f58ce16d1f538353ad55747d"
 dependencies = [
  "anstyle",
  "once_cell_polyfill",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -948,8 +948,8 @@ dependencies = [
 
 [[package]]
 name = "csvs"
-version = "0.3.3"
-source = "git+https://codeberg.org/norcivilianlabs/csvs-rs#e6c90fe264f1f22d1d79ca1997eee889ce8ed0b9"
+version = "0.4.2"
+source = "git+https://codeberg.org/fetsorn/csvs#2f8bbb4062f268789c2ece1b7d4fbb156ae63d48"
 dependencies = [
  "async-stream",
  "csv",
@@ -1100,7 +1100,7 @@ dependencies = [
  "libc",
  "option-ext",
  "redox_users",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1290,7 +1290,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -1765,8 +1765,8 @@ dependencies = [
 
 [[package]]
 name = "git2kit"
-version = "0.1.2"
-source = "git+https://codeberg.org/fetsorn/git2kit#7b47ebe20f9ab439b05aae2115fd40177b42eb0e"
+version = "0.1.4"
+source = "git+https://codeberg.org/fetsorn/git2kit#e0532cde4f616997adbf95f2b97dd611b233c76a"
 dependencies = [
  "backtrace",
  "bstr",
@@ -2584,8 +2584,8 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
 name = "mindzoo"
-version = "0.1.5"
-source = "git+https://codeberg.org/norcivilianlabs/mindzoo#dba5fbd86c1558384ccf9ce5436c91a22fff5d99"
+version = "0.1.11"
+source = "git+https://codeberg.org/norcivilianlabs/mindzoo#f4aadee29a5fc00fa10b76a81dbdd2a83c1de1b3"
 dependencies = [
  "async-stream",
  "csvs",
@@ -3715,7 +3715,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4107,7 +4107,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3a766e1110788c36f4fa1c2b71b387a7815aa65f88ce0229841826633d93723e"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -4676,7 +4676,7 @@ dependencies = [
  "getrandom 0.4.2",
  "once_cell",
  "rustix",
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5058,7 +5058,7 @@ checksum = "f2f6fb2847f6742cd76af783a2a2c49e9375d0a111c7bef6f71cd9e738c72d6e"
 dependencies = [
  "memoffset",
  "tempfile",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -5504,7 +5504,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.59.0",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

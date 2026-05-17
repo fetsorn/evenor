@@ -36,12 +36,19 @@ async function restore({ fs, zoo }, mind) {
   await zoo.catalog.rebuild();
 }
 
+async function merge({ zoo }, mind, strategy) {
+  await zoo.catalog.merge(mind, strategy);
+}
+
 export default async (fs) => {
-  const zoo = await mindzoo({ fs, dir: "/" });
+  const http = await import("isomorphic-git/http/web");
+
+  const zoo = await mindzoo({ fs, http, dir: "/" });
 
   return {
     sparql: zoo.sparql,
     archive: (mind) => archive({ fs, zoo }, mind),
     restore: (mind) => restore({ fs, zoo }, mind),
+    merge: (mind, strategy) => merge({ zoo }, mind, strategy),
   };
 };

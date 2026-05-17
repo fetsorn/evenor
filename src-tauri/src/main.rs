@@ -26,7 +26,7 @@ fn main() {
                 let data_dir = match cli.data_dir {
                     Some(p) => std::path::Path::new(&p).to_owned(),
                     // .local/share on linux
-                    None => app.path().app_data_dir()?,
+                    None => evenor_lib::create_store(app.app_handle())?,
                 };
 
                 if !data_dir.exists() {

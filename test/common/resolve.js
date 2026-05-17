@@ -1,6 +1,6 @@
 import { setValue } from "./actions.js";
 import { open } from "./open.js";
-import { clone } from "./clone.js";
+import { clone, pull } from "./clone.js";
 import { edit } from "./edit.js";
 import { createEvent, save } from "./create.js";
 import { search } from "./search.js";
@@ -31,6 +31,8 @@ export function testResolveOpen() {
     await clone("http://127.0.0.1:8174/test-mind1.git"); // has 7
 
     await setRemote("http://127.0.0.1:8174/test-mind2.git"); // has 6
+
+    await pull();
 
     await open();
 

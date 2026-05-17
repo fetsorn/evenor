@@ -38,9 +38,9 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "^0.29.1",
+    "@fetsorn/csvs-js": "^0.29.2",
     "@fetsorn/mindbook": "^0.0.18",
-    "@fetsorn/mindzoo": "^0.0.10",
+    "@fetsorn/mindzoo": "^0.0.13",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-log": "^2",
     "@tauri-apps/plugin-opener": "^2",

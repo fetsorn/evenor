@@ -48,13 +48,12 @@ export async function createEvent() {
 
   await click(await $("aria/add"));
 
-  await (await $("button=datum")).waitForExist({ timeout: 5000 });
+  await (await $("button=@")).waitForExist({ timeout: 5000 });
 
-  // disambiguate add/datum button from menu/base/datum option
-  await click(await $("button=datum"));
+  await click(await $("button=@"));
 
   // input name in profile
-  await setValue(await $("aria/datum -"), "baz");
+  await setValue(await $("aria/@ -"), "baz");
 
   await save();
 }

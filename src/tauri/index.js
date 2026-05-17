@@ -36,8 +36,13 @@ async function sparql({ kind, graph, query }) {
   });
 }
 
+async function merge(mind, strategy) {
+  await invoke("merge", { mind, strategy });
+}
+
 export default {
   sparql,
   archive,
   restore,
+  merge,
 };

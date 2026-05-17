@@ -1,4 +1,5 @@
 import { dirname, resolve } from "path";
+import { copyFileSync, mkdirSync } from "fs";
 import { env } from "process";
 import { fileURLToPath } from "url";
 import { defineConfig } from "vite";
@@ -7,7 +8,19 @@ import { webdriverio } from "@vitest/browser-webdriverio";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+function copyMindbookCss() {
+    return {
+        name: "copy-mindbook-css",
+        writeBundle() {
+            const src = resolve(__dirname, "node_modules/@fetsorn/mindbook/dist/mindbook.css");
+            const dest = resolve(__dirname, "dist/mindbook.css");
+            copyFileSync(src, dest);
+        },
+    };
+}
+
 export default defineConfig({
+    plugins: [copyMindbookCss()],
     build: {
         lib: {
             entry: resolve(__dirname, "src/index.js"),

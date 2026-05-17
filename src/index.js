@@ -172,7 +172,12 @@ export default async function startEvenor() {
 
       const found = existing.find((r) => {
         const url = r.origin_url;
-        return url && (typeof url === "string" ? url === remoteUrl : url.origin_url === remoteUrl);
+        return (
+          url &&
+          (typeof url === "string"
+            ? url === remoteUrl
+            : url.origin_url === remoteUrl)
+        );
       });
 
       if (found) {

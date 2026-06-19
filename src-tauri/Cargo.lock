@@ -948,8 +948,8 @@ dependencies = [
 
 [[package]]
 name = "csvs"
-version = "0.4.2"
-source = "git+https://codeberg.org/fetsorn/csvs#2f8bbb4062f268789c2ece1b7d4fbb156ae63d48"
+version = "0.4.4"
+source = "git+https://codeberg.org/fetsorn/csvs#7da56378b8354879165e19ec981559021baeba4d"
 dependencies = [
  "async-stream",
  "csv",
@@ -2584,8 +2584,8 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
 name = "mindzoo"
-version = "0.1.11"
-source = "git+https://codeberg.org/norcivilianlabs/mindzoo#f4aadee29a5fc00fa10b76a81dbdd2a83c1de1b3"
+version = "0.1.14"
+source = "git+https://codeberg.org/norcivilianlabs/mindzoo#bcbaee9243d6d15d5b81f0fdb386843802d90ecc"
 dependencies = [
  "async-stream",
  "csvs",

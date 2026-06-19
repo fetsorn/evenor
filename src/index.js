@@ -107,24 +107,26 @@ export default async function startEvenor() {
       // const files = pickFile();
       //}
     },
-    r: async (base, queryString) => {
+    r: async (base, queryString, options) => {
       const keywords = Object.keys(schema);
 
       const parsed = parseQueryString(queryString, keywords);
 
       const query = buildQuery(base, parsed, schema);
 
-      const searchParams = new URLSearchParams();
+      if (options?.register) {
+        const searchParams = new URLSearchParams();
 
-      searchParams.set("_", base);
+        searchParams.set("_", base);
 
-      if (queryString) {
-        searchParams.set("q", queryString);
+        if (queryString) {
+          searchParams.set("q", queryString);
+        }
+
+        const url = makeURL(searchParams, mind);
+
+        window.history.pushState(null, null, url);
       }
-
-      const url = makeURL(searchParams, mind);
-
-      window.history.pushState(null, null, url);
 
       return api.sparql({ kind: "SELECT", graph: mind, query });
     },
@@ -192,6 +194,7 @@ export default async function startEvenor() {
           _: "mind",
           mind,
           name: "cloned",
+          branch: [],
           origin_url: {
             _: "origin_url",
             origin_url: remoteUrl,
@@ -203,9 +206,28 @@ export default async function startEvenor() {
 
         await api.merge(mind, "theirs");
 
+        // after merge theirs, uuid may have changed — find the mind by origin
+        const updated = await Array.fromAsync(
+          await api.sparql({
+            kind: "SELECT",
+            graph: "root",
+            query: { _: "mind" },
+          }),
+        );
+
+        const cloned = updated.find((r) => {
+          const url = r.origin_url;
+          return (
+            url &&
+            (typeof url === "string"
+              ? url === remoteUrl
+              : url.origin_url === remoteUrl)
+          );
+        });
+
         await crud.c({
           action: "open",
-          record: { _: "mind", mind },
+          record: { _: "mind", mind: cloned ? cloned.mind : mind },
         });
       }
     } else {

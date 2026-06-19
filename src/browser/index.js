@@ -1,6 +1,7 @@
 import { saveAs } from "file-saver";
 import mindzoo from "@fetsorn/mindzoo";
 import { zip, unzip } from "./zip.js";
+import { seedDefaultMind } from "@/seed.js";
 
 async function archive({ fs, zoo }, mind) {
   const dir = await zoo.catalog.locate(mind);
@@ -41,6 +42,9 @@ async function merge({ zoo }, mind, strategy) {
 }
 
 export default async (fs) => {
+  // seed default mind on first run (before mindzoo rebuild discovers it)
+  await seedDefaultMind(fs, "/");
+
   const http = await import("isomorphic-git/http/web");
 
   const zoo = await mindzoo({ fs, http, dir: "/" });

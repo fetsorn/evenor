@@ -12,6 +12,7 @@ use tauri_plugin_dialog::DialogExt;
 use tokio::sync::Mutex;
 
 mod error;
+pub mod seed;
 mod zip;
 pub use error::{Error, Result};
 
@@ -289,6 +290,13 @@ pub fn run() {
         mylog(&a, "hello from Rust")?;
 
         let store_dir = create_store(app.app_handle())?;
+        eprintln!("[setup] store_dir={:?}", store_dir);
+
+        match seed::seed_default_mind(&store_dir) {
+            Ok(true) => eprintln!("[setup] seeded default mind"),
+            Ok(false) => eprintln!("[setup] store already has minds, skipping seed"),
+            Err(e) => eprintln!("[setup] seed error: {e}"),
+        }
 
         app.manage(store_dir);
 

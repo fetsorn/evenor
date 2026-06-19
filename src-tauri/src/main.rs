@@ -34,6 +34,12 @@ fn main() {
                         .expect("Could not create application bundle location in data directory");
                 }
 
+                match evenor_lib::seed::seed_default_mind(&data_dir) {
+                    Ok(true) => eprintln!("[setup] seeded default mind"),
+                    Ok(false) => eprintln!("[setup] store already has minds, skipping seed"),
+                    Err(e) => eprintln!("[setup] seed error: {e}"),
+                }
+
                 app.manage(data_dir);
 
                 Ok(())

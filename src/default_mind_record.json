@@ -21,8 +21,7 @@
       "branch": "actname",
       "trunk": "event",
       "@en": "Name of the person in the event",
-      "@ru": "Имя человека участвовавшего в событии",
-      "cognate": ["sayname", "person", "parent"]
+      "@ru": "Имя человека участвовавшего в событии"
     },
     {
       "_": "branch",
@@ -34,95 +33,10 @@
     },
     {
       "_": "branch",
-      "branch": "person",
-      "cognate": ["sayname", "actname", "parent"]
-    },
-    {
-      "_": "branch",
-      "branch": "parent",
-      "trunk": "person",
-      "cognate": ["sayname", "actname", "person"]
-    },
-    {
-      "_": "branch",
-      "branch": "sayname",
-      "trunk": "event",
-      "@en": "Name of the person who made the record",
-      "@ru": "Имя автора записи",
-      "cognate": ["actname", "person", "parent"]
-    },
-    {
-      "_": "branch",
       "branch": "category",
       "trunk": "event",
       "@en": "Category of the dataset",
       "@ru": "Категория"
-    },
-    {
-      "_": "branch",
-      "branch": "privacy",
-      "trunk": "event",
-      "@en": "Privacy",
-      "@ru": "Публичность"
-    },
-    {
-      "_": "branch",
-      "branch": "file",
-      "trunk": "event",
-      "task": "file",
-      "@en": "Digital asset",
-      "@ru": "Файл"
-    },
-    {
-      "_": "branch",
-      "branch": "filename",
-      "trunk": "file",
-      "task": "filename",
-      "@en": "Name of digital asset",
-      "@ru": "Название файла"
-    },
-    {
-      "_": "branch",
-      "branch": "fileext",
-      "trunk": "file",
-      "task": "fileext",
-      "@en": "Extension of the file",
-      "@ru": "Расширение файла"
-    },
-    {
-      "_": "branch",
-      "branch": "filehash",
-      "trunk": "file",
-      "task": "filehash",
-      "@en": "Hashsum of the file",
-      "@ru": "Хэш файла"
-    },
-    {
-      "_": "branch",
-      "branch": "branch",
-      "@en": "Branch name",
-      "@ru": "Название ветки"
-    },
-    {
-      "_": "branch",
-      "branch": "trunk",
-      "trunk": "branch",
-      "@en": "Branch trunk",
-      "@ru": "Ствол ветки"
-    },
-    {
-      "_": "branch",
-      "branch": "task",
-      "trunk": "branch",
-      "@en": "Branch task",
-      "@ru": "Предназначение ветки"
-    },
-    {
-      "_": "branch",
-      "branch": "cognate",
-      "trunk": "branch",
-      "@en": "Branch cognate",
-      "@ru": "Родственная ветка"
     }
   ]
 }

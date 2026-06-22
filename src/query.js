@@ -268,16 +268,21 @@ export function buildQuery(base, parsed, schema) {
   const searchBranches = crown.filter((b) => !(b in parsed.filters));
 
   if (searchBranches.length === 0) {
-    // all branches already filtered, just add freeform to base value
-    return { ...query, [base]: regexPattern };
+    // all branches already filtered, just add freeform to base value + prose
+    const baseArm = { ...query, [base]: regexPattern };
+    const proseArm = { ...query, "@": regexPattern };
+    return [baseArm, proseArm];
   }
 
-  // produce one QON per branch (union)
+  // produce one QON per branch (union) + prose
   const arms = searchBranches.map((branch) => {
     const fragment = keywordToQon(schema, base, branch, regexPattern);
 
     return mergeFragment(query, fragment);
   });
 
-  return arms.length === 1 ? arms[0] : arms;
+  // search untagged prose descriptions
+  arms.push({ ...query, "@": regexPattern });
+
+  return arms;
 }

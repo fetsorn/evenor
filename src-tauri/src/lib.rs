@@ -264,6 +264,26 @@ async fn merge<R: Runtime>(
     Ok(())
 }
 
+#[tauri::command]
+async fn compute_stats<R: Runtime>(
+    app: AppHandle<R>,
+) -> Result<()> {
+    let dir = get_store(&app)?;
+
+    let zoo_state: State<'_, ZooState> = app.state();
+
+    let mut zoo_guard = zoo_state.zoo.lock().await;
+    if zoo_guard.is_none() {
+        let zoo = Mindzoo::new(dir).await.map_err(Error::from)?;
+        *zoo_guard = Some(zoo);
+    }
+    let zoo = zoo_guard.as_ref().unwrap();
+
+    zoo.compute_stats().await.map_err(Error::from)?;
+
+    Ok(())
+}
+
 pub fn create_store<R: Runtime>(app: &AppHandle<R>) -> Result<PathBuf> {
     let data_dir = app
         .path()
@@ -292,11 +312,11 @@ pub fn run() {
         let store_dir = create_store(app.app_handle())?;
         eprintln!("[setup] store_dir={:?}", store_dir);
 
-        match seed::seed_default_mind(&store_dir) {
-            Ok(true) => eprintln!("[setup] seeded default mind"),
-            Ok(false) => eprintln!("[setup] store already has minds, skipping seed"),
-            Err(e) => eprintln!("[setup] seed error: {e}"),
-        }
+        //match seed::seed_default_mind(&store_dir) {
+        //    Ok(true) => eprintln!("[setup] seeded default mind"),
+        //    Ok(false) => eprintln!("[setup] store already has minds, skipping seed"),
+        //    Err(e) => eprintln!("[setup] seed error: {e}"),
+        //}
 
         app.manage(store_dir);
 
@@ -320,7 +340,7 @@ pub fn create_app<R: tauri::Runtime>(builder: tauri::Builder<R>) -> tauri::App<R
             zoo: Mutex::new(None),
             streams: Mutex::new(HashMap::new()),
         })
-        .invoke_handler(tauri::generate_handler![sparql, archive, restore, merge])
+        .invoke_handler(tauri::generate_handler![sparql, archive, restore, merge, compute_stats])
         .build(tauri::generate_context!())
         .expect("error while running the application")
 }

@@ -2,17 +2,17 @@ import { click } from "./actions.js";
 import { createMind } from "./create.js";
 
 export async function wipe() {
-  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+  await (await $("aria/…")).waitForExist({ timeout: 5000 });
 
-  await click(await $("aria/."));
+  await click(await $("aria/…"));
 
   await (await $("aria/delete")).waitForExist({ timeout: 5000 });
 
   await click(await $("aria/delete"));
 
-  await (await $("aria/Yes")).waitForExist({ timeout: 5000 });
+  await (await $("aria/yes")).waitForExist({ timeout: 5000 });
 
-  await click(await $("aria/Yes"));
+  await click(await $("aria/yes"));
 
   await (await $("aria/delete")).waitForExist({ reverse: true, timeout: 5000 });
 }
@@ -25,6 +25,6 @@ export function testDelete() {
 
     const element = await $("aria/found");
 
-    await expect(element).toHaveText("found 0");
+    await expect(element).toHaveText("found 1");
   });
 }

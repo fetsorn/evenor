@@ -24,13 +24,13 @@ export function newUUID() {
   return shajs("sha256").update(uuidv4()).digest("hex");
 }
 
-export default async function startEvenor() {
+export default async function startEvenor({ seed = true } = {}) {
   const fs = initFS(new LightningFS("fs"));
 
   const api =
     getBuildMode() === "tauri"
       ? (await import("@/tauri/index.js")).default
-      : await (await import("@/browser/index.js")).default(fs);
+      : await (await import("@/browser/index.js")).default(fs, { seed });
 
   let crud = {};
 
@@ -73,7 +73,7 @@ export default async function startEvenor() {
 
         const actionPartial =
           mind === "root"
-            ? { mind: ["open", "archive", "restore", "pull", "push"] }
+            ? { mind: ["open", "archive", "restore", "pull", "push", "stats"] }
             : {};
 
         book.open({
@@ -101,6 +101,11 @@ export default async function startEvenor() {
       }
       if (action === "push") {
         await api.merge(record.mind, "ours");
+      }
+      if (action === "stats") {
+        await api.computeStats();
+        // reopen root to show updated stats
+        await crud.c({ action: "open", record: { _: "mind", mind: "root" } });
       }
       //should be on event or file entry to add lfs asset
       //if (record.action === "load") {

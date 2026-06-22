@@ -3,13 +3,17 @@ import { createMind } from "./create.js";
 import { search } from "./search.js";
 
 async function spoiler() {
-  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+  const openBtn = await $("aria/open");
 
-  await click(await $("aria/."));
+  if (!(await openBtn.isDisplayed())) {
+    await (await $("aria/…")).waitForExist({ timeout: 5000 });
 
-  await (await $("aria/open")).waitForExist({ timeout: 5000 });
+    await click(await $("aria/…"));
 
-  await click(await $("aria/open"));
+    await openBtn.waitForDisplayed({ timeout: 5000 });
+  }
+
+  await click(openBtn);
 }
 
 export async function open() {

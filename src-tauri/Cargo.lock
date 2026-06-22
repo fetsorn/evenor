@@ -2585,7 +2585,6 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 [[package]]
 name = "mindzoo"
 version = "0.1.14"
-source = "git+https://codeberg.org/norcivilianlabs/mindzoo#bcbaee9243d6d15d5b81f0fdb386843802d90ecc"
 dependencies = [
  "async-stream",
  "csvs",

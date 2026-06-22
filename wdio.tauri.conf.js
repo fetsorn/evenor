@@ -17,7 +17,7 @@ export const config = {
       maxInstances: 1,
       "tauri:options": {
         application: "./src-tauri/target/release/evenor",
-        args: ["-d", `${tmpdir()}/store`], // will create store/ in /tmp
+        args: ["-d", `${tmpdir()}/store`, "--seed=false"], // will create store/ in /tmp
       },
     },
   ],

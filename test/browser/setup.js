@@ -19,5 +19,5 @@ export async function setup() {
 
     const fs = new LightningFS("fs");
 
-    await startEvenor({ fs, mindbook, csvs, mindzoo });
+    await startEvenor({ fs, mindbook, csvs, mindzoo, seed: false });
 }

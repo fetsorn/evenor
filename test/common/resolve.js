@@ -8,7 +8,7 @@ import { search } from "./search.js";
 export async function setRemote(url) {
   await edit();
 
-  await setValue(await $("aria/origin_url -"), url);
+  await setValue(await $("aria/URL to remote git repository -"), url);
 
   await save();
 }
@@ -17,6 +17,9 @@ export function testResolveSave() {
   it("should resolve on commit", async () => {
     // clone
     await clone("http://127.0.0.1:8174/test-mind1.git");
+
+    // runs search to show the updated id after clone
+    await search();
 
     await open();
 

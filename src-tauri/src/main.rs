@@ -10,6 +10,10 @@ struct Cli {
     /// Path to the data directory
     #[arg(short, long)]
     data_dir: Option<std::path::PathBuf>,
+
+    /// Seed the default mind on first run
+    #[arg(long, default_value_t = true)]
+    seed: bool,
 }
 
 fn main() {
@@ -34,10 +38,12 @@ fn main() {
                         .expect("Could not create application bundle location in data directory");
                 }
 
-                match evenor_lib::seed::seed_default_mind(&data_dir) {
-                    Ok(true) => eprintln!("[setup] seeded default mind"),
-                    Ok(false) => eprintln!("[setup] store already has minds, skipping seed"),
-                    Err(e) => eprintln!("[setup] seed error: {e}"),
+                if cli.seed {
+                    match evenor_lib::seed::seed_default_mind(&data_dir) {
+                        Ok(true) => eprintln!("[setup] seeded default mind"),
+                        Ok(false) => eprintln!("[setup] store already has minds, skipping seed"),
+                        Err(e) => eprintln!("[setup] seed error: {e}"),
+                    }
                 }
 
                 app.manage(data_dir);

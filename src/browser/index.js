@@ -41,9 +41,11 @@ async function merge({ zoo }, mind, strategy) {
   await zoo.catalog.merge(mind, strategy);
 }
 
-export default async (fs) => {
+export default async (fs, { seed = true } = {}) => {
   // seed default mind on first run (before mindzoo rebuild discovers it)
-  await seedDefaultMind(fs, "/");
+  if (seed) {
+    await seedDefaultMind(fs, "/");
+  }
 
   const http = await import("isomorphic-git/http/web");
 
@@ -54,5 +56,6 @@ export default async (fs) => {
     archive: (mind) => archive({ fs, zoo }, mind),
     restore: (mind) => restore({ fs, zoo }, mind),
     merge: (mind, strategy) => merge({ zoo }, mind, strategy),
+    computeStats: () => zoo.catalog.computeStats(),
   };
 };

@@ -4,15 +4,17 @@ import { search } from "./search.js";
 import { draft, save } from "./create.js";
 
 export async function pull() {
-  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+  const pullBtn = await $("aria/pull");
 
-  await click(await $("aria/."));
+  if (!(await pullBtn.isDisplayed())) {
+    await (await $("aria/…")).waitForExist({ timeout: 5000 });
 
-  await (await $("aria/pull")).waitForExist({ timeout: 5000 });
+    await click(await $("aria/…"));
 
-  await click(await $("aria/pull"));
+    await pullBtn.waitForDisplayed({ timeout: 5000 });
+  }
 
-  await (await $("aria/pull")).waitForExist({ timeout: 5000 });
+  await click(pullBtn);
 
   // wait for fetch
   // TODO: replace with wait for Success
@@ -26,17 +28,19 @@ export async function clone(url) {
   await draft();
 
   // input name in profile
-  await setValue(await $("aria/name -"), "foobar");
+  await setValue(await $("aria/Name of the mind -"), "foobar");
 
   await (await $("aria/add")).waitForExist({ timeout: 5000 });
 
   await click(await $("aria/add"));
 
-  await (await $("button=origin_url")).waitForExist({ timeout: 5000 });
+  await (
+    await $("button=URL to remote git repository")
+  ).waitForExist({ timeout: 5000 });
 
-  await click(await $("button=origin_url"));
+  await click(await $("button=URL to remote git repository"));
 
-  await setValue(await $("aria/origin_url -"), url);
+  await setValue(await $("aria/URL to remote git repository -"), url);
 
   // save remote
   await save();

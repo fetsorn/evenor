@@ -40,9 +40,14 @@ async function merge(mind, strategy) {
   await invoke("merge", { mind, strategy });
 }
 
+async function computeStats() {
+  await invoke("compute_stats");
+}
+
 export default {
   sparql,
   archive,
   restore,
   merge,
+  computeStats,
 };

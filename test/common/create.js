@@ -24,7 +24,7 @@ export async function createMind() {
   await draft();
 
   // input name in profile
-  await setValue(await $("aria/name -"), "foobar");
+  await setValue(await $("aria/Name of the mind -"), "foobar");
 
   await save();
 }
@@ -44,16 +44,23 @@ export async function createEvent() {
   // check that no records in the overview
   await draft();
 
-  await (await $("aria/add")).waitForExist({ timeout: 5000 });
+  // open the "add..." spoiler
+  await (await $(".spoiler-add")).waitForExist({ timeout: 5000 });
 
-  await click(await $("aria/add"));
+  await click(await $(".spoiler-add"));
 
-  await (await $("button=@")).waitForExist({ timeout: 5000 });
+  // click locale prose button (e.g. "English") — use class to avoid
+  // matching the language selector option
+  await (
+    await $("button.profileAddNew=English")
+  ).waitForExist({ timeout: 5000 });
 
-  await click(await $("button=@"));
+  await click(await $("button.profileAddNew=English"));
 
-  // input name in profile
-  await setValue(await $("aria/@ -"), "baz");
+  // prose spoiler auto-opens in edit mode, input prose
+  await (await $("aria/English -")).waitForExist({ timeout: 5000 });
+
+  await setValue(await $("aria/English -"), "baz");
 
   await save();
 }
@@ -66,10 +73,14 @@ export function testCreateEvent() {
 
     await createEvent();
 
-    // check that one record in the overview
+    // prose is inside a closed spoiler, open it
+    await (await $(".spoiler-is")).waitForExist({ timeout: 5000 });
+
+    await click(await $(".spoiler-is"));
+
+    // check that prose is displayed
     const element = await $("aria/baz");
 
-    // check that one record in the overview
     await expect(element).toBeDisplayed();
   });
 }

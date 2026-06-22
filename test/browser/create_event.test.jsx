@@ -11,7 +11,7 @@ describe("create event", () => {
   testCreateEvent();
 
   afterEach(async () => {
-    //await browser.debug();
+    // await browser.debug();
 
     await cleanup();
   });

@@ -2,13 +2,17 @@ import { click, setValue } from "./actions.js";
 import { createMind, save } from "./create.js";
 
 export async function edit() {
-  await (await $("aria/.")).waitForExist({ timeout: 5000 });
+  const editBtn = await $("aria/edit");
 
-  await click(await $("aria/."));
+  if (!(await editBtn.isDisplayed())) {
+    await (await $("aria/…")).waitForExist({ timeout: 5000 });
 
-  await (await $("aria/edit")).waitForExist({ timeout: 5000 });
+    await click(await $("aria/…"));
 
-  await click(await $("aria/edit"));
+    await editBtn.waitForDisplayed({ timeout: 5000 });
+  }
+
+  await click(editBtn);
 }
 
 export function testEdit() {
@@ -17,7 +21,7 @@ export function testEdit() {
 
     await edit();
 
-    await setValue(await $("aria/name -"), "foobaz");
+    await setValue(await $("aria/Name of the mind -"), "foobaz");
 
     await save();
 

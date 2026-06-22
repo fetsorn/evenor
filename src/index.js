@@ -63,7 +63,7 @@ export default async function startEvenor({ seed = true } = {}) {
         const base = sp.get("_") ?? pickDefaultBase(schema);
         const sortBy = sp.get(".sortBy") ?? pickDefaultSortBy(schema, base);
         const sortDirection = sp.get(".sortDirection") ?? undefined;
-        const scroll = sp.get(".scroll") ?? undefined;
+        const focus = sp.get(".focus") ?? undefined;
         const query = sp.get("q") ?? "";
 
         const actionPartial =
@@ -76,7 +76,7 @@ export default async function startEvenor({ seed = true } = {}) {
           base,
           sortBy,
           sortDirection,
-          scroll,
+          focus,
           query,
           template,
           actions: actionPartial,
@@ -131,6 +131,10 @@ export default async function startEvenor({ seed = true } = {}) {
 
         if (queryString) {
           searchParams.set("q", queryString);
+        }
+
+        if (options.focus) {
+          searchParams.set(".focus", options.focus);
         }
 
         const url = makeURL(searchParams, mind);

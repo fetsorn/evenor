@@ -583,7 +583,7 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.20":
+"@fetsorn/mindbook@^0.0.21":
   version "0.0.20"
   resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.20.tgz#cbea96ac46f8aff1e881cf3fcc36cbf316532687"
   integrity sha512-shAZC69iTC11MAp+0qeVWgO0GOC3bn0qm6Dio+zcdQttAZ9XJKlawmp/okPPbv5P/48fkCWbE7R4ClOtS3wpGg==
@@ -2395,6 +2395,16 @@
   integrity sha512-sumk8m5wzOPMs8TizfQkWG0MTqe0p1yfu77ouz+xy1hNW+gaSf99uiU3lvz4rSghloM1esKfqRCFQibJI4+d/w==
   dependencies:
     "@wdio/logger" "9.18.0"
+
+"@xterm/addon-fit@^0.11.0":
+  version "0.11.0"
+  resolved "https://registry.yarnpkg.com/@xterm/addon-fit/-/addon-fit-0.11.0.tgz#ba4778b69fcc9044a060c2176bbe077657d7b37e"
+  integrity sha512-jYcgT6xtVYhnhgxh3QgYDnnNMYTcf8ElbxxFzX0IZo+vabQqSPAjC3c1wJrKB5E19VwQei89QCiZZP86DCPF7g==
+
+"@xterm/xterm@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@xterm/xterm/-/xterm-6.0.0.tgz#93637b0f2ee3a70718b5746a27c9c506af16745b"
+  integrity sha512-TQwDdQGtwwDt+2cgKDLn0IRaSxYu1tSUjgKarSDkUM0ZNiSRXFpjxEsvc/Zgc5kq5omJ+V0a8/kIM2WD3sMOYg==
 
 "@zip.js/zip.js@^2.8.11":
   version "2.8.26"

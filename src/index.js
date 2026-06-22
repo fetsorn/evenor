@@ -71,6 +71,18 @@ export default async function startEvenor({ seed = true } = {}) {
             ? { mind: ["open", "archive", "restore", "pull", "push", "stats"] }
             : {};
 
+        const onBack =
+          mind === "root"
+            ? null
+            : async () => {
+                await crud.c({
+                  action: "open",
+                  record: { _: "mind", mind: "root" },
+                });
+
+                await book.find("mind", "");
+              };
+
         book.open({
           schema,
           base,
@@ -80,6 +92,7 @@ export default async function startEvenor({ seed = true } = {}) {
           query,
           template,
           actions: actionPartial,
+          onBack,
         });
       }
       //should be on mind entry
@@ -163,10 +176,16 @@ export default async function startEvenor({ seed = true } = {}) {
   // Heavy backend initialization (seed, catalog rebuild)
   book.status("initializing...");
 
-  api =
-    getBuildMode() === "tauri"
-      ? (await import("@/tauri/index.js")).default
-      : await (await import("@/browser/index.js")).default(fs, { seed });
+  try {
+    api =
+      getBuildMode() === "tauri"
+        ? (await import("@/tauri/index.js")).default
+        : await (await import("@/browser/index.js")).default(fs, { seed });
+  } catch (e) {
+    console.error("initialization failed:", e);
+    book.status(`error: ${e.message || e}`);
+    return;
+  }
 
   book.status(null);
 

@@ -27,20 +27,15 @@ export function newUUID() {
 export default async function startEvenor({ seed = true } = {}) {
   const fs = initFS(new LightningFS("fs"));
 
-  const api =
-    getBuildMode() === "tauri"
-      ? (await import("@/tauri/index.js")).default
-      : await (await import("@/browser/index.js")).default(fs, { seed });
-
-  let crud = {};
-
-  let book = {};
+  let api;
 
   let mind = "root";
 
   let schema = {};
 
-  crud = {
+  let book;
+
+  const crud = {
     c: async ({ action, record, searchParams: incomingParams }) => {
       if (action === "open") {
         mind = record.mind;
@@ -89,21 +84,31 @@ export default async function startEvenor({ seed = true } = {}) {
       }
       //should be on mind entry
       if (action === "archive") {
+        book.status("archiving...");
         await api.archive(record.mind);
+        book.status(null);
       }
       if (action === "restore") {
+        book.status("restoring...");
         await api.restore(record.mind);
+        book.status(null);
         // reopen root to refresh catalog
         await crud.c({ action: "open", record: { _: "mind", mind: "root" } });
       }
       if (action === "pull") {
+        book.status("pulling...");
         await api.merge(record.mind, "theirs");
+        book.status(null);
       }
       if (action === "push") {
+        book.status("pushing...");
         await api.merge(record.mind, "ours");
+        book.status(null);
       }
       if (action === "stats") {
+        book.status("computing stats...");
         await api.computeStats();
+        book.status(null);
         // reopen root to show updated stats
         await crud.c({ action: "open", record: { _: "mind", mind: "root" } });
       }
@@ -146,8 +151,22 @@ export default async function startEvenor({ seed = true } = {}) {
     },
   };
 
-  book = await mindbook.create(crud);
+  // Render the interface immediately — no white screen
+  book = mindbook.create(crud);
 
+  await book.bind(document.getElementById("root"));
+
+  // Heavy backend initialization (seed, catalog rebuild)
+  book.status("initializing...");
+
+  api =
+    getBuildMode() === "tauri"
+      ? (await import("@/tauri/index.js")).default
+      : await (await import("@/browser/index.js")).default(fs, { seed });
+
+  book.status(null);
+
+  // Navigate and load data now that the backend is ready
   window.addEventListener("popstate", async () => {
     const searchParams = new URLSearchParams(history.location.search);
 
@@ -193,6 +212,8 @@ export default async function startEvenor({ seed = true } = {}) {
           record: { _: "mind", mind: found.mind },
         });
       } else {
+        book.status("cloning...");
+
         const mind = newUUID();
 
         const mindRecord = {
@@ -230,6 +251,8 @@ export default async function startEvenor({ seed = true } = {}) {
           );
         });
 
+        book.status(null);
+
         await crud.c({
           action: "open",
           record: { _: "mind", mind: cloned ? cloned.mind : mind },
@@ -254,6 +277,4 @@ export default async function startEvenor({ seed = true } = {}) {
   window.dispatchEvent(
     new PopStateEvent("popstate", { state: { page: "dashboard" } }),
   );
-
-  book.bind(document.getElementById("root"));
 }

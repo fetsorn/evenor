@@ -26,7 +26,7 @@ fn main() {
                     .level(tauri_plugin_log::log::LevelFilter::Info)
                     .build(),
             )
-            .setup(|app| {
+            .setup(move |app| {
                 let data_dir = match cli.data_dir {
                     Some(p) => std::path::Path::new(&p).to_owned(),
                     // .local/share on linux

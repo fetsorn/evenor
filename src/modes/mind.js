@@ -181,7 +181,9 @@ export async function mount(container, ctx) {
     ctx.api =
       getBuildMode() === "tauri"
         ? (await import("@/tauri/index.js")).default
-        : await (await import("@/browser/index.js")).default(fs, {
+        : await (
+            await import("@/browser/index.js")
+          ).default(fs, {
             seed: ctx.seed,
           });
 
@@ -275,6 +277,8 @@ export async function mount(container, ctx) {
             query: { _: "mind" },
           }),
         );
+
+        console.clone("select clone", updated);
 
         const cloned = updated.find((r) => {
           const url = r.origin_url;

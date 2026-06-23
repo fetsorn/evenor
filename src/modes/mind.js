@@ -259,15 +259,15 @@ export async function mount(container, ctx) {
           },
         };
 
+        // induct + settle clones the remote content (including
+        // the remote UUID), so no merge-theirs needed afterward
         await ctx.api.sparql({
           kind: "UPDATE",
           graph: "root",
           query: mindRecord,
         });
 
-        await ctx.api.merge(cloneMind, "theirs");
-
-        // after merge theirs, uuid may have changed — find the mind by origin
+        // uuid may have changed — find the mind by origin
         const updated = await Array.fromAsync(
           await ctx.api.sparql({
             kind: "SELECT",

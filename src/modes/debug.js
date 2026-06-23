@@ -8,11 +8,16 @@ let container;
 let terminal;
 let fitAddon;
 let resizeObserver;
-let refreshInterval;
 
 export async function mount(el, ctx) {
   container = el;
   container.innerHTML = "";
+
+  // mindbook.css sets body { overflow: hidden; height: 100% } and
+  // .root { height: 100% } for its own scroll container.
+  // Debug view needs normal document scrolling, so override both.
+  document.body.style.overflow = "auto";
+  container.style.height = "auto";
 
   const style = document.createElement("style");
   style.textContent = `
@@ -146,23 +151,28 @@ export async function mount(el, ctx) {
 
   // Logs
   const logsSection = section(rest, "logs");
+  const refreshBtn = document.createElement("button");
+  refreshBtn.textContent = "refresh";
+  logsSection.appendChild(refreshBtn);
   const logList = document.createElement("div");
   logList.className = "log-list";
   logsSection.appendChild(logList);
 
+  let renderedCount = 0;
+
   function renderLogs() {
-    logList.innerHTML = "";
-    for (const entry of logs) {
+    for (let i = renderedCount; i < logs.length; i++) {
+      const entry = logs[i];
       const div = document.createElement("div");
       div.className = `log-entry ${entry.level}`;
       const time = new Date(entry.time).toLocaleTimeString();
       div.textContent = `[${time}] ${entry.level}: ${entry.message}`;
       logList.appendChild(div);
     }
-    logList.scrollTop = logList.scrollHeight;
+    renderedCount = logs.length;
   }
   renderLogs();
-  refreshInterval = setInterval(renderLogs, 2000);
+  refreshBtn.onclick = renderLogs;
 
   // Filesystem
   if (ctx.fs) {
@@ -176,10 +186,6 @@ export async function mount(el, ctx) {
 }
 
 export function unmount() {
-  if (refreshInterval) {
-    clearInterval(refreshInterval);
-    refreshInterval = null;
-  }
   if (resizeObserver) {
     resizeObserver.disconnect();
     resizeObserver = null;
@@ -189,6 +195,8 @@ export function unmount() {
     terminal = null;
   }
   fitAddon = null;
+  // Restore mindbook's body/root styles
+  document.body.style.overflow = "";
   if (container) {
     container.style.cssText = "";
     container.innerHTML = "";

@@ -42,11 +42,17 @@ export async function clone(url) {
 
   await setValue(await $("aria/URL to remote git repository -"), url);
 
-  // save remote
+  // save remote — induct + settle clones the remote content,
+  // including the remote UUID, so no pull needed afterward
   await save();
 
-  // pull to get uuid from remote
-  await pull();
+  // settle may have replaced the throwaway UUID with the remote one;
+  // search to reload, then wait for the list to render
+  await search();
+
+  await (
+    await $("aria/found")
+  ).waitForExist({ timeout: 5000 });
 }
 
 export function testClone() {

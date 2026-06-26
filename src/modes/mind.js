@@ -69,7 +69,16 @@ export async function mount(container, ctx) {
 
         const actionPartial =
           mind === "root"
-            ? { mind: ["open", "archive", "restore", "pull", "push", "stats"] }
+            ? {
+                mind: [
+                  "open",
+                  "archive",
+                  "restore",
+                  "pull",
+                  "push",
+                  "duplicate",
+                ],
+              }
             : {};
 
         const onBack =
@@ -119,17 +128,11 @@ export async function mount(container, ctx) {
         await ctx.api.merge(record.mind, "ours");
         book.status(null);
       }
-      if (action === "stats") {
-        book.status("computing stats...");
-        await ctx.api.computeStats();
+      if (action === "duplicate") {
+        book.status("duplicating...");
+        // TODO
         book.status(null);
-        // reopen root to show updated stats
-        await crud.c({ action: "open", record: { _: "mind", mind: "root" } });
       }
-      //should be on event or file entry to add lfs asset
-      //if (record.action === "load") {
-      // const files = pickFile();
-      //}
     },
     r: async (base, queryString, options) => {
       const keywords = Object.keys(schema);

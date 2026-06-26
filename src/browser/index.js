@@ -62,6 +62,5 @@ export default async (fs, { seed = true } = {}) => {
     archive: (mind) => archive({ fs, zoo }, mind),
     restore: (mind) => restore({ fs, zoo }, mind),
     merge: (mind, strategy) => merge({ zoo }, mind, strategy),
-    computeStats: () => zoo.catalog.computeStats(),
   };
 };

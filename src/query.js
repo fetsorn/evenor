@@ -274,12 +274,15 @@ export function buildQuery(base, parsed, schema) {
     return [baseArm, proseArm];
   }
 
-  // produce one QON per branch (union) + prose
+  // produce one QON per branch (union) + base value + prose
   const arms = searchBranches.map((branch) => {
     const fragment = keywordToQon(schema, base, branch, regexPattern);
 
     return mergeFragment(query, fragment);
   });
+
+  // search the base value itself
+  arms.push({ ...query, [base]: regexPattern });
 
   // search untagged prose descriptions
   arms.push({ ...query, "@": regexPattern });

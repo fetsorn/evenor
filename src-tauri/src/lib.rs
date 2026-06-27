@@ -1,4 +1,4 @@
-use csvs::{Entry, IntoValue};
+use csvs::Entry;
 use futures_util::StreamExt;
 use mindzoo::{Kind, Mindzoo};
 use serde::Serialize;
@@ -112,7 +112,7 @@ async fn sparql<R: Runtime>(
             log::info!("evenor::sparql yielded entry");
             Ok(SelectNext {
                 done: false,
-                value: Some(entry.into_value()),
+                value: Some(entry.into()),
             })
         }
         Some(Err(e)) => {

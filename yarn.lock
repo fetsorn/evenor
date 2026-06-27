@@ -567,10 +567,10 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.27.7.tgz#8fe30b3088b89b4873c3a6cc87597ae3920c0a8b"
   integrity sha512-56hiAJPhwQ1R4i+21FVF7V8kSD5zZTdHcVuRFMW0hn753vVfQN8xlx4uOPT4xoGH0Z/oVATuR82AiqSTDIpaHg==
 
-"@fetsorn/csvs-js@^0.29.5":
-  version "0.29.5"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.29.5.tgz#9f58d4bc332c56608572c24ce3e3573cf85b8a24"
-  integrity sha512-c90hfVr1v8qpc+TXR04NtC+FRxqNOjU/IGWTsf2tlk8ehIunE2UNRZZKzF9wHVwmu2SzjG6D31A4wkwcZ9h3Mw==
+"@fetsorn/csvs-js@^0.29.7":
+  version "0.29.7"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.29.7.tgz#a577684e9236dd7e08df14dbe314c55f55bc8bbe"
+  integrity sha512-emH1jxCVtfGSQ7sKAYO4E7bF4XcZRRe9WnEYUxxU6cY7DAphE4JuMpu/lVo7Dd3cpbB/8ipYlpecX3oJLg2uNA==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
@@ -583,16 +583,18 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.21":
-  version "0.0.20"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.20.tgz#cbea96ac46f8aff1e881cf3fcc36cbf316532687"
-  integrity sha512-shAZC69iTC11MAp+0qeVWgO0GOC3bn0qm6Dio+zcdQttAZ9XJKlawmp/okPPbv5P/48fkCWbE7R4ClOtS3wpGg==
+"@fetsorn/mindbook@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.22.tgz#721869cadd7ec1135ce110e1cab57a5a05a28eb6"
+  integrity sha512-wpH/L+ZeRTUnj0rlDvqsDPOXOOI9zCaCzYR35FFmXRV56BfVl+0PycjO7wtAJwfDV382+sGVhCtJuBg5ZSFhZA==
   dependencies:
     "@lingui/core" "^6.4.0"
     "@lingui/solid" "^6.4.0"
     "@solid-primitives/resize-observer" "^2.1.5"
     "@solidjs/meta" "^0.29.4"
     "@tiptap/core" "^3.27.1"
+    "@tiptap/extension-code-block-lowlight" "^3.27.1"
+    "@tiptap/extension-placeholder" "^3.27.1"
     "@tiptap/pm" "^3.27.1"
     "@tiptap/starter-kit" "^3.27.1"
     buffer "^6.0.3"
@@ -601,6 +603,7 @@
     i18next "25.8.18"
     i18next-browser-languagedetector "8.2.1"
     i18next-http-backend "3.0.2"
+    lowlight "^3.3.0"
     microdiff "^1.5.0"
     mime "^4.1.0"
     path-browserify "^1.0.1"
@@ -614,12 +617,12 @@
     uuid "^13.0.0"
     web-streams-polyfill "^4.2.0"
 
-"@fetsorn/mindzoo@^0.0.19":
-  version "0.0.19"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.19.tgz#c081bcd72f39a204e7ee3483658db5acf75a34f5"
-  integrity sha512-ATP04btwcFwGOXQ06EYo3OnPiSpgR53mRiciNV8RUyxfq3z/+j8hhwBZ8hTnTj5tqUwRpAW2myf2+46z4CT7gw==
+"@fetsorn/mindzoo@^0.0.21":
+  version "0.0.21"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.21.tgz#c0898a6335c07447ee85e961b7e5dcb76658c9c9"
+  integrity sha512-jQBvkFXm+/3nggBBJGnCur7fTN3LBFIxGf4JSEttZ5YPOduP1ts2r9Il49xaCRBy2DY+nk3zsK6opCI+vrEw8A==
   dependencies:
-    "@fetsorn/csvs-js" "^0.29.5"
+    "@fetsorn/csvs-js" "^0.29.7"
     "@fetsorn/isogit-lfs" "^0.5.3"
     "@isomorphic-git/lightning-fs" "4.6.2"
     "@vitest/browser-webdriverio" "^4.1.0"
@@ -1698,6 +1701,11 @@
   resolved "https://registry.yarnpkg.com/@tiptap/extension-bullet-list/-/extension-bullet-list-3.27.1.tgz#7c620986039e81d3991906952e6c16ded6a0b11d"
   integrity sha512-faCUHnRP47o9Zh9VZZX6EX/569udw9Vopm2PgEKPWuKLE2qaS5WBuUVU0iItdJmKUqaWiOZkpoW4jvnDmj0dfg==
 
+"@tiptap/extension-code-block-lowlight@^3.27.1":
+  version "3.27.1"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block-lowlight/-/extension-code-block-lowlight-3.27.1.tgz#9f6fd904889031f4a20c7179cd6267fe88704892"
+  integrity sha512-rDZYDwKpV3Uw8xjI5pzSQTLJ7pEyJkDrVhnzdh9mBY3sHVwP1maYh+0kRUrHi5N3EhiNp/GXG1kPjysPIQ4nqQ==
+
 "@tiptap/extension-code-block@^3.27.1":
   version "3.27.1"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-code-block/-/extension-code-block-3.27.1.tgz#83824e58c9f01d216eec0bf5049587eafac47068"
@@ -1774,6 +1782,11 @@
   version "3.27.1"
   resolved "https://registry.yarnpkg.com/@tiptap/extension-paragraph/-/extension-paragraph-3.27.1.tgz#f3ea50ba90eb9ad035d512521020870308354780"
   integrity sha512-7K7eo1gruOgAsnbK+GCV23AUVUI0cL1bTig8HaPneoFMVbig7vddk8jNLKBWO8TXVbG7TuHdnDN4F98vdtwh5Q==
+
+"@tiptap/extension-placeholder@^3.27.1":
+  version "3.27.1"
+  resolved "https://registry.yarnpkg.com/@tiptap/extension-placeholder/-/extension-placeholder-3.27.1.tgz#2b0abb9cf68e5330e7cd961c2fc0b1dbf53b32c1"
+  integrity sha512-lhcNDcczQ75yJOSywCHb58Hmtg1aPL/2TdYmeLPxVrP048D7rRs133sfONcgyyw0AvhnfmPOkHLTv3QtKSowhw==
 
 "@tiptap/extension-strike@^3.27.1":
   version "3.27.1"
@@ -1928,6 +1941,13 @@
   resolved "https://registry.yarnpkg.com/@types/estree/-/estree-1.0.8.tgz#958b91c991b1867ced318bedea0e215ee050726e"
   integrity sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w==
 
+"@types/hast@^3.0.0":
+  version "3.0.4"
+  resolved "https://registry.yarnpkg.com/@types/hast/-/hast-3.0.4.tgz#1d6b39993b82cea6ad783945b0508c25903e15aa"
+  integrity sha512-WPs+bbQw5aCj+x6laNGWLH3wviHtoCv/P3+otBhbOhJgG8qtpdAMlTCxLtsTWA7LH1Oh/bFCHsBn0TPS5m30EQ==
+  dependencies:
+    "@types/unist" "*"
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0", "@types/istanbul-lib-coverage@^2.0.6":
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.6.tgz#7739c232a1fee9b4d3ce8985f314c0c6d33549d7"
@@ -2016,6 +2036,11 @@
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/stack-utils/-/stack-utils-2.0.3.tgz#6209321eb2c1712a7e7466422b8cb1fc0d9dd5d8"
   integrity sha512-9aEbYZ3TbYMznPdcdr3SmIrLXwC/AKZXQeCf9Pgao5CKb8CyHuEX5jzWPTkvregvhRJHcpRO6BFoGW9ycaOkYw==
+
+"@types/unist@*":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/unist/-/unist-3.0.3.tgz#acaab0f919ce69cce629c2d4ed2eb4adc1b6c20c"
+  integrity sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==
 
 "@types/which@^2.0.1":
   version "2.0.2"
@@ -3242,6 +3267,11 @@ degenerator@^5.0.0:
     escodegen "^2.1.0"
     esprima "^4.0.1"
 
+dequal@^2.0.0:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/dequal/-/dequal-2.0.3.tgz#2644214f1997d39ed0ee0ece72335490a7ac67be"
+  integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
+
 destr@^2.0.5:
   version "2.0.5"
   resolved "https://registry.yarnpkg.com/destr/-/destr-2.0.5.tgz#7d112ff1b925fb8d2079fac5bdb4a90973b51fdb"
@@ -3251,6 +3281,13 @@ detect-libc@^2.0.3:
   version "2.1.2"
   resolved "https://registry.yarnpkg.com/detect-libc/-/detect-libc-2.1.2.tgz#689c5dcdc1900ef5583a4cb9f6d7b473742074ad"
   integrity sha512-Btj2BOOO83o3WyH59e8MgXsxEQVcarkUOpEYrubB0urwnN10yQ364rsiByU11nZlqWYZm05i/of7io4mzihBtQ==
+
+devlop@^1.0.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/devlop/-/devlop-1.1.0.tgz#4db7c2ca4dc6e0e834c30be70c94bbc976dc7018"
+  integrity sha512-RWmIqhcFf1lRYBvNmr7qTNuyCt/7/ns2jbpp1+PalgE/rDQcBT0fioSMUpJ93irlUhC5hrg4cYqe6U+0ImW0rA==
+  dependencies:
+    dequal "^2.0.0"
 
 diff3@0.0.3:
   version "0.0.3"
@@ -4229,6 +4266,11 @@ he@^1.2.0:
   resolved "https://registry.yarnpkg.com/he/-/he-1.2.0.tgz#84ae65fa7eafb165fddb61566ae14baf05664f0f"
   integrity sha512-F/1DnUGPopORZi0ni+CvrCgHQ5FyEAHRLSApuYWMmrbSwoN2Mn/7k+Gl38gJnR7yyDZk6WLXwiGod1JOWNDKGw==
 
+highlight.js@~11.11.0:
+  version "11.11.1"
+  resolved "https://registry.yarnpkg.com/highlight.js/-/highlight.js-11.11.1.tgz#fca06fa0e5aeecf6c4d437239135fabc15213585"
+  integrity sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==
+
 history@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/history/-/history-5.3.0.tgz#1548abaa245ba47992f063a0783db91ef201c73b"
@@ -5181,6 +5223,15 @@ loglevel@^1.6.0:
   version "1.9.2"
   resolved "https://registry.yarnpkg.com/loglevel/-/loglevel-1.9.2.tgz#c2e028d6c757720107df4e64508530db6621ba08"
   integrity sha512-HgMmCqIJSAKqo68l0rS2AanEWfkxaZ5wNiEFb5ggm08lDs9Xl2KxBlX3PTcaD2chBM1gXAYf491/M2Rv8Jwayg==
+
+lowlight@^3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/lowlight/-/lowlight-3.3.0.tgz#007b8a5bfcfd27cc65b96246d2de3e9dd4e23c6c"
+  integrity sha512-0JNhgFoPvP6U6lE/UdVsSq99tn6DhjjpAj5MxG49ewd2mOBVtwWYIT8ClyABhq198aXXODMU6Ox8DrGy/CpTZQ==
+  dependencies:
+    "@types/hast" "^3.0.0"
+    devlop "^1.0.0"
+    highlight.js "~11.11.0"
 
 lru-cache@^10.0.1, lru-cache@^10.2.0:
   version "10.4.3"

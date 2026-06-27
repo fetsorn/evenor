@@ -948,8 +948,8 @@ dependencies = [
 
 [[package]]
 name = "csvs"
-version = "0.4.4"
-source = "git+https://codeberg.org/fetsorn/csvs#7da56378b8354879165e19ec981559021baeba4d"
+version = "0.4.5"
+source = "git+https://codeberg.org/fetsorn/csvs#eadea1f362e453f9e842f778a2cbdf9e3bea4202"
 dependencies = [
  "async-stream",
  "csv",
@@ -1295,7 +1295,7 @@ dependencies = [
 
 [[package]]
 name = "evenor"
-version = "3.1.4"
+version = "3.1.5"
 dependencies = [
  "chrono",
  "clap",
@@ -2584,7 +2584,8 @@ checksum = "6877bb514081ee2a7ff5ef9de3281f14a4dd4bceac4c09388074a6b5df8a139a"
 
 [[package]]
 name = "mindzoo"
-version = "0.1.14"
+version = "0.1.15"
+source = "git+https://codeberg.org/norcivilianlabs/mindzoo#414737806726e7e7c059ba172e7b6232dbd214c8"
 dependencies = [
  "async-stream",
  "csvs",

@@ -1,7 +1,7 @@
 {
   "name": "evenor",
   "productName": "evenor",
-  "version": "3.1.4",
+  "version": "3.1.5",
   "private": true,
   "description": "Tell the story of your own data.",
   "type": "module",
@@ -38,9 +38,9 @@
     "vitest": "^4.1.0"
   },
   "dependencies": {
-    "@fetsorn/csvs-js": "^0.29.5",
-    "@fetsorn/mindbook": "^0.0.20",
-    "@fetsorn/mindzoo": "^0.0.19",
+    "@fetsorn/csvs-js": "^0.29.7",
+    "@fetsorn/mindbook": "^0.0.22",
+    "@fetsorn/mindzoo": "^0.0.21",
     "@tauri-apps/api": "^2",
     "@tauri-apps/plugin-log": "^2",
     "@tauri-apps/plugin-opener": "^2",

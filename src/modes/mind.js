@@ -281,7 +281,7 @@ export async function mount(container, ctx) {
           }),
         );
 
-        console.clone("select clone", updated);
+        console.log("select clone", updated);
 
         const cloned = updated.find((r) => {
           const url = r.origin_url;

@@ -8,7 +8,7 @@ import { search } from "./search.js";
 export async function setRemote(url) {
   await edit();
 
-  await setValue(await $("aria/URL to remote git repository -"), url);
+  await setValue(await $('[contenteditable][aria-label="URL to remote git repository"]'), url);
 
   await save();
 }

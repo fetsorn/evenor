@@ -21,7 +21,7 @@ export function testEdit() {
 
     await edit();
 
-    await setValue(await $("aria/Name of the mind -"), "foobaz");
+    await setValue(await $('[contenteditable][aria-label="Name of the mind"]'), "foobaz");
 
     await save();
 

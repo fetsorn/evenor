@@ -28,7 +28,7 @@ export async function clone(url) {
   await draft();
 
   // input name in profile
-  await setValue(await $("aria/Name of the mind -"), "foobar");
+  await setValue(await $('[contenteditable][aria-label="Name of the mind"]'), "foobar");
 
   await (await $("aria/add")).waitForExist({ timeout: 5000 });
 
@@ -40,7 +40,7 @@ export async function clone(url) {
 
   await click(await $("button=URL to remote git repository"));
 
-  await setValue(await $("aria/URL to remote git repository -"), url);
+  await setValue(await $('[contenteditable][aria-label="URL to remote git repository"]'), url);
 
   // save remote — induct + settle clones the remote content,
   // including the remote UUID, so no pull needed afterward

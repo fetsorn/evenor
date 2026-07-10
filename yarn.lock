@@ -567,10 +567,10 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.27.7.tgz#8fe30b3088b89b4873c3a6cc87597ae3920c0a8b"
   integrity sha512-56hiAJPhwQ1R4i+21FVF7V8kSD5zZTdHcVuRFMW0hn753vVfQN8xlx4uOPT4xoGH0Z/oVATuR82AiqSTDIpaHg==
 
-"@fetsorn/csvs-js@^0.29.7":
-  version "0.29.7"
-  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.29.7.tgz#a577684e9236dd7e08df14dbe314c55f55bc8bbe"
-  integrity sha512-emH1jxCVtfGSQ7sKAYO4E7bF4XcZRRe9WnEYUxxU6cY7DAphE4JuMpu/lVo7Dd3cpbB/8ipYlpecX3oJLg2uNA==
+"@fetsorn/csvs-js@^0.30.0":
+  version "0.30.0"
+  resolved "https://registry.yarnpkg.com/@fetsorn/csvs-js/-/csvs-js-0.30.0.tgz#f22fbcadb92685b3ee536ef2983d2b412c3298d5"
+  integrity sha512-WatLDomOKScyuWbSRS1G13sev4TM1MdFawqCOTRDxsxHSzvwbN76N/7+ZzCyU8K6/bow8ulGVX8Wet1pWqGmOA==
   dependencies:
     "@swimburger/isomorphic-streams" "^1.1.1"
     papaparse "^5.4.1"
@@ -583,10 +583,10 @@
   dependencies:
     isomorphic-git "1.25.6"
 
-"@fetsorn/mindbook@^0.0.22":
-  version "0.0.22"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.22.tgz#721869cadd7ec1135ce110e1cab57a5a05a28eb6"
-  integrity sha512-wpH/L+ZeRTUnj0rlDvqsDPOXOOI9zCaCzYR35FFmXRV56BfVl+0PycjO7wtAJwfDV382+sGVhCtJuBg5ZSFhZA==
+"@fetsorn/mindbook@^0.0.23":
+  version "0.0.23"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindbook/-/mindbook-0.0.23.tgz#6ddd2c1d83504be8a13b9c26d1123249deaa5f23"
+  integrity sha512-G1DLoVYhkPL30yh3eF6faPnKrKCFCXzFbw53CVvEdHmiAuIGKJablecUNqUilSBsRMYbT8UeSd8aJKPGwgeidw==
   dependencies:
     "@lingui/core" "^6.4.0"
     "@lingui/solid" "^6.4.0"
@@ -617,12 +617,12 @@
     uuid "^13.0.0"
     web-streams-polyfill "^4.2.0"
 
-"@fetsorn/mindzoo@^0.0.21":
-  version "0.0.21"
-  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.21.tgz#c0898a6335c07447ee85e961b7e5dcb76658c9c9"
-  integrity sha512-jQBvkFXm+/3nggBBJGnCur7fTN3LBFIxGf4JSEttZ5YPOduP1ts2r9Il49xaCRBy2DY+nk3zsK6opCI+vrEw8A==
+"@fetsorn/mindzoo@^0.0.22":
+  version "0.0.22"
+  resolved "https://registry.yarnpkg.com/@fetsorn/mindzoo/-/mindzoo-0.0.22.tgz#c4e3fd4e685cb46c3056a1a38539eaca04ce7436"
+  integrity sha512-iVZomoCvxj3pB6X8tB0VgwdLsq5nnvTlHloqxjVXQDTd4/2cETnnAsc1uQuzJ99f2jGZiZhXllQbWE9yQhi4Zw==
   dependencies:
-    "@fetsorn/csvs-js" "^0.29.7"
+    "@fetsorn/csvs-js" "^0.30.0"
     "@fetsorn/isogit-lfs" "^0.5.3"
     "@isomorphic-git/lightning-fs" "4.6.2"
     "@vitest/browser-webdriverio" "^4.1.0"

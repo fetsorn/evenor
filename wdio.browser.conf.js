@@ -11,6 +11,7 @@ export const config = {
       "goog:chromeOptions": {
         // or 'moz:firefoxOptions' or 'wdio:chromedriverOptions'
         binary: "/usr/bin/chromium-browser",
+        args: ["--lang=en"],
       },
       "wdio:chromedriverOptions": {
         // or 'wdio:geckodriverOptions', 'wdio:edgedriverOptions'

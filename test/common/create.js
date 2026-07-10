@@ -24,7 +24,7 @@ export async function createMind() {
   await draft();
 
   // input name in profile
-  await setValue(await $("aria/Name of the mind -"), "foobar");
+  await setValue(await $('[contenteditable][aria-label="Name of the mind"]'), "foobar");
 
   await save();
 }
@@ -58,9 +58,9 @@ export async function createEvent() {
   await click(await $("button.profileAddNew=English"));
 
   // prose spoiler auto-opens in edit mode, input prose
-  await (await $("aria/English -")).waitForExist({ timeout: 5000 });
+  await (await $('[contenteditable][aria-label="English"]')).waitForExist({ timeout: 5000 });
 
-  await setValue(await $("aria/English -"), "baz");
+  await setValue(await $('[contenteditable][aria-label="English"]'), "baz");
 
   await save();
 }

@@ -29,7 +29,21 @@ export async function setValue(field, value) {
       field,
     );
   } else {
-    // polyfill doesn't work in browser
-    await field.setValue(value);
+    const tagName = await field.getTagName();
+
+    if (tagName === "input" || tagName === "textarea") {
+      await field.setValue(value);
+    } else {
+      // contenteditable (tiptap ProseMirror) — select all then type
+      await field.click();
+      await browser.execute((el) => {
+        const range = document.createRange();
+        range.selectNodeContents(el);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }, field);
+      await browser.keys(value.split(""));
+    }
   }
 }

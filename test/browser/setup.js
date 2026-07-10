@@ -5,6 +5,9 @@ import mindbook from "@fetsorn/mindbook";
 import LightningFS from "@isomorphic-git/lightning-fs";
 import startEvenor from "../../dist/evenor.js";
 
+// Force English locale so lingui labels match test selectors
+Object.defineProperty(navigator, "languages", { get: () => ["en"] });
+
 export async function setup() {
     window.Buffer = window.Buffer || Buffer;
 

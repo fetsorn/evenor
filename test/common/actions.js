@@ -34,16 +34,20 @@ export async function setValue(field, value) {
     if (tagName === "input" || tagName === "textarea") {
       await field.setValue(value);
     } else {
-      // contenteditable (tiptap ProseMirror) — select all then type
+      // contenteditable (tiptap ProseMirror) — use execCommand to
+      // insert text, which triggers tiptap's input handling properly
       await field.click();
-      await browser.execute((el) => {
+      await browser.execute((el, val) => {
+        el.focus();
+        // select all existing content for replacement
         const range = document.createRange();
         range.selectNodeContents(el);
         const sel = window.getSelection();
         sel.removeAllRanges();
         sel.addRange(range);
-      }, field);
-      await browser.keys(value.split(""));
+        // insert text via execCommand — triggers tiptap onUpdate
+        document.execCommand("insertText", false, val);
+      }, field, value);
     }
   }
 }

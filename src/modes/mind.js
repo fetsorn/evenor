@@ -50,6 +50,14 @@ export async function mount(container, ctx) {
           }),
         );
 
+        // a missing record or record without branch means the mind
+        // has no schema in the catalog — report instead of crashing
+        if (mindRecord === undefined || mindRecord.branch === undefined) {
+          console.error("open failed: no schema for mind", record.mind);
+          book.status(`error: no schema for mind ${record.mind}`);
+          return;
+        }
+
         // TODO merge extractSchemaRecords and recordsToSchema
         const [schemaRecord, ...metaRecords] = extractSchemaRecords(
           mindRecord.branch,
@@ -224,23 +232,18 @@ export async function mount(container, ctx) {
 
     if (shouldClone) {
       // check if a mind with this origin already exists
-      const existing = await Array.fromAsync(
+      // NOTE: SELECT { _: "mind" } returns shallow records without
+      // origin_url, so filter by nested origin_url in the query itself
+      const [found] = await Array.fromAsync(
         await ctx.api.sparql({
           kind: "SELECT",
           graph: "root",
-          query: { _: "mind" },
+          query: {
+            _: "mind",
+            origin_url: { _: "origin_url", origin_url: remoteUrl },
+          },
         }),
       );
-
-      const found = existing.find((r) => {
-        const url = r.origin_url;
-        return (
-          url &&
-          (typeof url === "string"
-            ? url === remoteUrl
-            : url.origin_url === remoteUrl)
-        );
-      });
 
       if (found) {
         await crud.c({
@@ -266,38 +269,43 @@ export async function mount(container, ctx) {
 
         // induct + settle clones the remote content (including
         // the remote UUID), so no merge-theirs needed afterward
-        await ctx.api.sparql({
-          kind: "UPDATE",
-          graph: "root",
-          query: mindRecord,
-        });
+        try {
+          await ctx.api.sparql({
+            kind: "UPDATE",
+            graph: "root",
+            query: mindRecord,
+          });
+        } catch (e) {
+          console.error("clone failed:", e);
+          book.status(`error: ${e.message ?? e}`);
+          return;
+        }
 
-        // uuid may have changed — find the mind by origin
-        const updated = await Array.fromAsync(
+        // the clone adopts the remote uuid, replacing cloneMind —
+        // recover the actual uuid by filtering on nested origin_url
+        const [cloned] = await Array.fromAsync(
           await ctx.api.sparql({
             kind: "SELECT",
             graph: "root",
-            query: { _: "mind" },
+            query: {
+              _: "mind",
+              origin_url: { _: "origin_url", origin_url: remoteUrl },
+            },
           }),
         );
 
-        console.log("select clone", updated);
+        console.log("select clone", cloned);
 
-        const cloned = updated.find((r) => {
-          const url = r.origin_url;
-          return (
-            url &&
-            (typeof url === "string"
-              ? url === remoteUrl
-              : url.origin_url === remoteUrl)
-          );
-        });
+        if (cloned === undefined) {
+          book.status(`error: cloned mind not found: ${remoteUrl}`);
+          return;
+        }
 
         book.status(null);
 
         await crud.c({
           action: "open",
-          record: { _: "mind", mind: cloned ? cloned.mind : cloneMind },
+          record: { _: "mind", mind: cloned.mind },
         });
       }
     } else {

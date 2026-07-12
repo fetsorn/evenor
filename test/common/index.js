@@ -1,4 +1,4 @@
-import { testClone } from "./clone.js";
+import { testClone, testCloneUrl } from "./clone.js";
 import { testCreateMind, testCreateEvent } from "./create.js";
 import { testDelete } from "./delete.js";
 import { testOpen } from "./open.js";
@@ -8,6 +8,7 @@ import { testEdit } from "./edit.js";
 
 export {
   testClone,
+  testCloneUrl,
   testCreateEvent,
   testCreateMind,
   testDelete,

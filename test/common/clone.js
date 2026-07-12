@@ -55,6 +55,35 @@ export async function clone(url) {
   ).waitForExist({ timeout: 5000 });
 }
 
+export function testCloneUrl() {
+  it("should clone a mind from url search params", async () => {
+    // the hash was set to #?~=<remote>&-= before mount, so the initial
+    // popstate triggers the url clone flow and opens the cloned mind —
+    // poll search until the cloned view is active and yields its 7 events
+    await browser.waitUntil(
+      async () => {
+        await search();
+
+        const found = await $("aria/found");
+
+        if (!(await found.isExisting())) return false;
+
+        return (await found.getText()) === "found 7";
+      },
+      {
+        timeout: 15000,
+        interval: 1000,
+        timeoutMsg: "expected cloned mind to open and search to find 7",
+      },
+    );
+
+    // the url should carry the uuid adopted from the remote .csvs.csv
+    await expect(browser).toHaveUrl(
+      expect.stringContaining("524e6a8d-6046-4346-a094-e7771054e0ee"),
+    );
+  });
+}
+
 export function testClone() {
   it("should clone a mind", async () => {
     // NOTE can't test the url clone

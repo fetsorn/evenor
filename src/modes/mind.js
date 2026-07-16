@@ -245,10 +245,37 @@ export async function mount(container, ctx) {
         }),
       );
 
+      // verify the existing mind actually has a schema — failed clones
+      // from older versions left schemaless ghost minds behind that
+      // would shadow the origin url forever; retire them and re-clone
+      let existing;
+
       if (found) {
+        const [described] = await Array.fromAsync(
+          await ctx.api.sparql({
+            kind: "DESCRIBE",
+            graph: "root",
+            query: { _: "mind", mind: found.mind },
+          }),
+        );
+
+        if (described !== undefined && described.branch !== undefined) {
+          existing = found.mind;
+        } else {
+          console.log("retiring schemaless ghost mind", found.mind);
+
+          await ctx.api.sparql({
+            kind: "DELETE",
+            graph: "root",
+            query: { _: "mind", mind: found.mind },
+          });
+        }
+      }
+
+      if (existing) {
         await crud.c({
           action: "open",
-          record: { _: "mind", mind: found.mind },
+          record: { _: "mind", mind: existing },
         });
       } else {
         book.status("cloning...");

@@ -3,7 +3,7 @@
   "productName": "evenor",
   "version": "3.1.7",
   "private": true,
-  "description": "Tell the story of your own data.",
+  "description": "Plain-text database editor",
   "type": "module",
   "scripts": {
     "dev": "vite",
